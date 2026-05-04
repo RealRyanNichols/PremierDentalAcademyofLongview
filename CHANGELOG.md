@@ -10,6 +10,46 @@ practice management software they'll see on day one in any East Texas office.
 
 ---
 
+## Practice Pro v2 — Imaging suite (FMX + photos + docs) — 2026-05-04
+
+Replaces the old Documents stub with a proper imaging hub —
+the radiograph + intraoral photo workflow real practices need.
+
+### New Imaging module (ribbon tab "Imaging" / shortcut I)
+
+Sub-tabs:
+- **FMX** — full-mouth series in standard adult mount layout: 16
+  periapical slots (8 maxillary + 8 mandibular) plus 4 bitewings
+  centred between the arches. Each slot is labeled with its tooth
+  range (e.g. "1–3", "BW 4–5") and shows the image when present
+  along with the capture date and live edit ring.
+- **Bitewings** — standalone 4-image bitewing series for routine
+  caries-detection visits.
+- **Panorex / Cephalometric** — single large radiograph slot
+  with replace / remove / annotate.
+- **3D / CBCT** — placeholder volume viewer (axial / sagittal /
+  coronal slice mockups) wired for future DICOM integration.
+- **Intraoral photos** — 8-view standard photographic series:
+  front smile, full smile, retracted, occlusal max + mand, R/L
+  buccal, profile.
+- **Documents** — HIPAA forms, consents, insurance cards, lab
+  slips, prescription history.
+
+### Workflow
+- Click any empty slot or the "＋ New image" button → file picker.
+- Drag any JPEG/PNG file directly onto a slot → mounted instantly.
+- Click a mounted image → full lightbox viewer with inline
+  annotations textarea (autosaves), Replace, Remove.
+- Print-ready FMX page (browser print).
+- All images stored as data URLs in the patient record (will move
+  to Supabase Storage when authenticated).
+
+### Coming next push
+- Real 6-point AAP-graded perio chart
+- Then: Tx Plan / Ledger / Patient profile depth pass
+
+---
+
 ## Practice Pro v2 — Today + Comms + Recall actions — 2026-05-04
 
 The "wow" features no legacy product ships with. Open

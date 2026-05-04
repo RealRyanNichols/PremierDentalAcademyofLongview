@@ -266,7 +266,7 @@
       { id: 'comms',    label: 'Comms',    shortcut: 'C' },
       { id: 'schedule', label: 'Schedule', shortcut: 'S' },
       { id: 'recall',   label: 'Recall',   shortcut: '7' },
-      { id: 'docs',     label: 'Docs',     shortcut: '8' },
+      { id: 'imaging',  label: 'Imaging',  shortcut: 'I' },
     ];
     return `
       <div class="pp-ribbon px-3 flex items-center gap-1 overflow-x-auto">
@@ -433,7 +433,7 @@
       case 'tx':       return wrap(renderTxPlan(p));
       case 'perio':    return wrap(renderPerioStub(p));
       case 'comms':    return wrap(renderComms(p));
-      case 'docs':     return wrap(renderDocsStub(p));
+      case 'imaging':  return wrap(renderImaging(p));
       default: return '';
     }
   }
@@ -811,6 +811,277 @@
     `;
   }
 
+  // ── Imaging module: FMX, BWs, Pano, Ceph, CBCT, photos ─────────
+  // Standard adult FMX layout — 14 PAs + 4 BWs in a 3-row mount.
+  const FMX_LAYOUT = {
+    maxRow: [
+      { id: 'm-r-mol', label: '1–3',   teeth: [1, 2, 3] },
+      { id: 'm-r-pre', label: '4–5',   teeth: [4, 5] },
+      { id: 'm-r-cus', label: '6',     teeth: [6] },
+      { id: 'm-ant-r', label: '7–9',   teeth: [7, 8, 9] },
+      { id: 'm-ant-l', label: '8–10',  teeth: [8, 9, 10] },
+      { id: 'm-l-cus', label: '11',    teeth: [11] },
+      { id: 'm-l-pre', label: '12–13', teeth: [12, 13] },
+      { id: 'm-l-mol', label: '14–16', teeth: [14, 15, 16] },
+    ],
+    bwRow: [
+      { id: 'bw-r-mol', label: 'BW 2–3',   teeth: [2, 3, 30, 31] },
+      { id: 'bw-r-pre', label: 'BW 4–5',   teeth: [4, 5, 28, 29] },
+      { id: 'bw-l-pre', label: 'BW 12–13', teeth: [12, 13, 20, 21] },
+      { id: 'bw-l-mol', label: 'BW 14–15', teeth: [14, 15, 18, 19] },
+    ],
+    mandRow: [
+      { id: 'd-r-mol', label: '32–30', teeth: [32, 31, 30] },
+      { id: 'd-r-pre', label: '29–28', teeth: [29, 28] },
+      { id: 'd-r-cus', label: '27',    teeth: [27] },
+      { id: 'd-ant-r', label: '26–24', teeth: [26, 25, 24] },
+      { id: 'd-ant-l', label: '25–23', teeth: [25, 24, 23] },
+      { id: 'd-l-cus', label: '22',    teeth: [22] },
+      { id: 'd-l-pre', label: '21–20', teeth: [21, 20] },
+      { id: 'd-l-mol', label: '19–17', teeth: [19, 18, 17] },
+    ],
+  };
+  const PHOTO_VIEWS = [
+    { id: 'front',          label: 'Front smile',     hint: 'Lips relaxed' },
+    { id: 'smile',          label: 'Full smile',      hint: 'Wide smile' },
+    { id: 'retracted',      label: 'Retracted',       hint: 'Anterior, teeth together' },
+    { id: 'occlusal_max',   label: 'Occlusal max.',   hint: 'Mirror, upper arch' },
+    { id: 'occlusal_mand',  label: 'Occlusal mand.',  hint: 'Mirror, lower arch' },
+    { id: 'right_buccal',   label: 'Right buccal',    hint: 'Right side, teeth together' },
+    { id: 'left_buccal',    label: 'Left buccal',     hint: 'Left side, teeth together' },
+    { id: 'profile',        label: 'Profile',         hint: 'Side view of face' },
+  ];
+
+  function ensureImaging(p) {
+    p.imaging = p.imaging || { fmx: {}, bw: {}, pano: null, ceph: null, cbct: null, photos: {}, docs: [] };
+    p.imaging.fmx = p.imaging.fmx || {};
+    p.imaging.bw = p.imaging.bw || {};
+    p.imaging.photos = p.imaging.photos || {};
+    p.imaging.docs = p.imaging.docs || [];
+    return p.imaging;
+  }
+
+  function renderImaging(p) {
+    const img = ensureImaging(p);
+    const tab = state.ui.imagingTab || 'fmx';
+    const tabs = [
+      { id: 'fmx',    label: 'FMX',           count: Object.keys(img.fmx).length + Object.keys(img.bw).length },
+      { id: 'bw',     label: 'Bitewings',     count: Object.keys(img.bw).length },
+      { id: 'pano',   label: 'Panorex',       count: img.pano ? 1 : 0 },
+      { id: 'ceph',   label: 'Ceph',          count: img.ceph ? 1 : 0 },
+      { id: 'cbct',   label: '3D / CBCT',     count: img.cbct ? 1 : 0 },
+      { id: 'photos', label: 'Photos',        count: Object.keys(img.photos).length },
+      { id: 'docs',   label: 'Documents',     count: (img.docs || []).length },
+    ];
+    return `
+      <div class="space-y-4">
+        <!-- Header -->
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h1 class="text-xl font-semibold text-slate-900 leading-tight">Imaging</h1>
+            <p class="text-[12px] text-slate-500 mt-0.5">Radiographs, intraoral photos, and clinical documents for ${escapeHtml(p.first)} ${escapeHtml(p.last)}.</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-soft" data-action="imaging-print" title="Print FMX summary">⎙ Print</button>
+            <button class="btn btn-primary" data-action="imaging-take" title="Capture / upload to current view">＋ New image</button>
+          </div>
+        </div>
+        <!-- Sub-tabs -->
+        <div class="bg-white rounded border border-slate-200 px-1 flex flex-wrap gap-0.5">
+          ${tabs.map(t => `
+            <button data-action="imaging-tab" data-t="${t.id}"
+              class="px-3 py-2 text-[12px] font-medium rounded-t ${tab === t.id ? 'text-teal-700 border-b-2 border-teal-600 -mb-px bg-teal-50/50' : 'text-slate-600 hover:text-slate-900 border-b-2 border-transparent'}">
+              ${t.label}
+              ${t.count ? `<span class="ml-1 text-[10px] mono px-1.5 py-0.5 rounded ${tab === t.id ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-600'}">${t.count}</span>` : ''}
+            </button>
+          `).join('')}
+        </div>
+        <!-- Body -->
+        ${tab === 'fmx'    ? renderFmx(p)    : ''}
+        ${tab === 'bw'     ? renderBwOnly(p) : ''}
+        ${tab === 'pano'   ? renderSinglePane(p, 'pano',  'Panoramic radiograph',     'Wide-arch survey, displays both jaws + TMJ.') : ''}
+        ${tab === 'ceph'   ? renderSinglePane(p, 'ceph',  'Cephalometric radiograph', 'Lateral skull view for ortho analysis.') : ''}
+        ${tab === 'cbct'   ? renderCBCT(p) : ''}
+        ${tab === 'photos' ? renderPhotos(p) : ''}
+        ${tab === 'docs'   ? renderDocs(p) : ''}
+      </div>
+    `;
+  }
+
+  function renderFmx(p) {
+    const img = ensureImaging(p);
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-2 text-center">Maxillary</div>
+        <div class="grid grid-cols-8 gap-2">
+          ${FMX_LAYOUT.maxRow.map(s => imgSlot('fmx', s, img.fmx[s.id], 'pa')).join('')}
+        </div>
+        <div class="my-3 border-t-2 border-dashed border-slate-200 relative">
+          <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Bitewings</span>
+        </div>
+        <div class="grid grid-cols-4 gap-2 px-[12.5%]">
+          ${FMX_LAYOUT.bwRow.map(s => imgSlot('bw', s, img.bw[s.id], 'bw')).join('')}
+        </div>
+        <div class="mt-3 border-t-2 border-dashed border-slate-200"></div>
+        <div class="grid grid-cols-8 gap-2 mt-3">
+          ${FMX_LAYOUT.mandRow.map(s => imgSlot('fmx', s, img.fmx[s.id], 'pa')).join('')}
+        </div>
+        <div class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mt-2 text-center">Mandibular</div>
+        <p class="text-[11px] text-slate-500 mt-4 text-center">Drag a JPEG/PNG onto any slot to mount it. Click a mounted image to view, replace, or annotate.</p>
+      </div>
+    `;
+  }
+
+  function renderBwOnly(p) {
+    const img = ensureImaging(p);
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="text-[12px] text-slate-500 mb-3">Bitewing series — diagnostic standard for interproximal caries + bone level.</div>
+        <div class="grid grid-cols-4 gap-3 max-w-3xl">
+          ${FMX_LAYOUT.bwRow.map(s => imgSlot('bw', s, img.bw[s.id], 'bw', 'lg')).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderSinglePane(p, key, title, hint) {
+    const img = ensureImaging(p);
+    const data = img[key];
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="font-semibold text-[13px]">${title}</div>
+            <div class="text-[11px] text-slate-500">${hint}</div>
+          </div>
+          ${data ? `
+            <div class="flex gap-2">
+              <button class="btn btn-soft" data-action="img-replace" data-pane="${key}">Replace</button>
+              <button class="btn btn-soft" data-action="img-remove" data-pane="${key}">Remove</button>
+            </div>
+          ` : ''}
+        </div>
+        ${data ? `
+          <figure class="bg-slate-900 rounded p-2 max-w-3xl mx-auto">
+            <img src="${escapeHtml(data.dataUrl || '')}" alt="${title}" class="w-full h-auto rounded" />
+            <figcaption class="text-[11px] text-slate-300 mt-2 flex justify-between">
+              <span>Captured ${fmt.dateShort(data.date)}</span>
+              ${data.notes ? `<span>${escapeHtml(data.notes)}</span>` : ''}
+            </figcaption>
+          </figure>
+        ` : `
+          <button data-action="img-upload" data-pane="${key}"
+            class="block w-full max-w-3xl mx-auto border-2 border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50/30 rounded p-12 text-center transition">
+            <div class="text-3xl text-slate-300 mb-2">⊞</div>
+            <div class="text-[13px] font-medium text-slate-700">Upload ${title.toLowerCase()}</div>
+            <div class="text-[11px] text-slate-400 mt-1">Drag a file here or click to browse</div>
+          </button>
+        `}
+      </div>
+    `;
+  }
+
+  function renderCBCT(p) {
+    const img = ensureImaging(p);
+    const data = img.cbct;
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="font-semibold text-[13px]">3D / CBCT volume</div>
+        <div class="text-[11px] text-slate-500 mb-3">Cone-beam CT — used for implant planning, endo, oral surgery, TMJ, sleep apnea airway.</div>
+        ${data ? `
+          <div class="grid sm:grid-cols-3 gap-3">
+            ${['Axial', 'Sagittal', 'Coronal'].map(view => `
+              <div class="bg-slate-900 rounded p-2 aspect-square flex flex-col items-center justify-center text-slate-300">
+                <div class="text-[11px] uppercase tracking-wider">${view}</div>
+                <div class="text-2xl font-mono opacity-60 mt-1">⊕</div>
+                <div class="text-[10px] mt-1">slice 50/120</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="text-[11px] text-slate-500 mt-3">Captured ${fmt.dateShort(data.date)} · ${escapeHtml(data.notes || 'No notes')}</div>
+        ` : `
+          <button data-action="img-upload" data-pane="cbct"
+            class="block w-full border-2 border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50/30 rounded p-12 text-center transition">
+            <div class="text-3xl text-slate-300 mb-2">⊞</div>
+            <div class="text-[13px] font-medium text-slate-700">Import CBCT volume</div>
+            <div class="text-[11px] text-slate-400 mt-1">DICOM upload (placeholder for 3D viewer integration)</div>
+          </button>
+        `}
+      </div>
+    `;
+  }
+
+  function renderPhotos(p) {
+    const img = ensureImaging(p);
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="text-[12px] text-slate-500 mb-3">Standard intraoral photographic series — diagnostics, treatment planning, and outcome documentation.</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          ${PHOTO_VIEWS.map(v => imgSlot('photos', v, img.photos[v.id], 'photo')).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderDocs(p) {
+    const img = ensureImaging(p);
+    const docs = img.docs || [];
+    return `
+      <div class="bg-white rounded border border-slate-200 p-4">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <div class="font-semibold text-[13px]">Patient documents</div>
+            <div class="text-[11px] text-slate-500">HIPAA forms, treatment consents, insurance cards, prescription history, lab slips.</div>
+          </div>
+          <button class="btn btn-primary" data-action="img-upload" data-pane="docs">＋ Upload document</button>
+        </div>
+        ${docs.length === 0 ? `
+          <div class="border-2 border-dashed border-slate-200 rounded p-12 text-center text-[12px] text-slate-500">
+            No documents on file. Drag a PDF or image here to upload.
+          </div>
+        ` : `
+          <ul class="divide-y divide-slate-100">
+            ${docs.map((d, i) => `
+              <li class="py-2 flex items-center gap-3">
+                <div class="text-2xl text-slate-400">📄</div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-[12px] font-medium text-slate-900 truncate">${escapeHtml(d.name || 'Document')}</div>
+                  <div class="text-[11px] text-slate-500">${fmt.dateShort(d.date)} · ${escapeHtml(d.kind || 'file')}</div>
+                </div>
+                <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="img-doc-view" data-i="${i}">View</button>
+                <button class="btn btn-ghost !py-1 !px-2 !text-[11px] text-rose-600" data-action="img-doc-remove" data-i="${i}">✕</button>
+              </li>
+            `).join('')}
+          </ul>
+        `}
+      </div>
+    `;
+  }
+
+  function imgSlot(type, slot, data, kind, size = 'md') {
+    const aspect = kind === 'photo' ? 'aspect-square' : kind === 'bw' ? 'aspect-[4/3]' : 'aspect-[3/4]';
+    const sizeCls = size === 'lg' ? 'min-h-[180px]' : 'min-h-[110px]';
+    return `
+      <div class="img-slot ${aspect} ${sizeCls} relative group" data-img-slot="${type}:${slot.id}">
+        ${data ? `
+          <button class="block w-full h-full bg-slate-900 rounded overflow-hidden hover:ring-2 hover:ring-teal-500 transition" data-action="img-view" data-type="${type}" data-id="${slot.id}">
+            <img src="${escapeHtml(data.dataUrl || '')}" alt="${escapeHtml(slot.label)}" class="w-full h-full object-cover" />
+          </button>
+          <div class="absolute top-1 left-1 right-1 flex justify-between pointer-events-none">
+            <span class="bg-slate-900/70 text-white text-[10px] mono px-1 rounded">${escapeHtml(slot.label)}</span>
+            ${data.date ? `<span class="bg-slate-900/70 text-white text-[10px] mono px-1 rounded">${fmt.dateShort(data.date).slice(0,5)}</span>` : ''}
+          </div>
+        ` : `
+          <button class="block w-full h-full border-2 border-dashed border-slate-300 hover:border-teal-500 hover:bg-teal-50/30 rounded transition flex flex-col items-center justify-center text-slate-400" data-action="img-upload" data-type="${type}" data-id="${slot.id}">
+            <span class="text-[10px] mono opacity-60">${escapeHtml(slot.label)}</span>
+            <span class="text-2xl opacity-30 mt-1">＋</span>
+            ${slot.hint ? `<span class="text-[10px] opacity-60 mt-0.5 px-1 text-center">${escapeHtml(slot.hint)}</span>` : ''}
+          </button>
+        `}
+      </div>
+    `;
+  }
+
   // ── Chart module: odontogram with surface marking ──────────────
   const MARKERS = [
     { id: '',          label: 'Erase',      color: '#ffffff', text: 'Clear' },
@@ -1155,7 +1426,6 @@
       </div>
     `;
   }
-  function renderDocsStub(p) { return placeholder('Documents', 'Document manager + imaging slot land in a follow-up push.'); }
   function placeholder(title, msg) { return `<div class="bg-white rounded border border-slate-200 p-8 text-center"><div class="text-slate-900 font-semibold">${title}</div><div class="text-slate-500 text-[12px] mt-1">${msg}</div></div>`; }
 
   // ── Modal ──────────────────────────────────────────────────────
@@ -1173,6 +1443,7 @@
       'quick-text': modalQuickText,
       'log-call': modalLogCall,
       'log-comm': modalLogComm,
+      'image-viewer': modalImageViewer,
     })[m.type];
     if (!content) return '';
     return `
@@ -1409,6 +1680,77 @@
     `;
   }
 
+  function modalImageViewer(props) {
+    const p = currentPatient();
+    const img = ensureImaging(p);
+    let data, label;
+    if (props.type === 'fmx' || props.type === 'bw') {
+      data = img[props.type][props.id];
+      const slot = (props.type === 'fmx'
+        ? FMX_LAYOUT.maxRow.concat(FMX_LAYOUT.mandRow)
+        : FMX_LAYOUT.bwRow).find(s => s.id === props.id);
+      label = slot ? slot.label : props.id;
+    } else if (props.type === 'photos') {
+      data = img.photos[props.id];
+      label = (PHOTO_VIEWS.find(v => v.id === props.id) || { label: props.id }).label;
+    }
+    if (!data) return '<div class="p-4 text-slate-500">Image not found.</div>';
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>${escapeHtml(label)} — ${fmt.dateShort(data.date)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 bg-slate-900 max-h-[70vh] overflow-auto">
+        <img src="${escapeHtml(data.dataUrl || '')}" alt="${escapeHtml(label)}" class="max-w-full max-h-[60vh] mx-auto" />
+      </div>
+      <div class="p-4 flex flex-wrap gap-2 items-center justify-between">
+        <textarea data-action="img-notes-edit" data-type="${props.type}" data-id="${props.id}" class="input flex-1 min-w-[240px]" rows="2" placeholder="Annotations / findings...">${escapeHtml(data.notes || '')}</textarea>
+        <div class="flex gap-2">
+          <button class="btn btn-soft" data-action="img-upload" data-type="${props.type}" data-id="${props.id}">Replace</button>
+          <button class="btn btn-danger" data-action="img-slot-remove" data-type="${props.type}" data-id="${props.id}">Remove</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function triggerImageUpload(type, id) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = type === 'docs' ? '*/*' : 'image/*';
+    input.multiple = type === 'docs';
+    input.onchange = (e) => {
+      const files = Array.from(e.target.files || []);
+      files.forEach(f => readAndStore(type, id, f));
+    };
+    input.click();
+  }
+
+  function readAndStore(type, id, file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const p = currentPatient(); if (!p) return;
+      const img = ensureImaging(p);
+      const entry = { dataUrl: reader.result, date: '2026-05-04', name: file.name, kind: file.type, notes: '' };
+      if (type === 'fmx' || type === 'bw' || type === 'photos') {
+        img[type][id || file.name] = entry;
+      } else if (type === 'docs') {
+        img.docs.push(entry);
+      } else {
+        img[type] = entry;
+      }
+      saveSoon();
+      logAction('imaging_upload', { type, id });
+      rerender();
+      toast(`Image saved`, { tone: 'success' });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function openImageViewer(type, id) {
+    state.ui.modal = { type: 'image-viewer', props: { type, id }, lg: true };
+    rerender();
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -1428,7 +1770,7 @@
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center"><h2>Keyboard shortcuts</h2><button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button></div>
       <div class="p-4 text-[12px] grid grid-cols-2 gap-x-6 gap-y-2">
-        ${[['⌘K','Search patients & ADA codes'],['H','Today dashboard'],['1','Patient overview'],['T','Tooth chart'],['3','Perio'],['4','Tx Plan'],['L','Ledger'],['C','Comms log'],['S','Schedule'],['7','Recall pipeline'],['8','Documents'],['N','New patient'],['F','Focus search'],['P','Post procedure'],['?','This help']].map(([k,d])=>`<div class="flex justify-between"><span>${escapeHtml(d)}</span><kbd>${k}</kbd></div>`).join('')}
+        ${[['⌘K','Search patients & ADA codes'],['H','Today dashboard'],['1','Patient overview'],['T','Tooth chart'],['3','Perio'],['4','Tx Plan'],['L','Ledger'],['C','Comms log'],['S','Schedule'],['7','Recall pipeline'],['I / 8','Imaging'],['N','New patient'],['F','Focus search'],['P','Post procedure'],['?','This help']].map(([k,d])=>`<div class="flex justify-between"><span>${escapeHtml(d)}</span><kbd>${k}</kbd></div>`).join('')}
       </div>
     `;
   }
@@ -1644,6 +1986,49 @@
           }
           break;
         }
+        case 'imaging-tab': state.ui.imagingTab = t.dataset.t; rerender(); break;
+        case 'imaging-take':
+        case 'imaging-print': {
+          const tab = state.ui.imagingTab || 'fmx';
+          if (a === 'imaging-print') return window.print();
+          // "New image" routes by current sub-tab
+          if (tab === 'photos' || tab === 'docs') triggerImageUpload(tab, null);
+          else if (['pano','ceph','cbct'].includes(tab)) triggerImageUpload(tab, null);
+          else triggerImageUpload(tab === 'bw' ? 'bw' : 'fmx', null);
+          break;
+        }
+        case 'img-upload': triggerImageUpload(t.dataset.type || t.dataset.pane, t.dataset.id); break;
+        case 'img-replace': triggerImageUpload(t.dataset.pane, null); break;
+        case 'img-remove': {
+          const p = currentPatient(); if (!p) break;
+          const img = ensureImaging(p);
+          const pane = t.dataset.pane;
+          img[pane] = null;
+          saveSoon(); logAction('imaging_remove', { pane }); rerender(); toast('Image removed', { tone: 'success' });
+          break;
+        }
+        case 'img-view': openImageViewer(t.dataset.type, t.dataset.id); break;
+        case 'img-slot-remove': {
+          const p = currentPatient(); if (!p) break;
+          const img = ensureImaging(p);
+          if (img[t.dataset.type]) delete img[t.dataset.type][t.dataset.id];
+          saveSoon(); logAction('imaging_slot_remove', { type: t.dataset.type, id: t.dataset.id });
+          closeModal();
+          toast('Image removed', { tone: 'success' });
+          break;
+        }
+        case 'img-doc-view': {
+          const p = currentPatient(); const d = (p?.imaging?.docs || [])[+t.dataset.i];
+          if (d?.dataUrl) window.open(d.dataUrl, '_blank');
+          break;
+        }
+        case 'img-doc-remove': {
+          const p = currentPatient(); if (!p) break;
+          const img = ensureImaging(p);
+          img.docs.splice(+t.dataset.i, 1);
+          saveSoon(); logAction('imaging_doc_remove'); rerender();
+          break;
+        }
         case 'set-marker': state.ui.chartMarker = t.dataset.marker; rerender(); break;
         case 'chart-reset': {
           if (!confirm('Clear all chart markings for this patient?')) break;
@@ -1740,6 +2125,38 @@
         markSurface(tooth, surf.dataset.surface, marker);
       }
       rerender();
+    });
+
+    // Drag-drop image onto a slot
+    root.addEventListener('dragover', (ev) => {
+      const slot = ev.target.closest?.('[data-img-slot]');
+      if (!slot) return;
+      ev.preventDefault();
+      slot.classList.add('ring-2', 'ring-teal-500');
+    });
+    root.addEventListener('dragleave', (ev) => {
+      const slot = ev.target.closest?.('[data-img-slot]');
+      if (slot) slot.classList.remove('ring-2', 'ring-teal-500');
+    });
+    root.addEventListener('drop', (ev) => {
+      const slot = ev.target.closest?.('[data-img-slot]');
+      if (!slot) return;
+      ev.preventDefault();
+      slot.classList.remove('ring-2', 'ring-teal-500');
+      const [type, id] = slot.dataset.imgSlot.split(':');
+      const file = ev.dataTransfer.files?.[0];
+      if (file) readAndStore(type, id, file);
+    });
+
+    // Image-notes autosave
+    root.addEventListener('input', (ev) => {
+      const t = ev.target;
+      if (!t.matches?.('[data-action="img-notes-edit"]')) return;
+      const p = currentPatient(); if (!p) return;
+      const img = ensureImaging(p);
+      const type = t.dataset.type, id = t.dataset.id;
+      const data = (type === 'fmx' || type === 'bw' || type === 'photos') ? img[type][id] : img[type];
+      if (data) { data.notes = t.value; saveSoon(); }
     });
 
     // Right-click on tooth → context menu
@@ -2011,7 +2428,8 @@
         case '3': setModule('perio'); break;
         case '4': setModule('tx'); break;
         case '7': setModule('recall'); break;
-        case '8': setModule('docs'); break;
+        case 'i': setModule('imaging'); break;
+        case '8': setModule('imaging'); break;
       }
     });
   }
