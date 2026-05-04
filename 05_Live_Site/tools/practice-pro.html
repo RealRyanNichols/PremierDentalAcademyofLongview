@@ -1097,8 +1097,157 @@
     { id: 'fracture',  label: 'Fracture',   color: '#be185d' },
   ];
 
-  // Determine if a tooth is anterior (incisor/canine) by universal number.
+  // Tooth class by universal number (1-32)
+  function toothClass(n) {
+    if ([1,2,3, 14,15,16, 17,18,19, 30,31,32].includes(n)) return 'molar';
+    if ([4,5, 12,13, 20,21, 28,29].includes(n)) return 'premolar';
+    if ([6, 11, 22, 27].includes(n)) return 'canine';
+    if ([8, 9, 24, 25].includes(n)) return 'central';
+    return 'lateral'; // 7, 10, 23, 26
+  }
   function isAnterior(n) { return (n >= 6 && n <= 11) || (n >= 22 && n <= 27); }
+
+  // Anatomically-shaped tooth SVG paths.
+  // viewBox is 0 0 40 76 — root (top), gingival line, crown body, occlusal/incisal edge.
+  // Crown SVG path is the only thing that gets surface-marked; the root stays neutral.
+  // For maxillary teeth (1-16) we draw root-up, crown-down (the way you see them in patient's mouth).
+  // For mandibular teeth (17-32) we flip so crown faces up.
+  function toothShapes(cls) {
+    // returns { rootPath, crownPath, surfaceZones, occlusalDecor }
+    // Coordinates are in a 40-wide × 60-tall crown box (root above is 0-16, crown is 16-72).
+    if (cls === 'molar') {
+      return {
+        rootPath: 'M11,2 Q11,12 15,16 L25,16 Q29,12 29,2 L26,2 L25,12 L23,2 L21,12 L19,2 L17,12 L15,2 L14,12 Z',
+        crownPath: 'M5,16 Q5,16 7,17 L33,17 Q35,17 35,18 L35,55 Q35,72 32,72 Q30,75 28,72 Q26,75 24,72 Q22,75 20,72 Q18,75 16,72 Q14,75 12,72 Q10,75 8,72 Q5,72 5,55 Z',
+        zones: {
+          M: 'M5,18 L5,72 L12,72 L12,18 Z',
+          D: 'M28,18 L28,72 L35,72 L35,18 Z',
+          B: 'M5,16 L35,16 L35,30 L5,30 Z',
+          L: 'M5,58 L35,58 L35,72 L5,72 Z',
+          O: 'M12,30 L28,30 L28,58 L12,58 Z',
+        },
+        cusps: [{x:8,y:70},{x:14,y:73},{x:20,y:70},{x:26,y:73},{x:32,y:70}],
+      };
+    }
+    if (cls === 'premolar') {
+      return {
+        rootPath: 'M16,2 L16,16 L24,16 L24,2 Q22,8 20,2 Q18,8 16,2 Z',
+        crownPath: 'M7,16 L33,16 L35,30 L35,56 Q35,72 30,72 Q25,75 20,72 Q15,75 10,72 Q5,72 5,56 L5,30 Z',
+        zones: {
+          M: 'M5,18 L5,72 L13,72 L13,18 Z',
+          D: 'M27,18 L27,72 L35,72 L35,18 Z',
+          B: 'M5,16 L35,16 L35,32 L5,32 Z',
+          L: 'M5,58 L35,58 L35,72 L5,72 Z',
+          O: 'M13,32 L27,32 L27,58 L13,58 Z',
+        },
+        cusps: [{x:14,y:72},{x:26,y:72}],
+      };
+    }
+    if (cls === 'canine') {
+      return {
+        rootPath: 'M17,1 L23,1 L23,16 L17,16 Z',
+        crownPath: 'M9,16 L31,16 L34,28 L33,52 Q31,72 25,72 L20,76 L15,72 Q9,72 7,52 L6,28 Z',
+        zones: {
+          M: 'M6,18 L6,76 L13,76 L13,18 Z',
+          D: 'M27,18 L27,76 L34,76 L34,18 Z',
+          B: 'M6,16 L34,16 L34,32 L6,32 Z',
+          L: 'M6,58 L34,58 L34,72 L6,72 Z',
+          I: 'M13,32 L27,32 L27,58 L13,58 Z',
+        },
+        cusps: [{x:20,y:76, peak: true}],
+      };
+    }
+    if (cls === 'central') {
+      return {
+        rootPath: 'M16,1 L24,1 L24,16 L16,16 Z',
+        crownPath: 'M7,16 L33,16 L35,28 L34,56 Q34,68 30,72 L10,72 Q6,68 6,56 L5,28 Z',
+        zones: {
+          M: 'M5,18 L5,72 L13,72 L13,18 Z',
+          D: 'M27,18 L27,72 L35,72 L35,18 Z',
+          B: 'M5,16 L35,16 L35,32 L5,32 Z',
+          L: 'M5,58 L35,58 L35,72 L5,72 Z',
+          I: 'M13,32 L27,32 L27,58 L13,58 Z',
+        },
+        edge: { y: 72 },
+      };
+    }
+    // lateral incisor — slightly narrower than central
+    return {
+      rootPath: 'M17,1 L23,1 L23,16 L17,16 Z',
+      crownPath: 'M9,16 L31,16 L33,28 L32,56 Q32,68 28,72 L12,72 Q8,68 8,56 L7,28 Z',
+      zones: {
+        M: 'M7,18 L7,72 L14,72 L14,18 Z',
+        D: 'M26,18 L26,72 L33,72 L33,18 Z',
+        B: 'M7,16 L33,16 L33,32 L7,32 Z',
+        L: 'M7,58 L33,58 L33,72 L7,72 Z',
+        I: 'M14,32 L26,32 L26,58 L14,58 Z',
+      },
+      edge: { y: 72 },
+    };
+  }
+
+  function renderTooth(num, marks, isUpper) {
+    const cls = toothClass(num);
+    const shape = toothShapes(cls);
+    const m = marks || {};
+    const ant = isAnterior(num);
+    // Whole-tooth detection: explicit `whole` key or any value in WHOLE_VALS
+    const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
+    const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
+    const wholeColor = wholeVal ? (MARKERS.find(x => x.id === wholeVal)?.color || '#ffffff') : null;
+    const isMissing = wholeVal === 'missing';
+
+    const surfaceColor = (key) => {
+      const v = m[key]; if (!v || WHOLE_VALS.includes(v)) return null;
+      return (MARKERS.find(x => x.id === v) || {}).color || null;
+    };
+
+    // Mandibular: flip vertically so crown faces up
+    const flip = !isUpper;
+    const transform = flip ? 'scale(1,-1) translate(0,-76)' : '';
+
+    // Mark surfaces in z-order: render crown first, then surface fills overlaid
+    const surfaceFills = Object.entries(shape.zones).map(([k, d]) => {
+      const fill = surfaceColor(k);
+      if (!fill) return '';
+      return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.85"/>`;
+    }).join('');
+
+    // Cusp dots (thin highlights at the chewing edge)
+    const cuspDots = (shape.cusps || []).map(c => `
+      <circle cx="${c.x}" cy="${c.y - 1}" r="1.4" fill="#fff" stroke="#475569" stroke-width="0.5"/>
+    `).join('');
+
+    return `
+      <div class="tooth flex flex-col items-center" data-tooth="${num}">
+        <svg viewBox="0 0 40 76" width="100%" style="max-width:42px;height:auto;display:block;${flip?'':''}" oncontextmenu="return false">
+          <g transform="${transform}">
+            ${ isMissing ? `
+              <!-- Missing tooth: faint outline -->
+              <path d="${shape.crownPath}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2 2" pointer-events="none"/>
+              <line x1="8" y1="20" x2="32" y2="68" stroke="#94a3b8" stroke-width="1.5"/>
+              <line x1="32" y1="20" x2="8" y2="68" stroke="#94a3b8" stroke-width="1.5"/>
+            ` : `
+              <!-- Root -->
+              <path d="${shape.rootPath}" fill="#fef3c7" stroke="#94a3b8" stroke-width="0.6"/>
+              <!-- Gingival line -->
+              <line x1="4" y1="16" x2="36" y2="16" stroke="#cbd5e1" stroke-width="0.5"/>
+              <!-- Crown body (the surface-paintable area) -->
+              <path d="${shape.crownPath}" fill="${wholeColor || '#ffffff'}" stroke="${wholeVal === 'rct' ? '#0f172a' : '#475569'}" stroke-width="1"/>
+              ${ wholeColor ? '' : surfaceFills }
+              ${ wholeColor ? '' : cuspDots }
+              <!-- Click capture overlays (transparent paths over each surface zone) -->
+              ${ wholeColor ? '' : Object.entries(shape.zones).map(([k, d]) => `
+                <path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />
+              `).join('') }
+              ${ wholeVal === 'rct' ? '<path d="M20,28 L20,68" stroke="#9333ea" stroke-width="2" pointer-events="none"/>' : '' }
+              ${ wholeVal === 'implant' ? '<rect x="18" y="6" width="4" height="14" fill="#0ea5e9" pointer-events="none"/>' : '' }
+            ` }
+          </g>
+        </svg>
+      </div>
+    `;
+  }
 
   function renderChart(p) {
     const chart = p.chart || {};
@@ -1149,14 +1298,16 @@
             </div>`).join('')}
         </div>
 
-        <!-- Odontogram -->
+        <!-- Odontogram (anatomical view) -->
         <div class="bg-white rounded border border-slate-200 p-4 overflow-x-auto">
-          <div class="min-w-[760px]">
+          <div class="min-w-[880px]">
+            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mb-1">Maxillary (upper) — patient's right ⟵ ⟶ patient's left</div>
             ${renderArch(chart, true,  PERM_TEETH.slice(0, 16))}
-            <div class="my-2 border-t-2 border-dashed border-slate-200 relative">
+            <div class="my-3 border-t-2 border-dashed border-slate-200 relative">
               <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">midline</span>
             </div>
             ${renderArch(chart, false, PERM_TEETH.slice(16).reverse())}
+            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mt-1">Mandibular (lower)</div>
           </div>
         </div>
 
@@ -1189,44 +1340,6 @@
       </div>
       <div class="grid grid-cols-16 gap-1 mt-0.5" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
         ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500">${n}</div>`).join('')}
-      </div>
-    `;
-  }
-
-  function renderTooth(num, marks, isUpper) {
-    const ant = isAnterior(num);
-    // Surfaces always fetched as M, B/F, D, L, O/I but we render strips around a center
-    const m = marks || {};
-    const surfaceColor = (key) => {
-      const v = m[key]; if (!v) return '#ffffff';
-      const found = MARKERS.find(x => x.id === v);
-      return found ? found.color : '#ffffff';
-    };
-    // Whole-tooth markers: explicit `whole` key, OR any surface containing a whole-marker value
-    const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
-    const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
-    const wholeColor = wholeVal ? (MARKERS.find(x => x.id === wholeVal)?.color || '#ffffff') : null;
-    // Check for treatment-planned overlay (planned) — drawn as outline ring
-    const w = 36, h = 56;
-    const stroke = wholeColor ? '#0f172a' : '#94a3b8';
-    return `
-      <div class="tooth flex flex-col items-center" data-tooth="${num}">
-        <svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:38px;height:auto" oncontextmenu="return false">
-          ${ wholeColor ? `<rect x="2" y="2" width="${w-4}" height="${h-4}" rx="6" ry="6" fill="${wholeColor}" stroke="${stroke}" stroke-width="1" />`
-            : `
-            <rect class="tooth-shape" x="2" y="2" width="${w-4}" height="${h-4}" rx="6" ry="6" fill="#ffffff" stroke="${stroke}" stroke-width="1"/>
-            <!-- B/F (top) -->
-            <rect data-surface="B" x="6" y="4" width="${w-12}" height="9"  rx="2" fill="${surfaceColor('B')}" stroke="#cbd5e1" />
-            <!-- L (bottom) -->
-            <rect data-surface="L" x="6" y="${h-13}" width="${w-12}" height="9" rx="2" fill="${surfaceColor('L')}" stroke="#cbd5e1" />
-            <!-- M (left) -->
-            <rect data-surface="M" x="4" y="14" width="9" height="${h-28}" rx="2" fill="${surfaceColor('M')}" stroke="#cbd5e1" />
-            <!-- D (right) -->
-            <rect data-surface="D" x="${w-13}" y="14" width="9" height="${h-28}" rx="2" fill="${surfaceColor('D')}" stroke="#cbd5e1" />
-            <!-- O/I (center) -->
-            <rect data-surface="${ant ? 'I' : 'O'}" x="14" y="16" width="${w-28}" height="${h-32}" rx="2" fill="${surfaceColor(ant ? 'I' : 'O') !== '#ffffff' ? surfaceColor(ant ? 'I' : 'O') : surfaceColor('O')}" stroke="#cbd5e1" />
-          ` }
-        </svg>
       </div>
     `;
   }
