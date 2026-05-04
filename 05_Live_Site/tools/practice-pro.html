@@ -1541,46 +1541,162 @@
     `;
   }
   function renderScheduleStub(p) { return placeholder('Schedule', 'Op grid + drag-drop schedule ships in a follow-up push.'); }
+  // ── Tx Plan module: editable, phased, insurance-estimated ──────
+  const TX_STATUSES = [
+    { id: 'planned',     label: 'Planned',     cls: 'chip-slate' },
+    { id: 'accepted',    label: 'Accepted',    cls: 'chip-emerald' },
+    { id: 'scheduled',   label: 'Scheduled',   cls: 'chip-sky' },
+    { id: 'inprogress',  label: 'In progress', cls: 'chip-amber' },
+    { id: 'completed',   label: 'Completed',   cls: 'chip-emerald' },
+    { id: 'declined',    label: 'Declined',    cls: 'chip-rose' },
+  ];
+
+  function txEstimates(line, p) {
+    // Returns { fee, ins, pt } using carrier coverage matrix from SEED.coverage.
+    const fee = Number(line.fee) || 0;
+    if (line.estInsurance != null) {
+      const ins = Math.min(fee, Math.max(0, Number(line.estInsurance) || 0));
+      return { fee, ins, pt: fee - ins };
+    }
+    const code = SEED.adaCodes.find(c => c.code === line.code);
+    const cat = code?.cat;
+    let pct = (cat && SEED.coverage[cat] != null) ? SEED.coverage[cat] : 0.8;
+    // No insurance => pt pays all
+    const carrier = (p.insurance?.primary?.carrier || '').toLowerCase();
+    if (!carrier || /self.?pay|cash/i.test(carrier)) pct = 0;
+    // Apply remaining-max cap (roughly)
+    const ins = Math.round(fee * pct * 100) / 100;
+    return { fee, ins, pt: fee - ins };
+  }
+
   function renderTxPlan(p) {
-    const tp = p.treatmentPlan || [];
-    if (tp.length === 0) return `<div class="bg-white rounded border border-slate-200 p-6 text-center text-slate-500 text-[12px]">No treatment planned for this patient yet. The full Tx Plan editor lands in a follow-up push.</div>`;
-    const total = tp.reduce((a, l) => a + (Number(l.fee) || 0), 0);
-    const portion = tp.reduce((a, l) => a + patientPortion(l, SEED.adaCodes, SEED.coverage), 0);
+    p.treatmentPlan = p.treatmentPlan || [];
+    // Lazy-init line ids and statuses
+    p.treatmentPlan.forEach(l => {
+      if (!l.id) l.id = uid('tx');
+      if (!l.status) l.status = 'planned';
+    });
+    const tp = p.treatmentPlan;
+
+    const filter = state.ui.txFilter || 'active';   // active | all | completed | declined
+    const visible = tp.filter(l =>
+      filter === 'active'    ? !['completed','declined'].includes(l.status) :
+      filter === 'completed' ? l.status === 'completed' :
+      filter === 'declined'  ? l.status === 'declined'  : true
+    );
+
+    let totalPresented = 0, totalAccepted = 0, totalCompleted = 0, totalIns = 0, totalPt = 0;
+    tp.forEach(l => {
+      const e = txEstimates(l, p);
+      totalPresented += e.fee;
+      totalIns += e.ins;
+      totalPt += e.pt;
+      if (['accepted','scheduled','inprogress','completed'].includes(l.status)) totalAccepted += e.fee;
+      if (l.status === 'completed') totalCompleted += e.fee;
+    });
+    const acceptancePct = totalPresented > 0 ? Math.round((totalAccepted / totalPresented) * 100) : 0;
+
     const phases = [1, 2, 3];
+
     return `
-      <div class="bg-white rounded border border-slate-200 overflow-hidden">
-        <div class="p-3 border-b border-slate-200 flex justify-between items-center">
-          <h2 class="font-semibold text-[13px]">Treatment plan</h2>
-          <div class="text-[12px] flex gap-4">
-            <span>Total: <span class="mono font-semibold">${fmt.money(total)}</span></span>
-            <span>Pt portion (est): <span class="mono font-semibold text-rose-700">${fmt.money(portion)}</span></span>
-          </div>
+      <div class="space-y-3">
+        <!-- Header: totals + actions -->
+        <div class="grid grid-cols-2 lg:grid-cols-5 gap-2">
+          ${perioStatTile('Presented', fmt.money(totalPresented), `${tp.length} procedures`)}
+          ${perioStatTile('Accepted', fmt.money(totalAccepted), `${acceptancePct}% case acceptance`, acceptancePct >= 70 ? 'emerald' : acceptancePct >= 40 ? 'amber' : 'rose')}
+          ${perioStatTile('Completed', fmt.money(totalCompleted), 'Production from this plan')}
+          ${perioStatTile('Ins. estimate', fmt.money(totalIns), escapeHtml(p.insurance?.primary?.carrier || 'self-pay'))}
+          ${perioStatTile('Patient portion', fmt.money(totalPt), 'Out-of-pocket', 'rose')}
         </div>
+
+        <!-- Toolbar -->
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-2">
+          <div class="flex gap-1.5">
+            ${[
+              { id: 'active',    label: `Active (${tp.filter(l => !['completed','declined'].includes(l.status)).length})` },
+              { id: 'all',       label: `All (${tp.length})` },
+              { id: 'completed', label: `Completed (${tp.filter(l => l.status === 'completed').length})` },
+              { id: 'declined',  label: `Declined (${tp.filter(l => l.status === 'declined').length})` },
+            ].map(t => `<button data-action="tx-filter" data-f="${t.id}"
+                class="px-2 py-1 text-[11px] rounded ${filter === t.id ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}">${t.label}</button>`).join('')}
+          </div>
+          <span class="flex-1"></span>
+          <button class="btn btn-soft" data-action="tx-print">⎙ Print plan</button>
+          <button class="btn btn-soft" data-action="tx-pdf">⬇ PDF</button>
+          <button class="btn btn-soft" data-action="tx-sign">✓ Sign &amp; accept</button>
+          <button class="btn btn-primary" data-action="open-modal" data-modal="tx-add-line">＋ Add procedure</button>
+        </div>
+
+        <!-- Phases -->
         ${phases.map(ph => {
-          const lines = tp.filter(l => (l.phase || 1) === ph);
-          if (lines.length === 0) return '';
+          const lines = visible.filter(l => (l.phase || 1) === ph);
           const phTotal = lines.reduce((a, l) => a + (Number(l.fee) || 0), 0);
+          const phEst = lines.reduce((acc, l) => {
+            const e = txEstimates(l, p);
+            return { ins: acc.ins + e.ins, pt: acc.pt + e.pt };
+          }, { ins: 0, pt: 0 });
           return `
-            <div>
-              <div class="px-3 py-1.5 bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wide font-semibold text-slate-600 flex justify-between">
-                <span>Phase ${ph}</span><span class="mono">${fmt.money(phTotal)}</span>
-              </div>
-              <table class="pp">
+            <section class="bg-white rounded border border-slate-200 overflow-hidden">
+              <header class="px-3 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <span class="text-[11px] uppercase tracking-wide font-semibold text-slate-700">Phase ${ph}</span>
+                  <span class="text-[11px] text-slate-500">${ph === 1 ? 'Immediate (urgent + foundational)' : ph === 2 ? 'Stabilization (3–6 mo)' : 'Definitive / elective'}</span>
+                </div>
+                <div class="text-[11px] flex gap-3">
+                  <span>Total <span class="mono font-semibold">${fmt.money(phTotal)}</span></span>
+                  <span>Ins <span class="mono">${fmt.money(phEst.ins)}</span></span>
+                  <span>Pt <span class="mono text-rose-700">${fmt.money(phEst.pt)}</span></span>
+                </div>
+              </header>
+              ${lines.length === 0 ? `<div class="p-4 text-center text-[12px] text-slate-400">— no procedures —</div>` :
+              `<table class="pp">
+                <thead><tr>
+                  <th>Code</th><th>Description</th><th>Tooth</th><th>Priority</th><th>Status</th>
+                  <th class="text-right">Fee</th><th class="text-right">Ins. est</th><th class="text-right">Patient</th>
+                  <th class="text-right">Actions</th>
+                </tr></thead>
                 <tbody>
-                  ${lines.map(l => `
-                    <tr>
-                      <td class="mono">${escapeHtml(l.code)}</td>
-                      <td>${escapeHtml(l.desc)}</td>
-                      <td class="mono">${l.tooth || '—'}${l.surface ? ' ' + escapeHtml(l.surface) : ''}</td>
-                      <td><span class="chip ${l.priority === 'high' ? 'chip-rose' : l.priority === 'medium' ? 'chip-amber' : 'chip-slate'}">${escapeHtml(l.priority || 'medium')}</span></td>
-                      <td class="text-right mono">${fmt.money(l.fee)}</td>
-                      <td class="text-right text-[11px] text-slate-500 mono">est ${fmt.money(patientPortion(l, SEED.adaCodes, SEED.coverage))}</td>
-                    </tr>
-                  `).join('')}
+                  ${lines.map(l => {
+                    const e = txEstimates(l, p);
+                    const status = TX_STATUSES.find(s => s.id === l.status) || TX_STATUSES[0];
+                    return `
+                      <tr data-tx-id="${l.id}">
+                        <td class="mono">${escapeHtml(l.code)}</td>
+                        <td>${escapeHtml(l.desc)} ${l.preauthRequired ? '<span class="chip chip-amber ml-1" title="Pre-authorization required">pre-auth</span>' : ''}</td>
+                        <td class="mono">${l.tooth || '—'}${l.surface ? ' ' + escapeHtml(l.surface) : ''}</td>
+                        <td><span class="chip ${l.priority === 'high' ? 'chip-rose' : l.priority === 'medium' ? 'chip-amber' : 'chip-slate'}">${escapeHtml(l.priority || 'medium')}</span></td>
+                        <td>
+                          <select data-action="tx-set-status" data-id="${l.id}" class="text-[11px] px-1.5 py-0.5 border border-slate-300 rounded bg-white">
+                            ${TX_STATUSES.map(s => `<option value="${s.id}" ${s.id === l.status ? 'selected' : ''}>${s.label}</option>`).join('')}
+                          </select>
+                        </td>
+                        <td class="text-right mono">${fmt.money(e.fee)}</td>
+                        <td class="text-right mono text-emerald-700">${fmt.money(e.ins)}</td>
+                        <td class="text-right mono text-rose-700">${fmt.money(e.pt)}</td>
+                        <td class="text-right whitespace-nowrap">
+                          ${l.status === 'planned' ? `<button class="btn btn-soft !py-1 !px-1.5 !text-[11px]" data-action="tx-accept" data-id="${l.id}" title="Accept this line">✓</button>` : ''}
+                          ${['accepted','scheduled'].includes(l.status) ? `<button class="btn btn-soft !py-1 !px-1.5 !text-[11px]" data-action="tx-post-completed" data-id="${l.id}" title="Post as completed (creates ledger entry)">post</button>` : ''}
+                          <button class="btn btn-soft !py-1 !px-1.5 !text-[11px]" data-action="open-modal" data-modal="tx-edit-line" data-id="${l.id}">edit</button>
+                          <button class="btn btn-ghost !py-1 !px-1.5 !text-[11px] text-rose-600" data-action="tx-remove" data-id="${l.id}">✕</button>
+                        </td>
+                      </tr>
+                    `;
+                  }).join('')}
                 </tbody>
-              </table>
-            </div>`;
+              </table>`}
+              <div class="px-3 py-1.5 border-t border-slate-100">
+                <button class="text-[11px] text-teal-700 hover:underline" data-action="open-modal" data-modal="tx-add-line" data-phase="${ph}">＋ Add to phase ${ph}</button>
+              </div>
+            </section>
+          `;
         }).join('')}
+
+        <!-- Acceptance bar -->
+        <div class="bg-white rounded border border-slate-200 p-3">
+          <div class="flex justify-between text-[12px] mb-1"><span class="font-semibold">Case acceptance</span><span class="mono">${acceptancePct}%</span></div>
+          <div class="h-2 bg-slate-100 rounded"><div class="h-2 rounded ${acceptancePct >= 70 ? 'bg-emerald-500' : acceptancePct >= 40 ? 'bg-amber-500' : 'bg-rose-500'}" style="width:${acceptancePct}%"></div></div>
+          <div class="text-[11px] text-slate-500 mt-1">${fmt.money(totalAccepted)} of ${fmt.money(totalPresented)} presented accepted ${p.txPlanSignedAt ? `· Signed ${fmt.dateShort(p.txPlanSignedAt)}` : '· Not signed'}</div>
+        </div>
       </div>
     `;
   }
@@ -1716,6 +1832,8 @@
       'log-call': modalLogCall,
       'log-comm': modalLogComm,
       'image-viewer': modalImageViewer,
+      'tx-add-line': modalTxAddLine,
+      'tx-edit-line': modalTxEditLine,
     })[m.type];
     if (!content) return '';
     return `
@@ -2023,6 +2141,80 @@
     rerender();
   }
 
+  function modalTxAddLine(props) {
+    const phase = props.phase || 1;
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Add procedure to treatment plan</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-tx-line" class="p-4 grid sm:grid-cols-2 gap-3">
+        <div class="sm:col-span-2 relative">
+          <span class="label">ADA code</span>
+          <input name="code" autocomplete="off" id="ada-input" data-action="ada-typeahead" class="input mono" placeholder="e.g. D2740 or crown" autofocus />
+          <div id="ada-suggest" class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg max-h-56 overflow-auto z-10 hidden"></div>
+        </div>
+        <label><span class="label">Tooth</span><input name="tooth" class="input mono" placeholder="14" /></label>
+        <label><span class="label">Surface(s)</span><input name="surface" class="input mono" placeholder="MOD" /></label>
+        <label><span class="label">Fee</span><input name="fee" class="input mono" placeholder="0.00" /></label>
+        <label><span class="label">Phase</span>
+          <select name="phase" class="input">
+            <option value="1" ${phase===1?'selected':''}>1 — Immediate</option>
+            <option value="2" ${phase===2?'selected':''}>2 — Stabilization</option>
+            <option value="3" ${phase===3?'selected':''}>3 — Definitive</option>
+          </select>
+        </label>
+        <label><span class="label">Priority</span>
+          <select name="priority" class="input"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select>
+        </label>
+        <label class="sm:col-span-2"><span class="label">Notes</span><textarea name="notes" rows="2" class="input"></textarea></label>
+        <label class="flex items-center gap-2 sm:col-span-2 text-[12px]">
+          <input type="checkbox" name="preauth" class="accent-teal-700" /> Pre-authorization required
+        </label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add to plan</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalTxEditLine(props) {
+    const p = currentPatient();
+    const line = (p.treatmentPlan || []).find(l => l.id === props.id);
+    if (!line) return '<div class="p-4 text-slate-500">Line not found.</div>';
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Edit procedure</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-tx-edit" data-id="${line.id}" class="p-4 grid sm:grid-cols-2 gap-3">
+        <label><span class="label">Code</span><input name="code" value="${escapeHtml(line.code)}" class="input mono" /></label>
+        <label><span class="label">Description</span><input name="desc" value="${escapeHtml(line.desc)}" class="input" /></label>
+        <label><span class="label">Tooth</span><input name="tooth" value="${escapeHtml(line.tooth || '')}" class="input mono" /></label>
+        <label><span class="label">Surface</span><input name="surface" value="${escapeHtml(line.surface || '')}" class="input mono" /></label>
+        <label><span class="label">Fee</span><input name="fee" value="${line.fee}" class="input mono" /></label>
+        <label><span class="label">Insurance estimate (override)</span><input name="estInsurance" value="${line.estInsurance != null ? line.estInsurance : ''}" placeholder="auto" class="input mono" /></label>
+        <label><span class="label">Phase</span>
+          <select name="phase" class="input">
+            <option value="1" ${(line.phase||1)===1?'selected':''}>1 — Immediate</option>
+            <option value="2" ${line.phase===2?'selected':''}>2 — Stabilization</option>
+            <option value="3" ${line.phase===3?'selected':''}>3 — Definitive</option>
+          </select>
+        </label>
+        <label><span class="label">Priority</span>
+          <select name="priority" class="input">${['high','medium','low'].map(x => `<option value="${x}" ${line.priority===x?'selected':''}>${x[0].toUpperCase()+x.slice(1)}</option>`).join('')}</select>
+        </label>
+        <label class="sm:col-span-2"><span class="label">Notes</span><textarea name="notes" rows="2" class="input">${escapeHtml(line.notes||'')}</textarea></label>
+        <label class="flex items-center gap-2 sm:col-span-2 text-[12px]"><input type="checkbox" name="preauth" ${line.preauthRequired?'checked':''} class="accent-teal-700" /> Pre-authorization required</label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -2259,6 +2451,64 @@
           break;
         }
         case 'imaging-tab': state.ui.imagingTab = t.dataset.t; rerender(); break;
+        case 'tx-filter': state.ui.txFilter = t.dataset.f; rerender(); break;
+        case 'tx-set-status': {
+          const p = currentPatient(); if (!p) break;
+          const id = t.dataset.id;
+          const line = p.treatmentPlan.find(l => l.id === id);
+          if (line) {
+            line.status = ev.target.value;
+            saveSoon(); logAction('tx_status', { id, status: line.status }); rerender();
+          }
+          break;
+        }
+        case 'tx-accept': {
+          const p = currentPatient(); if (!p) break;
+          const line = p.treatmentPlan.find(l => l.id === t.dataset.id);
+          if (line) { line.status = 'accepted'; line.acceptedAt = new Date().toISOString(); saveSoon(); logAction('tx_accept', { id: line.id }); rerender(); toast('Procedure accepted', { tone: 'success' }); }
+          break;
+        }
+        case 'tx-post-completed': {
+          const p = currentPatient(); if (!p) break;
+          const line = p.treatmentPlan.find(l => l.id === t.dataset.id);
+          if (!line) break;
+          line.status = 'completed';
+          line.completedAt = '2026-05-04';
+          // Mirror to ledger
+          p.ledger = (p.ledger || []).concat([{
+            date: '2026-05-04',
+            code: line.code, desc: line.desc,
+            tooth: line.tooth || null, surface: line.surface || null,
+            fee: line.fee, status: 'completed',
+            provider: p.provider || 'Dr. Williams',
+            notes: 'Posted from treatment plan',
+          }]);
+          saveSoon(); logAction('tx_complete', { id: line.id, code: line.code, fee: line.fee });
+          rerender();
+          toast(`${line.code} posted to ledger`, { tone: 'success' });
+          break;
+        }
+        case 'tx-remove': {
+          const p = currentPatient(); if (!p) break;
+          if (!confirm('Remove this procedure from the plan?')) break;
+          p.treatmentPlan = p.treatmentPlan.filter(l => l.id !== t.dataset.id);
+          saveSoon(); logAction('tx_remove', { id: t.dataset.id }); rerender();
+          break;
+        }
+        case 'tx-sign': {
+          const p = currentPatient(); if (!p) break;
+          if (!confirm(`Sign and accept this treatment plan for ${p.first} ${p.last}?`)) break;
+          p.txPlanSignedAt = new Date().toISOString();
+          // Auto-accept any planned lines
+          (p.treatmentPlan || []).forEach(l => { if (l.status === 'planned') l.status = 'accepted'; });
+          saveSoon(); logAction('tx_sign', { id: p.id });
+          appendComm(p, { kind: 'note', direction: 'out', text: 'Patient signed treatment plan. All planned procedures auto-accepted.' });
+          toast('Treatment plan signed', { tone: 'success' });
+          rerender();
+          break;
+        }
+        case 'tx-print': window.print(); break;
+        case 'tx-pdf': downloadTxPlanPDF(); break;
         case 'perio-arch': state.ui.perioArch = t.dataset.a; rerender(); break;
         case 'perio-switch': state.ui.perioExamId = +(ev.target.value || 0); rerender(); break;
         case 'perio-new-exam': {
@@ -2449,6 +2699,8 @@
       if (a === 'submit-quick-text')  return submitQuickText(t);
       if (a === 'submit-log-call')    return submitLogCall(t);
       if (a === 'submit-log-comm')    return submitLogComm(t);
+      if (a === 'submit-tx-line')     return submitTxLine(t);
+      if (a === 'submit-tx-edit')     return submitTxEdit(t);
     };
 
     // Tooth surface paint (delegated to root)
@@ -2638,6 +2890,114 @@
     closeModal();
     toast('Communication logged', { tone: 'success' });
     rerender();
+  }
+
+  function submitTxLine(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const code = String(fd.get('code') || '').toUpperCase().trim();
+    const ada = SEED.adaCodes.find(c => c.code === code);
+    const fee = Number(fd.get('fee')) || (ada?.fee) || 0;
+    const line = {
+      id: uid('tx'),
+      code, desc: ada?.desc || code,
+      tooth: fd.get('tooth') || null,
+      surface: fd.get('surface') || null,
+      fee,
+      phase: +fd.get('phase') || 1,
+      priority: fd.get('priority') || 'medium',
+      preauthRequired: !!fd.get('preauth'),
+      status: 'planned',
+      notes: fd.get('notes') || '',
+      date: '2026-05-04',
+    };
+    p.treatmentPlan = (p.treatmentPlan || []).concat([line]);
+    saveSoon();
+    logAction('tx_add', { id: line.id, code });
+    closeModal();
+    toast(`Added ${code} to phase ${line.phase}`, { tone: 'success' });
+  }
+
+  function submitTxEdit(form) {
+    const p = currentPatient(); if (!p) return;
+    const id = form.dataset.id;
+    const line = p.treatmentPlan.find(l => l.id === id);
+    if (!line) return;
+    const fd = new FormData(form);
+    line.code = String(fd.get('code') || '').toUpperCase().trim();
+    line.desc = fd.get('desc') || line.desc;
+    line.tooth = fd.get('tooth') || null;
+    line.surface = fd.get('surface') || null;
+    line.fee = Number(fd.get('fee')) || 0;
+    const estIns = fd.get('estInsurance');
+    line.estInsurance = (estIns === '' || estIns == null) ? null : Number(estIns);
+    line.phase = +fd.get('phase') || 1;
+    line.priority = fd.get('priority') || 'medium';
+    line.notes = fd.get('notes') || '';
+    line.preauthRequired = !!fd.get('preauth');
+    saveSoon();
+    logAction('tx_edit', { id });
+    closeModal();
+    toast('Plan updated', { tone: 'success' });
+  }
+
+  async function downloadTxPlanPDF() {
+    const p = currentPatient();
+    const today = '2026-05-04';
+    const tp = p.treatmentPlan || [];
+    let totalFee = 0, totalIns = 0, totalPt = 0;
+    tp.forEach(l => { const e = txEstimates(l, p); totalFee += e.fee; totalIns += e.ins; totalPt += e.pt; });
+    const phaseTable = (ph) => {
+      const lines = tp.filter(l => (l.phase || 1) === ph);
+      if (lines.length === 0) return '';
+      let phF = 0, phI = 0, phP = 0;
+      const rows = lines.map(l => {
+        const e = txEstimates(l, p); phF += e.fee; phI += e.ins; phP += e.pt;
+        return `<tr><td style="font-family:monospace;padding:6px;border-bottom:1px solid #f1f5f9">${escapeHtml(l.code)}</td><td style="padding:6px;border-bottom:1px solid #f1f5f9">${escapeHtml(l.desc)}</td><td style="font-family:monospace;padding:6px;border-bottom:1px solid #f1f5f9">${l.tooth || '—'}${l.surface ? ' ' + escapeHtml(l.surface) : ''}</td><td style="text-align:right;font-family:monospace;padding:6px;border-bottom:1px solid #f1f5f9">${fmt.money(e.fee)}</td><td style="text-align:right;font-family:monospace;padding:6px;border-bottom:1px solid #f1f5f9">${fmt.money(e.ins)}</td><td style="text-align:right;font-family:monospace;padding:6px;border-bottom:1px solid #f1f5f9">${fmt.money(e.pt)}</td></tr>`;
+      }).join('');
+      return `
+        <h3 style="margin-top:18px;font-size:13px;border-bottom:1px solid #cbd5e1;padding-bottom:4px">Phase ${ph}</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr style="background:#f8fafc"><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Code</th><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Description</th><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Tooth</th><th align="right" style="padding:6px;border-bottom:1px solid #cbd5e1">Fee</th><th align="right" style="padding:6px;border-bottom:1px solid #cbd5e1">Ins. est</th><th align="right" style="padding:6px;border-bottom:1px solid #cbd5e1">Patient</th></tr></thead>
+          <tbody>${rows}</tbody>
+          <tfoot><tr style="background:#f8fafc;font-weight:600"><td colspan="3" style="padding:6px;text-align:right">Phase total</td><td style="padding:6px;text-align:right;font-family:monospace">${fmt.money(phF)}</td><td style="padding:6px;text-align:right;font-family:monospace">${fmt.money(phI)}</td><td style="padding:6px;text-align:right;font-family:monospace">${fmt.money(phP)}</td></tr></tfoot>
+        </table>
+      `;
+    };
+    const html = `
+      <div style="font-family:Inter,sans-serif;color:#0f172a">
+        <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:16px"><tr>
+          <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
+          <span style="color:#64748b;font-size:12px">123 Practice Way · Longview, TX 75601 · (903) 555-0100</span></td>
+          <td style="text-align:right">
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Treatment plan</div>
+            <div style="font-family:monospace;font-size:14px">${today}</div>
+          </td>
+        </tr></table>
+        <table style="width:100%;margin-bottom:8px"><tr>
+          <td><strong>${escapeHtml(p.last)}, ${escapeHtml(p.first)}</strong><br/>
+            <span style="color:#475569;font-size:12px">${escapeHtml(p.address || '')}, ${escapeHtml(p.city || '')} ${escapeHtml(p.state || '')} ${escapeHtml(p.zip || '')}</span></td>
+          <td style="text-align:right;font-size:12px">
+            ID: <strong style="font-family:monospace">${escapeHtml(p.id)}</strong><br/>
+            DOB: <span style="font-family:monospace">${fmt.dateShort(p.dob)}</span><br/>
+            Insurance: ${escapeHtml(p.insurance?.primary?.carrier || 'Self-pay')}
+          </td>
+        </tr></table>
+        ${[1,2,3].map(phaseTable).join('')}
+        <table style="width:100%;margin-top:16px;font-size:13px;border-top:1px solid #cbd5e1;padding-top:8px">
+          <tr><td>Total presented</td><td align="right" style="font-family:monospace">${fmt.money(totalFee)}</td></tr>
+          <tr><td>Estimated insurance benefit</td><td align="right" style="font-family:monospace">${fmt.money(totalIns)}</td></tr>
+          <tr style="font-weight:600;border-top:2px solid #0f172a"><td style="padding-top:6px">Estimated patient portion</td><td align="right" style="font-family:monospace;padding-top:6px">${fmt.money(totalPt)}</td></tr>
+        </table>
+        <div style="margin-top:32px;font-size:11px;color:#475569">
+          <p>Insurance estimates are not a guarantee of payment. Actual benefits will be determined by your carrier upon claim submission.</p>
+          <p style="margin-top:18px">Patient signature: ____________________________________   Date: __________</p>
+          <p style="margin-top:10px">Provider signature: ____________________________________   Date: __________</p>
+        </div>
+      </div>
+    `;
+    try { await exportPDF(html, `treatment-plan-${p.id}-${today}.pdf`); toast('Tx plan PDF downloaded', { tone: 'success' }); }
+    catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
   }
 
   function exportRecallCSV() {

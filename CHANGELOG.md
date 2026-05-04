@@ -10,6 +10,53 @@ practice management software they'll see on day one in any East Texas office.
 
 ---
 
+## Practice Pro v2 — Tx Plan editor — 2026-05-04
+
+The treatment-planning workflow real practices use to present cases
+and track acceptance.
+
+### Editable, phased treatment plans
+- ＋ Add procedure modal: ADA code typeahead, tooth, surface, fee,
+  phase (1 immediate / 2 stabilization / 3 definitive), priority,
+  pre-auth flag, notes.
+- Edit any line in place via the edit modal.
+- Per-line status workflow: Planned → Accepted → Scheduled →
+  In progress → Completed (or Declined). Status drives filter chips
+  (Active / All / Completed / Declined) at the top.
+- Each phase shows its own subtotal and is collapsible.
+- Per-line ＋ button to add directly into a phase.
+
+### Real insurance estimation
+- Per-line patient portion vs insurance estimate computed from the
+  ADA category-coverage matrix (diagnostic 100%, preventive 100%,
+  restorative 80%, endo 50%, perio 80%, prostho/implant 50%, etc.)
+- Self-pay carriers automatically estimate 0% insurance.
+- Per-line insurance override field for known carrier exceptions.
+- Phase totals display fee, ins est, pt portion.
+- Page header tiles: Presented / Accepted / Completed dollars +
+  ins / patient totals.
+
+### Case acceptance + signature
+- Live "Case acceptance %" meter (accepted $ / presented $)
+  colour-coded green / amber / rose at 70 / 40.
+- ✓ Sign & accept button — creates a signature timestamp,
+  auto-accepts all planned lines, and logs a communication note
+  ("Patient signed treatment plan").
+- ✓ Per-line accept button.
+
+### Production posting
+- "post" action on accepted/scheduled lines marks the line
+  Completed AND posts the procedure into the ledger automatically
+  (with date, code, fee, tooth, provider, notes).
+
+### Output
+- ⎙ Print plan — browser print of the visible plan.
+- ⬇ PDF — downloads a multi-phase treatment plan PDF with
+  practice header, patient block, phase tables, totals, signature
+  lines (patient + provider), and the standard insurance disclaimer.
+
+---
+
 ## Practice Pro v2 — Real perio chart (AAP 2017) — 2026-05-04
 
 The clinical credibility module. Open the Perio ribbon tab on any
