@@ -44,14 +44,23 @@
     .surface.s-watch     { fill: #f97316; }
     .surface.s-fracture  { fill: #be185d; }
 
-    /* Form polish */
-    .input { @apply w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-[13px] focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600; }
-    .label { @apply block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-0.5; }
-    .btn { @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-medium transition; }
-    .btn-primary { @apply bg-teal-700 text-white hover:bg-teal-800; }
-    .btn-ghost { @apply text-slate-700 hover:bg-slate-100; }
-    .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
-    .btn-soft { @apply bg-slate-100 text-slate-800 hover:bg-slate-200; }
+    /* Form polish — explicit Tailwind utilities (CDN doesn't support @apply outside special blocks) */
+  </style>
+
+  <style type="text/tailwindcss">
+    @layer components {
+      .input { @apply w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-[13px] focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600; }
+      .label { @apply block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-0.5; }
+      .btn { @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-medium transition; }
+      .btn-primary { @apply bg-teal-700 text-white hover:bg-teal-800; }
+      .btn-ghost { @apply text-slate-700 hover:bg-slate-100; }
+      .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
+      .btn-soft { @apply bg-slate-100 text-slate-800 hover:bg-slate-200; }
+      .marker-btn { @apply px-2 py-1 rounded text-[11px] font-medium border transition flex items-center gap-1.5; }
+    }
+  </style>
+
+  <style>
 
     /* Scrollbar polish */
     ::-webkit-scrollbar { width: 9px; height: 9px; }
@@ -94,8 +103,9 @@
 
     /* Mobile */
     @media (max-width: 768px) {
-      .pp-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; transform: translateX(-100%); transition: transform .2s; width: 280px; }
+      .pp-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 40; transform: translateX(-100%); transition: transform .2s; width: 86vw; max-width: 320px; box-shadow: 4px 0 18px rgba(0,0,0,.15); }
       .pp-sidebar.open { transform: none; }
+      .pp-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 35; }
     }
   </style>
 </head>
@@ -135,7 +145,10 @@
     currentPatientId: null,
     module: 'overview',     // overview | chart | perio | tx | ledger | schedule | recall | docs
     ui: {
-      sidebarOpen: true,
+      sidebarOpen: window.matchMedia('(min-width: 769px)').matches,
+      isMobile: window.matchMedia('(max-width: 768px)').matches,
+      chartMarker: 'caries',
+      toothContext: null,
       paletteOpen: false,
       modal: null,          // { type, props }
       patientFilter: '',
@@ -277,8 +290,13 @@
       { id: 'overdue',  label: 'Overdue',  cls: 'chip-rose' },
     ];
     return `
+      ${state.ui.sidebarOpen && state.ui.isMobile ? '<div class="pp-backdrop" data-action="close-sidebar"></div>' : ''}
       <aside class="pp-sidebar w-72 flex flex-col ${state.ui.sidebarOpen ? 'open' : ''}">
         <div class="p-2 border-b border-slate-200">
+          <div class="flex items-center gap-1 mb-1.5 md:hidden">
+            <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold flex-1">Patients</span>
+            <button data-action="close-sidebar" class="text-slate-500 hover:text-slate-900 px-2 py-1 rounded hover:bg-slate-100" aria-label="Close patient list">✕</button>
+          </div>
           <div class="relative">
             <input id="patient-search" data-action="patient-filter"
               value="${escapeHtml(state.ui.patientFilter)}"
@@ -531,7 +549,191 @@
   }
 
   // ── Stubs for modules that arrive in subsequent pushes ─────────
-  function renderChart(p) { return placeholder('Chart', 'Odontogram with surface marking ships next push.'); }
+  // ── Chart module: odontogram with surface marking ──────────────
+  const MARKERS = [
+    { id: '',          label: 'Erase',      color: '#ffffff', text: 'Clear' },
+    { id: 'caries',    label: 'Caries',     color: '#ef4444' },
+    { id: 'composite', label: 'Composite',  color: '#0d9488' },
+    { id: 'amalgam',   label: 'Amalgam',    color: '#475569' },
+    { id: 'sealant',   label: 'Sealant',    color: '#a3e635' },
+    { id: 'crown',     label: 'Crown',      color: '#fbbf24', whole: true },
+    { id: 'rct',       label: 'RCT',        color: '#9333ea', whole: true },
+    { id: 'missing',   label: 'Missing',    color: '#1e293b', whole: true },
+    { id: 'implant',   label: 'Implant',    color: '#0ea5e9', whole: true },
+    { id: 'watch',     label: 'Watch',      color: '#f97316' },
+    { id: 'fracture',  label: 'Fracture',   color: '#be185d' },
+  ];
+
+  // Determine if a tooth is anterior (incisor/canine) by universal number.
+  function isAnterior(n) { return (n >= 6 && n <= 11) || (n >= 22 && n <= 27); }
+
+  function renderChart(p) {
+    const chart = p.chart || {};
+    const counts = { caries: 0, composite: 0, amalgam: 0, missing: 0, crown: 0, planned: 0 };
+    Object.values(chart).forEach(t => {
+      Object.values(t || {}).forEach(v => { if (counts[v] != null) counts[v]++; });
+    });
+    const planned = (p.treatmentPlan || []).filter(l => l.tooth).length;
+    counts.planned = planned;
+    const activeMarker = state.ui.chartMarker || 'caries';
+    const ctx = state.ui.toothContext;
+
+    return `
+      <div class="space-y-3">
+        <!-- Toolbar -->
+        <div class="bg-white rounded border border-slate-200 p-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-2">Marker</span>
+            ${MARKERS.map(m => `
+              <button data-action="set-marker" data-marker="${m.id}"
+                class="marker-btn ${activeMarker === m.id ? 'border-teal-600 ring-1 ring-teal-600 bg-teal-50' : 'border-slate-200 bg-white hover:bg-slate-50'}"
+                title="${m.label}${m.whole ? ' (whole tooth)' : ''}">
+                <span class="inline-block w-3 h-3 rounded-sm border border-slate-300" style="background:${m.color}"></span>
+                <span>${m.label}</span>
+              </button>`).join('')}
+            <span class="flex-1"></span>
+            <button class="btn btn-soft" data-action="chart-reset" title="Clear all chart markings">Reset chart</button>
+          </div>
+          <div class="text-[11px] text-slate-500 mt-2">
+            Click a surface to apply the active marker. <span class="hidden md:inline">Right-click a tooth for more actions.</span>
+            Whole-tooth markers (Crown, RCT, Missing, Implant) apply to the entire tooth.
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2">
+          ${[
+            { k: 'caries',    l: 'Active caries',  cls: 'text-rose-700' },
+            { k: 'composite', l: 'Composites',     cls: 'text-teal-700' },
+            { k: 'amalgam',   l: 'Amalgams',       cls: 'text-slate-700' },
+            { k: 'crown',     l: 'Crowns',         cls: 'text-amber-700' },
+            { k: 'missing',   l: 'Missing',        cls: 'text-slate-900' },
+            { k: 'planned',   l: 'Tx-planned',     cls: 'text-sky-700' },
+          ].map(s => `
+            <div class="bg-white rounded border border-slate-200 p-2">
+              <div class="text-[10px] uppercase tracking-wide text-slate-500">${s.l}</div>
+              <div class="text-lg mono font-semibold ${s.cls}">${counts[s.k] || 0}</div>
+            </div>`).join('')}
+        </div>
+
+        <!-- Odontogram -->
+        <div class="bg-white rounded border border-slate-200 p-4 overflow-x-auto">
+          <div class="min-w-[760px]">
+            ${renderArch(chart, true,  PERM_TEETH.slice(0, 16))}
+            <div class="my-2 border-t-2 border-dashed border-slate-200 relative">
+              <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">midline</span>
+            </div>
+            ${renderArch(chart, false, PERM_TEETH.slice(16).reverse())}
+          </div>
+        </div>
+
+        <!-- Existing chart legend / chart history -->
+        <div class="grid lg:grid-cols-2 gap-3">
+          <div class="bg-white rounded border border-slate-200 p-3">
+            <div class="text-[12px] font-semibold mb-2">Existing restorations + findings</div>
+            ${renderChartFindings(chart, false)}
+          </div>
+          <div class="bg-white rounded border border-slate-200 p-3">
+            <div class="text-[12px] font-semibold mb-2">Treatment-planned</div>
+            ${(p.treatmentPlan || []).filter(l => l.tooth).length === 0 ? '<div class="text-[12px] text-slate-500">No tooth-specific treatment planned.</div>' :
+            `<ul class="text-[12px] space-y-1">${(p.treatmentPlan || []).filter(l => l.tooth).map(l => `
+              <li class="flex justify-between border-b border-slate-100 pb-1">
+                <span><span class="mono font-semibold">#${escapeHtml(l.tooth)}${l.surface ? ' ' + escapeHtml(l.surface) : ''}</span> · ${escapeHtml(l.code)} ${escapeHtml(l.desc)}</span>
+                <span class="mono">${fmt.money(l.fee)}</span>
+              </li>`).join('')}</ul>`}
+          </div>
+        </div>
+
+        ${ctx ? renderToothMenu(ctx) : ''}
+      </div>
+    `;
+  }
+
+  function renderArch(chart, isUpper, teethRange) {
+    return `
+      <div class="grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+        ${teethRange.map(n => renderTooth(n, chart[`T-${n}`] || {}, isUpper)).join('')}
+      </div>
+      <div class="grid grid-cols-16 gap-1 mt-0.5" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500">${n}</div>`).join('')}
+      </div>
+    `;
+  }
+
+  function renderTooth(num, marks, isUpper) {
+    const ant = isAnterior(num);
+    // Surfaces always fetched as M, B/F, D, L, O/I but we render strips around a center
+    const m = marks || {};
+    const surfaceColor = (key) => {
+      const v = m[key]; if (!v) return '#ffffff';
+      const found = MARKERS.find(x => x.id === v);
+      return found ? found.color : '#ffffff';
+    };
+    // Whole-tooth markers: explicit `whole` key, OR any surface containing a whole-marker value
+    const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
+    const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
+    const wholeColor = wholeVal ? (MARKERS.find(x => x.id === wholeVal)?.color || '#ffffff') : null;
+    // Check for treatment-planned overlay (planned) — drawn as outline ring
+    const w = 36, h = 56;
+    const stroke = wholeColor ? '#0f172a' : '#94a3b8';
+    return `
+      <div class="tooth flex flex-col items-center" data-tooth="${num}">
+        <svg viewBox="0 0 ${w} ${h}" width="100%" style="max-width:38px;height:auto" oncontextmenu="return false">
+          ${ wholeColor ? `<rect x="2" y="2" width="${w-4}" height="${h-4}" rx="6" ry="6" fill="${wholeColor}" stroke="${stroke}" stroke-width="1" />`
+            : `
+            <rect class="tooth-shape" x="2" y="2" width="${w-4}" height="${h-4}" rx="6" ry="6" fill="#ffffff" stroke="${stroke}" stroke-width="1"/>
+            <!-- B/F (top) -->
+            <rect data-surface="B" x="6" y="4" width="${w-12}" height="9"  rx="2" fill="${surfaceColor('B')}" stroke="#cbd5e1" />
+            <!-- L (bottom) -->
+            <rect data-surface="L" x="6" y="${h-13}" width="${w-12}" height="9" rx="2" fill="${surfaceColor('L')}" stroke="#cbd5e1" />
+            <!-- M (left) -->
+            <rect data-surface="M" x="4" y="14" width="9" height="${h-28}" rx="2" fill="${surfaceColor('M')}" stroke="#cbd5e1" />
+            <!-- D (right) -->
+            <rect data-surface="D" x="${w-13}" y="14" width="9" height="${h-28}" rx="2" fill="${surfaceColor('D')}" stroke="#cbd5e1" />
+            <!-- O/I (center) -->
+            <rect data-surface="${ant ? 'I' : 'O'}" x="14" y="16" width="${w-28}" height="${h-32}" rx="2" fill="${surfaceColor(ant ? 'I' : 'O') !== '#ffffff' ? surfaceColor(ant ? 'I' : 'O') : surfaceColor('O')}" stroke="#cbd5e1" />
+          ` }
+        </svg>
+      </div>
+    `;
+  }
+
+  function renderChartFindings(chart, includeWhole) {
+    const rows = [];
+    Object.keys(chart).sort((a, b) => parseInt(a.split('-')[1]) - parseInt(b.split('-')[1])).forEach(k => {
+      const num = k.split('-')[1];
+      const m = chart[k];
+      Object.entries(m).forEach(([surf, val]) => {
+        if (!val) return;
+        rows.push({ tooth: num, surf, val });
+      });
+    });
+    if (rows.length === 0) return '<div class="text-[12px] text-slate-500">No existing chart markings.</div>';
+    return `<ul class="text-[12px] space-y-1 max-h-56 overflow-auto">${rows.map(r => {
+      const m = MARKERS.find(x => x.id === r.val);
+      return `<li class="flex items-center gap-2 border-b border-slate-100 pb-1">
+        <span class="inline-block w-3 h-3 rounded-sm" style="background:${m?.color || '#cbd5e1'}"></span>
+        <span class="mono">#${r.tooth} ${r.surf === 'whole' ? '' : r.surf}</span>
+        <span class="capitalize">${escapeHtml(m?.label || r.val)}</span>
+      </li>`;
+    }).join('')}</ul>`;
+  }
+
+  function renderToothMenu(ctx) {
+    return `
+      <div class="fixed inset-0 z-30" data-action="close-tooth-menu" style="background:transparent">
+        <div class="absolute bg-white border border-slate-200 rounded shadow-lg py-1 text-[12px]"
+             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px"
+             onclick="event.stopPropagation()">
+          <div class="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-100">Tooth #${ctx.tooth}</div>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-plan" data-tooth="${ctx.tooth}">＋ Plan procedure</button>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-mark-missing" data-tooth="${ctx.tooth}">Mark missing</button>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-mark-watch" data-tooth="${ctx.tooth}">Mark watch (occlusal)</button>
+          <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-clear" data-tooth="${ctx.tooth}">Clear all markings</button>
+        </div>
+      </div>
+    `;
+  }
   function renderPerioStub(p) { return placeholder('Perio', '6-point perio chart ships in a follow-up push.'); }
   function renderScheduleStub(p) { return placeholder('Schedule', 'Op grid + drag-drop schedule ships in a follow-up push.'); }
   function renderTxPlan(p) {
@@ -943,12 +1145,45 @@
   }
 
   // ── Actions ─────────────────────────────────────────────────────
+  function markSurface(tooth, surf, val) {
+    const p = currentPatient(); if (!p) return;
+    p.chart = p.chart || {};
+    const key = `T-${tooth}`;
+    p.chart[key] = p.chart[key] || {};
+    // If tooth had whole-tooth marker, clear it first
+    if (p.chart[key].whole) delete p.chart[key].whole;
+    p.chart[key][surf] = val;
+    saveSoon();
+    logAction('chart_mark_surface', { tooth, surf, val });
+  }
+  function markWholeTooth(tooth, val) {
+    const p = currentPatient(); if (!p) return;
+    p.chart = p.chart || {};
+    p.chart[`T-${tooth}`] = { whole: val };
+    saveSoon();
+    logAction('chart_mark_whole', { tooth, val });
+  }
+  function clearSurface(tooth, surf) {
+    const p = currentPatient(); if (!p) return;
+    if (p.chart?.[`T-${tooth}`]) {
+      delete p.chart[`T-${tooth}`][surf];
+      if (Object.keys(p.chart[`T-${tooth}`]).length === 0) delete p.chart[`T-${tooth}`];
+      saveSoon();
+      logAction('chart_clear_surface', { tooth, surf });
+    }
+  }
+
   function selectPatient(id) {
     state.currentPatientId = id;
+    if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    state.ui.toothContext = null;
     saveSoon(); rerender();
   }
   function setModule(m) {
-    state.module = m; rerender();
+    state.module = m;
+    state.ui.toothContext = null;
+    if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    rerender();
   }
   function openModal(type, props = {}) { state.ui.modal = { type, props, lg: type === 'edit-medical' }; rerender(); }
   function closeModal() { state.ui.modal = null; rerender(); }
@@ -965,6 +1200,7 @@
       const a = t.dataset.action;
       switch (a) {
         case 'toggle-sidebar': state.ui.sidebarOpen = !state.ui.sidebarOpen; rerender(); break;
+        case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'open-palette': openPalette(); break;
         case 'close-palette': closePalette(); break;
         case 'audit-toggle': openModal('audit'); break;
@@ -983,6 +1219,39 @@
             saveSoon(); logAction('toggle_premed', { id: p.id, value: p.medical.premedicate }); rerender();
           }
           break;
+        }
+        case 'set-marker': state.ui.chartMarker = t.dataset.marker; rerender(); break;
+        case 'chart-reset': {
+          if (!confirm('Clear all chart markings for this patient?')) break;
+          const p = currentPatient(); if (p) { p.chart = {}; saveSoon(); logAction('chart_reset', { id: p.id }); rerender(); toast('Chart cleared'); }
+          break;
+        }
+        case 'tooth-plan': {
+          const num = t.dataset.tooth;
+          state.ui.toothContext = null;
+          openModal('post-procedure', { prefillTooth: num, status: 'planned' });
+          // Defer focus and prefill
+          setTimeout(() => {
+            const inp = document.querySelector('[name="tooth"]');
+            if (inp) inp.value = num;
+          }, 0);
+          break;
+        }
+        case 'tooth-mark-missing': {
+          markWholeTooth(t.dataset.tooth, 'missing');
+          state.ui.toothContext = null; rerender(); break;
+        }
+        case 'tooth-mark-watch': {
+          markSurface(t.dataset.tooth, isAnterior(+t.dataset.tooth) ? 'I' : 'O', 'watch');
+          state.ui.toothContext = null; rerender(); break;
+        }
+        case 'tooth-clear': {
+          const p = currentPatient(); if (p) { delete (p.chart || {})[`T-${t.dataset.tooth}`]; saveSoon(); logAction('tooth_clear', { tooth: t.dataset.tooth }); }
+          state.ui.toothContext = null; rerender(); break;
+        }
+        case 'close-tooth-menu': {
+          if (ev.target === t) state.ui.toothContext = null;
+          rerender(); break;
         }
         case 'filter-family': {
           state.ui.patientFilter = ''; state.ui.patientFilterTab = 'all';
@@ -1021,6 +1290,38 @@
       if (a === 'submit-payment')     return submitPayment(t);
       if (a === 'submit-medical')     return submitMedical(t);
     };
+
+    // Tooth surface paint (delegated to root)
+    root.addEventListener('click', (ev) => {
+      const surf = ev.target.closest?.('[data-surface]');
+      if (!surf) return;
+      const toothEl = surf.closest('[data-tooth]');
+      if (!toothEl) return;
+      const tooth = toothEl.dataset.tooth;
+      const marker = state.ui.chartMarker;
+      const def = MARKERS.find(m => m.id === marker);
+      ev.stopPropagation();
+      state.ui.toothContext = null;
+      if (!marker) { clearSurface(tooth, surf.dataset.surface); rerender(); return; }
+      if (def?.whole) {
+        markWholeTooth(tooth, marker);
+      } else {
+        markSurface(tooth, surf.dataset.surface, marker);
+      }
+      rerender();
+    });
+
+    // Right-click on tooth → context menu
+    root.addEventListener('contextmenu', (ev) => {
+      const toothEl = ev.target.closest?.('[data-tooth]');
+      if (!toothEl) return;
+      ev.preventDefault();
+      const r = toothEl.getBoundingClientRect();
+      const x = Math.min(r.right, window.innerWidth - 220);
+      const y = Math.min(r.bottom + 4, window.innerHeight - 200);
+      state.ui.toothContext = { tooth: toothEl.dataset.tooth, x, y };
+      rerender();
+    });
 
     // Demographics autosave on blur
     root.addEventListener('blur', (ev) => {
@@ -1210,6 +1511,14 @@
     } catch (e) { state.user = null; }
     await loadState();
     bindKeys();
+    // Track viewport width — keeps isMobile + sidebar default in sync
+    const mq = window.matchMedia('(max-width: 768px)');
+    const onMQ = () => {
+      state.ui.isMobile = mq.matches;
+      if (!mq.matches) state.ui.sidebarOpen = true; // desktop = always show
+      rerender();
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onMQ);
     render();
     if ((window.PDA?.sb && state.user) || true) {
       // Show the welcome toast once per session
