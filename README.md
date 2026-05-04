@@ -8,8 +8,8 @@ training program in East Texas.
 ```
 05_Live_Site/
   tools/                     student practice-management trainers
-    practice-pro.html        Dentrix-style simulator (PDA Practice Pro)
-    eaglesoft.html           EagleSoft-style simulator (PDA EagleNest)
+    practice-pro.html        Practice management trainer (PDA Practice Pro)
+    eaglenest.html           Clinical workflow trainer (PDA EagleNest)
   assets/                    shared JS modules
   auth.js                    Supabase auth shim (window.PDA)
 db/migrations/               SQL migrations (apply via Supabase dashboard)

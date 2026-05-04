@@ -3,15 +3,1225 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PDA Practice Pro — coming up next push</title>
+  <title>PDA Practice Pro — Practice Management Trainer</title>
+  <meta name="description" content="Premier Dental Academy of Longview — Practice Pro practice management trainer." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230f172a'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='%230d9488'%3EP%3C/text%3E%3C/svg%3E" />
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    body { font-size: 13px; color: #0f172a; background: #f1f5f9; }
+    .mono { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; }
+
+    /* Dark navy app chrome */
+    .pp-chrome { background: #0f172a; color: #e2e8f0; }
+    .pp-ribbon { background: #f8fafc; border-bottom: 1px solid #cbd5e1; }
+    .pp-sidebar { background: #ffffff; border-right: 1px solid #cbd5e1; }
+    .pp-tab-active { background: #ffffff; color: #0f172a; border-bottom-color: #0d9488 !important; }
+
+    /* Subtle fade-in for module switches */
+    @keyframes fade { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+    .pp-fade { animation: fade .14s ease-out; }
+    @keyframes slidein { from { transform: translateX(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    /* Tooth SVG default + states */
+    .tooth { cursor: pointer; }
+    .tooth:hover .tooth-shape { stroke: #0d9488; stroke-width: 1.5; }
+    .surface { fill: #ffffff; stroke: #94a3b8; }
+    .surface.s-amalgam   { fill: #475569; }
+    .surface.s-composite { fill: #0d9488; }
+    .surface.s-caries    { fill: #ef4444; }
+    .surface.s-sealant   { fill: #a3e635; }
+    .surface.s-crown     { fill: #fbbf24; }
+    .surface.s-rct       { fill: #9333ea; }
+    .surface.s-missing   { fill: #1e293b; opacity: .35; }
+    .surface.s-implant   { fill: #0ea5e9; }
+    .surface.s-watch     { fill: #f97316; }
+    .surface.s-fracture  { fill: #be185d; }
+
+    /* Form polish */
+    .input { @apply w-full px-2 py-1.5 bg-white border border-slate-300 rounded text-[13px] focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600; }
+    .label { @apply block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-0.5; }
+    .btn { @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-medium transition; }
+    .btn-primary { @apply bg-teal-700 text-white hover:bg-teal-800; }
+    .btn-ghost { @apply text-slate-700 hover:bg-slate-100; }
+    .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
+    .btn-soft { @apply bg-slate-100 text-slate-800 hover:bg-slate-200; }
+
+    /* Scrollbar polish */
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* No outline on programmatic focus */
+    [data-pf] { outline: none; }
+
+    /* Print styling for walkout statements */
+    @media print {
+      body * { visibility: hidden; }
+      #print-root, #print-root * { visibility: visible; }
+      #print-root { position: absolute; left: 0; top: 0; width: 100%; }
+    }
+
+    /* Table polish */
+    table.pp { width: 100%; border-collapse: collapse; }
+    table.pp th { background: #f8fafc; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; padding: 8px 10px; border-bottom: 1px solid #cbd5e1; }
+    table.pp td { padding: 8px 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+    table.pp tr:hover td { background: #f8fafc; }
+
+    /* Alert chip */
+    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .chip-amber { background: #fef3c7; color: #92400e; }
+    .chip-rose  { background: #ffe4e6; color: #9f1239; }
+    .chip-sky   { background: #e0f2fe; color: #075985; }
+    .chip-emerald { background: #d1fae5; color: #065f46; }
+    .chip-slate { background: #e2e8f0; color: #334155; }
+
+    /* Keyboard kbd polish */
+    kbd { background: #1e293b; color: #e2e8f0; padding: 1px 6px; border-radius: 3px; font-family: 'SFMono-Regular', monospace; font-size: 10px; border-bottom: 2px solid #0f172a; }
+
+    /* Modal */
+    .modal-back { position: fixed; inset: 0; background: rgba(15, 23, 42, .55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal { background: #fff; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,.25); width: 100%; max-width: 560px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal-lg { max-width: 880px; }
+    .modal h2 { font-size: 14px; font-weight: 600; }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+      .pp-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 30; transform: translateX(-100%); transition: transform .2s; width: 280px; }
+      .pp-sidebar.open { transform: none; }
+    }
+  </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center">
-  <div class="bg-white rounded-xl shadow p-8 max-w-md text-center">
-    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">PDA Practice Pro</p>
-    <h1 class="text-2xl font-semibold mt-2">v2 build landing in the next push</h1>
-    <p class="text-slate-600 mt-3 text-sm">Foundation (auth, persistence, seed data, SQL migration) is live. Full Dentrix-style trainer ships next commit.</p>
-    <a href="/" class="inline-block mt-5 text-sm text-teal-700 hover:underline">← Back</a>
-  </div>
+<body>
+
+<!-- ─────────────────────────── App shell ───────────────────────────── -->
+<div id="app" class="h-screen flex flex-col"></div>
+
+<!-- Off-screen print root for walkout statements / treatment plans -->
+<div id="print-root" style="display:none;"></div>
+
+<!-- Toast host gets injected at runtime -->
+
+<!-- Shared modules -->
+<script src="/auth.js"></script>
+<script src="/assets/pda-shared.js"></script>
+<script src="/assets/pda-seed-patients.js"></script>
+
+<script>
+/* ============================================================
+ * PDA Practice Pro v2
+ * Single-file vanilla-JS dental practice management trainer.
+ * Dark-navy ribbon UI workflow for RDA students.
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  const APP = 'practice_pro';
+  const { fmt, uid, debounce, escapeHtml, avatarUrl, toast, exportPDF,
+          patientPortion, PERM_TEETH, SURFACES, SURFACE_COLORS, Store } = window.PDA_SHARED;
+  const SEED = window.PDA_SEED;
+
+  // ── State ──────────────────────────────────────────────────────
+  const state = {
+    user: null,
+    patients: [],
+    currentPatientId: null,
+    module: 'overview',     // overview | chart | perio | tx | ledger | schedule | recall | docs
+    ui: {
+      sidebarOpen: true,
+      paletteOpen: false,
+      modal: null,          // { type, props }
+      patientFilter: '',
+      patientFilterTab: 'all', // all | recall | new | overdue
+    },
+    audit: [],
+  };
+
+  // ── Persistence ────────────────────────────────────────────────
+  async function loadState() {
+    const saved = await Store.load(APP);
+    if (saved && Array.isArray(saved.patients) && saved.patients.length) {
+      state.patients = saved.patients;
+      state.currentPatientId = saved.currentPatientId || saved.patients[0].id;
+    } else {
+      // First run: seed
+      state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.currentPatientId = state.patients[0].id;
+      await Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
+      Store.log(APP, 'seeded_patients', { count: state.patients.length });
+    }
+  }
+  const saveSoon = debounce(() => {
+    Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
+  }, 350);
+
+  function logAction(action, metadata) {
+    state.audit.unshift({ at: new Date().toISOString(), action, metadata });
+    if (state.audit.length > 80) state.audit.length = 80;
+    Store.log(APP, action, metadata);
+  }
+
+  // ── Selectors ──────────────────────────────────────────────────
+  function currentPatient() {
+    return state.patients.find(p => p.id === state.currentPatientId) || null;
+  }
+
+  function balanceFor(p) {
+    return (p.ledger || []).reduce((acc, e) => acc + (Number(e.fee) || 0) - (Number(e.payment) || 0), 0);
+  }
+
+  function filteredPatients() {
+    const q = state.ui.patientFilter.trim().toLowerCase();
+    const tab = state.ui.patientFilterTab;
+    let list = state.patients.slice();
+    if (tab !== 'all') list = list.filter(p => (p.type || '') === tab);
+    if (q) list = list.filter(p => {
+      return [p.first, p.last, p.preferred, p.id, p.phone, p.dob, p.email]
+        .filter(Boolean).some(s => String(s).toLowerCase().includes(q));
+    });
+    list.sort((a, b) => (a.last + a.first).localeCompare(b.last + b.first));
+    return list;
+  }
+
+  // ── Render dispatch ────────────────────────────────────────────
+  function render() {
+    const root = document.getElementById('app');
+    root.innerHTML = `
+      ${renderTopChrome()}
+      ${renderRibbon()}
+      <div class="flex-1 flex overflow-hidden">
+        ${renderSidebar()}
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+          ${renderBanner()}
+          <div class="flex-1 overflow-auto">
+            ${renderModule()}
+          </div>
+        </main>
+      </div>
+      ${renderModal()}
+      ${renderPalette()}
+    `;
+    bindEvents();
+  }
+  const rerender = () => requestAnimationFrame(render);
+
+  // ── Top chrome (dark navy title bar) ───────────────────────────
+  function renderTopChrome() {
+    const p = currentPatient();
+    return `
+      <header class="pp-chrome flex items-center justify-between px-3 py-1.5 text-[12px]">
+        <div class="flex items-center gap-3">
+          <button data-action="toggle-sidebar" class="md:hidden text-slate-300 hover:text-white">☰</button>
+          <span class="flex items-center gap-1.5 font-semibold tracking-wide">
+            <span class="inline-block w-2.5 h-2.5 bg-teal-500 rounded-sm"></span>
+            PDA Practice Pro
+            <span class="text-slate-500 font-normal">— Practice Management Trainer</span>
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-slate-400">${escapeHtml(state.user ? `${state.user.first_name || 'Student'} ${state.user.last_name || ''}` : 'Student Demo')}</span>
+          <button data-action="open-palette" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded flex items-center gap-2 text-slate-200">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
+            <span>Search</span>
+            <kbd>⌘K</kbd>
+          </button>
+          <button data-action="audit-toggle" class="text-slate-300 hover:text-white" title="Audit log">⏱</button>
+        </div>
+      </header>
+    `;
+  }
+
+  // ── Ribbon (module switcher) ───────────────────────────────────
+  function renderRibbon() {
+    const tabs = [
+      { id: 'overview', label: 'Overview', shortcut: '1' },
+      { id: 'chart',    label: 'Chart',    shortcut: 'T' },
+      { id: 'perio',    label: 'Perio',    shortcut: '3' },
+      { id: 'tx',       label: 'Tx Plan',  shortcut: '4' },
+      { id: 'ledger',   label: 'Ledger',   shortcut: 'L' },
+      { id: 'schedule', label: 'Schedule', shortcut: 'S' },
+      { id: 'recall',   label: 'Recall',   shortcut: '7' },
+      { id: 'docs',     label: 'Documents',shortcut: '8' },
+    ];
+    return `
+      <div class="pp-ribbon px-3 flex items-center gap-1 overflow-x-auto">
+        ${tabs.map(t => `
+          <button data-action="set-module" data-module="${t.id}"
+            class="px-3 py-2.5 text-[12px] font-medium border-b-2 ${state.module === t.id ? 'pp-tab-active' : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">
+            ${t.label}
+            <kbd class="ml-1.5 opacity-60">${t.shortcut}</kbd>
+          </button>
+        `).join('')}
+        <span class="flex-1"></span>
+        <div class="hidden sm:flex items-center gap-2 text-slate-500 pr-2">
+          <kbd>?</kbd><span>help</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Sidebar (patient list with search + tabs) ──────────────────
+  function renderSidebar() {
+    const list = filteredPatients();
+    const tabs = [
+      { id: 'all',      label: 'All',      cls: 'chip-slate' },
+      { id: 'recall',   label: 'Recall',   cls: 'chip-emerald' },
+      { id: 'new',      label: 'New',      cls: 'chip-sky' },
+      { id: 'overdue',  label: 'Overdue',  cls: 'chip-rose' },
+    ];
+    return `
+      <aside class="pp-sidebar w-72 flex flex-col ${state.ui.sidebarOpen ? 'open' : ''}">
+        <div class="p-2 border-b border-slate-200">
+          <div class="relative">
+            <input id="patient-search" data-action="patient-filter"
+              value="${escapeHtml(state.ui.patientFilter)}"
+              placeholder="Search patients (F)..."
+              class="w-full pl-7 pr-2 py-1.5 text-[12px] bg-slate-50 border border-slate-300 rounded focus:outline-none focus:border-teal-600" />
+            <svg class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
+          </div>
+          <div class="flex gap-1 mt-2">
+            ${tabs.map(t => `
+              <button data-action="patient-filter-tab" data-tab="${t.id}"
+                class="px-2 py-0.5 text-[11px] rounded ${state.ui.patientFilterTab === t.id ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}">
+                ${t.label}
+              </button>
+            `).join('')}
+            <button data-action="open-modal" data-modal="new-patient" class="ml-auto btn btn-primary !py-0.5 !px-2 !text-[11px]" title="New patient (N)">＋ New</button>
+          </div>
+        </div>
+        <div class="flex-1 overflow-auto">
+          ${list.length === 0 ? `
+            <div class="p-6 text-center text-[12px] text-slate-500">No patients match.</div>
+          ` : list.map(p => renderPatientRow(p)).join('')}
+        </div>
+        <div class="p-2 border-t border-slate-200 text-[11px] text-slate-500 flex justify-between">
+          <span>${list.length} of ${state.patients.length} pts</span>
+          <button data-action="open-modal" data-modal="audit" class="hover:text-teal-700">Audit log</button>
+        </div>
+      </aside>
+    `;
+  }
+
+  function renderPatientRow(p) {
+    const sel = p.id === state.currentPatientId;
+    const due = p.recall?.due ? new Date(p.recall.due) : null;
+    const today = new Date('2026-05-04');
+    const dueDays = due ? Math.round((due - today) / 86400000) : null;
+    const recallChip = dueDays != null
+      ? (dueDays < -30 ? `<span class="chip chip-rose">overdue</span>`
+        : dueDays < 0 ? `<span class="chip chip-amber">recall due</span>`
+        : dueDays < 30 ? `<span class="chip chip-emerald">due ${dueDays}d</span>`
+        : '')
+      : '';
+    const balance = balanceFor(p);
+    const balChip = balance > 0
+      ? `<span class="text-rose-600 font-semibold mono">${fmt.money(balance)}</span>`
+      : `<span class="text-slate-400 mono">${fmt.money(0)}</span>`;
+    return `
+      <button data-action="select-patient" data-id="${p.id}"
+        class="w-full text-left px-2.5 py-2 border-b border-slate-100 hover:bg-slate-50 ${sel ? 'bg-teal-50 border-l-4 border-l-teal-600' : 'border-l-4 border-l-transparent'}">
+        <div class="flex items-center gap-2">
+          <img src="${avatarUrl(p.first + ' ' + p.last)}" alt="" class="w-7 h-7 rounded-full bg-slate-200" />
+          <div class="flex-1 min-w-0">
+            <div class="text-[13px] font-semibold text-slate-900 truncate">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</div>
+            <div class="text-[11px] text-slate-500 flex items-center gap-1.5 mono">
+              ${p.id} · ${fmt.age(p.dob)}y ${escapeHtml(p.sex || '')}
+            </div>
+          </div>
+          <div class="text-right">
+            ${(p.alerts || []).length ? `<span class="chip chip-rose" title="${escapeHtml(p.alerts.join(', '))}">!</span>` : ''}
+          </div>
+        </div>
+        <div class="flex items-center justify-between mt-1">
+          ${recallChip || `<span class="text-[10px] text-slate-400">${escapeHtml(p.insurance?.primary?.carrier || 'self-pay')}</span>`}
+          ${balChip}
+        </div>
+      </button>
+    `;
+  }
+
+  // ── Patient banner (sticky, with name/photo/alerts) ────────────
+  function renderBanner() {
+    const p = currentPatient();
+    if (!p) return `<div class="p-8 text-slate-400">No patient selected.</div>`;
+    const ins = p.insurance?.primary;
+    const alerts = (p.alerts || []);
+    const balance = balanceFor(p);
+    const balanceColor = balance > 0 ? 'text-rose-600' : 'text-slate-700';
+    return `
+      <header class="bg-white border-b border-slate-200 px-4 py-3 flex flex-wrap gap-4 items-center sticky top-0 z-10">
+        <img src="${avatarUrl(p.first + ' ' + p.last)}" class="w-14 h-14 rounded-full border-2 border-slate-200" alt="" />
+        <div class="flex-1 min-w-[220px]">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-lg font-semibold text-slate-900">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</h1>
+            ${p.preferred && p.preferred !== p.first ? `<span class="text-slate-400 text-[12px]">"${escapeHtml(p.preferred)}"</span>` : ''}
+            <span class="chip chip-slate mono">${escapeHtml(p.id)}</span>
+            ${p.medical?.premedicate ? '<span class="chip chip-amber">PREMED</span>' : ''}
+            ${(p.medical?.allergies || []).filter(a => a !== 'NKDA').length ? '<span class="chip chip-rose">ALLERGY</span>' : ''}
+          </div>
+          <div class="text-[12px] text-slate-500 flex flex-wrap gap-x-4 gap-y-0.5 mt-0.5">
+            <span>DOB <span class="mono text-slate-700">${fmt.dateShort(p.dob)}</span> (${fmt.age(p.dob)} y)</span>
+            <span>${escapeHtml(p.sex || '')}${p.pronouns ? ' · ' + escapeHtml(p.pronouns) : ''}</span>
+            <span class="mono">${escapeHtml(p.phone || '')}</span>
+            ${p.familyId ? `<span class="text-teal-700">Family ${escapeHtml(p.familyId)}</span>` : ''}
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Insurance</div>
+          <div class="text-[12px] text-slate-800">${escapeHtml(ins?.carrier || 'Self-pay')}</div>
+          <div class="text-[11px] text-slate-500 mono">Used ${fmt.money(ins?.used || 0)}/${ins?.max ? fmt.money(ins.max) : '—'}</div>
+        </div>
+        <div class="text-right border-l border-slate-200 pl-4">
+          <div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Balance</div>
+          <div class="text-lg ${balanceColor} font-semibold mono">${fmt.money(balance)}</div>
+          <button data-action="open-modal" data-modal="walkout" class="text-[11px] text-teal-700 hover:underline">Walkout statement →</button>
+        </div>
+        ${alerts.length ? `
+          <div class="basis-full flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 -mx-4 px-4">
+            ${alerts.map(a => `<span class="chip chip-amber">⚠ ${escapeHtml(a)}</span>`).join('')}
+          </div>
+        ` : ''}
+      </header>
+    `;
+  }
+
+  // ── Module router ──────────────────────────────────────────────
+  function renderModule() {
+    const p = currentPatient();
+    if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
+    const wrap = (inner) => `<div class="pp-fade p-4 max-w-[1400px] mx-auto">${inner}</div>`;
+    switch (state.module) {
+      case 'overview': return wrap(renderOverview(p));
+      case 'chart':    return wrap(renderChart(p));
+      case 'ledger':   return wrap(renderLedger(p));
+      case 'tx':       return wrap(renderTxPlan(p));
+      case 'perio':    return wrap(renderPerioStub(p));
+      case 'schedule': return wrap(renderScheduleStub(p));
+      case 'recall':   return wrap(renderRecall(p));
+      case 'docs':     return wrap(renderDocsStub(p));
+      default: return '';
+    }
+  }
+
+  // ── Overview module ────────────────────────────────────────────
+  function renderOverview(p) {
+    const ins = p.insurance?.primary || {};
+    const med = p.medical || {};
+    return `
+      <div class="grid lg:grid-cols-3 gap-4">
+        <!-- Demographics -->
+        <section class="bg-white rounded border border-slate-200 p-4 lg:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold text-slate-900 text-[13px]">Demographics</h2>
+            <span class="text-[11px] text-slate-400">Auto-saves on blur</span>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-3">
+            ${field('first',     'First name',  p.first)}
+            ${field('last',      'Last name',   p.last)}
+            ${field('preferred', 'Goes by',     p.preferred || '')}
+            ${field('dob',       'Date of birth', p.dob, 'date')}
+            ${field('sex',       'Sex',         p.sex || '')}
+            ${field('pronouns',  'Pronouns',    p.pronouns || '')}
+            ${field('phone',     'Phone',       p.phone || '')}
+            ${field('email',     'Email',       p.email || '')}
+            ${field('address',   'Address',     p.address || '', 'text', 2)}
+            ${field('city',      'City',        p.city || '')}
+            ${field('state',     'State',       p.state || '')}
+            ${field('zip',       'ZIP',         p.zip || '')}
+          </div>
+        </section>
+
+        <!-- Vital info card -->
+        <section class="bg-white rounded border border-slate-200 p-4">
+          <h2 class="font-semibold text-slate-900 text-[13px] mb-3">Snapshot</h2>
+          <dl class="space-y-2 text-[12px]">
+            <div class="flex justify-between"><dt class="text-slate-500">Provider</dt><dd>${escapeHtml(p.provider || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Last prophy</dt><dd class="mono">${fmt.dateShort(p.lastProphy)}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Recall interval</dt><dd>${p.recall?.interval || 6} mo</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Recall due</dt><dd class="mono">${fmt.dateShort(p.recall?.due)}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Status</dt><dd class="capitalize">${escapeHtml(p.type || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Family</dt><dd>${p.familyId ? `<a class="text-teal-700" data-action="filter-family" data-fid="${p.familyId}">${escapeHtml(p.familyId)}</a>` : '—'}</dd></div>
+          </dl>
+          <div class="border-t border-slate-100 mt-3 pt-3">
+            <button class="btn btn-soft w-full justify-center" data-action="open-modal" data-modal="post-procedure" title="Post procedure (P)">＋ Post procedure</button>
+          </div>
+        </section>
+
+        <!-- Medical -->
+        <section class="bg-white rounded border border-slate-200 p-4 lg:col-span-2">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold text-slate-900 text-[13px]">Medical history</h2>
+            <button class="text-[11px] text-teal-700 hover:underline" data-action="open-modal" data-modal="edit-medical">Edit</button>
+          </div>
+          <div class="grid sm:grid-cols-3 gap-4 text-[12px]">
+            <div>
+              <div class="label">Allergies</div>
+              <ul class="space-y-1">${(med.allergies || []).map(a => `<li class="${a === 'NKDA' ? 'text-slate-500' : 'text-rose-700 font-medium'}">${escapeHtml(a)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+            <div>
+              <div class="label">Medications</div>
+              <ul class="space-y-1">${(med.meds || []).map(m => `<li>${escapeHtml(m)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+            <div>
+              <div class="label">Conditions</div>
+              <ul class="space-y-1">${(med.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+          </div>
+          ${med.notes ? `<div class="mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-[12px]"><span class="font-semibold">Note:</span> ${escapeHtml(med.notes)}</div>` : ''}
+          <label class="flex items-center gap-2 mt-3 text-[12px]">
+            <input type="checkbox" data-action="toggle-premed" ${med.premedicate ? 'checked' : ''} class="accent-teal-700" />
+            <span>Premedicate before treatment</span>
+          </label>
+        </section>
+
+        <!-- Insurance -->
+        <section class="bg-white rounded border border-slate-200 p-4">
+          <h2 class="font-semibold text-slate-900 text-[13px] mb-3">Primary insurance</h2>
+          <dl class="space-y-1.5 text-[12px]">
+            <div class="flex justify-between"><dt class="text-slate-500">Carrier</dt><dd>${escapeHtml(ins.carrier || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Plan</dt><dd>${escapeHtml(ins.plan || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Group</dt><dd class="mono">${escapeHtml(ins.group || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Annual max</dt><dd class="mono">${ins.max != null ? fmt.money(ins.max) : '—'}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Used</dt><dd class="mono">${fmt.money(ins.used || 0)}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Deductible</dt><dd class="mono">${fmt.money(ins.deductible || 0)}</dd></div>
+          </dl>
+          ${ins.max ? `
+            <div class="mt-3">
+              <div class="text-[11px] text-slate-500 flex justify-between"><span>Used</span><span>${Math.round(((ins.used || 0) / ins.max) * 100)}%</span></div>
+              <div class="h-1.5 bg-slate-100 rounded mt-1"><div class="h-1.5 rounded bg-teal-600" style="width:${Math.min(100, ((ins.used || 0) / ins.max) * 100)}%"></div></div>
+            </div>` : ''}
+        </section>
+
+        <!-- Recent activity -->
+        <section class="bg-white rounded border border-slate-200 p-4 lg:col-span-3">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="font-semibold text-slate-900 text-[13px]">Recent activity</h2>
+            <button class="text-[11px] text-teal-700 hover:underline" data-action="set-module" data-module="ledger">Open ledger →</button>
+          </div>
+          ${ (p.ledger || []).length === 0
+            ? '<div class="text-[12px] text-slate-500">No procedures posted.</div>'
+            : `<table class="pp">
+                <thead><tr><th>Date</th><th>Code</th><th>Description</th><th>Tooth</th><th>Provider</th><th class="text-right">Fee</th></tr></thead>
+                <tbody>
+                  ${ (p.ledger || []).slice().reverse().slice(0, 6).map(e => `
+                    <tr><td class="mono">${fmt.dateShort(e.date)}</td><td class="mono">${escapeHtml(e.code)}</td><td>${escapeHtml(e.desc)}</td><td class="mono">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td><td>${escapeHtml(e.provider || '—')}</td><td class="text-right mono">${fmt.money(e.fee)}</td></tr>
+                  `).join('') }
+                </tbody>
+              </table>`
+          }
+        </section>
+      </div>
+    `;
+  }
+
+  function field(key, label, value, type = 'text', span = 1) {
+    return `
+      <label class="block ${span === 2 ? 'sm:col-span-2' : ''}">
+        <span class="label">${escapeHtml(label)}</span>
+        <input type="${type}" data-edit="${key}" value="${escapeHtml(value || '')}" class="input" />
+      </label>
+    `;
+  }
+
+  // ── Stubs for modules that arrive in subsequent pushes ─────────
+  function renderChart(p) { return placeholder('Chart', 'Odontogram with surface marking ships next push.'); }
+  function renderPerioStub(p) { return placeholder('Perio', '6-point perio chart ships in a follow-up push.'); }
+  function renderScheduleStub(p) { return placeholder('Schedule', 'Op grid + drag-drop schedule ships in a follow-up push.'); }
+  function renderTxPlan(p) {
+    const tp = p.treatmentPlan || [];
+    if (tp.length === 0) return `<div class="bg-white rounded border border-slate-200 p-6 text-center text-slate-500 text-[12px]">No treatment planned for this patient yet. The full Tx Plan editor lands in a follow-up push.</div>`;
+    const total = tp.reduce((a, l) => a + (Number(l.fee) || 0), 0);
+    const portion = tp.reduce((a, l) => a + patientPortion(l, SEED.adaCodes, SEED.coverage), 0);
+    const phases = [1, 2, 3];
+    return `
+      <div class="bg-white rounded border border-slate-200 overflow-hidden">
+        <div class="p-3 border-b border-slate-200 flex justify-between items-center">
+          <h2 class="font-semibold text-[13px]">Treatment plan</h2>
+          <div class="text-[12px] flex gap-4">
+            <span>Total: <span class="mono font-semibold">${fmt.money(total)}</span></span>
+            <span>Pt portion (est): <span class="mono font-semibold text-rose-700">${fmt.money(portion)}</span></span>
+          </div>
+        </div>
+        ${phases.map(ph => {
+          const lines = tp.filter(l => (l.phase || 1) === ph);
+          if (lines.length === 0) return '';
+          const phTotal = lines.reduce((a, l) => a + (Number(l.fee) || 0), 0);
+          return `
+            <div>
+              <div class="px-3 py-1.5 bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wide font-semibold text-slate-600 flex justify-between">
+                <span>Phase ${ph}</span><span class="mono">${fmt.money(phTotal)}</span>
+              </div>
+              <table class="pp">
+                <tbody>
+                  ${lines.map(l => `
+                    <tr>
+                      <td class="mono">${escapeHtml(l.code)}</td>
+                      <td>${escapeHtml(l.desc)}</td>
+                      <td class="mono">${l.tooth || '—'}${l.surface ? ' ' + escapeHtml(l.surface) : ''}</td>
+                      <td><span class="chip ${l.priority === 'high' ? 'chip-rose' : l.priority === 'medium' ? 'chip-amber' : 'chip-slate'}">${escapeHtml(l.priority || 'medium')}</span></td>
+                      <td class="text-right mono">${fmt.money(l.fee)}</td>
+                      <td class="text-right text-[11px] text-slate-500 mono">est ${fmt.money(patientPortion(l, SEED.adaCodes, SEED.coverage))}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>`;
+        }).join('')}
+      </div>
+    `;
+  }
+  function renderLedger(p) {
+    const entries = (p.ledger || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    let running = 0;
+    const rows = entries.map(e => {
+      const charge = Number(e.fee) || 0;
+      const payment = Number(e.payment) || 0;
+      running += charge - payment;
+      return `
+        <tr>
+          <td class="mono">${fmt.dateShort(e.date)}</td>
+          <td class="mono">${escapeHtml(e.code || '')}</td>
+          <td>${escapeHtml(e.desc || '')}</td>
+          <td class="mono">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td>
+          <td>${escapeHtml(e.provider || '')}</td>
+          <td class="text-right mono">${charge ? fmt.money(charge) : '—'}</td>
+          <td class="text-right mono">${payment ? fmt.money(payment) : '—'}</td>
+          <td class="text-right mono ${running > 0 ? 'text-rose-700 font-semibold' : 'text-slate-700'}">${fmt.money(running)}</td>
+        </tr>
+      `;
+    }).join('');
+    return `
+      <div class="bg-white rounded border border-slate-200 overflow-hidden">
+        <div class="p-3 border-b border-slate-200 flex flex-wrap justify-between items-center gap-2">
+          <h2 class="font-semibold text-[13px]">Ledger</h2>
+          <div class="flex gap-2">
+            <button class="btn btn-soft" data-action="open-modal" data-modal="post-procedure">＋ Post procedure</button>
+            <button class="btn btn-soft" data-action="open-modal" data-modal="post-payment">$ Post payment</button>
+            <button class="btn btn-primary" data-action="open-modal" data-modal="walkout">Walkout statement</button>
+          </div>
+        </div>
+        ${entries.length === 0 ? '<div class="p-6 text-[12px] text-slate-500 text-center">No ledger entries. Post a procedure to begin.</div>' :
+        `<table class="pp">
+          <thead>
+            <tr><th>Date</th><th>Code</th><th>Description</th><th>Tooth</th><th>Provider</th><th class="text-right">Charge</th><th class="text-right">Payment</th><th class="text-right">Balance</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+          <tfoot>
+            <tr class="bg-slate-50 font-semibold">
+              <td colspan="5" class="text-right">Current balance</td>
+              <td colspan="2"></td>
+              <td class="text-right mono ${running > 0 ? 'text-rose-700' : 'text-slate-700'}">${fmt.money(running)}</td>
+            </tr>
+          </tfoot>
+        </table>`}
+      </div>
+    `;
+  }
+  function renderRecall(p) {
+    const today = new Date('2026-05-04');
+    const list = state.patients.map(p2 => {
+      const due = p2.recall?.due ? new Date(p2.recall.due) : null;
+      const days = due ? Math.round((due - today) / 86400000) : null;
+      return { p: p2, days };
+    }).filter(x => x.days != null && x.days <= 30).sort((a, b) => a.days - b.days);
+    return `
+      <div class="bg-white rounded border border-slate-200 overflow-hidden">
+        <div class="p-3 border-b border-slate-200">
+          <h2 class="font-semibold text-[13px]">Recall — due in next 30 days</h2>
+          <div class="text-[11px] text-slate-500">${list.length} patients</div>
+        </div>
+        ${list.length === 0 ? '<div class="p-6 text-center text-[12px] text-slate-500">No recalls due.</div>' :
+        `<table class="pp">
+          <thead><tr><th>Patient</th><th>Provider</th><th>Last prophy</th><th>Recall due</th><th>Days</th><th>Phone</th></tr></thead>
+          <tbody>
+            ${list.map(({ p: p2, days }) => `
+              <tr>
+                <td><button class="text-teal-700 hover:underline" data-action="select-patient" data-id="${p2.id}">${escapeHtml(p2.last)}, ${escapeHtml(p2.first)}</button></td>
+                <td>${escapeHtml(p2.provider || '—')}</td>
+                <td class="mono">${fmt.dateShort(p2.lastProphy)}</td>
+                <td class="mono">${fmt.dateShort(p2.recall?.due)}</td>
+                <td class="mono ${days < 0 ? 'text-rose-600 font-semibold' : ''}">${days}</td>
+                <td class="mono">${escapeHtml(p2.phone || '')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>`}
+      </div>
+    `;
+  }
+  function renderDocsStub(p) { return placeholder('Documents', 'Document manager + imaging slot land in a follow-up push.'); }
+  function placeholder(title, msg) { return `<div class="bg-white rounded border border-slate-200 p-8 text-center"><div class="text-slate-900 font-semibold">${title}</div><div class="text-slate-500 text-[12px] mt-1">${msg}</div></div>`; }
+
+  // ── Modal ──────────────────────────────────────────────────────
+  function renderModal() {
+    const m = state.ui.modal;
+    if (!m) return '';
+    const content = ({
+      'new-patient': modalNewPatient,
+      'post-procedure': modalPostProcedure,
+      'post-payment': modalPostPayment,
+      'walkout': modalWalkout,
+      'edit-medical': modalEditMedical,
+      'audit': modalAudit,
+      'help': modalHelp,
+    })[m.type];
+    if (!content) return '';
+    return `
+      <div class="modal-back" data-action="close-modal">
+        <div class="modal ${m.lg ? 'modal-lg' : ''}" onclick="event.stopPropagation()">
+          ${content(m.props || {})}
+        </div>
+      </div>
+    `;
+  }
+
+  function modalNewPatient() {
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>New patient</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-new-patient" class="p-4 grid sm:grid-cols-2 gap-3">
+        <label class="block"><span class="label">First name *</span><input name="first" required class="input" autofocus /></label>
+        <label class="block"><span class="label">Last name *</span><input name="last" required class="input" /></label>
+        <label class="block"><span class="label">DOB</span><input name="dob" type="date" class="input" /></label>
+        <label class="block"><span class="label">Sex</span>
+          <select name="sex" class="input"><option value="">—</option><option>F</option><option>M</option><option>X</option></select>
+        </label>
+        <label class="block sm:col-span-2"><span class="label">Cell phone</span><input name="phone" class="input" placeholder="(903) 555-0000" /></label>
+        <label class="block sm:col-span-2"><span class="label">Email</span><input name="email" type="email" class="input" /></label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add patient</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalPostProcedure() {
+    const p = currentPatient();
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Post procedure — ${escapeHtml(p.last)}, ${escapeHtml(p.first)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-procedure" class="p-4 grid sm:grid-cols-2 gap-3">
+        <div class="sm:col-span-2 relative">
+          <span class="label">ADA code (type to search)</span>
+          <input name="code" autocomplete="off" id="ada-input" data-action="ada-typeahead" class="input mono" placeholder="e.g. D2392 or composite" autofocus />
+          <div id="ada-suggest" class="absolute left-0 right-0 top-full mt-1 bg-white border border-slate-200 rounded shadow-lg max-h-56 overflow-auto z-10 hidden"></div>
+        </div>
+        <label class="block"><span class="label">Tooth</span><input name="tooth" class="input mono" placeholder="e.g. 19" /></label>
+        <label class="block"><span class="label">Surface(s)</span><input name="surface" class="input mono" placeholder="e.g. MO" /></label>
+        <label class="block"><span class="label">Fee</span><input name="fee" class="input mono" placeholder="0.00" /></label>
+        <label class="block"><span class="label">Provider</span>
+          <select name="provider" class="input">
+            <option>Dr. Williams</option>
+            <option>Dr. Patel</option>
+            <option>Hyg. Smith</option>
+            <option>Hyg. Jordan</option>
+          </select>
+        </label>
+        <label class="block sm:col-span-2"><span class="label">Notes</span><textarea name="notes" rows="2" class="input"></textarea></label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Post</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalPostPayment() {
+    const p = currentPatient();
+    const bal = balanceFor(p);
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Post payment — ${escapeHtml(p.last)}, ${escapeHtml(p.first)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-payment" class="p-4 grid grid-cols-2 gap-3">
+        <div class="col-span-2 text-[12px] text-slate-600">Outstanding balance: <span class="mono font-semibold ${bal > 0 ? 'text-rose-700' : 'text-slate-700'}">${fmt.money(bal)}</span></div>
+        <label class="block col-span-2"><span class="label">Amount</span><input name="amount" class="input mono" placeholder="${fmt.money(bal)}" autofocus /></label>
+        <label class="block"><span class="label">Method</span>
+          <select name="method" class="input">
+            <option>Cash</option><option>Card</option><option>Check</option><option>Insurance payment</option>
+          </select>
+        </label>
+        <label class="block"><span class="label">Date</span><input name="date" type="date" value="${'2026-05-04'}" class="input" /></label>
+        <div class="col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Post payment</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalWalkout() {
+    const p = currentPatient();
+    const today = '2026-05-04';
+    const todays = (p.ledger || []).filter(e => (e.date || '').slice(0, 10) === today);
+    const balance = balanceFor(p);
+    const todaysCharges = todays.reduce((a, e) => a + (Number(e.fee) || 0), 0);
+    const todaysPayments = todays.reduce((a, e) => a + (Number(e.payment) || 0), 0);
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Walkout statement</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 text-[12px]">
+        <div class="bg-slate-50 border border-slate-200 rounded p-3 mb-3">
+          <div class="flex justify-between"><span class="font-semibold">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</span><span class="mono">${escapeHtml(p.id)}</span></div>
+          <div class="text-slate-500 mt-1">${escapeHtml(p.address || '')}, ${escapeHtml(p.city || '')} ${escapeHtml(p.state || '')} ${escapeHtml(p.zip || '')}</div>
+        </div>
+        <h3 class="font-semibold text-[12px] mb-2">Today's services (${today})</h3>
+        ${todays.length === 0 ? '<div class="text-slate-500 mb-3">No services posted today.</div>' :
+        `<table class="pp mb-3">
+          <thead><tr><th>Code</th><th>Description</th><th>Tooth</th><th class="text-right">Fee</th></tr></thead>
+          <tbody>
+            ${todays.map(e => `<tr><td class="mono">${escapeHtml(e.code || '')}</td><td>${escapeHtml(e.desc || '')}</td><td class="mono">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td><td class="text-right mono">${fmt.money(e.fee)}</td></tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr class="bg-slate-50"><td colspan="3" class="text-right font-semibold">Today's charges</td><td class="text-right mono font-semibold">${fmt.money(todaysCharges)}</td></tr>
+            ${todaysPayments ? `<tr class="bg-slate-50"><td colspan="3" class="text-right font-semibold">Today's payments</td><td class="text-right mono font-semibold">−${fmt.money(todaysPayments)}</td></tr>` : ''}
+            <tr class="bg-slate-100"><td colspan="3" class="text-right font-semibold">Balance forward</td><td class="text-right mono font-semibold">${fmt.money(balance)}</td></tr>
+          </tfoot>
+        </table>`}
+        <div class="flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button class="btn btn-ghost" data-action="close-modal">Close</button>
+          <button class="btn btn-soft" data-action="walkout-print">Print</button>
+          <button class="btn btn-primary" data-action="walkout-pdf">Download PDF</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function modalEditMedical() {
+    const p = currentPatient();
+    const m = p.medical || {};
+    const list = (a) => (a || []).join('\n');
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Edit medical history</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-medical" class="p-4 grid grid-cols-3 gap-3">
+        <label class="block"><span class="label">Allergies (one per line)</span><textarea name="allergies" rows="6" class="input">${escapeHtml(list(m.allergies))}</textarea></label>
+        <label class="block"><span class="label">Medications</span><textarea name="meds" rows="6" class="input">${escapeHtml(list(m.meds))}</textarea></label>
+        <label class="block"><span class="label">Conditions</span><textarea name="conditions" rows="6" class="input">${escapeHtml(list(m.conditions))}</textarea></label>
+        <label class="col-span-3"><span class="label">Notes</span><textarea name="notes" rows="2" class="input">${escapeHtml(m.notes || '')}</textarea></label>
+        <label class="col-span-3 flex items-center gap-2"><input type="checkbox" name="premedicate" ${m.premedicate ? 'checked' : ''} class="accent-teal-700" /> <span>Requires premedication</span></label>
+        <div class="col-span-3 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalAudit() {
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Session audit log</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 max-h-[60vh] overflow-auto text-[12px]">
+        ${state.audit.length === 0 ? '<div class="text-slate-500">No actions logged yet this session.</div>' :
+        `<ol class="space-y-1.5">
+          ${state.audit.map(a => `<li class="flex gap-2 items-baseline border-b border-slate-100 pb-1"><span class="mono text-[10px] text-slate-400 shrink-0">${a.at.slice(11, 19)}</span><span class="font-medium">${escapeHtml(a.action)}</span> <span class="text-slate-500">${escapeHtml(JSON.stringify(a.metadata || {}).slice(0, 120))}</span></li>`).join('')}
+        </ol>`}
+      </div>
+    `;
+  }
+
+  function modalHelp() {
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center"><h2>Keyboard shortcuts</h2><button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button></div>
+      <div class="p-4 text-[12px] grid grid-cols-2 gap-x-6 gap-y-2">
+        ${[['⌘K','Search patients & ADA codes'],['N','New patient'],['F','Focus search'],['T','Tooth chart'],['L','Ledger'],['S','Schedule'],['P','Post procedure'],['1–8','Switch modules'],['?','This help']].map(([k,d])=>`<div class="flex justify-between"><span>${escapeHtml(d)}</span><kbd>${k}</kbd></div>`).join('')}
+      </div>
+    `;
+  }
+
+  // ── Cmd-K palette ──────────────────────────────────────────────
+  function renderPalette() {
+    if (!state.ui.paletteOpen) return '';
+    return `
+      <div class="modal-back" data-action="close-palette">
+        <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+          <div class="p-2 border-b border-slate-200">
+            <input id="palette-input" data-action="palette-input" autofocus
+              placeholder="Find patient, ADA code, or action..."
+              class="w-full px-3 py-2 text-[14px] focus:outline-none" />
+          </div>
+          <div id="palette-results" class="max-h-[60vh] overflow-auto p-1"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPaletteResults(query = '') {
+    const root = document.getElementById('palette-results');
+    if (!root) return;
+    const q = query.trim().toLowerCase();
+    const out = [];
+    if (q) {
+      // Patients
+      state.patients.forEach(p => {
+        const hay = `${p.first} ${p.last} ${p.id} ${p.phone || ''}`.toLowerCase();
+        if (hay.includes(q)) out.push({
+          kind: 'Patient', label: `${p.last}, ${p.first}`, sub: `${p.id} · ${fmt.age(p.dob)}y`, action: () => { selectPatient(p.id); closePalette(); }
+        });
+      });
+      // ADA codes
+      SEED.adaCodes.forEach(c => {
+        const hay = `${c.code} ${c.desc}`.toLowerCase();
+        if (hay.includes(q)) out.push({
+          kind: 'ADA', label: c.code, sub: c.desc, action: () => { closePalette(); openModal('post-procedure', { prefill: c }); }
+        });
+      });
+      // Actions
+      const actions = [
+        { label: 'New patient', module: null, action: () => { closePalette(); openModal('new-patient'); } },
+        { label: 'Post procedure', action: () => { closePalette(); openModal('post-procedure'); } },
+        { label: 'Walkout statement', action: () => { closePalette(); openModal('walkout'); } },
+        { label: 'Open Chart', action: () => { closePalette(); setModule('chart'); } },
+        { label: 'Open Ledger', action: () => { closePalette(); setModule('ledger'); } },
+        { label: 'Open Schedule', action: () => { closePalette(); setModule('schedule'); } },
+      ];
+      actions.forEach(a => { if (a.label.toLowerCase().includes(q)) out.push({ kind: 'Action', label: a.label, sub: '', action: a.action }); });
+    }
+    root.innerHTML = (out.length === 0 && q
+      ? `<div class="p-4 text-[12px] text-slate-500">No matches.</div>`
+      : (out.slice(0, 16).map((r, i) => `
+        <button data-pi="${i}" class="w-full text-left px-3 py-2 rounded hover:bg-slate-100 flex items-baseline gap-2">
+          <span class="text-[10px] uppercase tracking-wide text-slate-400 w-14 shrink-0">${r.kind}</span>
+          <span class="flex-1 truncate">${escapeHtml(r.label)}</span>
+          <span class="text-[11px] text-slate-500 truncate">${escapeHtml(r.sub)}</span>
+        </button>
+      `).join('')));
+    Array.from(root.querySelectorAll('button[data-pi]')).forEach((b, i) => {
+      b.onclick = () => out[i].action();
+    });
+  }
+
+  // ── ADA typeahead in procedure modal ───────────────────────────
+  function renderAdaSuggestions(q) {
+    const box = document.getElementById('ada-suggest');
+    if (!box) return;
+    const ql = (q || '').trim().toLowerCase();
+    if (!ql) { box.classList.add('hidden'); return; }
+    const matches = SEED.adaCodes.filter(c =>
+      c.code.toLowerCase().includes(ql) || c.desc.toLowerCase().includes(ql)
+    ).slice(0, 8);
+    if (matches.length === 0) { box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    box.innerHTML = matches.map((c, i) => `
+      <button type="button" data-ada-i="${i}" class="w-full text-left px-3 py-2 hover:bg-teal-50 border-b border-slate-100 flex items-baseline gap-2">
+        <span class="mono text-[12px] font-semibold w-14 shrink-0">${c.code}</span>
+        <span class="flex-1 text-[12px]">${escapeHtml(c.desc)}</span>
+        <span class="mono text-[11px] text-slate-500">${fmt.money(c.fee)}</span>
+      </button>
+    `).join('');
+    Array.from(box.querySelectorAll('button[data-ada-i]')).forEach((btn, i) => {
+      btn.onclick = () => {
+        const c = matches[i];
+        const form = box.closest('form');
+        form.code.value = c.code;
+        form.fee.value = c.fee;
+        // Try to fill description in notes if helpful
+        box.classList.add('hidden');
+        form.querySelector('[name="tooth"]').focus();
+      };
+    });
+  }
+
+  // ── Actions ─────────────────────────────────────────────────────
+  function selectPatient(id) {
+    state.currentPatientId = id;
+    saveSoon(); rerender();
+  }
+  function setModule(m) {
+    state.module = m; rerender();
+  }
+  function openModal(type, props = {}) { state.ui.modal = { type, props, lg: type === 'edit-medical' }; rerender(); }
+  function closeModal() { state.ui.modal = null; rerender(); }
+  function openPalette() { state.ui.paletteOpen = true; rerender(); setTimeout(() => renderPaletteResults(''), 0); }
+  function closePalette() { state.ui.paletteOpen = false; rerender(); }
+
+  // ── Event delegation ────────────────────────────────────────────
+  function bindEvents() {
+    const root = document.getElementById('app');
+
+    root.onclick = (ev) => {
+      const t = ev.target.closest('[data-action]');
+      if (!t) return;
+      const a = t.dataset.action;
+      switch (a) {
+        case 'toggle-sidebar': state.ui.sidebarOpen = !state.ui.sidebarOpen; rerender(); break;
+        case 'open-palette': openPalette(); break;
+        case 'close-palette': closePalette(); break;
+        case 'audit-toggle': openModal('audit'); break;
+        case 'set-module': setModule(t.dataset.module); break;
+        case 'select-patient': selectPatient(t.dataset.id); break;
+        case 'patient-filter-tab': state.ui.patientFilterTab = t.dataset.tab; rerender(); break;
+        case 'open-modal': openModal(t.dataset.modal); break;
+        case 'close-modal':
+          if (ev.target === t) closeModal(); break;
+        case 'walkout-print': window.print(); break;
+        case 'walkout-pdf': downloadWalkout(); break;
+        case 'toggle-premed': {
+          const p = currentPatient(); if (p) {
+            p.medical = p.medical || {};
+            p.medical.premedicate = !p.medical.premedicate;
+            saveSoon(); logAction('toggle_premed', { id: p.id, value: p.medical.premedicate }); rerender();
+          }
+          break;
+        }
+        case 'filter-family': {
+          state.ui.patientFilter = ''; state.ui.patientFilterTab = 'all';
+          // Filter list to family members of fid
+          const fid = t.dataset.fid;
+          const members = state.patients.filter(p => p.familyId === fid);
+          if (members.length) {
+            state.ui.patientFilter = members.map(p => p.last).join(' ');
+          }
+          rerender();
+          break;
+        }
+      }
+    };
+
+    root.oninput = (ev) => {
+      const t = ev.target.closest('[data-action]');
+      if (!t) return;
+      if (t.dataset.action === 'patient-filter') {
+        state.ui.patientFilter = t.value;
+        // Cheap re-render of just the list section
+        const grid = document.querySelector('.pp-sidebar > div:nth-child(2)');
+        if (grid) grid.innerHTML = filteredPatients().map(renderPatientRow).join('') || '<div class="p-6 text-center text-[12px] text-slate-500">No matches.</div>';
+      }
+      if (t.dataset.action === 'palette-input') renderPaletteResults(t.value);
+      if (t.dataset.action === 'ada-typeahead') renderAdaSuggestions(t.value);
+    };
+
+    root.onsubmit = (ev) => {
+      const t = ev.target.closest('[data-action]');
+      if (!t) return;
+      const a = t.dataset.action;
+      ev.preventDefault();
+      if (a === 'submit-new-patient') return submitNewPatient(t);
+      if (a === 'submit-procedure')   return submitProcedure(t);
+      if (a === 'submit-payment')     return submitPayment(t);
+      if (a === 'submit-medical')     return submitMedical(t);
+    };
+
+    // Demographics autosave on blur
+    root.addEventListener('blur', (ev) => {
+      const inp = ev.target;
+      if (!inp.matches?.('[data-edit]')) return;
+      const p = currentPatient(); if (!p) return;
+      const key = inp.dataset.edit;
+      if (p[key] !== inp.value) {
+        p[key] = inp.value;
+        saveSoon();
+        logAction('edit_demographics', { id: p.id, field: key });
+        toast(`Saved ${key}`, { tone: 'success', ms: 1200 });
+      }
+    }, true);
+  }
+
+  // ── Submit handlers ─────────────────────────────────────────────
+  function submitNewPatient(form) {
+    const fd = new FormData(form);
+    const id = `PT-${(Math.max(0, ...state.patients.map(p => parseInt(p.id.split('-')[1] || 0))) + 1).toString().padStart(4, '0')}`;
+    const p = {
+      id, mrn: id.split('-')[1],
+      first: fd.get('first'), last: fd.get('last'),
+      dob: fd.get('dob') || null, sex: fd.get('sex') || '',
+      phone: fd.get('phone') || '', email: fd.get('email') || '',
+      address: '', city: 'Longview', state: 'TX', zip: '',
+      insurance: { primary: { carrier: 'Self-pay', plan: '', group: '', max: 0, deductible: 0, used: 0 } },
+      medical: { allergies: ['NKDA'], meds: [], conditions: [], premedicate: false, notes: '' },
+      alerts: [], ledger: [], treatmentPlan: [], chart: {}, perio: null, notes: [],
+      provider: 'Dr. Williams', type: 'new',
+      lastProphy: null, recall: { interval: 6, due: '2026-05-04' },
+    };
+    state.patients.push(p);
+    state.currentPatientId = id;
+    saveSoon();
+    logAction('created_patient', { id, name: `${p.first} ${p.last}` });
+    closeModal();
+    toast(`Added ${p.first} ${p.last}`, { tone: 'success' });
+  }
+
+  function submitProcedure(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const code = String(fd.get('code') || '').toUpperCase().trim();
+    const ada = SEED.adaCodes.find(c => c.code === code);
+    const fee = Number(fd.get('fee')) || (ada?.fee) || 0;
+    const entry = {
+      date: '2026-05-04',
+      code, desc: ada?.desc || code,
+      tooth: fd.get('tooth') || null, surface: fd.get('surface') || null,
+      fee, status: 'completed', provider: fd.get('provider') || 'Dr. Williams',
+      notes: fd.get('notes') || '',
+    };
+    p.ledger = (p.ledger || []).concat([entry]);
+    saveSoon();
+    logAction('posted_procedure', { id: p.id, code, fee });
+    closeModal();
+    toast(`Posted ${code} — ${fmt.money(fee)}`, { tone: 'success' });
+  }
+
+  function submitPayment(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const amt = Number(fd.get('amount')) || 0;
+    if (!amt) return toast('Enter an amount', { tone: 'warn' });
+    p.ledger = (p.ledger || []).concat([{
+      date: fd.get('date') || '2026-05-04',
+      code: '', desc: `Payment — ${fd.get('method')}`,
+      payment: amt, fee: 0,
+    }]);
+    saveSoon();
+    logAction('posted_payment', { id: p.id, amount: amt });
+    closeModal();
+    toast(`Posted ${fmt.money(amt)} payment`, { tone: 'success' });
+  }
+
+  function submitMedical(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const split = (s) => String(s || '').split(/\n+/).map(x => x.trim()).filter(Boolean);
+    p.medical = {
+      allergies: split(fd.get('allergies')),
+      meds: split(fd.get('meds')),
+      conditions: split(fd.get('conditions')),
+      notes: fd.get('notes') || '',
+      premedicate: !!fd.get('premedicate'),
+    };
+    // Auto-update banner alerts: keep existing custom alerts but rebuild medically-derived ones
+    const derived = [];
+    p.medical.allergies.filter(a => a !== 'NKDA').forEach(a => derived.push(`${a} allergy`));
+    if (p.medical.premedicate) derived.push('Premedicate');
+    p.alerts = derived;
+    saveSoon();
+    logAction('edit_medical', { id: p.id });
+    closeModal();
+    toast('Medical history saved', { tone: 'success' });
+  }
+
+  async function downloadWalkout() {
+    const p = currentPatient();
+    const today = '2026-05-04';
+    const todays = (p.ledger || []).filter(e => (e.date || '').slice(0, 10) === today);
+    const balance = balanceFor(p);
+    const charges = todays.reduce((a, e) => a + (Number(e.fee) || 0), 0);
+    const payments = todays.reduce((a, e) => a + (Number(e.payment) || 0), 0);
+    const html = `
+      <div style="font-family:Inter,sans-serif;color:#0f172a;">
+        <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:16px"><tr>
+          <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
+          <span style="color:#64748b;font-size:12px">123 Practice Way · Longview, TX 75601 · (903) 555-0100</span></td>
+          <td style="text-align:right">
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Walkout statement</div>
+            <div style="font-family:monospace;font-size:14px">${today}</div>
+          </td>
+        </tr></table>
+        <table style="width:100%;margin-bottom:16px"><tr>
+          <td><strong>${escapeHtml(p.last)}, ${escapeHtml(p.first)}</strong><br/>
+            <span style="color:#475569;font-size:12px">${escapeHtml(p.address || '')}<br/>${escapeHtml(p.city || '')} ${escapeHtml(p.state || '')} ${escapeHtml(p.zip || '')}</span></td>
+          <td style="text-align:right;font-size:12px">
+            Patient ID: <strong style="font-family:monospace">${escapeHtml(p.id)}</strong><br/>
+            DOB: <span style="font-family:monospace">${fmt.dateShort(p.dob)}</span><br/>
+            Provider: ${escapeHtml(p.provider || '—')}
+          </td>
+        </tr></table>
+        <h3 style="border-bottom:1px solid #cbd5e1;padding-bottom:4px;margin-bottom:6px;font-size:13px">Today's services</h3>
+        ${todays.length === 0 ? '<div style="color:#64748b;font-size:12px;margin-bottom:12px">No services posted today.</div>' :
+        `<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">
+          <thead><tr style="background:#f8fafc"><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Code</th><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Description</th><th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Tooth</th><th align="right" style="padding:6px;border-bottom:1px solid #cbd5e1">Fee</th></tr></thead>
+          <tbody>
+            ${todays.map(e => `<tr><td style="padding:6px;border-bottom:1px solid #f1f5f9;font-family:monospace">${escapeHtml(e.code || '')}</td><td style="padding:6px;border-bottom:1px solid #f1f5f9">${escapeHtml(e.desc || '')}</td><td style="padding:6px;border-bottom:1px solid #f1f5f9;font-family:monospace">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td><td style="padding:6px;border-bottom:1px solid #f1f5f9;text-align:right;font-family:monospace">${fmt.money(e.fee)}</td></tr>`).join('')}
+          </tbody>
+        </table>`}
+        <table style="width:100%;font-size:13px;margin-top:12px;border-top:1px solid #cbd5e1;padding-top:8px">
+          <tr><td>Today's charges</td><td align="right" style="font-family:monospace">${fmt.money(charges)}</td></tr>
+          <tr><td>Today's payments</td><td align="right" style="font-family:monospace">−${fmt.money(payments)}</td></tr>
+          <tr style="font-weight:600;border-top:2px solid #0f172a"><td style="padding-top:6px">Balance forward</td><td align="right" style="font-family:monospace;padding-top:6px">${fmt.money(balance)}</td></tr>
+        </table>
+        <div style="margin-top:32px;font-size:11px;color:#64748b">
+          <p>Patient signature: ____________________________________   Date: __________</p>
+          <p style="margin-top:24px">This statement reflects services rendered on ${today}. Insurance estimate is for informational purposes only.</p>
+        </div>
+      </div>
+    `;
+    try {
+      await exportPDF(html, `walkout-${p.id}-${today}.pdf`);
+      toast('Walkout PDF downloaded', { tone: 'success' });
+    } catch (e) {
+      toast('PDF export failed: ' + e.message, { tone: 'error' });
+    }
+  }
+
+  // ── Keyboard shortcuts ──────────────────────────────────────────
+  function bindKeys() {
+    document.addEventListener('keydown', (ev) => {
+      const tag = (ev.target?.tagName || '').toLowerCase();
+      const inField = tag === 'input' || tag === 'textarea' || tag === 'select';
+      // Cmd-K is universal
+      if ((ev.metaKey || ev.ctrlKey) && (ev.key === 'k' || ev.key === 'K')) {
+        ev.preventDefault(); openPalette(); return;
+      }
+      if (ev.key === 'Escape') {
+        if (state.ui.paletteOpen) { closePalette(); return; }
+        if (state.ui.modal) { closeModal(); return; }
+      }
+      if (inField) return;
+      switch (ev.key.toLowerCase()) {
+        case 'n': openModal('new-patient'); break;
+        case 'f': document.getElementById('patient-search')?.focus(); ev.preventDefault(); break;
+        case 't': setModule('chart'); break;
+        case 'l': setModule('ledger'); break;
+        case 's': setModule('schedule'); break;
+        case 'p': openModal('post-procedure'); break;
+        case '?': openModal('help'); break;
+        case '1': setModule('overview'); break;
+        case '3': setModule('perio'); break;
+        case '4': setModule('tx'); break;
+        case '7': setModule('recall'); break;
+        case '8': setModule('docs'); break;
+      }
+    });
+  }
+
+  // ── Boot ────────────────────────────────────────────────────────
+  async function boot() {
+    try {
+      state.user = await window.PDA.requireAuth?.('/login.html').then(() => window.PDA.getProfile()).catch(() => null);
+    } catch (e) { state.user = null; }
+    await loadState();
+    bindKeys();
+    render();
+    if ((window.PDA?.sb && state.user) || true) {
+      // Show the welcome toast once per session
+      if (!sessionStorage.getItem('pp.greeted')) {
+        toast(`Welcome, ${state.user?.first_name || 'student'}. ${state.patients.length} patients loaded.`, { tone: 'info', ms: 3000 });
+        sessionStorage.setItem('pp.greeted', '1');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
 </body>
 </html>
