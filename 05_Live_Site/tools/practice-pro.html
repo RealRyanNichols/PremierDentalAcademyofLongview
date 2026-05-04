@@ -431,7 +431,7 @@
       case 'chart':    return wrap(renderChart(p));
       case 'ledger':   return wrap(renderLedger(p));
       case 'tx':       return wrap(renderTxPlan(p));
-      case 'perio':    return wrap(renderPerioStub(p));
+      case 'perio':    return wrap(renderPerio(p));
       case 'comms':    return wrap(renderComms(p));
       case 'imaging':  return wrap(renderImaging(p));
       default: return '';
@@ -1267,7 +1267,279 @@
       </div>
     `;
   }
-  function renderPerioStub(p) { return placeholder('Perio', '6-point perio chart ships in a follow-up push.'); }
+  // ── Perio module: real 6-point exam with AAP 2017 staging ──────
+  // Site order: [MB, B, DB, ML, L, DL]
+  const PERIO_SITES = ['MB', 'B', 'DB', 'ML', 'L', 'DL'];
+  const FURCATION_TEETH = new Set([1, 2, 3, 14, 15, 16, 17, 18, 19, 30, 31, 32, 4, 13]); // molars + max first PMs
+  const SKIP_TEETH = new Set([1, 16, 17, 32]); // 3rd molars often missing/extracted; skip in default exam
+
+  function ensurePerio(p) {
+    p.perioExams = p.perioExams || [];
+    if (p.perioExams.length === 0) {
+      p.perioExams.push(makeBlankExam('2026-05-04', p.provider || 'Hyg. Smith'));
+    }
+    if (state.ui.perioExamId == null) state.ui.perioExamId = p.perioExams.length - 1;
+    return p.perioExams[state.ui.perioExamId];
+  }
+
+  function makeBlankExam(date, examiner) {
+    const teeth = {};
+    for (let n = 1; n <= 32; n++) {
+      teeth[n] = { pd: [3,3,3,3,3,3], rec: [0,0,0,0,0,0], bop: [0,0,0,0,0,0], mob: 0, furc: 0, plaque: 0 };
+    }
+    return { id: `pe-${date}-${Math.random().toString(36).slice(2, 6)}`, date, examiner, teeth };
+  }
+
+  function depthClass(pd) {
+    if (!pd) return 'bg-slate-100 text-slate-400';
+    if (pd <= 3) return 'bg-emerald-100 text-emerald-800';
+    if (pd <= 5) return 'bg-amber-200 text-amber-900';
+    return 'bg-rose-300 text-rose-900';
+  }
+
+  function calcPerioStats(exam, p) {
+    let pds = [], cals = [], bops = 0, sites = 0, plaques = 0, teeth = 0;
+    let maxPD = 0, maxCAL = 0, sitesGE4 = 0, sitesGE5 = 0;
+    Object.entries(exam.teeth).forEach(([num, t]) => {
+      const n = +num;
+      // Skip teeth marked "missing" in chart so stats reflect remaining dentition
+      if (p.chart?.[`T-${num}`]?.whole === 'missing') return;
+      teeth++;
+      if (t.plaque) plaques++;
+      for (let i = 0; i < 6; i++) {
+        const pd = +t.pd?.[i] || 0;
+        const rec = +t.rec?.[i] || 0;
+        if (pd > 0) sites++;
+        pds.push(pd);
+        cals.push(pd + rec);
+        if (pd > maxPD) maxPD = pd;
+        if (pd + rec > maxCAL) maxCAL = pd + rec;
+        if (pd >= 4) sitesGE4++;
+        if (pd >= 5) sitesGE5++;
+        if (t.bop?.[i]) bops++;
+      }
+    });
+    const avg = (a) => a.length ? (a.reduce((s, v) => s + v, 0) / a.length) : 0;
+    return {
+      teethExamined: teeth,
+      sites,
+      meanPD: avg(pds),
+      maxPD,
+      bopCount: bops,
+      bopPct: sites ? Math.round(bops / sites * 100) : 0,
+      plaquePct: teeth ? Math.round(plaques / teeth * 100) : 0,
+      meanCAL: avg(cals),
+      maxCAL,
+      sitesGE4, sitesGE5,
+      extentPct: sites ? Math.round(sitesGE4 / sites * 100) : 0,
+    };
+  }
+
+  function aapStageGrade(s, p) {
+    // AAP 2017 staging
+    let stage = 'I';
+    if (s.maxCAL >= 5 || s.maxPD >= 6) stage = 'III';
+    else if (s.maxCAL >= 3 || s.maxPD >= 5) stage = 'II';
+    // Stage IV upgrade if Stage III + complexity (high tooth loss, mobility, etc.)
+    if (stage === 'III') {
+      const missingCount = Object.values(p.chart || {}).filter(t => t.whole === 'missing' || Object.values(t).includes('missing')).length;
+      if (missingCount >= 5) stage = 'IV';
+    }
+    // Extent
+    const extent = s.extentPct >= 30 ? 'Generalized' : 'Localized';
+    // Grade — indirect estimation
+    let grade = 'B';
+    const meds = (p.medical?.meds || []).join(' ').toLowerCase();
+    const conds = (p.medical?.conditions || []).join(' ').toLowerCase();
+    const isSmoker = /smok|tobacco|nicotine|vape/i.test(meds + ' ' + conds + ' ' + (p.medical?.notes || ''));
+    const hasDM = /diabet|t2dm|t1dm|a1c\s*[8-9]|a1c\s*[1-9][0-9]/i.test(meds + ' ' + conds + ' ' + (p.medical?.notes || ''));
+    if (isSmoker || hasDM) grade = 'C';
+    if (s.bopPct < 10 && s.maxPD <= 4) grade = 'A';
+    return { stage, grade, extent, isSmoker, hasDM };
+  }
+
+  function renderPerio(p) {
+    const exam = ensurePerio(p);
+    const stats = calcPerioStats(exam, p);
+    const sg = aapStageGrade(stats, p);
+    const examIdx = state.ui.perioExamId;
+    const arch = state.ui.perioArch || 'both';
+    return `
+      <div class="space-y-4">
+        <!-- Header strip -->
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-3">
+          <div class="flex items-center gap-2">
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Exam date</label>
+              <input data-action="perio-date" type="date" value="${exam.date}" class="text-[12px] mono px-2 py-1 border border-slate-300 rounded" />
+            </div>
+            <div>
+              <label class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Examiner</label>
+              <input data-action="perio-examiner" value="${escapeHtml(exam.examiner || '')}" class="text-[12px] px-2 py-1 border border-slate-300 rounded w-40" />
+            </div>
+            ${p.perioExams.length > 1 ? `
+              <div>
+                <label class="block text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Switch exam</label>
+                <select data-action="perio-switch" class="text-[12px] px-2 py-1 border border-slate-300 rounded">
+                  ${p.perioExams.map((e, i) => `<option value="${i}" ${i === examIdx ? 'selected' : ''}>${e.date} — ${escapeHtml(e.examiner || '')}</option>`).join('')}
+                </select>
+              </div>` : ''}
+          </div>
+          <span class="flex-1"></span>
+          <div class="flex gap-1.5">
+            <button class="btn btn-soft" data-action="perio-arch" data-a="max" title="Maxillary only">Max</button>
+            <button class="btn btn-soft" data-action="perio-arch" data-a="mand" title="Mandibular only">Mand</button>
+            <button class="btn btn-soft ${arch === 'both' ? '!bg-slate-900 !text-white' : ''}" data-action="perio-arch" data-a="both" title="Both arches">Both</button>
+            <span class="w-1"></span>
+            <button class="btn btn-soft" data-action="perio-fill-healthy" title="Set all sites to 3mm, no BOP">Fill healthy</button>
+            <button class="btn btn-primary" data-action="perio-new-exam">＋ New exam</button>
+          </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="grid grid-cols-2 sm:grid-cols-7 gap-2">
+          ${perioStatTile('Mean PD', stats.meanPD.toFixed(1) + 'mm', 'avg pocket depth')}
+          ${perioStatTile('Max PD', stats.maxPD + 'mm', 'deepest site', stats.maxPD >= 6 ? 'rose' : stats.maxPD >= 5 ? 'amber' : 'emerald')}
+          ${perioStatTile('BOP', stats.bopPct + '%', stats.bopCount + ' bleeding sites', stats.bopPct >= 30 ? 'rose' : stats.bopPct >= 10 ? 'amber' : 'emerald')}
+          ${perioStatTile('Plaque', stats.plaquePct + '%', 'teeth with plaque', stats.plaquePct >= 30 ? 'rose' : stats.plaquePct >= 15 ? 'amber' : 'emerald')}
+          ${perioStatTile('Mean CAL', stats.meanCAL.toFixed(1) + 'mm', 'attachment loss')}
+          ${perioStatTile('Stage', sg.stage, sg.extent + ', max CAL ' + stats.maxCAL + 'mm', sg.stage === 'IV' ? 'rose' : sg.stage === 'III' ? 'rose' : sg.stage === 'II' ? 'amber' : 'emerald')}
+          ${perioStatTile('Grade', sg.grade, sg.grade === 'C' ? 'rapid risk' : sg.grade === 'A' ? 'slow' : 'moderate', sg.grade === 'C' ? 'rose' : sg.grade === 'A' ? 'emerald' : 'amber')}
+        </div>
+
+        <!-- Interpretation -->
+        <div class="bg-white rounded border border-slate-200 p-3 text-[12px]">
+          <div class="font-semibold mb-1">Clinical interpretation</div>
+          ${perioInterpretation(stats, sg, p)}
+        </div>
+
+        <!-- Chart legend -->
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-3 text-[11px]">
+          <span class="text-slate-500 font-semibold uppercase tracking-wide">Legend:</span>
+          <span class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-emerald-100 border border-emerald-200"></span> 1–3mm healthy</span>
+          <span class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-amber-200"></span> 4–5mm warning</span>
+          <span class="flex items-center gap-1"><span class="w-4 h-4 rounded bg-rose-300"></span> 6+ mm severe</span>
+          <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-rose-600"></span> BOP</span>
+          <span class="text-slate-400">Click a depth → edit. Tab moves to next site.</span>
+        </div>
+
+        <!-- The chart -->
+        <div class="bg-white rounded border border-slate-200 p-3 overflow-x-auto">
+          <div class="min-w-[920px]">
+            ${(arch === 'both' || arch === 'max') ? renderPerioArch(exam, p, 'max', PERM_TEETH.slice(0, 16)) : ''}
+            ${(arch === 'both') ? '<div class="h-3"></div>' : ''}
+            ${(arch === 'both' || arch === 'mand') ? renderPerioArch(exam, p, 'mand', PERM_TEETH.slice(16).reverse()) : ''}
+          </div>
+        </div>
+
+        <!-- Action footer -->
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap gap-2 items-center justify-between text-[12px]">
+          <div class="text-slate-500">Recommended recall interval based on Stage ${sg.stage}, Grade ${sg.grade}: <strong class="text-slate-900">${recallForStage(sg.stage, sg.grade)} months</strong></div>
+          <div class="flex gap-2">
+            <button class="btn btn-soft" data-action="perio-print">⎙ Print exam</button>
+            <button class="btn btn-soft" data-action="perio-save-recall" title="Update patient's recall interval">Apply recall interval</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function perioStatTile(label, value, sub, tone) {
+    const toneCls = tone === 'rose' ? 'text-rose-700' : tone === 'amber' ? 'text-amber-700' : tone === 'emerald' ? 'text-emerald-700' : 'text-slate-900';
+    return `
+      <div class="bg-white rounded border border-slate-200 p-2">
+        <div class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">${escapeHtml(label)}</div>
+        <div class="text-xl mono font-semibold ${toneCls}">${escapeHtml(value)}</div>
+        <div class="text-[10px] text-slate-500">${escapeHtml(sub)}</div>
+      </div>
+    `;
+  }
+
+  function perioInterpretation(stats, sg, p) {
+    const lines = [];
+    if (stats.maxPD >= 6) lines.push(`<span class="text-rose-700 font-semibold">Severe pocketing</span> — ${stats.sitesGE5} sites ≥ 5mm. Consider periodontal therapy (D4341 SRP) and re-evaluation in 4–6 weeks.`);
+    else if (stats.maxPD >= 5) lines.push(`<span class="text-amber-700 font-semibold">Moderate pocketing</span> — ${stats.sitesGE4} sites ≥ 4mm. SRP indicated for affected quadrants.`);
+    else lines.push(`<span class="text-emerald-700 font-semibold">No significant pocketing</span> — all sites ≤ 4mm. Maintain routine prophy.`);
+
+    if (stats.bopPct >= 30) lines.push(`Bleeding on probing is <span class="text-rose-700 font-semibold">${stats.bopPct}%</span> — active gingival inflammation. Reinforce home care.`);
+    else if (stats.bopPct >= 10) lines.push(`BOP at ${stats.bopPct}%. Localized inflammation — review interproximal hygiene.`);
+    else if (stats.sites > 0) lines.push(`BOP only ${stats.bopPct}% — clinically stable.`);
+
+    if (stats.plaquePct >= 30) lines.push(`Plaque present on ${stats.plaquePct}% of teeth. Strong link to gingivitis — patient education indicated.`);
+
+    lines.push(`<span class="font-semibold">AAP 2017: Stage ${sg.stage}${sg.stage !== 'I' ? ', Grade ' + sg.grade : ''}, ${sg.extent.toLowerCase()}.</span>`);
+    if (sg.isSmoker) lines.push(`Smoking documented — Grade upgraded to C (rapid risk). Smoking cessation counselling recommended.`);
+    if (sg.hasDM) lines.push(`Diabetes documented — bidirectional risk with periodontitis. Coordinate with PCP on glycemic control.`);
+    if (sg.stage === 'IV') lines.push(`<span class="text-rose-700 font-semibold">Stage IV</span> — multiple missing teeth + advanced disease. Comprehensive rehabilitation indicated; refer to periodontist.`);
+
+    return `<ul class="list-disc pl-5 space-y-0.5 text-slate-700">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+  }
+
+  function recallForStage(stage, grade) {
+    if (stage === 'I') return 6;
+    if (stage === 'II') return 4;
+    if (grade === 'C') return 3;
+    return 3;
+  }
+
+  function renderPerioArch(exam, p, archId, teethRange) {
+    return `
+      <div>
+        <div class="text-[11px] uppercase tracking-wider text-slate-500 font-semibold mb-1 ${archId === 'mand' ? 'mt-2' : ''}">${archId === 'max' ? 'Maxillary (buccal up · lingual down)' : 'Mandibular (lingual up · buccal down)'}</div>
+        <div class="grid gap-px" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+          ${teethRange.map(n => renderPerioTooth(exam, p, n, archId)).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderPerioTooth(exam, p, num, archId) {
+    const t = exam.teeth[num] || { pd: [], rec: [], bop: [], mob: 0, furc: 0, plaque: 0 };
+    const isMissing = p.chart?.[`T-${num}`]?.whole === 'missing'
+      || Object.values(p.chart?.[`T-${num}`] || {}).includes('missing');
+    if (isMissing) {
+      return `<div class="border-l border-slate-200 px-0.5">
+        <div class="text-center text-[10px] mono text-slate-400">${num}</div>
+        <div class="h-24 flex items-center justify-center text-slate-300 text-[10px]">missing</div>
+      </div>`;
+    }
+    // Site cell helper
+    const cell = (i, kind) => {
+      const v = +t[kind]?.[i] || 0;
+      const cls = kind === 'pd' ? depthClass(v) : (v ? 'bg-rose-500' : 'bg-slate-100');
+      const display = kind === 'pd' ? (v || '·') : (v ? '●' : '');
+      return `<button class="${cls} text-[10px] mono w-full h-5 leading-none rounded-sm hover:ring-1 hover:ring-teal-500"
+        data-action="perio-edit" data-tooth="${num}" data-i="${i}" data-kind="${kind}" tabindex="0" title="${kind.toUpperCase()} site ${PERIO_SITES[i]}: ${v}">${display}</button>`;
+    };
+    // For maxillary: buccal sites on top (0-2 = MB,B,DB), lingual on bottom (3-5 = ML,L,DL)
+    // For mandibular: lingual on top, buccal on bottom (flipped)
+    const top = archId === 'max' ? [0,1,2] : [3,4,5];
+    const bot = archId === 'max' ? [3,4,5] : [0,1,2];
+    const showFurc = FURCATION_TEETH.has(num);
+    return `
+      <div class="border-l border-slate-200 px-0.5">
+        <div class="text-center text-[10px] mono ${SKIP_TEETH.has(num) ? 'text-slate-400' : 'text-slate-700 font-semibold'}">${num}</div>
+        <!-- Top row: 3 PD + 3 BOP -->
+        <div class="grid grid-cols-3 gap-px">${top.map(i => cell(i, 'pd')).join('')}</div>
+        <div class="grid grid-cols-3 gap-px mt-px">${top.map(i => cell(i, 'bop')).join('')}</div>
+        <!-- Tooth body indicator -->
+        <div class="my-0.5 h-2 bg-slate-100 rounded-sm flex items-center justify-center text-[9px] mono">
+          ${t.mob ? `<span class="text-rose-700" title="Mobility ${t.mob}">M${t.mob}</span>` : ''}
+          ${showFurc && t.furc ? `<span class="text-amber-700 ml-1" title="Furcation ${t.furc}">F${t.furc}</span>` : ''}
+          ${t.plaque ? `<span class="text-slate-700 ml-1" title="Plaque present">P</span>` : ''}
+        </div>
+        <!-- Bottom row: 3 BOP + 3 PD -->
+        <div class="grid grid-cols-3 gap-px">${bot.map(i => cell(i, 'bop')).join('')}</div>
+        <div class="grid grid-cols-3 gap-px mt-px">${bot.map(i => cell(i, 'pd')).join('')}</div>
+        <!-- Mob/Furc quick toggles -->
+        <div class="grid grid-cols-3 gap-px mt-1 text-[9px]">
+          <button class="bg-slate-50 hover:bg-slate-200 rounded-sm py-0.5" data-action="perio-cycle" data-tooth="${num}" data-k="mob" title="Mobility 0–3">m${t.mob}</button>
+          ${showFurc ? `<button class="bg-slate-50 hover:bg-slate-200 rounded-sm py-0.5" data-action="perio-cycle" data-tooth="${num}" data-k="furc" title="Furcation 0–3">f${t.furc}</button>` : '<span></span>'}
+          <button class="bg-slate-50 hover:bg-slate-200 rounded-sm py-0.5" data-action="perio-cycle" data-tooth="${num}" data-k="plaque" title="Plaque toggle">${t.plaque ? '✓' : 'p'}</button>
+        </div>
+      </div>
+    `;
+  }
   function renderScheduleStub(p) { return placeholder('Schedule', 'Op grid + drag-drop schedule ships in a follow-up push.'); }
   function renderTxPlan(p) {
     const tp = p.treatmentPlan || [];
@@ -1987,6 +2259,71 @@
           break;
         }
         case 'imaging-tab': state.ui.imagingTab = t.dataset.t; rerender(); break;
+        case 'perio-arch': state.ui.perioArch = t.dataset.a; rerender(); break;
+        case 'perio-switch': state.ui.perioExamId = +(ev.target.value || 0); rerender(); break;
+        case 'perio-new-exam': {
+          const p = currentPatient(); if (!p) break;
+          p.perioExams = p.perioExams || [];
+          p.perioExams.push(makeBlankExam('2026-05-04', p.provider || 'Hyg. Smith'));
+          state.ui.perioExamId = p.perioExams.length - 1;
+          saveSoon(); logAction('perio_new_exam', { id: p.id }); rerender();
+          toast('New perio exam started', { tone: 'success' });
+          break;
+        }
+        case 'perio-fill-healthy': {
+          const p = currentPatient(); if (!p) break;
+          const exam = ensurePerio(p);
+          for (let n = 1; n <= 32; n++) {
+            exam.teeth[n] = { pd: [3,3,3,3,3,3], rec: [0,0,0,0,0,0], bop: [0,0,0,0,0,0], mob: 0, furc: 0, plaque: 0 };
+          }
+          saveSoon(); logAction('perio_fill_healthy'); rerender();
+          toast('Filled with healthy baseline', { tone: 'success' });
+          break;
+        }
+        case 'perio-cycle': {
+          const p = currentPatient(); if (!p) break;
+          const exam = ensurePerio(p);
+          const tn = t.dataset.tooth, k = t.dataset.k;
+          exam.teeth[tn] = exam.teeth[tn] || { pd:[3,3,3,3,3,3], rec:[0,0,0,0,0,0], bop:[0,0,0,0,0,0], mob:0, furc:0, plaque:0 };
+          if (k === 'plaque') exam.teeth[tn].plaque = exam.teeth[tn].plaque ? 0 : 1;
+          else exam.teeth[tn][k] = ((+exam.teeth[tn][k] || 0) + 1) % 4;
+          saveSoon(); rerender(); break;
+        }
+        case 'perio-edit': {
+          const p = currentPatient(); if (!p) break;
+          const exam = ensurePerio(p);
+          const tn = t.dataset.tooth, idx = +t.dataset.i, kind = t.dataset.kind;
+          exam.teeth[tn] = exam.teeth[tn] || { pd:[3,3,3,3,3,3], rec:[0,0,0,0,0,0], bop:[0,0,0,0,0,0], mob:0, furc:0, plaque:0 };
+          if (kind === 'bop') {
+            exam.teeth[tn].bop[idx] = exam.teeth[tn].bop[idx] ? 0 : 1;
+            saveSoon(); rerender();
+          } else {
+            // PD: prompt for value (works on mobile + desktop)
+            const cur = exam.teeth[tn].pd[idx] || 3;
+            const v = prompt(`Tooth #${tn} site ${PERIO_SITES[idx]} — pocket depth (mm):`, cur);
+            if (v == null) return;
+            const n = Math.max(0, Math.min(15, parseInt(v) || 0));
+            exam.teeth[tn].pd[idx] = n;
+            saveSoon();
+            logAction('perio_edit_pd', { tooth: tn, site: PERIO_SITES[idx], value: n });
+            rerender();
+          }
+          break;
+        }
+        case 'perio-print': window.print(); break;
+        case 'perio-save-recall': {
+          const p = currentPatient(); if (!p) break;
+          const exam = ensurePerio(p);
+          const stats = calcPerioStats(exam, p);
+          const sg = aapStageGrade(stats, p);
+          const interval = recallForStage(sg.stage, sg.grade);
+          p.recall = p.recall || {};
+          p.recall.interval = interval;
+          saveSoon(); logAction('perio_apply_recall', { interval, stage: sg.stage });
+          toast(`Recall interval set to ${interval} months`, { tone: 'success' });
+          rerender();
+          break;
+        }
         case 'imaging-take':
         case 'imaging-print': {
           const tab = state.ui.imagingTab || 'fmx';
@@ -2090,6 +2427,13 @@
       if (t.id === 'quick-text-body') {
         const c = document.getElementById('text-counter');
         if (c) c.textContent = t.value.length;
+      }
+      if (t.dataset.action === 'perio-date' || t.dataset.action === 'perio-examiner') {
+        const p = currentPatient(); if (!p) return;
+        const exam = ensurePerio(p);
+        if (t.dataset.action === 'perio-date') exam.date = t.value;
+        else exam.examiner = t.value;
+        saveSoon();
       }
     };
 

@@ -10,6 +10,51 @@ practice management software they'll see on day one in any East Texas office.
 
 ---
 
+## Practice Pro v2 — Real perio chart (AAP 2017) — 2026-05-04
+
+The clinical credibility module. Open the Perio ribbon tab on any
+patient.
+
+### 6-point exam, 32 teeth
+- Six pocket-depth sites per tooth: MB, B, DB, ML, L, DL.
+- Buccal sites on top, lingual on bottom (flipped on the
+  mandibular arch the way real perio charts are drawn).
+- Click any depth cell → numeric prompt (works on iPad / phone).
+- Color coding: 1–3mm green (healthy), 4–5mm amber (warning),
+  6+mm rose (severe).
+- Click any BOP cell → toggles bleeding-on-probing dot.
+- Per-tooth controls: Mobility 0–3 (cycle), Furcation 0–3 (cycle,
+  only shown on molars + max 1st premolars), Plaque indicator.
+- Skips teeth marked as missing in the chart so stats reflect the
+  remaining dentition.
+
+### Live AAP 2017 staging + grading
+- Mean PD, Max PD, BOP %, Plaque %, Mean CAL, Max CAL — all
+  recalculated on every keystroke.
+- Stage I / II / III / IV computed from CAL + PD thresholds and
+  upgraded to IV on Stage III patients with ≥ 5 missing teeth.
+- Localized vs Generalized extent based on % sites ≥ 4mm.
+- Grade A/B/C — defaults to B, automatically upgrades to C if
+  the chart documents smoking or diabetes (parsed from medical
+  meds/conditions/notes).
+- Plain-English clinical interpretation generated below the stats:
+  pocketing severity, bleeding pattern, plaque load, AAP
+  classification, smoking-cessation prompt, diabetes referral
+  prompt, Stage IV periodontist referral.
+
+### Workflow
+- Multiple exams per patient (date-stamped). Switch between exams
+  to compare visits.
+- "Fill healthy" button — pre-fills 3mm everywhere as a starting
+  baseline.
+- "Apply recall interval" — uses Stage + Grade to compute
+  evidence-based recare cadence (3 / 4 / 6 mo) and updates the
+  patient's recall.
+- Print-ready exam page (browser print).
+- Examiner + date editable inline.
+
+---
+
 ## Practice Pro v2 — Imaging suite (FMX + photos + docs) — 2026-05-04
 
 Replaces the old Documents stub with a proper imaging hub —
