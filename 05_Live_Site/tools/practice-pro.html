@@ -143,7 +143,7 @@
     user: null,
     patients: [],
     currentPatientId: null,
-    module: 'overview',     // overview | chart | perio | tx | ledger | schedule | recall | docs
+    module: 'today',        // today | overview | chart | perio | tx | ledger | comms | schedule | recall | docs
     ui: {
       sidebarOpen: window.matchMedia('(min-width: 769px)').matches,
       isMobile: window.matchMedia('(max-width: 768px)').matches,
@@ -162,10 +162,13 @@
     const saved = await Store.load(APP);
     if (saved && Array.isArray(saved.patients) && saved.patients.length) {
       state.patients = saved.patients;
+      // Migrate older saves to add new fields
+      state.patients.forEach(p => { p.comms = p.comms || []; });
       state.currentPatientId = saved.currentPatientId || saved.patients[0].id;
     } else {
       // First run: seed
       state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.patients.forEach(p => { p.comms = p.comms || []; });
       state.currentPatientId = state.patients[0].id;
       await Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
       Store.log(APP, 'seeded_patients', { count: state.patients.length });
@@ -254,14 +257,16 @@
   // ── Ribbon (module switcher) ───────────────────────────────────
   function renderRibbon() {
     const tabs = [
-      { id: 'overview', label: 'Overview', shortcut: '1' },
+      { id: 'today',    label: 'Today',    shortcut: 'H' },
+      { id: 'overview', label: 'Patient',  shortcut: '1' },
       { id: 'chart',    label: 'Chart',    shortcut: 'T' },
       { id: 'perio',    label: 'Perio',    shortcut: '3' },
       { id: 'tx',       label: 'Tx Plan',  shortcut: '4' },
       { id: 'ledger',   label: 'Ledger',   shortcut: 'L' },
+      { id: 'comms',    label: 'Comms',    shortcut: 'C' },
       { id: 'schedule', label: 'Schedule', shortcut: 'S' },
       { id: 'recall',   label: 'Recall',   shortcut: '7' },
-      { id: 'docs',     label: 'Documents',shortcut: '8' },
+      { id: 'docs',     label: 'Docs',     shortcut: '8' },
     ];
     return `
       <div class="pp-ribbon px-3 flex items-center gap-1 overflow-x-auto">
@@ -367,6 +372,8 @@
 
   // ── Patient banner (sticky, with name/photo/alerts) ────────────
   function renderBanner() {
+    // Hide banner for practice-wide modules
+    if (['today','schedule','recall'].includes(state.module)) return '';
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">No patient selected.</div>`;
     const ins = p.insurance?.primary;
@@ -412,17 +419,20 @@
 
   // ── Module router ──────────────────────────────────────────────
   function renderModule() {
+    const wrap = (inner) => `<div class="pp-fade p-4 max-w-[1400px] mx-auto">${inner}</div>`;
+    // Practice-wide modules don't require a selected patient
+    if (state.module === 'today')    return wrap(renderToday());
+    if (state.module === 'recall')   return wrap(renderRecall());
+    if (state.module === 'schedule') return wrap(renderScheduleStub());
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
-    const wrap = (inner) => `<div class="pp-fade p-4 max-w-[1400px] mx-auto">${inner}</div>`;
     switch (state.module) {
       case 'overview': return wrap(renderOverview(p));
       case 'chart':    return wrap(renderChart(p));
       case 'ledger':   return wrap(renderLedger(p));
       case 'tx':       return wrap(renderTxPlan(p));
       case 'perio':    return wrap(renderPerioStub(p));
-      case 'schedule': return wrap(renderScheduleStub(p));
-      case 'recall':   return wrap(renderRecall(p));
+      case 'comms':    return wrap(renderComms(p));
       case 'docs':     return wrap(renderDocsStub(p));
       default: return '';
     }
@@ -549,6 +559,258 @@
   }
 
   // ── Stubs for modules that arrive in subsequent pushes ─────────
+  // ── Today dashboard (practice-wide hub) ────────────────────────
+  function renderToday() {
+    const today = new Date('2026-05-04');
+    const todayStr = '2026-05-04';
+
+    // Recall buckets
+    const buckets = { overdue: [], dueSoon: [], dueLater: [] };
+    state.patients.forEach(p => {
+      const due = p.recall?.due ? new Date(p.recall.due) : null;
+      if (!due) return;
+      const days = Math.round((due - today) / 86400000);
+      if (days < -7) buckets.overdue.push({ p, days });
+      else if (days <= 14) buckets.dueSoon.push({ p, days });
+      else if (days <= 60) buckets.dueLater.push({ p, days });
+    });
+    buckets.overdue.sort((a, b) => a.days - b.days);
+    buckets.dueSoon.sort((a, b) => a.days - b.days);
+
+    // Outstanding A/R
+    const arBuckets = { current: 0, d30: 0, d60: 0, d90: 0, total: 0, count: 0 };
+    state.patients.forEach(p => {
+      const bal = balanceFor(p);
+      if (bal <= 0) return;
+      arBuckets.count++;
+      arBuckets.total += bal;
+      // Use most recent ledger entry date as proxy
+      const lastDate = (p.ledger || []).map(e => e.date).filter(Boolean).sort().slice(-1)[0];
+      const ageDays = lastDate ? Math.round((today - new Date(lastDate)) / 86400000) : 0;
+      if (ageDays >= 90)      arBuckets.d90 += bal;
+      else if (ageDays >= 60) arBuckets.d60 += bal;
+      else if (ageDays >= 30) arBuckets.d30 += bal;
+      else                    arBuckets.current += bal;
+    });
+
+    // Today's production (from ledger)
+    let prodToday = 0, prodMonth = 0;
+    const monthPrefix = todayStr.slice(0, 7);
+    state.patients.forEach(p => (p.ledger || []).forEach(e => {
+      const fee = Number(e.fee) || 0;
+      if (e.date === todayStr) prodToday += fee;
+      if ((e.date || '').startsWith(monthPrefix)) prodMonth += fee;
+    }));
+    const prodGoalDay = 2500;
+    const prodGoalMonth = 50000;
+
+    // Treatment-plan opportunity
+    let unscheduledTx = 0;
+    state.patients.forEach(p => (p.treatmentPlan || []).forEach(l => unscheduledTx += (Number(l.fee) || 0)));
+
+    // Today's appointments — derived from patients with a recall due today/this week + their provider
+    const todaysAppts = state.patients
+      .filter(p => p.recall?.due)
+      .map(p => ({ p, when: new Date(p.recall.due), days: Math.round((new Date(p.recall.due) - today) / 86400000) }))
+      .filter(x => x.days >= -3 && x.days <= 3)
+      .sort((a, b) => a.days - b.days)
+      .slice(0, 6);
+
+    // Recent activity feed from session audit
+    const feed = state.audit.slice(0, 8);
+
+    return `
+      <div class="space-y-4">
+        <!-- Header strip -->
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h1 class="text-2xl font-semibold text-slate-900 leading-tight">Good ${greeting()}, ${escapeHtml(state.user?.first_name || 'Student')}.</h1>
+            <p class="text-[12px] text-slate-500 mt-0.5">${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} · Premier Dental Academy of Longview</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button class="btn btn-soft" data-action="open-modal" data-modal="new-patient">＋ New patient</button>
+            <button class="btn btn-soft" data-action="open-palette">⌘K Search</button>
+            <button class="btn btn-primary" data-action="set-module" data-module="recall">Recall pipeline →</button>
+          </div>
+        </div>
+
+        <!-- KPI tiles -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          ${tile('Today\'s production', fmt.money(prodToday), `Goal ${fmt.money(prodGoalDay)}`, Math.min(100, (prodToday / prodGoalDay) * 100), 'teal')}
+          ${tile('This month', fmt.money(prodMonth), `Goal ${fmt.money(prodGoalMonth)}`, Math.min(100, (prodMonth / prodGoalMonth) * 100), 'sky')}
+          ${tile('Outstanding A/R', fmt.money(arBuckets.total), `${arBuckets.count} accounts`, null, 'rose')}
+          ${tile('Unscheduled tx', fmt.money(unscheduledTx), 'Across treatment plans', null, 'amber')}
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <!-- Recall pipeline -->
+          <section class="bg-white rounded border border-slate-200 lg:col-span-2 overflow-hidden">
+            <header class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <div>
+                <h2 class="font-semibold text-[13px]">Recall pipeline</h2>
+                <p class="text-[11px] text-slate-500 mt-0.5">Click any patient to follow up. Send a recall text in two taps.</p>
+              </div>
+              <button class="text-[11px] text-teal-700 hover:underline" data-action="set-module" data-module="recall">Open pipeline →</button>
+            </header>
+            <div class="grid grid-cols-3 divide-x divide-slate-200 text-center text-[12px]">
+              <div class="p-3"><div class="text-2xl font-semibold text-rose-600">${buckets.overdue.length}</div><div class="text-slate-500 text-[11px] uppercase tracking-wide">Overdue</div></div>
+              <div class="p-3"><div class="text-2xl font-semibold text-amber-600">${buckets.dueSoon.length}</div><div class="text-slate-500 text-[11px] uppercase tracking-wide">Due ≤ 14 days</div></div>
+              <div class="p-3"><div class="text-2xl font-semibold text-slate-600">${buckets.dueLater.length}</div><div class="text-slate-500 text-[11px] uppercase tracking-wide">Due 15–60 days</div></div>
+            </div>
+            <ul class="divide-y divide-slate-100 max-h-72 overflow-auto">
+              ${[...buckets.overdue.slice(0, 4), ...buckets.dueSoon.slice(0, 4)].map(({p, days}) => `
+                <li class="px-4 py-2 flex items-center gap-3 hover:bg-slate-50">
+                  <img src="${avatarUrl(p.first + ' ' + p.last)}" class="w-8 h-8 rounded-full" alt="">
+                  <button class="flex-1 text-left" data-action="select-patient-and-go" data-id="${p.id}" data-module="overview">
+                    <div class="text-[13px] font-medium text-slate-900">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</div>
+                    <div class="text-[11px] text-slate-500">${escapeHtml(p.provider || '')} · ${escapeHtml(p.phone || '')}</div>
+                  </button>
+                  <span class="chip ${days < 0 ? 'chip-rose' : days < 7 ? 'chip-amber' : 'chip-slate'} mono">${days < 0 ? `${-days}d late` : `${days}d`}</span>
+                  <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="quick-text-recall" data-id="${p.id}" title="Send a recall text">Text</button>
+                </li>
+              `).join('') || '<li class="p-6 text-center text-[12px] text-slate-500">All caught up — no patients due.</li>'}
+            </ul>
+          </section>
+
+          <!-- A/R aging -->
+          <section class="bg-white rounded border border-slate-200 overflow-hidden">
+            <header class="px-4 py-3 border-b border-slate-200">
+              <h2 class="font-semibold text-[13px]">A/R aging</h2>
+              <p class="text-[11px] text-slate-500 mt-0.5">Outstanding receivables.</p>
+            </header>
+            <div class="p-4">
+              ${arRow('Current',     arBuckets.current, arBuckets.total, 'bg-emerald-500')}
+              ${arRow('30+ days',    arBuckets.d30,     arBuckets.total, 'bg-amber-500')}
+              ${arRow('60+ days',    arBuckets.d60,     arBuckets.total, 'bg-orange-500')}
+              ${arRow('90+ days',    arBuckets.d90,     arBuckets.total, 'bg-rose-600')}
+              <div class="border-t border-slate-200 mt-3 pt-3 flex justify-between text-[13px] font-semibold"><span>Total</span><span class="mono">${fmt.money(arBuckets.total)}</span></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-4">
+          <!-- Today's appointments (derived) -->
+          <section class="bg-white rounded border border-slate-200 lg:col-span-2 overflow-hidden">
+            <header class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+              <h2 class="font-semibold text-[13px]">Around today</h2>
+              <button class="text-[11px] text-teal-700 hover:underline" data-action="set-module" data-module="schedule">Open schedule →</button>
+            </header>
+            ${todaysAppts.length === 0
+              ? '<div class="p-6 text-[12px] text-slate-500 text-center">Nothing scheduled in the next 3 days.</div>'
+              : `<table class="pp"><thead><tr><th>When</th><th>Patient</th><th>Provider</th><th>Reason</th><th></th></tr></thead><tbody>${todaysAppts.map(({p, when, days}) => `
+                <tr>
+                  <td class="mono">${days === 0 ? 'Today' : days < 0 ? `${-days}d ago` : `${days}d`}</td>
+                  <td><button class="text-teal-700 hover:underline" data-action="select-patient-and-go" data-id="${p.id}" data-module="overview">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</button></td>
+                  <td>${escapeHtml(p.provider || '')}</td>
+                  <td>Recall — ${escapeHtml(p.type || '—')}</td>
+                  <td class="text-right"><button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="quick-text-recall" data-id="${p.id}">Confirm</button></td>
+                </tr>`).join('')}</tbody></table>`}
+          </section>
+
+          <!-- Activity feed -->
+          <section class="bg-white rounded border border-slate-200 overflow-hidden">
+            <header class="px-4 py-3 border-b border-slate-200">
+              <h2 class="font-semibold text-[13px]">Practice activity</h2>
+            </header>
+            <ul class="p-3 space-y-2 max-h-72 overflow-auto">
+              ${feed.length === 0 ? '<li class="text-[12px] text-slate-500">Take an action to see it here.</li>' :
+              feed.map(a => `
+                <li class="flex items-start gap-2">
+                  <span class="mono text-[10px] text-slate-400 mt-0.5 shrink-0 w-12">${a.at.slice(11, 16)}</span>
+                  <span class="text-[12px] text-slate-700"><span class="font-medium capitalize">${escapeHtml(a.action.replace(/_/g, ' '))}</span> <span class="text-slate-400">${escapeHtml(JSON.stringify(a.metadata || {}).slice(0, 60))}</span></span>
+                </li>
+              `).join('')}
+            </ul>
+          </section>
+        </div>
+      </div>
+    `;
+  }
+
+  function greeting() {
+    const h = new Date().getHours();
+    if (h < 12) return 'morning';
+    if (h < 17) return 'afternoon';
+    return 'evening';
+  }
+  function tile(label, value, sub, pct, tone) {
+    const toneCls = ({ teal: 'bg-teal-600', sky: 'bg-sky-600', rose: 'bg-rose-600', amber: 'bg-amber-500' })[tone];
+    return `
+      <div class="bg-white rounded border border-slate-200 p-3">
+        <div class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">${escapeHtml(label)}</div>
+        <div class="text-2xl font-semibold mono text-slate-900 mt-1">${escapeHtml(value)}</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">${escapeHtml(sub)}</div>
+        ${pct != null ? `<div class="h-1.5 bg-slate-100 rounded mt-2"><div class="h-1.5 rounded ${toneCls}" style="width:${pct}%"></div></div>` : ''}
+      </div>
+    `;
+  }
+  function arRow(label, amount, total, color) {
+    const pct = total > 0 ? Math.round((amount / total) * 100) : 0;
+    return `
+      <div class="mb-2">
+        <div class="flex justify-between text-[12px]"><span>${label}</span><span class="mono">${fmt.money(amount)}</span></div>
+        <div class="h-1.5 bg-slate-100 rounded mt-1"><div class="h-1.5 rounded ${color}" style="width:${pct}%"></div></div>
+      </div>
+    `;
+  }
+
+  // ── Communications module ──────────────────────────────────────
+  const COMM_KINDS = [
+    { id: 'sms',       label: 'Text message', icon: '💬', color: 'sky' },
+    { id: 'call',      label: 'Phone call',   icon: '📞', color: 'emerald' },
+    { id: 'email',     label: 'Email',        icon: '✉️', color: 'slate' },
+    { id: 'voicemail', label: 'Voicemail',    icon: '🎙️', color: 'amber' },
+    { id: 'note',      label: 'Note',         icon: '📝', color: 'slate' },
+    { id: 'inperson',  label: 'In person',    icon: '👋', color: 'emerald' },
+  ];
+
+  function renderComms(p) {
+    const comms = (p.comms || []).slice().sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    const filter = state.ui.commsFilter || 'all';
+    const filtered = filter === 'all' ? comms : comms.filter(c => c.kind === filter);
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap gap-2 items-center">
+          <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-2">Filter</span>
+          <button data-action="comms-filter" data-f="all" class="px-2 py-1 text-[11px] rounded ${filter === 'all' ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}">All (${comms.length})</button>
+          ${COMM_KINDS.map(k => `<button data-action="comms-filter" data-f="${k.id}" class="px-2 py-1 text-[11px] rounded ${filter === k.id ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}">${k.icon} ${k.label}</button>`).join('')}
+          <span class="flex-1"></span>
+          <button class="btn btn-soft" data-action="open-modal" data-modal="quick-text" data-id="${p.id}">💬 Send text</button>
+          <button class="btn btn-soft" data-action="open-modal" data-modal="log-call" data-id="${p.id}">📞 Log call</button>
+          <button class="btn btn-primary" data-action="open-modal" data-modal="log-comm" data-id="${p.id}">＋ Log communication</button>
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 overflow-hidden">
+          ${filtered.length === 0
+            ? '<div class="p-8 text-center text-[12px] text-slate-500">No communications logged${filter !== "all" ? " of this type" : ""}. Use a button above to log one.</div>'
+            : `<ul class="divide-y divide-slate-100">${filtered.map(c => commRow(c)).join('')}</ul>`}
+        </div>
+      </div>
+    `;
+  }
+
+  function commRow(c) {
+    const k = COMM_KINDS.find(k => k.id === c.kind) || { icon: '•', label: c.kind, color: 'slate' };
+    const dirChip = c.direction ? `<span class="chip chip-${c.direction === 'in' ? 'sky' : 'emerald'}">${c.direction === 'in' ? '◀ inbound' : '▶ outbound'}</span>` : '';
+    return `
+      <li class="p-3 hover:bg-slate-50">
+        <div class="flex items-start gap-3">
+          <div class="text-xl shrink-0 select-none" aria-hidden="true">${k.icon}</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-baseline gap-2 flex-wrap">
+              <span class="text-[12px] font-semibold capitalize">${escapeHtml(k.label)}</span>
+              ${dirChip}
+              <span class="text-[11px] text-slate-500 mono">${c.at ? new Date(c.at).toLocaleString() : ''}</span>
+              <span class="text-[11px] text-slate-500">by ${escapeHtml(c.by || '—')}</span>
+            </div>
+            <div class="text-[12px] text-slate-700 mt-1 whitespace-pre-wrap">${escapeHtml(c.text || '')}</div>
+            ${c.subject ? `<div class="text-[11px] text-slate-500 mt-1">Subject: ${escapeHtml(c.subject)}</div>` : ''}
+          </div>
+        </div>
+      </li>
+    `;
+  }
+
   // ── Chart module: odontogram with surface marking ──────────────
   const MARKERS = [
     { id: '',          label: 'Erase',      color: '#ffffff', text: 'Clear' },
@@ -826,35 +1088,70 @@
       </div>
     `;
   }
-  function renderRecall(p) {
+  function renderRecall() {
     const today = new Date('2026-05-04');
-    const list = state.patients.map(p2 => {
-      const due = p2.recall?.due ? new Date(p2.recall.due) : null;
+    const filter = state.ui.recallFilter || 'all';   // all | overdue | due30 | due60
+    const all = state.patients.map(p => {
+      const due = p.recall?.due ? new Date(p.recall.due) : null;
       const days = due ? Math.round((due - today) / 86400000) : null;
-      return { p: p2, days };
-    }).filter(x => x.days != null && x.days <= 30).sort((a, b) => a.days - b.days);
+      const lastTouch = (p.comms || []).map(c => c.at).sort().slice(-1)[0];
+      return { p, days, lastTouch };
+    }).filter(x => x.days != null);
+    const list = all.filter(x =>
+      filter === 'all'    ? x.days <= 60 :
+      filter === 'overdue'? x.days < 0 :
+      filter === 'due30'  ? x.days >= 0 && x.days <= 30 :
+      filter === 'due60'  ? x.days > 30 && x.days <= 60 : true
+    ).sort((a, b) => a.days - b.days);
+    const counts = {
+      overdue: all.filter(x => x.days < 0).length,
+      due30:   all.filter(x => x.days >= 0 && x.days <= 30).length,
+      due60:   all.filter(x => x.days > 30 && x.days <= 60).length,
+    };
+    const tabs = [
+      { id: 'all',     label: `All (${counts.overdue + counts.due30 + counts.due60})` },
+      { id: 'overdue', label: `Overdue (${counts.overdue})`,     cls: 'text-rose-700' },
+      { id: 'due30',   label: `Due in 30 days (${counts.due30})`,cls: 'text-amber-700' },
+      { id: 'due60',   label: `Due in 31–60 days (${counts.due60})`, cls: 'text-slate-700' },
+    ];
     return `
-      <div class="bg-white rounded border border-slate-200 overflow-hidden">
-        <div class="p-3 border-b border-slate-200">
-          <h2 class="font-semibold text-[13px]">Recall — due in next 30 days</h2>
-          <div class="text-[11px] text-slate-500">${list.length} patients</div>
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap gap-2 items-center">
+          <h1 class="text-lg font-semibold text-slate-900 mr-3">Recall pipeline</h1>
+          ${tabs.map(t => `
+            <button data-action="recall-filter" data-f="${t.id}" class="px-2 py-1 text-[11px] rounded ${filter === t.id ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'} ${t.cls || ''}">${t.label}</button>
+          `).join('')}
+          <span class="flex-1"></span>
+          <button class="btn btn-soft" data-action="recall-export" title="Export the visible list as CSV">⬇ Export CSV</button>
         </div>
-        ${list.length === 0 ? '<div class="p-6 text-center text-[12px] text-slate-500">No recalls due.</div>' :
-        `<table class="pp">
-          <thead><tr><th>Patient</th><th>Provider</th><th>Last prophy</th><th>Recall due</th><th>Days</th><th>Phone</th></tr></thead>
-          <tbody>
-            ${list.map(({ p: p2, days }) => `
-              <tr>
-                <td><button class="text-teal-700 hover:underline" data-action="select-patient" data-id="${p2.id}">${escapeHtml(p2.last)}, ${escapeHtml(p2.first)}</button></td>
-                <td>${escapeHtml(p2.provider || '—')}</td>
-                <td class="mono">${fmt.dateShort(p2.lastProphy)}</td>
-                <td class="mono">${fmt.dateShort(p2.recall?.due)}</td>
-                <td class="mono ${days < 0 ? 'text-rose-600 font-semibold' : ''}">${days}</td>
-                <td class="mono">${escapeHtml(p2.phone || '')}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>`}
+
+        <div class="bg-white rounded border border-slate-200 overflow-hidden">
+          ${list.length === 0 ? '<div class="p-6 text-center text-[12px] text-slate-500">No patients in this bucket.</div>' :
+          `<table class="pp">
+            <thead><tr><th>Patient</th><th>Provider</th><th>Last prophy</th><th>Recall due</th><th>Days</th><th>Last contact</th><th>Phone</th><th class="text-right">Actions</th></tr></thead>
+            <tbody>
+              ${list.map(({ p: p2, days, lastTouch }) => `
+                <tr>
+                  <td>
+                    <button class="text-teal-700 hover:underline font-medium" data-action="select-patient-and-go" data-id="${p2.id}" data-module="overview">${escapeHtml(p2.last)}, ${escapeHtml(p2.first)}</button>
+                    <div class="text-[10px] text-slate-500 capitalize">${escapeHtml(p2.type || '')}</div>
+                  </td>
+                  <td class="text-[12px]">${escapeHtml(p2.provider || '—')}</td>
+                  <td class="mono text-[12px]">${fmt.dateShort(p2.lastProphy)}</td>
+                  <td class="mono text-[12px]">${fmt.dateShort(p2.recall?.due)}</td>
+                  <td><span class="chip mono ${days < 0 ? 'chip-rose' : days < 14 ? 'chip-amber' : 'chip-slate'}">${days < 0 ? `${-days}d late` : `${days}d`}</span></td>
+                  <td class="text-[11px] text-slate-500 mono">${lastTouch ? new Date(lastTouch).toLocaleDateString() : '—'}</td>
+                  <td class="mono text-[12px]">${escapeHtml(p2.phone || '')}</td>
+                  <td class="text-right whitespace-nowrap">
+                    <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="quick-text-recall" data-id="${p2.id}" title="Send recall text">💬</button>
+                    <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="open-modal" data-modal="log-call" data-id="${p2.id}" title="Log a call">📞</button>
+                    <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="recall-mark-contacted" data-id="${p2.id}" title="Mark contacted">✓</button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>`}
+        </div>
       </div>
     `;
   }
@@ -873,6 +1170,9 @@
       'edit-medical': modalEditMedical,
       'audit': modalAudit,
       'help': modalHelp,
+      'quick-text': modalQuickText,
+      'log-call': modalLogCall,
+      'log-comm': modalLogComm,
     })[m.type];
     if (!content) return '';
     return `
@@ -1027,6 +1327,88 @@
     `;
   }
 
+  function modalQuickText(props) {
+    const p = state.patients.find(x => x.id === props.id) || currentPatient();
+    const name = p ? p.preferred || p.first : 'patient';
+    const recallDate = p?.recall?.due ? fmt.date(p.recall.due) : 'soon';
+    const tpl = props.template || `Hi ${name}! This is Premier Dental reminding you it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 555-0100. Thanks!`;
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Send text — ${escapeHtml(p?.last)}, ${escapeHtml(p?.first)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-quick-text" data-pid="${p?.id || ''}" class="p-4 space-y-3">
+        <div class="text-[12px] text-slate-500">To <span class="mono text-slate-800">${escapeHtml(p?.phone || '')}</span></div>
+        <div class="flex gap-1 flex-wrap text-[11px]">
+          <button type="button" data-action="text-template" data-tpl="recall" class="btn btn-soft !py-1 !px-2 !text-[11px]">Recall reminder</button>
+          <button type="button" data-action="text-template" data-tpl="confirm" class="btn btn-soft !py-1 !px-2 !text-[11px]">Confirm appointment</button>
+          <button type="button" data-action="text-template" data-tpl="postop" class="btn btn-soft !py-1 !px-2 !text-[11px]">Post-op check-in</button>
+          <button type="button" data-action="text-template" data-tpl="balance" class="btn btn-soft !py-1 !px-2 !text-[11px]">Balance reminder</button>
+        </div>
+        <textarea name="text" id="quick-text-body" rows="5" maxlength="320" class="input">${escapeHtml(tpl)}</textarea>
+        <div class="flex justify-between items-center">
+          <span class="text-[11px] text-slate-500"><span id="text-counter">${tpl.length}</span>/320 chars</span>
+          <div class="flex gap-2">
+            <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+            <button type="submit" class="btn btn-primary">Send text</button>
+          </div>
+        </div>
+        <div class="text-[10px] text-slate-400">In a real practice this connects to your texting provider (Twilio, Weave, etc.). For training, the message is logged to the patient's communications.</div>
+      </form>
+    `;
+  }
+
+  function modalLogCall(props) {
+    const p = state.patients.find(x => x.id === props.id) || currentPatient();
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Log call — ${escapeHtml(p?.last)}, ${escapeHtml(p?.first)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-log-call" data-pid="${p?.id || ''}" class="p-4 space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <label><span class="label">Direction</span>
+            <select name="direction" class="input"><option value="out">Outbound (we called)</option><option value="in">Inbound (they called)</option></select>
+          </label>
+          <label><span class="label">Outcome</span>
+            <select name="outcome" class="input"><option>Connected</option><option>Voicemail</option><option>No answer</option><option>Busy</option><option>Wrong number</option></select>
+          </label>
+        </div>
+        <label class="block"><span class="label">Notes</span><textarea name="text" rows="4" class="input" placeholder="What was discussed?" autofocus></textarea></label>
+        <div class="flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Log call</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalLogComm(props) {
+    const p = state.patients.find(x => x.id === props.id) || currentPatient();
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Log communication — ${escapeHtml(p?.last)}, ${escapeHtml(p?.first)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-log-comm" data-pid="${p?.id || ''}" class="p-4 space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <label><span class="label">Type</span>
+            <select name="kind" class="input">${COMM_KINDS.map(k => `<option value="${k.id}">${k.icon} ${k.label}</option>`).join('')}</select>
+          </label>
+          <label><span class="label">Direction</span>
+            <select name="direction" class="input"><option value="out">Outbound</option><option value="in">Inbound</option><option value="">N/A</option></select>
+          </label>
+        </div>
+        <label class="block"><span class="label">Subject (optional)</span><input name="subject" class="input" /></label>
+        <label class="block"><span class="label">Notes</span><textarea name="text" rows="4" class="input" autofocus></textarea></label>
+        <div class="flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -1046,7 +1428,7 @@
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center"><h2>Keyboard shortcuts</h2><button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button></div>
       <div class="p-4 text-[12px] grid grid-cols-2 gap-x-6 gap-y-2">
-        ${[['⌘K','Search patients & ADA codes'],['N','New patient'],['F','Focus search'],['T','Tooth chart'],['L','Ledger'],['S','Schedule'],['P','Post procedure'],['1–8','Switch modules'],['?','This help']].map(([k,d])=>`<div class="flex justify-between"><span>${escapeHtml(d)}</span><kbd>${k}</kbd></div>`).join('')}
+        ${[['⌘K','Search patients & ADA codes'],['H','Today dashboard'],['1','Patient overview'],['T','Tooth chart'],['3','Perio'],['4','Tx Plan'],['L','Ledger'],['C','Comms log'],['S','Schedule'],['7','Recall pipeline'],['8','Documents'],['N','New patient'],['F','Focus search'],['P','Post procedure'],['?','This help']].map(([k,d])=>`<div class="flex justify-between"><span>${escapeHtml(d)}</span><kbd>${k}</kbd></div>`).join('')}
       </div>
     `;
   }
@@ -1220,6 +1602,48 @@
           }
           break;
         }
+        case 'select-patient-and-go': {
+          state.currentPatientId = t.dataset.id;
+          if (t.dataset.module) state.module = t.dataset.module;
+          if (state.ui.isMobile) state.ui.sidebarOpen = false;
+          state.ui.toothContext = null;
+          saveSoon(); rerender();
+          break;
+        }
+        case 'comms-filter': state.ui.commsFilter = t.dataset.f; rerender(); break;
+        case 'recall-filter': state.ui.recallFilter = t.dataset.f; rerender(); break;
+        case 'recall-export': exportRecallCSV(); break;
+        case 'recall-mark-contacted': {
+          const p = state.patients.find(x => x.id === t.dataset.id);
+          if (!p) break;
+          appendComm(p, { kind: 'note', direction: 'out', text: 'Marked contacted from recall pipeline.' });
+          toast(`Marked ${p.first} as contacted`, { tone: 'success' });
+          rerender();
+          break;
+        }
+        case 'quick-text-recall': {
+          openModal('quick-text', { id: t.dataset.id, template: 'recall' });
+          break;
+        }
+        case 'text-template': {
+          const tpl = t.dataset.tpl;
+          const ta = document.getElementById('quick-text-body');
+          const p = state.patients.find(x => x.id === document.querySelector('[data-action="submit-quick-text"]')?.dataset.pid) || currentPatient();
+          const name = p?.preferred || p?.first || 'patient';
+          const recallDate = p?.recall?.due ? fmt.date(p.recall.due) : 'soon';
+          const balance = p ? balanceFor(p) : 0;
+          const bodies = {
+            recall:  `Hi ${name}! This is Premier Dental — it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 555-0100. Thanks!`,
+            confirm: `Hi ${name}, confirming your appointment with us. Reply C to confirm, R to reschedule, or call (903) 555-0100.`,
+            postop:  `Hi ${name}, it's Premier Dental checking in after your visit. How are you feeling? Any questions or concerns? Reply or call (903) 555-0100.`,
+            balance: `Hi ${name}, you have an outstanding balance of ${fmt.money(balance)} with Premier Dental. Pay online or call (903) 555-0100. Thanks!`,
+          };
+          if (ta && bodies[tpl]) {
+            ta.value = bodies[tpl];
+            const c = document.getElementById('text-counter'); if (c) c.textContent = ta.value.length;
+          }
+          break;
+        }
         case 'set-marker': state.ui.chartMarker = t.dataset.marker; rerender(); break;
         case 'chart-reset': {
           if (!confirm('Clear all chart markings for this patient?')) break;
@@ -1278,6 +1702,10 @@
       }
       if (t.dataset.action === 'palette-input') renderPaletteResults(t.value);
       if (t.dataset.action === 'ada-typeahead') renderAdaSuggestions(t.value);
+      if (t.id === 'quick-text-body') {
+        const c = document.getElementById('text-counter');
+        if (c) c.textContent = t.value.length;
+      }
     };
 
     root.onsubmit = (ev) => {
@@ -1289,6 +1717,9 @@
       if (a === 'submit-procedure')   return submitProcedure(t);
       if (a === 'submit-payment')     return submitPayment(t);
       if (a === 'submit-medical')     return submitMedical(t);
+      if (a === 'submit-quick-text')  return submitQuickText(t);
+      if (a === 'submit-log-call')    return submitLogCall(t);
+      if (a === 'submit-log-comm')    return submitLogComm(t);
     };
 
     // Tooth surface paint (delegated to root)
@@ -1398,6 +1829,85 @@
     toast(`Posted ${fmt.money(amt)} payment`, { tone: 'success' });
   }
 
+  function appendComm(p, c) {
+    p.comms = p.comms || [];
+    p.comms.unshift(Object.assign({
+      at: new Date().toISOString(),
+      by: state.user?.first_name || 'Student',
+    }, c));
+    saveSoon();
+    logAction('comm_logged', { id: p.id, kind: c.kind, direction: c.direction });
+  }
+
+  function submitQuickText(form) {
+    const id = form.dataset.pid;
+    const p = state.patients.find(x => x.id === id);
+    if (!p) return;
+    const text = form.text.value.trim();
+    if (!text) return toast('Type a message first', { tone: 'warn' });
+    appendComm(p, { kind: 'sms', direction: 'out', text });
+    closeModal();
+    toast(`Text sent to ${p.first}`, { tone: 'success' });
+    rerender();
+  }
+
+  function submitLogCall(form) {
+    const id = form.dataset.pid;
+    const p = state.patients.find(x => x.id === id);
+    if (!p) return;
+    const fd = new FormData(form);
+    const text = `${fd.get('outcome')}. ${fd.get('text') || ''}`.trim();
+    appendComm(p, { kind: 'call', direction: fd.get('direction'), text });
+    closeModal();
+    toast('Call logged', { tone: 'success' });
+    rerender();
+  }
+
+  function submitLogComm(form) {
+    const id = form.dataset.pid;
+    const p = state.patients.find(x => x.id === id);
+    if (!p) return;
+    const fd = new FormData(form);
+    appendComm(p, {
+      kind: fd.get('kind'),
+      direction: fd.get('direction') || '',
+      subject: fd.get('subject') || '',
+      text: fd.get('text') || '',
+    });
+    closeModal();
+    toast('Communication logged', { tone: 'success' });
+    rerender();
+  }
+
+  function exportRecallCSV() {
+    const today = new Date('2026-05-04');
+    const filter = state.ui.recallFilter || 'all';
+    const all = state.patients.map(p => {
+      const due = p.recall?.due ? new Date(p.recall.due) : null;
+      const days = due ? Math.round((due - today) / 86400000) : null;
+      return { p, days };
+    }).filter(x => x.days != null);
+    const list = all.filter(x =>
+      filter === 'all'    ? x.days <= 60 :
+      filter === 'overdue'? x.days < 0 :
+      filter === 'due30'  ? x.days >= 0 && x.days <= 30 :
+      filter === 'due60'  ? x.days > 30 && x.days <= 60 : true
+    );
+    const csvRows = [['Patient', 'DOB', 'Provider', 'Last prophy', 'Recall due', 'Days', 'Phone', 'Email']];
+    list.forEach(({ p, days }) => csvRows.push([
+      `${p.last}, ${p.first}`, p.dob || '', p.provider || '',
+      p.lastProphy || '', p.recall?.due || '', days, p.phone || '', p.email || '',
+    ]));
+    const csv = csvRows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `recall-${filter}-2026-05-04.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Recall list exported', { tone: 'success' });
+  }
+
   function submitMedical(form) {
     const p = currentPatient(); if (!p) return;
     const fd = new FormData(form);
@@ -1493,6 +2003,8 @@
         case 't': setModule('chart'); break;
         case 'l': setModule('ledger'); break;
         case 's': setModule('schedule'); break;
+        case 'h': setModule('today'); break;
+        case 'c': setModule('comms'); break;
         case 'p': openModal('post-procedure'); break;
         case '?': openModal('help'); break;
         case '1': setModule('overview'); break;
