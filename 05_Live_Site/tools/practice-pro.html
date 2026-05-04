@@ -1112,86 +1112,191 @@
   // Crown SVG path is the only thing that gets surface-marked; the root stays neutral.
   // For maxillary teeth (1-16) we draw root-up, crown-down (the way you see them in patient's mouth).
   // For mandibular teeth (17-32) we flip so crown faces up.
-  function toothShapes(cls) {
-    // returns { rootPath, crownPath, surfaceZones, occlusalDecor }
-    // Coordinates are in a 40-wide × 60-tall crown box (root above is 0-16, crown is 16-72).
+  // Anatomically-detailed tooth SVGs.
+  // viewBox is 0 0 56 110 — root at top (y 4–48), gingival line at y=50, crown at y=50–106.
+  // Crown SVG path is the only thing that gets surface-marked; root + gingiva are decorative.
+  // Maxillary teeth (1-16) draw root-up / crown-down (the anatomical convention).
+  // Mandibular teeth (17-32) get vertically flipped at render time.
+  function toothShapes(cls, num) {
+    // Posterior maxillary molars have 3 roots (2 buccal + 1 palatal); mandibular have 2.
+    // We render a simplified 2-root view for both since the chart is a buccal-view diagram.
     if (cls === 'molar') {
       return {
-        rootPath: 'M11,2 Q11,12 15,16 L25,16 Q29,12 29,2 L26,2 L25,12 L23,2 L21,12 L19,2 L17,12 L15,2 L14,12 Z',
-        crownPath: 'M5,16 Q5,16 7,17 L33,17 Q35,17 35,18 L35,55 Q35,72 32,72 Q30,75 28,72 Q26,75 24,72 Q22,75 20,72 Q18,75 16,72 Q14,75 12,72 Q10,75 8,72 Q5,72 5,55 Z',
+        // Two distinct roots branching from the cervical line
+        roots: [
+          'M 18 48 Q 14 28 12 8 Q 12 4 14 4 Q 17 4 18 8 Q 22 28 22 48 Z',  // mesial root
+          'M 34 48 Q 38 28 40 8 Q 40 4 42 4 Q 39 4 38 8 Q 34 28 34 48 Z', // distal root
+          'M 22 48 Q 24 32 26 24 Q 28 32 30 48 Z',                           // central (palatal hint)
+        ],
+        crown: [
+          // Crown body — wider than root, narrows slightly toward occlusal edge,
+          // with 4 rounded cusp bumps along the chewing surface
+          'M 8 50',
+          'Q 6 50 6 54',                         // cervical bulge mesial
+          'L 6 90',
+          'Q 6 102 12 104',                       // mesial corner
+          'Q 14 108 17 105',                      // MB cusp
+          'Q 20 109 23 105',                      // ML cusp
+          'Q 26 110 28 106',                      // central groove dip
+          'Q 31 110 34 106',                      // DL cusp
+          'Q 37 110 40 105',                      // DB cusp
+          'Q 44 102 44 90',                       // distal corner
+          'L 44 54',
+          'Q 44 50 42 50',                        // cervical bulge distal
+          'Z'
+        ].join(' '),
         zones: {
-          M: 'M5,18 L5,72 L12,72 L12,18 Z',
-          D: 'M28,18 L28,72 L35,72 L35,18 Z',
-          B: 'M5,16 L35,16 L35,30 L5,30 Z',
-          L: 'M5,58 L35,58 L35,72 L5,72 Z',
-          O: 'M12,30 L28,30 L28,58 L12,58 Z',
+          M: 'M 6 52 L 6 105 L 14 108 L 14 52 Z',
+          D: 'M 36 52 L 36 108 L 44 105 L 44 52 Z',
+          B: 'M 6 50 L 44 50 L 44 70 L 6 70 Z',
+          L: 'M 6 92 L 44 92 L 44 108 L 6 108 Z',
+          O: 'M 14 70 L 36 70 L 36 92 L 14 92 Z',
         },
-        cusps: [{x:8,y:70},{x:14,y:73},{x:20,y:70},{x:26,y:73},{x:32,y:70}],
+        cusps: [
+          { x: 17, y: 105 }, { x: 23, y: 104 }, { x: 28, y: 106 }, { x: 34, y: 104 }, { x: 40, y: 104 }
+        ],
+        groove: 'M 14 82 L 40 82',
       };
     }
     if (cls === 'premolar') {
       return {
-        rootPath: 'M16,2 L16,16 L24,16 L24,2 Q22,8 20,2 Q18,8 16,2 Z',
-        crownPath: 'M7,16 L33,16 L35,30 L35,56 Q35,72 30,72 Q25,75 20,72 Q15,75 10,72 Q5,72 5,56 L5,30 Z',
+        roots: [
+          // single root with hint of bifurcation at apex
+          'M 18 48 Q 14 30 18 8 Q 22 4 25 4 Q 28 4 32 8 Q 36 30 32 48 L 28 48 Q 30 30 28 16 Q 26 30 26 48 Q 26 30 22 16 Q 20 30 22 48 Z',
+        ],
+        crown: [
+          'M 10 50',
+          'Q 8 50 8 54',
+          'L 8 88',
+          'Q 8 100 14 104',
+          'Q 17 109 22 105',                      // buccal cusp (taller)
+          'Q 25 110 28 106',                      // central groove
+          'Q 32 109 36 105',                      // lingual cusp
+          'Q 42 100 42 88',
+          'L 42 54',
+          'Q 42 50 40 50',
+          'Z'
+        ].join(' '),
         zones: {
-          M: 'M5,18 L5,72 L13,72 L13,18 Z',
-          D: 'M27,18 L27,72 L35,72 L35,18 Z',
-          B: 'M5,16 L35,16 L35,32 L5,32 Z',
-          L: 'M5,58 L35,58 L35,72 L5,72 Z',
-          O: 'M13,32 L27,32 L27,58 L13,58 Z',
+          M: 'M 8 52 L 8 105 L 16 107 L 16 52 Z',
+          D: 'M 34 52 L 34 107 L 42 105 L 42 52 Z',
+          B: 'M 8 50 L 42 50 L 42 72 L 8 72 Z',
+          L: 'M 8 92 L 42 92 L 42 108 L 8 108 Z',
+          O: 'M 16 72 L 34 72 L 34 92 L 16 92 Z',
         },
-        cusps: [{x:14,y:72},{x:26,y:72}],
+        cusps: [{ x: 22, y: 105 }, { x: 36, y: 105 }],
+        groove: 'M 18 88 L 36 88',
       };
     }
     if (cls === 'canine') {
       return {
-        rootPath: 'M17,1 L23,1 L23,16 L17,16 Z',
-        crownPath: 'M9,16 L31,16 L34,28 L33,52 Q31,72 25,72 L20,76 L15,72 Q9,72 7,52 L6,28 Z',
+        roots: [
+          // Single very long root — the longest in the human mouth
+          'M 22 48 Q 20 24 24 4 Q 25 2 26 2 Q 28 2 29 4 Q 32 24 30 48 Z',
+        ],
+        crown: [
+          'M 10 50',
+          'Q 8 50 8 54',
+          'L 8 80',                                // narrows toward incisal third
+          'Q 8 92 11 100',
+          'Q 14 106 18 104',                       // mesial slope of cusp
+          'Q 22 110 26 110',                       // POINTED CUSP TIP
+          'Q 30 110 34 104',                       // distal slope of cusp
+          'Q 38 106 41 100',
+          'Q 44 92 44 80',
+          'L 44 54',
+          'Q 44 50 42 50',
+          'Z'
+        ].join(' '),
         zones: {
-          M: 'M6,18 L6,76 L13,76 L13,18 Z',
-          D: 'M27,18 L27,76 L34,76 L34,18 Z',
-          B: 'M6,16 L34,16 L34,32 L6,32 Z',
-          L: 'M6,58 L34,58 L34,72 L6,72 Z',
-          I: 'M13,32 L27,32 L27,58 L13,58 Z',
+          M: 'M 8 52 L 8 100 L 18 106 L 18 52 Z',
+          D: 'M 34 52 L 34 106 L 44 100 L 44 52 Z',
+          B: 'M 8 50 L 44 50 L 44 75 L 8 75 Z',
+          L: 'M 8 95 L 44 95 L 44 110 L 8 110 Z',
+          I: 'M 18 75 L 34 75 L 34 95 L 18 95 Z',
         },
-        cusps: [{x:20,y:76, peak: true}],
+        cusps: [{ x: 26, y: 110, peak: true }],
+        cingulum: 'M 22 90 Q 26 95 30 90',
       };
     }
     if (cls === 'central') {
       return {
-        rootPath: 'M16,1 L24,1 L24,16 L16,16 Z',
-        crownPath: 'M7,16 L33,16 L35,28 L34,56 Q34,68 30,72 L10,72 Q6,68 6,56 L5,28 Z',
+        roots: [
+          'M 22 48 Q 20 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 32 26 30 48 Z',
+        ],
+        crown: [
+          'M 10 50',
+          'Q 8 50 8 54',
+          'L 8 88',
+          'Q 8 100 12 104',
+          'L 14 106',                              // mesioincisal angle (sharper than canine)
+          'Q 18 108 22 107',                       // mamelon dip
+          'Q 26 109 30 107',                       // mamelon dip
+          'L 38 106',                              // distoincisal angle
+          'Q 44 100 44 88',
+          'L 44 54',
+          'Q 44 50 42 50',
+          'Z'
+        ].join(' '),
         zones: {
-          M: 'M5,18 L5,72 L13,72 L13,18 Z',
-          D: 'M27,18 L27,72 L35,72 L35,18 Z',
-          B: 'M5,16 L35,16 L35,32 L5,32 Z',
-          L: 'M5,58 L35,58 L35,72 L5,72 Z',
-          I: 'M13,32 L27,32 L27,58 L13,58 Z',
+          M: 'M 8 52 L 8 105 L 16 107 L 16 52 Z',
+          D: 'M 34 52 L 34 107 L 44 105 L 44 52 Z',
+          B: 'M 8 50 L 44 50 L 44 75 L 8 75 Z',
+          L: 'M 8 92 L 44 92 L 44 108 L 8 108 Z',
+          I: 'M 16 75 L 34 75 L 34 92 L 16 92 Z',
         },
-        edge: { y: 72 },
+        mamelons: [{ x: 18, y: 105 }, { x: 26, y: 106 }, { x: 34, y: 105 }],
+        cingulum: 'M 22 90 Q 26 95 30 90',
       };
     }
-    // lateral incisor — slightly narrower than central
+    // lateral incisor — narrower
     return {
-      rootPath: 'M17,1 L23,1 L23,16 L17,16 Z',
-      crownPath: 'M9,16 L31,16 L33,28 L32,56 Q32,68 28,72 L12,72 Q8,68 8,56 L7,28 Z',
+      roots: [
+        'M 22 48 Q 21 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 31 26 30 48 Z',
+      ],
+      crown: [
+        'M 13 50',
+        'Q 11 50 11 54',
+        'L 11 88',
+        'Q 11 100 14 104',
+        'L 17 106',
+        'Q 20 108 24 107',
+        'Q 28 109 32 107',
+        'L 35 106',
+        'Q 41 100 41 88',
+        'L 41 54',
+        'Q 41 50 39 50',
+        'Z'
+      ].join(' '),
       zones: {
-        M: 'M7,18 L7,72 L14,72 L14,18 Z',
-        D: 'M26,18 L26,72 L33,72 L33,18 Z',
-        B: 'M7,16 L33,16 L33,32 L7,32 Z',
-        L: 'M7,58 L33,58 L33,72 L7,72 Z',
-        I: 'M14,32 L26,32 L26,58 L14,58 Z',
+        M: 'M 11 52 L 11 105 L 17 107 L 17 52 Z',
+        D: 'M 35 52 L 35 107 L 41 105 L 41 52 Z',
+        B: 'M 11 50 L 41 50 L 41 75 L 11 75 Z',
+        L: 'M 11 92 L 41 92 L 41 108 L 11 108 Z',
+        I: 'M 17 75 L 35 75 L 35 92 L 17 92 Z',
       },
-      edge: { y: 72 },
+      mamelons: [{ x: 20, y: 105 }, { x: 26, y: 106 }, { x: 32, y: 105 }],
+      cingulum: 'M 23 90 Q 26 94 29 90',
     };
+  }
+
+  function toothLabel(num) {
+    // Quadrant + tooth name for chart hover
+    const isUpper = num <= 16;
+    const isRight = (num <= 8) || (num >= 25 && num <= 32);
+    const cls = toothClass(num);
+    const idx = ({ 1:'3M', 2:'2M', 3:'1M', 4:'2PM', 5:'1PM', 6:'C', 7:'LI', 8:'CI',
+                   9:'CI', 10:'LI', 11:'C', 12:'1PM', 13:'2PM', 14:'1M', 15:'2M', 16:'3M',
+                   17:'3M', 18:'2M', 19:'1M', 20:'2PM', 21:'1PM', 22:'C', 23:'LI', 24:'CI',
+                   25:'CI', 26:'LI', 27:'C', 28:'1PM', 29:'2PM', 30:'1M', 31:'2M', 32:'3M' })[num] || '';
+    const names = { '3M':'3rd molar','2M':'2nd molar','1M':'1st molar','2PM':'2nd premolar','1PM':'1st premolar','C':'canine','LI':'lateral incisor','CI':'central incisor' };
+    return `${isUpper?'Maxillary':'Mandibular'} ${isRight?'right':'left'} ${names[idx] || cls}`;
   }
 
   function renderTooth(num, marks, isUpper) {
     const cls = toothClass(num);
-    const shape = toothShapes(cls);
+    const shape = toothShapes(cls, num);
     const m = marks || {};
-    const ant = isAnterior(num);
-    // Whole-tooth detection: explicit `whole` key or any value in WHOLE_VALS
     const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
     const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
     const wholeColor = wholeVal ? (MARKERS.find(x => x.id === wholeVal)?.color || '#ffffff') : null;
@@ -1202,46 +1307,71 @@
       return (MARKERS.find(x => x.id === v) || {}).color || null;
     };
 
-    // Mandibular: flip vertically so crown faces up
+    // Mandibular: flip vertically so crown faces up. ViewBox is now 56x110.
     const flip = !isUpper;
-    const transform = flip ? 'scale(1,-1) translate(0,-76)' : '';
+    const transform = flip ? 'scale(1,-1) translate(0,-110)' : '';
 
-    // Mark surfaces in z-order: render crown first, then surface fills overlaid
+    const gradId = `tg-${num}`;
+    const rootGrad = `tr-${num}`;
+
     const surfaceFills = Object.entries(shape.zones).map(([k, d]) => {
-      const fill = surfaceColor(k);
-      if (!fill) return '';
-      return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.85"/>`;
+      const fill = surfaceColor(k); if (!fill) return '';
+      return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.78"/>`;
     }).join('');
 
-    // Cusp dots (thin highlights at the chewing edge)
     const cuspDots = (shape.cusps || []).map(c => `
-      <circle cx="${c.x}" cy="${c.y - 1}" r="1.4" fill="#fff" stroke="#475569" stroke-width="0.5"/>
+      <circle cx="${c.x}" cy="${c.y - 2}" r="${c.peak ? 1.2 : 1.0}" fill="#ffffff" stroke="#94a3b8" stroke-width="0.4" pointer-events="none"/>
     `).join('');
 
+    const mamelons = (shape.mamelons || []).map(c => `
+      <circle cx="${c.x}" cy="${c.y}" r="0.8" fill="#cbd5e1" pointer-events="none"/>
+    `).join('');
+
+    const groove = shape.groove
+      ? `<path d="${shape.groove}" stroke="#94a3b8" stroke-width="0.5" fill="none" pointer-events="none" stroke-dasharray="0.8 0.8"/>`
+      : '';
+
+    const cingulum = shape.cingulum
+      ? `<path d="${shape.cingulum}" stroke="#cbd5e1" stroke-width="0.6" fill="none" pointer-events="none"/>`
+      : '';
+
+    const rootPaths = shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#94a3b8" stroke-width="0.5" pointer-events="none"/>`).join('');
+
     return `
-      <div class="tooth flex flex-col items-center" data-tooth="${num}">
-        <svg viewBox="0 0 40 76" width="100%" style="max-width:42px;height:auto;display:block;${flip?'':''}" oncontextmenu="return false">
+      <div class="tooth flex flex-col items-center" data-tooth="${num}" title="#${num} — ${escapeHtml(toothLabel(num))}">
+        <svg viewBox="0 0 56 110" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">
+          <defs>
+            <linearGradient id="${gradId}" x1="0" y1="50" x2="0" y2="110" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#ffffff"/>
+              <stop offset="1" stop-color="#f1f5f9"/>
+            </linearGradient>
+            <linearGradient id="${rootGrad}" x1="0" y1="4" x2="0" y2="50" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#fef3c7"/>
+              <stop offset="1" stop-color="#fde68a"/>
+            </linearGradient>
+          </defs>
           <g transform="${transform}">
             ${ isMissing ? `
-              <!-- Missing tooth: faint outline -->
-              <path d="${shape.crownPath}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2 2" pointer-events="none"/>
-              <line x1="8" y1="20" x2="32" y2="68" stroke="#94a3b8" stroke-width="1.5"/>
-              <line x1="32" y1="20" x2="8" y2="68" stroke="#94a3b8" stroke-width="1.5"/>
+              <path d="${shape.crown}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2 2" pointer-events="none"/>
+              <line x1="14" y1="56" x2="42" y2="100" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="42" y1="56" x2="14" y2="100" stroke="#94a3b8" stroke-width="2"/>
             ` : `
-              <!-- Root -->
-              <path d="${shape.rootPath}" fill="#fef3c7" stroke="#94a3b8" stroke-width="0.6"/>
-              <!-- Gingival line -->
-              <line x1="4" y1="16" x2="36" y2="16" stroke="#cbd5e1" stroke-width="0.5"/>
-              <!-- Crown body (the surface-paintable area) -->
-              <path d="${shape.crownPath}" fill="${wholeColor || '#ffffff'}" stroke="${wholeVal === 'rct' ? '#0f172a' : '#475569'}" stroke-width="1"/>
+              <!-- Roots (anatomically correct count per class) -->
+              ${rootPaths}
+              <!-- Gingival margin -->
+              <path d="M 4 50 Q 28 47 52 50" stroke="#fbcfe8" stroke-width="1.2" fill="none" pointer-events="none" opacity="0.7"/>
+              <!-- Crown body -->
+              <path d="${shape.crown}" fill="${wholeColor || `url(#${gradId})`}" stroke="${wholeVal === 'rct' ? '#0f172a' : '#475569'}" stroke-width="1" stroke-linejoin="round"/>
               ${ wholeColor ? '' : surfaceFills }
+              ${ wholeColor ? '' : groove }
+              ${ wholeColor ? '' : cingulum }
               ${ wholeColor ? '' : cuspDots }
-              <!-- Click capture overlays (transparent paths over each surface zone) -->
+              ${ wholeColor ? '' : mamelons }
               ${ wholeColor ? '' : Object.entries(shape.zones).map(([k, d]) => `
                 <path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />
               `).join('') }
-              ${ wholeVal === 'rct' ? '<path d="M20,28 L20,68" stroke="#9333ea" stroke-width="2" pointer-events="none"/>' : '' }
-              ${ wholeVal === 'implant' ? '<rect x="18" y="6" width="4" height="14" fill="#0ea5e9" pointer-events="none"/>' : '' }
+              ${ wholeVal === 'rct' ? '<path d="M 26 8 L 26 48" stroke="#9333ea" stroke-width="2.5" pointer-events="none" stroke-linecap="round"/>' : '' }
+              ${ wholeVal === 'implant' ? '<rect x="24" y="6" width="6" height="42" rx="1" fill="#0ea5e9" pointer-events="none"/><rect x="22" y="48" width="10" height="3" fill="#0ea5e9" pointer-events="none"/>' : '' }
             ` }
           </g>
         </svg>
