@@ -242,7 +242,11 @@
           </span>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-slate-400">${escapeHtml(state.user ? `${state.user.first_name || 'Student'} ${state.user.last_name || ''}` : 'Student Demo')}</span>
+          ${(() => { const a = activeStaff(); return `
+            <select data-action="switch-staff" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2 py-1 rounded border-0 focus:outline-none cursor-pointer" title="Switch staff perspective (training mode)">
+              ${STAFF.map(s => `<option value="${s.id}" ${s.id === a.id ? 'selected' : ''}>${escapeHtml(s.name)} · ${escapeHtml(s.role)}</option>`).join('')}
+            </select>
+          `; })()}
           <button data-action="open-palette" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded flex items-center gap-2 text-slate-200">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
             <span>Search</span>
@@ -268,6 +272,8 @@
       { id: 'recall',   label: 'Recall',   shortcut: '7' },
       { id: 'imaging',  label: 'Imaging',  shortcut: 'I' },
       { id: 'claims',   label: 'Claims',   shortcut: '9' },
+      { id: 'forms',    label: 'Forms',    shortcut: '0' },
+      { id: 'lab',      label: 'Lab',      shortcut: 'B' },
       { id: 'reports',  label: 'Reports',  shortcut: 'R' },
     ];
     return `
@@ -375,7 +381,7 @@
   // ── Patient banner (sticky, with name/photo/alerts) ────────────
   function renderBanner() {
     // Hide banner for practice-wide modules
-    if (['today','schedule','recall','claims','reports'].includes(state.module)) return '';
+    if (['today','schedule','recall','claims','reports','lab'].includes(state.module)) return '';
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">No patient selected.</div>`;
     const ins = p.insurance?.primary;
@@ -427,6 +433,7 @@
     if (state.module === 'recall')   return wrap(renderRecall());
     if (state.module === 'schedule') return wrap(renderSchedule());
     if (state.module === 'claims')   return wrap(renderClaims());
+    if (state.module === 'lab')      return wrap(renderLab());
     if (state.module === 'reports')  return wrap(renderReports());
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
@@ -437,6 +444,7 @@
       case 'tx':       return wrap(renderTxPlan(p));
       case 'perio':    return wrap(renderPerio(p));
       case 'comms':    return wrap(renderComms(p));
+      case 'forms':    return wrap(renderForms(p));
       case 'imaging':  return wrap(renderImaging(p));
       default: return '';
     }
@@ -1212,6 +1220,255 @@
         <div class="text-[11px] text-slate-500 mt-0.5">${sub}</div>
       </div>
     `;
+  }
+
+  // ── Forms library module ───────────────────────────────────────
+  // Each template lists its name, version, category, and a basic preview body.
+  const FORM_TEMPLATES = [
+    { id: 'hipaa-npp',     name: 'HIPAA Notice of Privacy Practices Acknowledgment', cat: 'Compliance',  ver: 'v3 — 2024',
+      body: `Acknowledgment that I have received and reviewed Premier Dental Academy of Longview's Notice of Privacy Practices, which describes how my health information may be used and disclosed.\n\nI understand my rights, including the right to receive a copy at any time, request restrictions, and request amendments to my health record.` },
+    { id: 'med-history',   name: 'Medical & Dental History',         cat: 'Clinical',    ver: 'v5 — 2025',
+      body: `Comprehensive review of medical conditions, current medications, allergies, hospitalizations, surgeries, and family medical history. Patient self-attestation of accuracy.` },
+    { id: 'pt-registration', name: 'Patient Registration',           cat: 'Front desk', ver: 'v2 — 2024',
+      body: `Demographics, emergency contact, employer, primary + secondary insurance, responsible party for billing, and HIPAA designated representative.` },
+    { id: 'financial',     name: 'Financial Agreement',              cat: 'Front desk', ver: 'v4 — 2024',
+      body: `Acknowledgment of practice's fee schedule, payment due at time of service, billing of insurance as a courtesy (not a guarantee), late-payment policy, returned-check fee, and collection terms.` },
+    { id: 'tx-consent',    name: 'Treatment Consent (general)',      cat: 'Clinical',   ver: 'v6 — 2025',
+      body: `Informed consent for routine restorative, prophylactic, periodontal, and oral surgery procedures, including risks (numbness, bleeding, infection, sensitivity), benefits, and alternatives. Patient acknowledges opportunity to ask questions.` },
+    { id: 'photo-release', name: 'Photo / Video Release',            cat: 'Marketing',  ver: 'v1 — 2024',
+      body: `Optional release authorizing the practice to use clinical photographs and video (with PHI removed) for educational presentations, before/after showcases, and marketing materials.` },
+    { id: 'postop-ext',    name: 'Post-Op: Extraction',              cat: 'Patient education', ver: 'v3 — 2025',
+      body: `Bite firmly on gauze for 30 minutes. Avoid spitting, rinsing, smoking, or using a straw for 24 hours. Soft diet x 24 hours. Saltwater rinses starting day 2. Call (903) 555-0100 for unusual bleeding, swelling, or pain.` },
+    { id: 'postop-rct',    name: 'Post-Op: Root Canal',              cat: 'Patient education', ver: 'v3 — 2025',
+      body: `Mild discomfort 24-72 hours is normal. Take ibuprofen 400-600 mg as directed unless contraindicated. Avoid chewing on the treated tooth until permanent crown placed. Call if severe pain, swelling, or biting pressure persists > 5 days.` },
+    { id: 'covid-screen',  name: 'COVID-19 / Wellness Screening',    cat: 'Compliance', ver: 'v2 — 2024',
+      body: `Screening for fever, cough, recent COVID-19 exposure, recent travel, and at-risk symptoms. Required at every visit per practice policy.` },
+    { id: 'minor-consent', name: 'Consent to Treat a Minor',         cat: 'Clinical',   ver: 'v1 — 2024',
+      body: `Parent or legal guardian authorization for routine dental treatment of a minor (under 18). Includes emergency-treatment authorization in the parent's absence.` },
+  ];
+
+  function ensureForms(p) { p.forms = p.forms || []; return p.forms; }
+
+  function renderForms(p) {
+    const filled = ensureForms(p);
+    const filter = state.ui.formsFilter || 'all';
+    const cats = ['all', 'Compliance', 'Clinical', 'Front desk', 'Marketing', 'Patient education'];
+    const visible = filter === 'all' ? FORM_TEMPLATES : FORM_TEMPLATES.filter(f => f.cat === filter);
+    const completion = Math.round(filled.length / FORM_TEMPLATES.length * 100);
+
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-2">
+          <h1 class="text-lg font-semibold text-slate-900 mr-2">Forms — ${escapeHtml(p.first)} ${escapeHtml(p.last)}</h1>
+          <span class="chip ${completion >= 80 ? 'chip-emerald' : completion >= 40 ? 'chip-amber' : 'chip-rose'}">${filled.length}/${FORM_TEMPLATES.length} signed</span>
+          <span class="flex-1"></span>
+          <button class="btn btn-soft" data-action="forms-send-all" title="Send all required forms via patient portal">📧 Send portal link</button>
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 p-2 flex flex-wrap gap-1">
+          ${cats.map(c => `<button data-action="forms-filter" data-f="${c}" class="px-2 py-1 text-[11px] rounded ${filter === c ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}">${c === 'all' ? 'All' : c}</button>`).join('')}
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          ${visible.map(tpl => {
+            const completed = filled.find(f => f.templateId === tpl.id);
+            return `
+              <div class="bg-white rounded border ${completed ? 'border-emerald-200' : 'border-slate-200'} p-3">
+                <div class="flex items-start gap-2">
+                  <div class="text-2xl ${completed ? 'text-emerald-600' : 'text-slate-300'}">${completed ? '✓' : '○'}</div>
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[13px] font-semibold text-slate-900">${escapeHtml(tpl.name)}</div>
+                    <div class="text-[11px] text-slate-500 mt-0.5"><span class="chip chip-slate mr-1">${escapeHtml(tpl.cat)}</span>${escapeHtml(tpl.ver)}</div>
+                    <div class="text-[11px] text-slate-600 mt-1.5 line-clamp-2">${escapeHtml(tpl.body.split('\n')[0].slice(0, 140))}${tpl.body.length > 140 ? '…' : ''}</div>
+                    ${completed ? `<div class="text-[10px] text-emerald-700 mt-1.5 mono">✓ Signed ${fmt.dateShort(completed.completedAt)} by ${escapeHtml(completed.completedBy || 'patient')}</div>` : ''}
+                  </div>
+                </div>
+                <div class="mt-3 flex gap-1 text-[11px]">
+                  ${completed
+                    ? `<button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="form-view" data-id="${tpl.id}">View signed</button>
+                       <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="form-pdf" data-id="${tpl.id}">PDF</button>`
+                    : `<button class="btn btn-primary !py-1 !px-2 !text-[11px]" data-action="form-sign" data-id="${tpl.id}">✎ Sign now</button>
+                       <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="form-send" data-id="${tpl.id}">Send to patient</button>
+                       <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="form-print" data-id="${tpl.id}">Print blank</button>`
+                  }
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Lab case tracking module ───────────────────────────────────
+  const LAB_VENDORS = ['Glidewell', 'Aurum', 'Heritage Dental Lab', 'NDX Keller', 'Local lab partner'];
+  const LAB_PROCEDURES = [
+    { id: 'crown-pfm',    name: 'Crown — PFM',           defaultDays: 10 },
+    { id: 'crown-zir',    name: 'Crown — Zirconia',      defaultDays: 12 },
+    { id: 'crown-emax',   name: 'Crown — e.max',         defaultDays: 14 },
+    { id: 'bridge-3unit', name: 'Bridge — 3 unit',       defaultDays: 14 },
+    { id: 'denture-c',    name: 'Complete denture',      defaultDays: 21 },
+    { id: 'denture-p',    name: 'Partial denture',       defaultDays: 21 },
+    { id: 'nightguard',   name: 'Night guard',           defaultDays: 7 },
+    { id: 'whitening',    name: 'Whitening trays',       defaultDays: 5 },
+    { id: 'implant-cust', name: 'Custom implant abutment', defaultDays: 10 },
+    { id: 'inlay-onlay',  name: 'Inlay / onlay',         defaultDays: 10 },
+  ];
+
+  function ensureLabCases() { state.labCases = state.labCases || []; return state.labCases; }
+
+  function seedLabCases() {
+    const cases = ensureLabCases();
+    if (cases.length > 0) return;
+    const today = new Date('2026-05-04');
+    const offset = (n) => { const d = new Date(today); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+    const samples = [
+      { patientIdx: 6,  proc: 'crown-emax',   tooth: '14', shade: 'A2', sent: -8,  status: 'in-lab' },
+      { patientIdx: 9,  proc: 'crown-pfm',    tooth: '8',  shade: 'A3', sent: -3,  status: 'in-lab' },
+      { patientIdx: 12, proc: 'bridge-3unit', tooth: '13–15', shade: 'B1', sent: -10, status: 'received', received: -2 },
+      { patientIdx: 15, proc: 'denture-c',    tooth: 'Upper', shade: 'B2', sent: -18, status: 'in-lab' },
+      { patientIdx: 19, proc: 'crown-zir',    tooth: '3',  shade: 'A2', sent: -15, status: 'overdue' },
+      { patientIdx: 21, proc: 'crown-zir',    tooth: '5',  shade: 'A3', sent: -1,  status: 'in-lab' },
+      { patientIdx: 23, proc: 'denture-c',    tooth: 'Upper + Lower', shade: 'A3.5', sent: -22, status: 'in-lab' },
+      { patientIdx: 24, proc: 'implant-cust', tooth: '19', shade: 'A2', sent: -6,  status: 'in-lab' },
+    ];
+    samples.forEach(s => {
+      const proc = LAB_PROCEDURES.find(x => x.id === s.proc);
+      const p = state.patients[s.patientIdx]; if (!p) return;
+      cases.push({
+        id: 'LAB-' + (Math.floor(Math.random() * 90000) + 10000),
+        patientId: p.id,
+        providerId: 'will',
+        labName: LAB_VENDORS[Math.floor(Math.random() * LAB_VENDORS.length)],
+        procedureId: s.proc,
+        procedureName: proc.name,
+        tooth: s.tooth,
+        shade: s.shade,
+        notes: '',
+        sentDate: offset(s.sent),
+        dueDate: offset(s.sent + proc.defaultDays),
+        receivedDate: s.received != null ? offset(s.received) : null,
+        deliveredDate: null,
+        status: s.status,
+      });
+    });
+  }
+
+  function renderLab() {
+    seedLabCases();
+    const cases = ensureLabCases();
+    const tab = state.ui.labTab || 'open';
+    const today = new Date('2026-05-04');
+    const updated = cases.map(c => {
+      const due = c.dueDate ? new Date(c.dueDate) : null;
+      const days = due ? Math.round((due - today) / 86400000) : null;
+      let status = c.status;
+      if (status === 'in-lab' && days != null && days < 0) status = 'overdue';
+      return { ...c, daysUntilDue: days, computedStatus: status };
+    });
+    const filters = {
+      open:      c => ['in-lab', 'overdue'].includes(c.computedStatus),
+      received:  c => c.computedStatus === 'received',
+      delivered: c => c.computedStatus === 'delivered',
+      remake:    c => c.computedStatus === 'remake',
+      all:       () => true,
+    };
+    const visible = updated.filter(filters[tab] || (() => true));
+    const counts = {
+      open: updated.filter(filters.open).length,
+      received: updated.filter(filters.received).length,
+      delivered: updated.filter(filters.delivered).length,
+      remake: updated.filter(filters.remake).length,
+      overdue: updated.filter(c => c.computedStatus === 'overdue').length,
+    };
+
+    return `
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h1 class="text-xl font-semibold text-slate-900 leading-tight">Lab cases</h1>
+            <p class="text-[12px] text-slate-500 mt-0.5">Track every crown, bridge, denture, and appliance from impression to seat.</p>
+          </div>
+          <button class="btn btn-primary" data-action="open-modal" data-modal="lab-add">＋ New case</button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          ${kpiCard('Open at lab', counts.open, `${counts.overdue} overdue`, counts.overdue > 0 ? 'rose' : 'amber')}
+          ${kpiCard('Received', counts.received, 'awaiting seat', 'sky')}
+          ${kpiCard('Delivered (lifetime)', counts.delivered, 'completed', 'emerald')}
+          ${kpiCard('Remakes', counts.remake, 'quality issues', counts.remake > 0 ? 'rose' : 'emerald')}
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 px-1 flex flex-wrap gap-0.5">
+          ${[
+            { id: 'open',      label: `At lab`,    n: counts.open },
+            { id: 'received',  label: `Received`,  n: counts.received },
+            { id: 'delivered', label: `Delivered`, n: counts.delivered },
+            { id: 'remake',    label: `Remakes`,   n: counts.remake },
+            { id: 'all',       label: `All` },
+          ].map(t => `<button data-action="lab-tab" data-t="${t.id}"
+              class="px-3 py-2 text-[12px] font-medium rounded-t ${tab === t.id ? 'text-teal-700 border-b-2 border-teal-600 -mb-px bg-teal-50/50' : 'text-slate-600 hover:text-slate-900 border-b-2 border-transparent'}">
+              ${t.label}${t.n != null ? `<span class="ml-1 text-[10px] mono px-1.5 py-0.5 rounded ${tab === t.id ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-600'}">${t.n}</span>` : ''}
+            </button>`).join('')}
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 overflow-hidden">
+          ${visible.length === 0 ? `<div class="p-6 text-center text-[12px] text-slate-500">No cases in this bucket.</div>` :
+          `<table class="pp">
+            <thead><tr><th>Case ID</th><th>Patient</th><th>Procedure</th><th>Tooth</th><th>Shade</th><th>Lab</th><th>Sent</th><th>Due</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+            <tbody>
+              ${visible.map(c => {
+                const p = state.patients.find(pp => pp.id === c.patientId);
+                const sChip = ({
+                  'in-lab':    'chip-amber',
+                  'overdue':   'chip-rose',
+                  'received':  'chip-sky',
+                  'delivered': 'chip-emerald',
+                  'remake':    'chip-rose',
+                })[c.computedStatus] || 'chip-slate';
+                return `
+                  <tr>
+                    <td class="mono text-[11px]">${escapeHtml(c.id)}</td>
+                    <td>${p ? `<button class="text-teal-700 hover:underline" data-action="select-patient-and-go" data-id="${p.id}" data-module="overview">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</button>` : '—'}</td>
+                    <td class="text-[12px]">${escapeHtml(c.procedureName)}</td>
+                    <td class="mono">${escapeHtml(c.tooth || '—')}</td>
+                    <td class="mono">${escapeHtml(c.shade || '—')}</td>
+                    <td class="text-[11px]">${escapeHtml(c.labName)}</td>
+                    <td class="mono text-[12px]">${fmt.dateShort(c.sentDate)}</td>
+                    <td class="mono text-[12px] ${c.daysUntilDue != null && c.daysUntilDue < 0 ? 'text-rose-700 font-semibold' : ''}">${fmt.dateShort(c.dueDate)}${c.daysUntilDue != null ? ` <span class="text-[10px] text-slate-500">(${c.daysUntilDue}d)</span>` : ''}</td>
+                    <td><span class="chip ${sChip}">${c.computedStatus}</span></td>
+                    <td class="text-right whitespace-nowrap">
+                      ${c.computedStatus === 'in-lab' || c.computedStatus === 'overdue' ? `<button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="lab-receive" data-id="${c.id}">Receive</button>` : ''}
+                      ${c.computedStatus === 'received' ? `<button class="btn btn-primary !py-1 !px-2 !text-[11px]" data-action="lab-deliver" data-id="${c.id}">Mark seated</button>` : ''}
+                      ${c.computedStatus !== 'remake' ? `<button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="lab-remake" data-id="${c.id}" title="Quality issue → remake">⚠</button>` : ''}
+                      <button class="btn btn-ghost !py-1 !px-2 !text-[11px] text-rose-600" data-action="lab-delete" data-id="${c.id}">✕</button>
+                    </td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>`}
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Multi-user / staff role switcher ───────────────────────────
+  const STAFF = [
+    { id: 'student', name: 'Student',         role: 'Trainee',          color: '#0d9488' },
+    { id: 'will',    name: 'Dr. Williams',    role: 'Doctor',           color: '#0d9488' },
+    { id: 'pat',     name: 'Dr. Patel',       role: 'Doctor',           color: '#0891b2' },
+    { id: 'smith',   name: 'Hyg. Smith',      role: 'Hygienist',        color: '#f59e0b' },
+    { id: 'jord',    name: 'Hyg. Jordan',     role: 'Hygienist',        color: '#a16207' },
+    { id: 'asst1',   name: 'RDA Garcia',      role: 'Dental Assistant', color: '#7c3aed' },
+    { id: 'asst2',   name: 'RDA Brooks',      role: 'Dental Assistant', color: '#7c3aed' },
+    { id: 'fd',      name: 'Reyna (Front)',   role: 'Front Desk',       color: '#db2777' },
+    { id: 'om',      name: 'Sandra (OM)',     role: 'Office Manager',   color: '#dc2626' },
+  ];
+
+  function activeStaff() {
+    const id = state.activeStaffId || 'student';
+    return STAFF.find(s => s.id === id) || STAFF[0];
   }
 
   // ── Imaging module: FMX, BWs, Pano, Ceph, CBCT, photos ─────────
@@ -2701,6 +2958,9 @@
       'sched-edit': modalSchedEdit,
       'claim-detail': modalClaimDetail,
       'claim-eob':    modalClaimEOB,
+      'form-sign':    modalFormSign,
+      'form-view':    modalFormView,
+      'lab-add':      modalLabAdd,
     })[m.type];
     if (!content) return '';
     return `
@@ -3245,6 +3505,95 @@
     `;
   }
 
+  function modalFormSign(props) {
+    const tpl = FORM_TEMPLATES.find(t => t.id === props.id);
+    if (!tpl) return '';
+    const p = currentPatient();
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Sign — ${escapeHtml(tpl.name)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-form-sign" data-tid="${tpl.id}" class="p-4 space-y-3 text-[12px]">
+        <div class="bg-slate-50 border border-slate-200 rounded p-3 max-h-[40vh] overflow-auto whitespace-pre-wrap">${escapeHtml(tpl.body)}</div>
+        <div class="grid grid-cols-2 gap-3">
+          <label><span class="label">Signer name *</span><input name="signer" required value="${escapeHtml(p.first + ' ' + p.last)}" class="input" /></label>
+          <label><span class="label">Relationship</span>
+            <select name="relationship" class="input"><option>Self / Patient</option><option>Parent / Guardian</option><option>Spouse</option><option>Power of attorney</option></select>
+          </label>
+        </div>
+        <label class="block">
+          <span class="label">Type-to-sign signature *</span>
+          <input name="signature" required class="input" placeholder="Type full legal name to sign electronically" style="font-family: 'Brush Script MT', cursive; font-size: 16px" />
+          <span class="text-[10px] text-slate-500">By typing above I attest this is my legally binding electronic signature.</span>
+        </label>
+        <div class="flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">✎ Sign &amp; save</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalFormView(props) {
+    const p = currentPatient();
+    const filled = (p.forms || []).find(f => f.templateId === props.id);
+    const tpl = FORM_TEMPLATES.find(t => t.id === props.id);
+    if (!filled || !tpl) return '';
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>${escapeHtml(tpl.name)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 text-[12px] space-y-3">
+        <div class="bg-slate-50 border border-slate-200 rounded p-3 whitespace-pre-wrap">${escapeHtml(tpl.body)}</div>
+        <div class="grid grid-cols-2 gap-3 bg-emerald-50 border border-emerald-200 rounded p-3">
+          <div><div class="label">Signed by</div>${escapeHtml(filled.completedBy || '')}</div>
+          <div><div class="label">Relationship</div>${escapeHtml(filled.relationship || '')}</div>
+          <div><div class="label">Signature</div><span style="font-family:'Brush Script MT',cursive;font-size:18px">${escapeHtml(filled.signature || '')}</span></div>
+          <div><div class="label">Date</div><span class="mono">${fmt.dateShort(filled.completedAt)}</span></div>
+        </div>
+        <div class="flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button class="btn btn-soft" data-action="form-pdf" data-id="${tpl.id}">⬇ PDF</button>
+          <button class="btn btn-danger" data-action="form-revoke" data-id="${tpl.id}">Revoke signature</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function modalLabAdd() {
+    const today = '2026-05-04';
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>New lab case</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-lab-add" class="p-4 grid grid-cols-2 gap-3">
+        <label class="col-span-2"><span class="label">Patient *</span>
+          <select name="patientId" required class="input">
+            <option value="">— Select —</option>
+            ${state.patients.slice().sort((a,b) => (a.last+a.first).localeCompare(b.last+b.first)).map(p => `<option value="${p.id}">${escapeHtml(p.last + ', ' + p.first)} (${p.id})</option>`).join('')}
+          </select>
+        </label>
+        <label><span class="label">Procedure *</span>
+          <select name="procedureId" required class="input">${LAB_PROCEDURES.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('')}</select>
+        </label>
+        <label><span class="label">Tooth(s)</span><input name="tooth" class="input mono" placeholder="e.g. 14 or 13–15 or Upper" /></label>
+        <label><span class="label">Shade</span><input name="shade" class="input mono" placeholder="A2, B1, etc." /></label>
+        <label><span class="label">Lab</span>
+          <select name="labName" class="input">${LAB_VENDORS.map(v => `<option>${escapeHtml(v)}</option>`).join('')}</select>
+        </label>
+        <label><span class="label">Sent date</span><input name="sentDate" type="date" value="${today}" class="input" /></label>
+        <label><span class="label">Due date</span><input name="dueDate" type="date" class="input" /></label>
+        <label class="col-span-2"><span class="label">Notes / instructions</span><textarea name="notes" rows="2" class="input" placeholder="Margin design, contacts, occlusion notes..."></textarea></label>
+        <div class="col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Send to lab</button>
+        </div>
+      </form>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -3522,6 +3871,92 @@
         case 'claim-pdf': downloadClaimPDF(t.dataset.id); break;
         case 'reports-print': window.print(); break;
         case 'reports-csv': exportReportsCSV(); break;
+        case 'switch-staff': {
+          state.activeStaffId = ev.target.value;
+          const s = activeStaff();
+          logAction('switch_staff', { id: s.id, role: s.role });
+          toast(`Now signed in as ${s.name} (${s.role})`, { tone: 'info' });
+          rerender();
+          break;
+        }
+        case 'forms-filter': state.ui.formsFilter = t.dataset.f; rerender(); break;
+        case 'forms-send-all': {
+          const p = currentPatient(); if (!p) break;
+          appendComm(p, { kind: 'sms', direction: 'out', text: `Hi ${p.first}! Premier Dental sent you a portal link to complete your forms before your visit. Tap: pda.example/portal/${p.id}` });
+          toast('Portal link texted to patient', { tone: 'success' });
+          rerender();
+          break;
+        }
+        case 'form-sign': openModal('form-sign', { id: t.dataset.id }); break;
+        case 'form-view': openModal('form-view', { id: t.dataset.id }); break;
+        case 'form-send': {
+          const p = currentPatient(); if (!p) break;
+          const tpl = FORM_TEMPLATES.find(x => x.id === t.dataset.id);
+          appendComm(p, { kind: 'email', direction: 'out', subject: `Please sign: ${tpl.name}`, text: `Hi ${p.first}, please complete and sign the attached "${tpl.name}" form before your next visit.\n\nLink: pda.example/portal/${p.id}/forms/${tpl.id}` });
+          toast('Form emailed to patient', { tone: 'success' });
+          rerender();
+          break;
+        }
+        case 'form-print': window.print(); break;
+        case 'form-pdf': downloadFormPDF(t.dataset.id); break;
+        case 'form-revoke': {
+          const p = currentPatient(); if (!p) break;
+          if (!confirm('Revoke this form signature?')) break;
+          p.forms = (p.forms || []).filter(f => f.templateId !== t.dataset.id);
+          saveSoon(); logAction('form_revoke', { id: t.dataset.id }); closeModal(); rerender();
+          toast('Signature revoked', { tone: 'warn' });
+          break;
+        }
+        case 'lab-tab': state.ui.labTab = t.dataset.t; rerender(); break;
+        case 'lab-receive': {
+          const c = ensureLabCases().find(x => x.id === t.dataset.id);
+          if (!c) break;
+          c.status = 'received';
+          c.receivedDate = '2026-05-04';
+          saveSoon(); logAction('lab_receive', { id: c.id });
+          rerender();
+          toast(`${c.procedureName} received from ${c.labName}`, { tone: 'success' });
+          break;
+        }
+        case 'lab-deliver': {
+          const c = ensureLabCases().find(x => x.id === t.dataset.id);
+          if (!c) break;
+          c.status = 'delivered';
+          c.deliveredDate = '2026-05-04';
+          saveSoon(); logAction('lab_deliver', { id: c.id });
+          rerender();
+          toast(`Case ${c.id} marked seated`, { tone: 'success' });
+          break;
+        }
+        case 'lab-remake': {
+          const c = ensureLabCases().find(x => x.id === t.dataset.id);
+          if (!c) break;
+          if (!confirm(`Mark ${c.procedureName} as a remake (quality issue)? A new case will be sent to ${c.labName}.`)) break;
+          c.status = 'remake';
+          // Spawn a follow-up case
+          const proc = LAB_PROCEDURES.find(x => x.id === c.procedureId);
+          const today = '2026-05-04';
+          const due = new Date(today); due.setDate(due.getDate() + (proc?.defaultDays || 10));
+          ensureLabCases().push({
+            ...c,
+            id: 'LAB-' + (Math.floor(Math.random() * 90000) + 10000),
+            sentDate: today,
+            receivedDate: null,
+            deliveredDate: null,
+            status: 'in-lab',
+            notes: `Remake of ${c.id} — ${c.notes || ''}`,
+          });
+          saveSoon(); logAction('lab_remake', { from: c.id });
+          rerender();
+          toast('Remake case sent', { tone: 'warn' });
+          break;
+        }
+        case 'lab-delete': {
+          if (!confirm('Delete this lab case?')) break;
+          state.labCases = ensureLabCases().filter(x => x.id !== t.dataset.id);
+          saveSoon(); logAction('lab_delete', { id: t.dataset.id }); rerender();
+          break;
+        }
         case 'sched-call': {
           const date = state.ui.scheduleDate || '2026-05-04';
           const a = (ensureSchedule()[date] || []).find(x => x.id === t.dataset.id);
@@ -3789,6 +4224,8 @@
       if (a === 'submit-sched-add')   return submitSchedAdd(t);
       if (a === 'submit-sched-edit')  return submitSchedEdit(t);
       if (a === 'submit-claim-eob')   return submitClaimEOB(t);
+      if (a === 'submit-form-sign')   return submitFormSign(t);
+      if (a === 'submit-lab-add')     return submitLabAdd(t);
     };
 
     // Tooth surface paint (delegated to root)
@@ -4228,6 +4665,83 @@
     catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
   }
 
+  function submitFormSign(form) {
+    const p = currentPatient(); if (!p) return;
+    const tplId = form.dataset.tid;
+    const fd = new FormData(form);
+    p.forms = ensureForms(p);
+    p.forms = p.forms.filter(f => f.templateId !== tplId);
+    p.forms.push({
+      templateId: tplId,
+      completedAt: new Date().toISOString(),
+      completedBy: fd.get('signer') || '',
+      relationship: fd.get('relationship') || '',
+      signature: fd.get('signature') || '',
+    });
+    saveSoon(); logAction('form_sign', { id: tplId });
+    appendComm(p, { kind: 'note', direction: 'in', text: `Signed: ${(FORM_TEMPLATES.find(t => t.id === tplId) || {}).name || tplId}` });
+    closeModal();
+    toast('Form signed and saved', { tone: 'success' });
+  }
+
+  function submitLabAdd(form) {
+    const fd = new FormData(form);
+    const proc = LAB_PROCEDURES.find(p => p.id === fd.get('procedureId'));
+    const sent = fd.get('sentDate') || '2026-05-04';
+    let due = fd.get('dueDate');
+    if (!due && proc) {
+      const d = new Date(sent); d.setDate(d.getDate() + proc.defaultDays);
+      due = d.toISOString().slice(0, 10);
+    }
+    ensureLabCases().push({
+      id: 'LAB-' + (Math.floor(Math.random() * 90000) + 10000),
+      patientId: fd.get('patientId'),
+      providerId: 'will',
+      procedureId: fd.get('procedureId'),
+      procedureName: proc?.name || '',
+      tooth: fd.get('tooth') || '',
+      shade: fd.get('shade') || '',
+      labName: fd.get('labName') || '',
+      sentDate: sent,
+      dueDate: due,
+      receivedDate: null,
+      deliveredDate: null,
+      status: 'in-lab',
+      notes: fd.get('notes') || '',
+    });
+    saveSoon(); logAction('lab_add', { proc: fd.get('procedureId') });
+    closeModal();
+    toast(`Lab case sent to ${fd.get('labName')}`, { tone: 'success' });
+  }
+
+  async function downloadFormPDF(formId) {
+    const p = currentPatient();
+    const tpl = FORM_TEMPLATES.find(t => t.id === formId);
+    const filled = (p.forms || []).find(f => f.templateId === formId);
+    if (!tpl) return;
+    const html = `
+      <div style="font-family:Inter,sans-serif;color:#0f172a">
+        <div style="border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:14px">
+          <strong style="font-size:18px">${escapeHtml(tpl.name)}</strong>
+          <div style="font-size:11px;color:#64748b;margin-top:2px">Premier Dental Academy of Longview · ${escapeHtml(tpl.ver)}</div>
+        </div>
+        <div style="margin-bottom:16px;font-size:12px"><strong>Patient:</strong> ${escapeHtml(p.last + ', ' + p.first)} · ID ${escapeHtml(p.id)} · DOB ${fmt.dateShort(p.dob)}</div>
+        <div style="font-size:12px;white-space:pre-wrap;line-height:1.5">${escapeHtml(tpl.body)}</div>
+        <div style="margin-top:32px;border-top:1px solid #cbd5e1;padding-top:16px">
+          ${filled ? `
+            <div style="font-size:12px"><strong>Signed by:</strong> ${escapeHtml(filled.completedBy)} (${escapeHtml(filled.relationship)})</div>
+            <div style="margin-top:6px;font-family:'Brush Script MT',cursive;font-size:24px">${escapeHtml(filled.signature)}</div>
+            <div style="font-size:11px;color:#64748b;margin-top:4px">Electronically signed ${fmt.date(filled.completedAt)}</div>
+          ` : `
+            <p style="font-size:12px;margin-top:32px">Patient signature: ____________________________________   Date: __________</p>
+          `}
+        </div>
+      </div>
+    `;
+    try { await exportPDF(html, `${formId}-${p.id}.pdf`); toast('Form PDF downloaded', { tone: 'success' }); }
+    catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
+  }
+
   function exportReportsCSV() {
     const today = new Date('2026-05-04');
     const rows = [['Patient ID','Patient','Provider','Insurance','Last visit','Recall due','Balance','Tx plan total','Status']];
@@ -4438,7 +4952,9 @@
         case '4': setModule('tx'); break;
         case '7': setModule('recall'); break;
         case 'r': setModule('reports'); break;
+        case 'b': setModule('lab'); break;
         case '9': setModule('claims'); break;
+        case '0': setModule('forms'); break;
         case 'i': setModule('imaging'); break;
         case '8': setModule('imaging'); break;
       }
