@@ -267,6 +267,8 @@
       { id: 'schedule', label: 'Schedule', shortcut: 'S' },
       { id: 'recall',   label: 'Recall',   shortcut: '7' },
       { id: 'imaging',  label: 'Imaging',  shortcut: 'I' },
+      { id: 'claims',   label: 'Claims',   shortcut: '9' },
+      { id: 'reports',  label: 'Reports',  shortcut: 'R' },
     ];
     return `
       <div class="pp-ribbon px-3 flex items-center gap-1 overflow-x-auto">
@@ -373,7 +375,7 @@
   // ── Patient banner (sticky, with name/photo/alerts) ────────────
   function renderBanner() {
     // Hide banner for practice-wide modules
-    if (['today','schedule','recall'].includes(state.module)) return '';
+    if (['today','schedule','recall','claims','reports'].includes(state.module)) return '';
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">No patient selected.</div>`;
     const ins = p.insurance?.primary;
@@ -424,6 +426,8 @@
     if (state.module === 'today')    return wrap(renderToday());
     if (state.module === 'recall')   return wrap(renderRecall());
     if (state.module === 'schedule') return wrap(renderSchedule());
+    if (state.module === 'claims')   return wrap(renderClaims());
+    if (state.module === 'reports')  return wrap(renderReports());
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
     switch (state.module) {
@@ -808,6 +812,405 @@
           </div>
         </div>
       </li>
+    `;
+  }
+
+  // ── Insurance claims module ────────────────────────────────────
+  function ensureClaims() { state.claims = state.claims || []; return state.claims; }
+
+  function unclaimedProcedures() {
+    // Returns ledger entries with code starting with D, status=completed, and not yet claimed,
+    // grouped by patient + carrier
+    const groups = new Map();
+    state.patients.forEach(p => {
+      const carrier = p.insurance?.primary?.carrier || 'Self-pay';
+      if (/self.?pay|cash/i.test(carrier)) return; // self-pay doesn't generate claims
+      (p.ledger || []).forEach((e, idx) => {
+        if (!e.code || !/^D\d+/i.test(e.code)) return;
+        if (e.claimed) return;
+        if (!e.fee || e.fee <= 0) return;
+        const k = `${p.id}|${carrier}`;
+        if (!groups.has(k)) groups.set(k, { patient: p, carrier, lines: [] });
+        groups.get(k).lines.push({ ledgerIdx: idx, ...e });
+      });
+    });
+    return Array.from(groups.values());
+  }
+
+  function renderClaims() {
+    const tab = state.ui.claimsTab || 'queue';
+    const groups = unclaimedProcedures();
+    const claims = ensureClaims().slice().sort((a, b) => (b.dateSubmitted || '').localeCompare(a.dateSubmitted || ''));
+    const counts = {
+      queue: groups.length,
+      submitted: claims.filter(c => c.status === 'submitted').length,
+      paid: claims.filter(c => c.status === 'paid').length,
+      denied: claims.filter(c => c.status === 'denied').length,
+      all: claims.length,
+    };
+    const totalQueueDollars = groups.reduce((a, g) => a + g.lines.reduce((b, l) => b + (Number(l.fee) || 0), 0), 0);
+    const totalSubmitted = claims.filter(c => c.status === 'submitted').reduce((a, c) => a + c.totalBilled, 0);
+    const totalPaid = claims.reduce((a, c) => a + (c.totalPaid || 0), 0);
+    const totalOutstanding = claims.filter(c => ['submitted','partial'].includes(c.status)).reduce((a, c) => a + (c.totalBilled - (c.totalPaid || 0)), 0);
+
+    return `
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h1 class="text-xl font-semibold text-slate-900 leading-tight">Insurance claims</h1>
+            <p class="text-[12px] text-slate-500 mt-0.5">Generate, submit, and track claims through receipt of payment.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          ${perioStatTile('Ready to bill',  fmt.money(totalQueueDollars), `${counts.queue} patient/carrier groups`, totalQueueDollars > 0 ? 'amber' : 'emerald')}
+          ${perioStatTile('Submitted',      fmt.money(totalSubmitted),    `${counts.submitted} pending`)}
+          ${perioStatTile('Outstanding',    fmt.money(totalOutstanding),  'Awaiting payment', totalOutstanding > 0 ? 'amber' : 'emerald')}
+          ${perioStatTile('Lifetime paid',  fmt.money(totalPaid),         `${counts.paid} claims`, 'emerald')}
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 px-1 flex flex-wrap gap-0.5">
+          ${[
+            { id: 'queue',     label: `Ready to bill`,    n: counts.queue },
+            { id: 'submitted', label: `Submitted`,        n: counts.submitted },
+            { id: 'paid',      label: `Paid`,             n: counts.paid },
+            { id: 'denied',    label: `Denied`,           n: counts.denied },
+            { id: 'all',       label: `All claims`,       n: counts.all },
+          ].map(t => `
+            <button data-action="claims-tab" data-t="${t.id}"
+              class="px-3 py-2 text-[12px] font-medium rounded-t ${tab === t.id ? 'text-teal-700 border-b-2 border-teal-600 -mb-px bg-teal-50/50' : 'text-slate-600 hover:text-slate-900 border-b-2 border-transparent'}">
+              ${t.label} ${t.n != null ? `<span class="ml-1 text-[10px] mono px-1.5 py-0.5 rounded ${tab === t.id ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-600'}">${t.n}</span>` : ''}
+            </button>
+          `).join('')}
+        </div>
+
+        ${tab === 'queue' ? renderClaimsQueue(groups) : renderClaimsHistory(claims, tab)}
+      </div>
+    `;
+  }
+
+  function renderClaimsQueue(groups) {
+    if (groups.length === 0) {
+      return `<div class="bg-white rounded border border-slate-200 p-8 text-center"><div class="text-slate-900 font-semibold">No claims waiting</div><div class="text-slate-500 text-[12px] mt-1">All completed insurance procedures have been billed. Post a procedure on a patient with insurance to see it here.</div></div>`;
+    }
+    return `
+      <div class="bg-white rounded border border-slate-200 overflow-hidden">
+        <table class="pp">
+          <thead><tr><th>Patient</th><th>Carrier</th><th>Procedures</th><th class="text-right">Total billable</th><th class="text-right">Action</th></tr></thead>
+          <tbody>
+            ${groups.map(g => {
+              const total = g.lines.reduce((a, l) => a + (Number(l.fee) || 0), 0);
+              return `
+                <tr>
+                  <td>
+                    <button class="text-teal-700 hover:underline font-medium" data-action="select-patient-and-go" data-id="${g.patient.id}" data-module="ledger">${escapeHtml(g.patient.last)}, ${escapeHtml(g.patient.first)}</button>
+                    <div class="text-[10px] text-slate-500 mono">${g.patient.id}</div>
+                  </td>
+                  <td>${escapeHtml(g.carrier)}<div class="text-[10px] text-slate-500 mono">${escapeHtml(g.patient.insurance?.primary?.group || '')}</div></td>
+                  <td class="text-[12px]">
+                    ${g.lines.slice(0, 3).map(l => `<div class="truncate"><span class="mono font-semibold">${escapeHtml(l.code)}</span> ${escapeHtml(l.desc || '')} ${l.tooth ? '#'+l.tooth : ''} <span class="text-slate-400">${fmt.dateShort(l.date)}</span></div>`).join('')}
+                    ${g.lines.length > 3 ? `<div class="text-[11px] text-slate-500">+ ${g.lines.length - 3} more</div>` : ''}
+                  </td>
+                  <td class="text-right mono font-semibold">${fmt.money(total)}</td>
+                  <td class="text-right">
+                    <button class="btn btn-primary !py-1 !px-2 !text-[11px]" data-action="claim-generate" data-pid="${g.patient.id}" data-carrier="${escapeHtml(g.carrier)}">Generate claim →</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderClaimsHistory(claims, tab) {
+    const filtered = claims.filter(c => tab === 'all' ? true : c.status === tab);
+    if (filtered.length === 0) {
+      return `<div class="bg-white rounded border border-slate-200 p-8 text-center text-[12px] text-slate-500">No ${tab === 'all' ? '' : tab} claims to show.</div>`;
+    }
+    return `
+      <div class="bg-white rounded border border-slate-200 overflow-hidden">
+        <table class="pp">
+          <thead><tr><th>Submitted</th><th>Patient</th><th>Carrier</th><th>Service date</th><th>Procedures</th><th class="text-right">Billed</th><th class="text-right">Paid</th><th>Status</th><th class="text-right">Actions</th></tr></thead>
+          <tbody>
+            ${filtered.map(c => {
+              const p = state.patients.find(pp => pp.id === c.patientId);
+              const statusColor = ({
+                'submitted': 'chip-sky',
+                'paid':      'chip-emerald',
+                'partial':   'chip-amber',
+                'denied':    'chip-rose',
+              })[c.status] || 'chip-slate';
+              return `
+                <tr>
+                  <td class="mono text-[12px]">${fmt.dateShort(c.dateSubmitted)}</td>
+                  <td>${p ? `<button class="text-teal-700 hover:underline" data-action="select-patient-and-go" data-id="${p.id}" data-module="ledger">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</button>` : '—'}</td>
+                  <td class="text-[12px]">${escapeHtml(c.carrierName)}</td>
+                  <td class="mono text-[12px]">${fmt.dateShort(c.dateOfService)}</td>
+                  <td class="text-[12px]">${c.procedures.map(pr => pr.code).join(', ')}</td>
+                  <td class="text-right mono">${fmt.money(c.totalBilled)}</td>
+                  <td class="text-right mono">${fmt.money(c.totalPaid || 0)}</td>
+                  <td><span class="chip ${statusColor}">${c.status}</span></td>
+                  <td class="text-right whitespace-nowrap">
+                    ${c.status === 'submitted' ? `<button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="claim-post-eob" data-id="${c.id}" title="Post EOB / payment">$</button>` : ''}
+                    <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="claim-pdf" data-id="${c.id}" title="ADA claim form">PDF</button>
+                    <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="open-modal" data-modal="claim-detail" data-id="${c.id}">view</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  // ── Reports module ─────────────────────────────────────────────
+  function renderReports() {
+    const today = new Date('2026-05-04');
+    const yyyy = today.getFullYear();
+    const monthStart = `${yyyy}-${String(today.getMonth()+1).padStart(2,'0')}-01`;
+    const ytdStart = `${yyyy}-01-01`;
+
+    // Production by provider
+    const prodBy = {};   // providerId -> { today, week, month, ytd }
+    const today7 = (() => { const d = new Date(today); d.setDate(d.getDate() - 6); return d.toISOString().slice(0,10); })();
+    state.patients.forEach(p => (p.ledger || []).forEach(e => {
+      const fee = Number(e.fee) || 0;
+      if (!fee) return;
+      const prov = e.provider || p.provider || 'Unassigned';
+      const date = e.date || '';
+      prodBy[prov] = prodBy[prov] || { today: 0, week: 0, month: 0, ytd: 0 };
+      if (date >= ytdStart)    prodBy[prov].ytd += fee;
+      if (date >= monthStart)  prodBy[prov].month += fee;
+      if (date >= today7)      prodBy[prov].week += fee;
+      if (date === '2026-05-04') prodBy[prov].today += fee;
+    }));
+    const totalToday = Object.values(prodBy).reduce((a, x) => a + x.today, 0);
+    const totalMonth = Object.values(prodBy).reduce((a, x) => a + x.month, 0);
+    const totalYtd = Object.values(prodBy).reduce((a, x) => a + x.ytd, 0);
+
+    // Hygiene production %
+    let hygProd = 0, totalProd = 0;
+    state.patients.forEach(p => (p.ledger || []).forEach(e => {
+      const fee = Number(e.fee) || 0; if (!fee) return;
+      totalProd += fee;
+      if (/hyg|prophy|sealant|fluoride|srp|perio main/i.test((e.provider || '') + ' ' + (e.desc || ''))) hygProd += fee;
+    }));
+    const hygPct = totalProd > 0 ? Math.round(hygProd / totalProd * 100) : 0;
+
+    // Tx acceptance
+    let txPresented = 0, txAccepted = 0, txCompleted = 0;
+    state.patients.forEach(p => (p.treatmentPlan || []).forEach(l => {
+      const fee = Number(l.fee) || 0;
+      txPresented += fee;
+      if (['accepted','scheduled','inprogress','completed'].includes(l.status)) txAccepted += fee;
+      if (l.status === 'completed') txCompleted += fee;
+    }));
+    const txAcceptPct = txPresented > 0 ? Math.round(txAccepted / txPresented * 100) : 0;
+    const txCompletePct = txAccepted > 0 ? Math.round(txCompleted / txAccepted * 100) : 0;
+
+    // No-show + cancellation rate from schedule
+    const sched = ensureSchedule();
+    let totalAppt = 0, noShows = 0, cancelled = 0, completed = 0;
+    Object.values(sched).forEach(day => day.forEach(a => {
+      totalAppt++;
+      if (a.status === 'no-show') noShows++;
+      if (a.status === 'cancelled') cancelled++;
+      if (a.status === 'completed' || a.status === 'arrived') completed++;
+    }));
+    const noShowPct = totalAppt > 0 ? Math.round(noShows / totalAppt * 100) : 0;
+    const cancelPct = totalAppt > 0 ? Math.round(cancelled / totalAppt * 100) : 0;
+
+    // Recare retention: % of patients with a recall date that's within their interval
+    let onRecare = 0, dueRecare = 0;
+    state.patients.forEach(p => {
+      const due = p.recall?.due ? new Date(p.recall.due) : null;
+      if (!due) return;
+      const days = Math.round((due - today) / 86400000);
+      if (days >= -7) onRecare++; else dueRecare++;
+    });
+    const recarePct = (onRecare + dueRecare) > 0 ? Math.round(onRecare / (onRecare + dueRecare) * 100) : 0;
+
+    // New patient counts
+    const newPts = state.patients.filter(p => p.type === 'new').length;
+    const newPtsThisMonth = state.patients.filter(p => p.type === 'new').length; // approximation
+
+    // A/R aging (reuse Today calc)
+    const arBuckets = { current: 0, d30: 0, d60: 0, d90: 0, total: 0, count: 0 };
+    state.patients.forEach(p => {
+      const bal = balanceFor(p); if (bal <= 0) return;
+      arBuckets.count++; arBuckets.total += bal;
+      const lastDate = (p.ledger || []).map(e => e.date).filter(Boolean).sort().slice(-1)[0];
+      const ageDays = lastDate ? Math.round((today - new Date(lastDate)) / 86400000) : 0;
+      if (ageDays >= 90) arBuckets.d90 += bal;
+      else if (ageDays >= 60) arBuckets.d60 += bal;
+      else if (ageDays >= 30) arBuckets.d30 += bal;
+      else arBuckets.current += bal;
+    });
+
+    // Top procedures (by frequency)
+    const procFreq = {};
+    state.patients.forEach(p => (p.ledger || []).forEach(e => {
+      if (!e.code) return;
+      procFreq[e.code] = procFreq[e.code] || { count: 0, fee: 0, desc: e.desc };
+      procFreq[e.code].count++;
+      procFreq[e.code].fee += Number(e.fee) || 0;
+    }));
+    const topProcs = Object.entries(procFreq).map(([code, x]) => ({ code, ...x })).sort((a,b) => b.count - a.count).slice(0, 8);
+
+    return `
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h1 class="text-xl font-semibold text-slate-900 leading-tight">Practice reports</h1>
+            <p class="text-[12px] text-slate-500 mt-0.5">As of ${today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="btn btn-soft" data-action="reports-print">⎙ Print</button>
+            <button class="btn btn-soft" data-action="reports-csv">⬇ CSV</button>
+          </div>
+        </div>
+
+        <!-- KPI tiles -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          ${kpiCard('Production today', fmt.money(totalToday), '', 'teal')}
+          ${kpiCard('Production MTD', fmt.money(totalMonth), 'Month-to-date', 'sky')}
+          ${kpiCard('Production YTD', fmt.money(totalYtd), 'Year-to-date', 'emerald')}
+          ${kpiCard('Outstanding A/R', fmt.money(arBuckets.total), `${arBuckets.count} accounts`, 'rose')}
+          ${kpiCard('Hygiene production', hygPct + '%', `${fmt.money(hygProd)} of ${fmt.money(totalProd)}`, 'teal')}
+          ${kpiCard('Case acceptance', txAcceptPct + '%', `${fmt.money(txAccepted)} / ${fmt.money(txPresented)}`, txAcceptPct >= 70 ? 'emerald' : txAcceptPct >= 40 ? 'amber' : 'rose')}
+          ${kpiCard('No-show rate', noShowPct + '%', `${noShows} of ${totalAppt} appts`, noShowPct >= 8 ? 'rose' : noShowPct >= 4 ? 'amber' : 'emerald')}
+          ${kpiCard('Recare retention', recarePct + '%', `${onRecare} on schedule`, recarePct >= 80 ? 'emerald' : recarePct >= 60 ? 'amber' : 'rose')}
+        </div>
+
+        <!-- Production by provider -->
+        <section class="bg-white rounded border border-slate-200 overflow-hidden">
+          <header class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+            <h2 class="font-semibold text-[13px]">Production by provider</h2>
+            <span class="text-[11px] text-slate-500">All ledger entries with a fee &gt; 0</span>
+          </header>
+          <table class="pp">
+            <thead><tr><th>Provider</th><th class="text-right">Today</th><th class="text-right">Last 7 days</th><th class="text-right">MTD</th><th class="text-right">YTD</th><th class="text-right">Share of YTD</th></tr></thead>
+            <tbody>
+              ${Object.entries(prodBy).sort((a,b) => b[1].ytd - a[1].ytd).map(([prov, x]) => `
+                <tr>
+                  <td>${escapeHtml(prov)}</td>
+                  <td class="text-right mono">${fmt.money(x.today)}</td>
+                  <td class="text-right mono">${fmt.money(x.week)}</td>
+                  <td class="text-right mono">${fmt.money(x.month)}</td>
+                  <td class="text-right mono font-semibold">${fmt.money(x.ytd)}</td>
+                  <td class="text-right">
+                    <div class="flex items-center gap-2 justify-end">
+                      <div class="h-2 bg-slate-100 rounded w-24"><div class="h-2 rounded bg-teal-600" style="width:${totalYtd > 0 ? Math.round(x.ytd / totalYtd * 100) : 0}%"></div></div>
+                      <span class="text-[11px] mono w-10 text-right">${totalYtd > 0 ? Math.round(x.ytd / totalYtd * 100) : 0}%</span>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+            <tfoot>
+              <tr class="bg-slate-50 font-semibold">
+                <td>Total</td>
+                <td class="text-right mono">${fmt.money(totalToday)}</td>
+                <td class="text-right mono">—</td>
+                <td class="text-right mono">${fmt.money(totalMonth)}</td>
+                <td class="text-right mono">${fmt.money(totalYtd)}</td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </section>
+
+        <div class="grid lg:grid-cols-2 gap-4">
+          <!-- A/R aging -->
+          <section class="bg-white rounded border border-slate-200 p-4">
+            <h2 class="font-semibold text-[13px] mb-3">A/R aging</h2>
+            ${arRow('Current',  arBuckets.current, arBuckets.total, 'bg-emerald-500')}
+            ${arRow('30+ days', arBuckets.d30,     arBuckets.total, 'bg-amber-500')}
+            ${arRow('60+ days', arBuckets.d60,     arBuckets.total, 'bg-orange-500')}
+            ${arRow('90+ days', arBuckets.d90,     arBuckets.total, 'bg-rose-600')}
+            <div class="border-t border-slate-200 mt-3 pt-3 flex justify-between text-[13px] font-semibold"><span>Total ${arBuckets.count} accounts</span><span class="mono">${fmt.money(arBuckets.total)}</span></div>
+          </section>
+
+          <!-- Schedule efficiency -->
+          <section class="bg-white rounded border border-slate-200 p-4">
+            <h2 class="font-semibold text-[13px] mb-3">Schedule efficiency</h2>
+            <dl class="space-y-2 text-[12px]">
+              <div class="flex justify-between"><dt>Total appointments</dt><dd class="mono">${totalAppt}</dd></div>
+              <div class="flex justify-between"><dt>Completed / arrived</dt><dd class="mono text-emerald-700">${completed}</dd></div>
+              <div class="flex justify-between"><dt>No-shows</dt><dd class="mono ${noShowPct >= 8 ? 'text-rose-700 font-semibold' : 'text-slate-700'}">${noShows} (${noShowPct}%)</dd></div>
+              <div class="flex justify-between"><dt>Cancellations</dt><dd class="mono ${cancelPct >= 10 ? 'text-rose-700' : 'text-slate-700'}">${cancelled} (${cancelPct}%)</dd></div>
+              <div class="border-t border-slate-100 pt-2 mt-2 flex justify-between"><dt class="font-semibold">Practice average</dt><dd class="mono text-emerald-700 font-semibold">${100 - noShowPct - cancelPct}%</dd></div>
+            </dl>
+            <div class="text-[11px] text-slate-500 mt-3">Industry benchmark: under 5% no-show, under 10% cancellation.</div>
+          </section>
+
+          <!-- Treatment plan analytics -->
+          <section class="bg-white rounded border border-slate-200 p-4">
+            <h2 class="font-semibold text-[13px] mb-3">Treatment plan funnel</h2>
+            <div class="space-y-3">
+              <div>
+                <div class="flex justify-between text-[12px] mb-1"><span>Presented</span><span class="mono">${fmt.money(txPresented)}</span></div>
+                <div class="h-2 bg-slate-100 rounded"><div class="h-2 rounded bg-slate-500" style="width:100%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[12px] mb-1"><span>Accepted (${txAcceptPct}%)</span><span class="mono">${fmt.money(txAccepted)}</span></div>
+                <div class="h-2 bg-slate-100 rounded"><div class="h-2 rounded bg-amber-500" style="width:${txAcceptPct}%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-[12px] mb-1"><span>Completed (${txCompletePct}% of accepted)</span><span class="mono">${fmt.money(txCompleted)}</span></div>
+                <div class="h-2 bg-slate-100 rounded"><div class="h-2 rounded bg-emerald-600" style="width:${txAcceptPct > 0 ? Math.round(txCompleted / txPresented * 100) : 0}%"></div></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Top procedures -->
+          <section class="bg-white rounded border border-slate-200 p-4">
+            <h2 class="font-semibold text-[13px] mb-3">Top procedures (lifetime)</h2>
+            <table class="pp">
+              <thead><tr><th>Code</th><th>Description</th><th class="text-right">Count</th><th class="text-right">Production</th></tr></thead>
+              <tbody>
+                ${topProcs.map(p => `
+                  <tr><td class="mono font-semibold">${escapeHtml(p.code)}</td><td class="text-[12px]">${escapeHtml(p.desc || '')}</td><td class="text-right mono">${p.count}</td><td class="text-right mono">${fmt.money(p.fee)}</td></tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </section>
+        </div>
+
+        <!-- Patient mix -->
+        <section class="bg-white rounded border border-slate-200 p-4">
+          <h2 class="font-semibold text-[13px] mb-3">Patient mix &amp; segments</h2>
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-[12px]">
+            ${[
+              { label: 'New patients',       v: state.patients.filter(p => p.type === 'new').length, cls: 'text-sky-700' },
+              { label: 'In maintenance',     v: state.patients.filter(p => p.type === 'maintenance').length, cls: 'text-emerald-700' },
+              { label: 'Mid-treatment',      v: state.patients.filter(p => p.type === 'mid-treatment').length, cls: 'text-amber-700' },
+              { label: 'Recall due',         v: state.patients.filter(p => p.type === 'recall').length, cls: 'text-amber-700' },
+              { label: 'Overdue',            v: state.patients.filter(p => p.type === 'overdue').length, cls: 'text-rose-700' },
+            ].map(s => `
+              <div class="bg-slate-50 rounded p-2 border border-slate-200">
+                <div class="text-[10px] uppercase tracking-wide text-slate-500">${s.label}</div>
+                <div class="text-2xl mono font-semibold ${s.cls}">${s.v}</div>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function kpiCard(label, value, sub, tone) {
+    const map = { teal:'text-teal-700', sky:'text-sky-700', emerald:'text-emerald-700', rose:'text-rose-700', amber:'text-amber-700' };
+    const cls = map[tone] || 'text-slate-900';
+    return `
+      <div class="bg-white rounded border border-slate-200 p-3">
+        <div class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold">${escapeHtml(label)}</div>
+        <div class="text-2xl mono font-semibold ${cls} mt-1">${escapeHtml(value)}</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">${sub}</div>
+      </div>
     `;
   }
 
@@ -2296,6 +2699,8 @@
       'tx-edit-line': modalTxEditLine,
       'sched-add': modalSchedAdd,
       'sched-edit': modalSchedEdit,
+      'claim-detail': modalClaimDetail,
+      'claim-eob':    modalClaimEOB,
     })[m.type];
     if (!content) return '';
     return `
@@ -2765,6 +3170,81 @@
     `;
   }
 
+  function modalClaimDetail(props) {
+    const c = (state.claims || []).find(x => x.id === props.id);
+    if (!c) return '<div class="p-4 text-slate-500">Claim not found.</div>';
+    const p = state.patients.find(pp => pp.id === c.patientId);
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Claim — ${escapeHtml(c.id)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 text-[12px] space-y-3">
+        <div class="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded border border-slate-200">
+          <div><div class="label">Patient</div>${p ? escapeHtml(p.last + ', ' + p.first) : '—'}</div>
+          <div><div class="label">Carrier</div>${escapeHtml(c.carrierName)}</div>
+          <div><div class="label">Service date</div><span class="mono">${fmt.dateShort(c.dateOfService)}</span></div>
+          <div><div class="label">Submitted</div><span class="mono">${fmt.dateShort(c.dateSubmitted)}</span></div>
+          <div><div class="label">Group #</div><span class="mono">${escapeHtml(c.group || '—')}</span></div>
+          <div><div class="label">Status</div><span class="chip ${ ({submitted:'chip-sky',paid:'chip-emerald',partial:'chip-amber',denied:'chip-rose'})[c.status] || 'chip-slate'}">${c.status}</span></div>
+        </div>
+        <table class="pp">
+          <thead><tr><th>Code</th><th>Description</th><th>Tooth</th><th class="text-right">Billed</th><th class="text-right">Allowed</th><th class="text-right">Paid</th></tr></thead>
+          <tbody>
+            ${c.procedures.map(pr => `<tr><td class="mono">${escapeHtml(pr.code)}</td><td>${escapeHtml(pr.desc || '')}</td><td class="mono">${pr.tooth || '—'}</td><td class="text-right mono">${fmt.money(pr.fee)}</td><td class="text-right mono">${pr.allowed != null ? fmt.money(pr.allowed) : '—'}</td><td class="text-right mono">${pr.paid != null ? fmt.money(pr.paid) : '—'}</td></tr>`).join('')}
+          </tbody>
+          <tfoot>
+            <tr class="bg-slate-50 font-semibold"><td colspan="3" class="text-right">Totals</td><td class="text-right mono">${fmt.money(c.totalBilled)}</td><td class="text-right mono">${fmt.money(c.totalAllowed || 0)}</td><td class="text-right mono">${fmt.money(c.totalPaid || 0)}</td></tr>
+          </tfoot>
+        </table>
+        ${c.notes ? `<div class="bg-amber-50 border border-amber-200 rounded p-2"><span class="font-semibold">EOB notes:</span> ${escapeHtml(c.notes)}</div>` : ''}
+        <div class="flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button class="btn btn-soft" data-action="claim-pdf" data-id="${c.id}">⬇ ADA form PDF</button>
+          ${c.status === 'submitted' ? `<button class="btn btn-primary" data-action="claim-post-eob" data-id="${c.id}">Post EOB / payment</button>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  function modalClaimEOB(props) {
+    const c = (state.claims || []).find(x => x.id === props.id);
+    if (!c) return '';
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Post EOB / payment</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-claim-eob" data-id="${c.id}" class="p-4 space-y-3">
+        <div class="text-[12px] text-slate-600">Billed total: <span class="mono font-semibold">${fmt.money(c.totalBilled)}</span></div>
+        <table class="pp text-[12px]">
+          <thead><tr><th>Code</th><th class="text-right">Billed</th><th class="text-right">Allowed</th><th class="text-right">Paid</th></tr></thead>
+          <tbody>
+            ${c.procedures.map((pr, i) => `
+              <tr>
+                <td class="mono">${escapeHtml(pr.code)} — ${escapeHtml(pr.desc || '')}</td>
+                <td class="text-right mono">${fmt.money(pr.fee)}</td>
+                <td class="text-right"><input name="allowed_${i}" type="number" step="0.01" placeholder="${pr.fee}" class="w-24 text-right px-2 py-1 border border-slate-300 rounded mono text-[12px]" /></td>
+                <td class="text-right"><input name="paid_${i}" type="number" step="0.01" placeholder="0" class="w-24 text-right px-2 py-1 border border-slate-300 rounded mono text-[12px]" /></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+        <label class="block"><span class="label">Status</span>
+          <select name="status" class="input">
+            <option value="paid">Paid in full</option>
+            <option value="partial">Partial payment</option>
+            <option value="denied">Denied</option>
+          </select>
+        </label>
+        <label class="block"><span class="label">EOB # / Notes</span><input name="notes" class="input" placeholder="e.g. EOB # 4421 received 2026-05-04" /></label>
+        <div class="flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Post payment</button>
+        </div>
+      </form>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -3036,6 +3516,12 @@
           openModal('quick-text', { id: a.patientId, template: 'confirm' });
           break;
         }
+        case 'claims-tab': state.ui.claimsTab = t.dataset.t; rerender(); break;
+        case 'claim-generate': generateClaim(t.dataset.pid, t.dataset.carrier); break;
+        case 'claim-post-eob': openModal('claim-eob', { id: t.dataset.id }); break;
+        case 'claim-pdf': downloadClaimPDF(t.dataset.id); break;
+        case 'reports-print': window.print(); break;
+        case 'reports-csv': exportReportsCSV(); break;
         case 'sched-call': {
           const date = state.ui.scheduleDate || '2026-05-04';
           const a = (ensureSchedule()[date] || []).find(x => x.id === t.dataset.id);
@@ -3302,6 +3788,7 @@
       if (a === 'submit-tx-edit')     return submitTxEdit(t);
       if (a === 'submit-sched-add')   return submitSchedAdd(t);
       if (a === 'submit-sched-edit')  return submitSchedEdit(t);
+      if (a === 'submit-claim-eob')   return submitClaimEOB(t);
     };
 
     // Tooth surface paint (delegated to root)
@@ -3617,6 +4104,148 @@
     toast('Appointment updated', { tone: 'success' });
   }
 
+  function generateClaim(patientId, carrier) {
+    const p = state.patients.find(x => x.id === patientId);
+    if (!p) return;
+    const lines = (p.ledger || []).filter(e => /^D\d+/i.test(e.code || '') && !e.claimed && (Number(e.fee) || 0) > 0);
+    if (lines.length === 0) { toast('Nothing to bill', { tone: 'warn' }); return; }
+    const claim = {
+      id: 'CL-' + (Math.floor(Math.random() * 90000) + 10000),
+      patientId,
+      carrierName: carrier || (p.insurance?.primary?.carrier || ''),
+      group: p.insurance?.primary?.group || '',
+      dateOfService: lines[0].date || '2026-05-04',
+      dateSubmitted: '2026-05-04',
+      status: 'submitted',
+      procedures: lines.map(l => ({ code: l.code, desc: l.desc, tooth: l.tooth, fee: Number(l.fee) || 0, allowed: null, paid: null })),
+      totalBilled: lines.reduce((a, l) => a + (Number(l.fee) || 0), 0),
+      totalAllowed: 0,
+      totalPaid: 0,
+      notes: '',
+    };
+    ensureClaims().push(claim);
+    // Mark ledger entries as claimed
+    p.ledger.forEach(e => {
+      if (!e.claimed && lines.some(l => l.date === e.date && l.code === e.code && l.fee === e.fee)) {
+        e.claimed = true; e.claimId = claim.id;
+      }
+    });
+    saveSoon();
+    logAction('claim_generate', { id: claim.id, patient: p.id, total: claim.totalBilled });
+    toast(`Claim ${claim.id} submitted to ${claim.carrierName}`, { tone: 'success' });
+    rerender();
+  }
+
+  function submitClaimEOB(form) {
+    const id = form.dataset.id;
+    const c = (state.claims || []).find(x => x.id === id);
+    if (!c) return;
+    const fd = new FormData(form);
+    let totalAllowed = 0, totalPaid = 0;
+    c.procedures.forEach((pr, i) => {
+      const allowed = parseFloat(fd.get(`allowed_${i}`));
+      const paid = parseFloat(fd.get(`paid_${i}`));
+      pr.allowed = isNaN(allowed) ? pr.fee : allowed;
+      pr.paid = isNaN(paid) ? 0 : paid;
+      totalAllowed += pr.allowed;
+      totalPaid += pr.paid;
+    });
+    c.totalAllowed = totalAllowed;
+    c.totalPaid = totalPaid;
+    c.status = fd.get('status') || 'paid';
+    c.notes = fd.get('notes') || '';
+    c.dateReceived = '2026-05-04';
+    // Post payment to patient ledger
+    const p = state.patients.find(x => x.id === c.patientId);
+    if (p && totalPaid > 0) {
+      p.ledger = (p.ledger || []).concat([{
+        date: '2026-05-04',
+        code: '', desc: `Insurance payment — ${c.carrierName} (claim ${c.id})`,
+        payment: totalPaid, fee: 0, provider: '',
+      }]);
+      // Apply contractual adjustment if allowed < billed (write-off)
+      const adjustment = c.totalBilled - totalAllowed;
+      if (adjustment > 0 && c.status === 'paid') {
+        p.ledger.push({
+          date: '2026-05-04',
+          code: '', desc: `Insurance adjustment — ${c.carrierName} contractual write-off`,
+          payment: adjustment, fee: 0, provider: '',
+        });
+      }
+    }
+    saveSoon();
+    logAction('claim_eob', { id, status: c.status, paid: totalPaid });
+    closeModal();
+    toast(`EOB posted: ${fmt.money(totalPaid)} received`, { tone: 'success' });
+    rerender();
+  }
+
+  async function downloadClaimPDF(claimId) {
+    const c = (state.claims || []).find(x => x.id === claimId);
+    if (!c) return;
+    const p = state.patients.find(pp => pp.id === c.patientId);
+    const html = `
+      <div style="font-family:Inter,sans-serif;color:#0f172a">
+        <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:14px"><tr>
+          <td><strong style="font-size:18px">ADA Dental Claim Form</strong><br/>
+          <span style="color:#64748b;font-size:11px">Premier Dental Academy of Longview · 123 Practice Way · Longview, TX 75601 · NPI 1234567890</span></td>
+          <td style="text-align:right">
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Claim</div>
+            <div style="font-family:monospace;font-size:14px">${escapeHtml(c.id)}</div>
+            <div style="font-family:monospace;font-size:11px">DOS ${fmt.dateShort(c.dateOfService)}</div>
+          </td>
+        </tr></table>
+        <table style="width:100%;font-size:12px;margin-bottom:10px"><tr>
+          <td><strong>Subscriber:</strong> ${escapeHtml(p.last + ', ' + p.first)}<br/>
+          DOB: <span style="font-family:monospace">${fmt.dateShort(p.dob)}</span><br/>
+          ID: <span style="font-family:monospace">${escapeHtml(p.id)}</span></td>
+          <td><strong>Carrier:</strong> ${escapeHtml(c.carrierName)}<br/>
+          Group: <span style="font-family:monospace">${escapeHtml(c.group || '—')}</span><br/>
+          Plan: ${escapeHtml(p.insurance?.primary?.plan || '')}</td>
+        </tr></table>
+        <table style="width:100%;border-collapse:collapse;font-size:11px">
+          <thead><tr style="background:#f8fafc">
+            <th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Procedure date</th>
+            <th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Tooth</th>
+            <th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">ADA code</th>
+            <th align="left" style="padding:6px;border-bottom:1px solid #cbd5e1">Description</th>
+            <th align="right" style="padding:6px;border-bottom:1px solid #cbd5e1">Fee</th>
+          </tr></thead>
+          <tbody>
+            ${c.procedures.map(pr => `<tr><td style="padding:5px;border-bottom:1px solid #f1f5f9;font-family:monospace">${fmt.dateShort(c.dateOfService)}</td><td style="padding:5px;border-bottom:1px solid #f1f5f9;font-family:monospace">${pr.tooth || '—'}</td><td style="padding:5px;border-bottom:1px solid #f1f5f9;font-family:monospace">${escapeHtml(pr.code)}</td><td style="padding:5px;border-bottom:1px solid #f1f5f9">${escapeHtml(pr.desc || '')}</td><td style="padding:5px;border-bottom:1px solid #f1f5f9;text-align:right;font-family:monospace">${fmt.money(pr.fee)}</td></tr>`).join('')}
+          </tbody>
+          <tfoot><tr style="background:#f8fafc;font-weight:600"><td colspan="4" style="padding:6px;text-align:right">Total fee billed</td><td style="padding:6px;text-align:right;font-family:monospace">${fmt.money(c.totalBilled)}</td></tr></tfoot>
+        </table>
+        <div style="margin-top:18px;font-size:11px;color:#475569">
+          <p>I hereby authorize release of any information necessary to process this claim and request payment of authorized benefits to the dentist named above.</p>
+          <p style="margin-top:24px">Patient signature: ____________________________________   Date: __________</p>
+          <p style="margin-top:12px">Treating dentist signature: ____________________________________   Date: __________</p>
+          <p style="margin-top:12px;font-style:italic">Training simulator only — not a valid claim. Real submission would route through your clearinghouse (DentalXChange / Vyne / Change Healthcare).</p>
+        </div>
+      </div>
+    `;
+    try { await exportPDF(html, `claim-${c.id}.pdf`); toast('Claim form PDF downloaded', { tone: 'success' }); }
+    catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
+  }
+
+  function exportReportsCSV() {
+    const today = new Date('2026-05-04');
+    const rows = [['Patient ID','Patient','Provider','Insurance','Last visit','Recall due','Balance','Tx plan total','Status']];
+    state.patients.forEach(p => {
+      const last = (p.ledger || []).map(e => e.date).filter(Boolean).sort().slice(-1)[0] || '';
+      const tp = (p.treatmentPlan || []).reduce((a,l) => a + (Number(l.fee) || 0), 0);
+      rows.push([p.id, `${p.last}, ${p.first}`, p.provider || '', p.insurance?.primary?.carrier || 'self-pay', last, p.recall?.due || '', balanceFor(p), tp, p.type || '']);
+    });
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `practice-report-${today.toISOString().slice(0,10)}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Report CSV exported', { tone: 'success' });
+  }
+
   async function downloadTxPlanPDF() {
     const p = currentPatient();
     const today = '2026-05-04';
@@ -3808,6 +4437,8 @@
         case '3': setModule('perio'); break;
         case '4': setModule('tx'); break;
         case '7': setModule('recall'); break;
+        case 'r': setModule('reports'); break;
+        case '9': setModule('claims'); break;
         case 'i': setModule('imaging'); break;
         case '8': setModule('imaging'); break;
       }
