@@ -1,5 +1,5 @@
 /* PDA Simulator Seed Data
- * 25 fictional patients used by both Practice Pro and EagleNest.
+ * 25 fictional patients used by both Practice Pro and ChairSide.
  * No real PHI. Names and details are entirely invented.
  */
 (function (global) {
@@ -735,7 +735,7 @@
     adjunct: 0.80,
   };
 
-  // SmartDoc note templates (used by EagleNest, also exposed for Practice Pro)
+  // SmartDoc note templates (used by ChairSide, also exposed for Practice Pro)
   const NOTE_TEMPLATES = {
     'Prophy Adult': `Pt presents for routine recare.\nReview of HHx: NC.\nVitals: BP ___/___ , HR ___.\nEO/IO exam: WNL.\nOral cancer screen: negative.\nProphy completed with ultrasonic + hand instrumentation. Polished w/ medium paste. Floss demo provided.\nHome care: brush 2x/day soft-bristle, floss qd. ___ minutes spent on OHI.\nNext recall: 6 mo.`,
     'Prophy Child': `Pt presents for routine recare with parent present.\nHHx reviewed: NC.\nBehavior: cooperative / show-tell-do effective.\nProphy completed w/ prophy paste. Topical fluoride varnish applied (5% NaF).\nReviewed brushing 2x/day with parental supervision. ___ minutes OHI.\nNext recall: 6 mo.`,

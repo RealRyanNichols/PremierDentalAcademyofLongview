@@ -4,11 +4,11 @@
 -- ============================================================
 
 -- Per-student fictional patient roster (shared schema for both
--- Practice Pro and EagleNest; the `app` column distinguishes them).
+-- Practice Pro and ChairSide; the `app` column distinguishes them).
 CREATE TABLE IF NOT EXISTS pp_patients (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id UUID REFERENCES profiles(id) ON DELETE CASCADE,
-  app TEXT CHECK (app IN ('practice_pro','eaglenest')),
+  app TEXT CHECK (app IN ('practice_pro','chairside')),
   data JSONB NOT NULL,
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -43,7 +43,7 @@ CREATE INDEX IF NOT EXISTS pp_practice_log_student_idx
 CREATE TABLE IF NOT EXISTS pp_scenarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   author_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
-  app TEXT CHECK (app IN ('practice_pro','eaglenest')),
+  app TEXT CHECK (app IN ('practice_pro','chairside')),
   title TEXT NOT NULL,
   description TEXT,
   data JSONB NOT NULL,

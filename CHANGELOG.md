@@ -6,7 +6,55 @@ practice management software they'll see on day one in any East Texas office.
 | Tool                | File                                     | Style                |
 | ------------------- | ---------------------------------------- | -------------------- |
 | PDA Practice Pro    | `05_Live_Site/tools/practice-pro.html`   | Dark-navy ribbon UI  |
-| PDA EagleNest       | `05_Live_Site/tools/eaglenest.html`      | Cyan ribbon UI       |
+| PDA ChairSide       | `05_Live_Site/tools/chairside.html`      | Cyan ribbon UI       |
+
+---
+
+## PDA ChairSide v1 — second trainer ships — 2026-05-04
+
+The second practice management trainer required by the brief.
+Open `/tools/chairside`. Distinct visual identity and workflow
+from PDA Practice Pro.
+
+### Visual identity
+- Cyan title-bar with white wordmark + brand sub-line
+- Soft-cyan ribbon under the title bar (vs Practice Pro's
+  light-grey ribbon)
+- Sticky patient banner with cyan accents, persists across
+  every module (the differentiator vs Practice Pro's banner
+  which hides on practice-wide views)
+- Bottom **Power Bar** strip showing live practice stats
+  (today's production, monthly production, patient count, Tx
+  acceptance %, today's date) — always visible
+
+### Modules
+- **Patient** — demographics (autosave on blur), insurance,
+  medical history
+- **OnSchedule** — color-coded operatory grid, 4 ops, 30-min
+  slots, 12 pre-seeded appointments (drag-drop ships next)
+- **Clinical** — 4 sub-tabs: Restorative, Perio (summary),
+  Clinical notes (locked + amendable), Medical alerts
+- **SmartDoc** — the signature feature. 15 clinical note
+  templates (Prophy adult, Prophy child, New patient exam,
+  Restorative, Extraction, SRP, RCT, Crown seat, Hygiene
+  exam, Pediatric exam, Limited exam, Sealant placement,
+  Recall, Emergency, Post-op call). Pick a template, edit,
+  save — notes lock and amendments are tracked separately
+  (chart-integrity / legal compliance)
+- **Imaging** — placeholder; full FMX viewer lives in
+  Practice Pro
+- **Ledger** — running balance, charges + payments, jump to
+  Walkout
+- **Walkout** — receipt-style PDF (mono font, dashed
+  dividers, classic register-tape aesthetic) — distinct from
+  Practice Pro's letterhead-style walkout
+
+### Cross-app integration
+- Top-right link to swap to Practice Pro and back
+- Reads patient data from shared state (Supabase + localStorage)
+- Each app has its own `app` namespace in the persistence layer
+- Renamed everywhere: file, code comments, landing page, README,
+  changelog, Supabase migration
 
 ---
 
@@ -185,7 +233,7 @@ The "wow" features no legacy product ships with. Open
 ### Coming next push
 - Perio chart (6-point, BOP%, auto-calc avg pocket)
 - Schedule grid with drag-drop appointments + provider colour-coding
-- EagleNest base shell
+- ChairSide base shell
 
 ---
 
@@ -209,7 +257,7 @@ The actual app shell is live. Open `/tools/practice-pro` to use it.
 - Mobile responsive — sidebar collapses behind a hamburger on iPad/phone.
 
 ### Naming
-- Renamed `tools/eaglesoft.html` → `tools/eaglenest.html` and stripped all references to copyrighted product names from user-facing copy and code comments.
+- Renamed `tools/eaglesoft.html` → `tools/chairside.html` and stripped all references to copyrighted product names from user-facing copy and code comments.
 
 ### Coming next push
 - Chart module (odontogram + click-to-mark surface marking with right-click → "Plan procedure")
