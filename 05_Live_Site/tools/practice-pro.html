@@ -265,7 +265,9 @@
       { id: 'overview', label: 'Patient',  shortcut: '1' },
       { id: 'chart',    label: 'Chart',    shortcut: 'T' },
       { id: 'perio',    label: 'Perio',    shortcut: '3' },
+      { id: 'vitals',   label: 'Vitals',   shortcut: 'V' },
       { id: 'tx',       label: 'Tx Plan',  shortcut: '4' },
+      { id: 'rx',       label: 'Rx',       shortcut: 'X' },
       { id: 'ledger',   label: 'Ledger',   shortcut: 'L' },
       { id: 'comms',    label: 'Comms',    shortcut: 'C' },
       { id: 'schedule', label: 'Schedule', shortcut: 'S' },
@@ -443,6 +445,8 @@
       case 'ledger':   return wrap(renderLedger(p));
       case 'tx':       return wrap(renderTxPlan(p));
       case 'perio':    return wrap(renderPerio(p));
+      case 'vitals':   return wrap(renderVitals(p));
+      case 'rx':       return wrap(renderRx(p));
       case 'comms':    return wrap(renderComms(p));
       case 'forms':    return wrap(renderForms(p));
       case 'imaging':  return wrap(renderImaging(p));
@@ -1469,6 +1473,262 @@
   function activeStaff() {
     const id = state.activeStaffId || 'student';
     return STAFF.find(s => s.id === id) || STAFF[0];
+  }
+
+  // ── Vitals module: BP / pulse / SpO2 / temp / weight per visit ──
+  function ensureVitals(p) { p.vitals = p.vitals || []; return p.vitals; }
+
+  function vitalAlerts(v) {
+    const alerts = [];
+    if (v.bp_sys >= 180 || v.bp_dia >= 120) alerts.push({ tone: 'rose', text: 'HYPERTENSIVE CRISIS — refer immediately' });
+    else if (v.bp_sys >= 140 || v.bp_dia >= 90) alerts.push({ tone: 'amber', text: 'Stage 2 hypertension — consult MD' });
+    else if (v.bp_sys >= 130 || v.bp_dia >= 80) alerts.push({ tone: 'amber', text: 'Stage 1 hypertension' });
+    if (v.spo2 != null && v.spo2 < 92) alerts.push({ tone: 'rose', text: 'Low SpO2 — assess airway, call MD if persistent' });
+    else if (v.spo2 != null && v.spo2 < 95) alerts.push({ tone: 'amber', text: 'Borderline SpO2' });
+    if (v.pulse >= 120) alerts.push({ tone: 'rose', text: 'Tachycardia' });
+    else if (v.pulse >= 100) alerts.push({ tone: 'amber', text: 'Mild tachycardia' });
+    else if (v.pulse > 0 && v.pulse < 50) alerts.push({ tone: 'amber', text: 'Bradycardia' });
+    if (v.temp >= 100.4) alerts.push({ tone: 'rose', text: 'Fever — defer elective treatment' });
+    if (v.glucose != null && v.glucose < 70) alerts.push({ tone: 'rose', text: 'Hypoglycemia — give 15g glucose, recheck' });
+    else if (v.glucose >= 250) alerts.push({ tone: 'rose', text: 'Hyperglycemia — defer elective, contact MD' });
+    return alerts;
+  }
+
+  function bmi(weight, height) {
+    if (!weight || !height) return null;
+    const m = height * 0.0254; // inches → meters
+    const kg = weight * 0.4536; // lbs → kg
+    return +(kg / (m * m)).toFixed(1);
+  }
+
+  function renderVitals(p) {
+    const vitals = ensureVitals(p).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const latest = vitals[0];
+    const series = vitals.slice().reverse().slice(-12); // chronological last 12
+
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-2">
+          <h1 class="text-lg font-semibold text-slate-900 mr-2">Vitals — ${escapeHtml(p.first)} ${escapeHtml(p.last)}</h1>
+          ${latest ? `<span class="text-[12px] text-slate-500">Last taken ${fmt.dateShort(latest.date)} by ${escapeHtml(latest.takenBy || '—')}</span>` : '<span class="text-[12px] text-slate-500">No vitals on file</span>'}
+          <span class="flex-1"></span>
+          <button class="btn btn-primary" data-action="open-modal" data-modal="vitals-take">＋ Take vitals</button>
+        </div>
+
+        ${latest ? `
+          <!-- Latest reading card -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
+            ${vitalTile('Blood pressure', latest.bp_sys && latest.bp_dia ? `${latest.bp_sys}/${latest.bp_dia}` : '—', 'mmHg', latest.bp_sys >= 140 ? 'rose' : latest.bp_sys >= 130 ? 'amber' : 'emerald')}
+            ${vitalTile('Pulse', latest.pulse || '—', 'bpm', latest.pulse >= 100 || (latest.pulse > 0 && latest.pulse < 60) ? 'amber' : 'emerald')}
+            ${vitalTile('SpO2', latest.spo2 != null ? latest.spo2 + '%' : '—', 'O2 sat', latest.spo2 < 92 ? 'rose' : latest.spo2 < 95 ? 'amber' : 'emerald')}
+            ${vitalTile('Temp', latest.temp ? latest.temp + '°F' : '—', '', latest.temp >= 100.4 ? 'rose' : 'emerald')}
+            ${vitalTile('Resp', latest.resp || '—', 'breaths/min')}
+            ${vitalTile('Weight', latest.weight ? latest.weight + ' lb' : '—', latest.height ? `BMI ${bmi(latest.weight, latest.height) ?? '—'}` : '')}
+            ${latest.glucose != null ? vitalTile('Glucose', latest.glucose + ' mg/dL', 'fingerstick', latest.glucose < 70 || latest.glucose >= 250 ? 'rose' : latest.glucose >= 180 ? 'amber' : 'emerald') : '<div></div>'}
+          </div>
+
+          ${(() => {
+            const alerts = vitalAlerts(latest);
+            if (alerts.length === 0) return '<div class="bg-emerald-50 border border-emerald-200 rounded p-2 text-[12px] text-emerald-800">All vitals within acceptable range for routine care.</div>';
+            return `<div class="space-y-1.5">${alerts.map(a => `
+              <div class="bg-${a.tone === 'rose' ? 'rose' : 'amber'}-50 border border-${a.tone === 'rose' ? 'rose' : 'amber'}-200 rounded p-2 text-[12px] text-${a.tone === 'rose' ? 'rose' : 'amber'}-900 font-medium">⚠ ${escapeHtml(a.text)}</div>
+            `).join('')}</div>`;
+          })()}
+        ` : '<div class="bg-white rounded border border-slate-200 p-6 text-center text-[12px] text-slate-500">No vitals recorded. Click "Take vitals" to start.</div>'}
+
+        <!-- Trend chart -->
+        ${series.length >= 2 ? renderVitalsTrend(series) : ''}
+
+        <!-- History -->
+        ${vitals.length > 0 ? `
+          <div class="bg-white rounded border border-slate-200 overflow-hidden">
+            <div class="px-3 py-2 border-b border-slate-200 text-[12px] font-semibold">History (${vitals.length})</div>
+            <table class="pp">
+              <thead><tr><th>Date</th><th>BP</th><th>Pulse</th><th>SpO2</th><th>Temp</th><th>Weight</th><th>BMI</th><th>Glucose</th><th>Taken by</th></tr></thead>
+              <tbody>
+                ${vitals.map(v => `
+                  <tr>
+                    <td class="mono text-[12px]">${fmt.dateShort(v.date)}</td>
+                    <td class="mono ${v.bp_sys >= 140 ? 'text-rose-700 font-semibold' : ''}">${v.bp_sys || '—'}/${v.bp_dia || '—'}</td>
+                    <td class="mono">${v.pulse || '—'}</td>
+                    <td class="mono ${v.spo2 < 95 ? 'text-amber-700' : ''}">${v.spo2 != null ? v.spo2 + '%' : '—'}</td>
+                    <td class="mono ${v.temp >= 100.4 ? 'text-rose-700' : ''}">${v.temp || '—'}</td>
+                    <td class="mono">${v.weight ? v.weight + ' lb' : '—'}</td>
+                    <td class="mono">${bmi(v.weight, v.height) ?? '—'}</td>
+                    <td class="mono">${v.glucose != null ? v.glucose : '—'}</td>
+                    <td class="text-[11px]">${escapeHtml(v.takenBy || '')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>` : ''}
+      </div>
+    `;
+  }
+
+  function vitalTile(label, value, sub, tone) {
+    const cls = { rose: 'text-rose-700', amber: 'text-amber-700', emerald: 'text-emerald-700' }[tone] || 'text-slate-900';
+    return `
+      <div class="bg-white rounded border border-slate-200 p-2">
+        <div class="text-[10px] uppercase tracking-wide text-slate-500 font-semibold">${escapeHtml(label)}</div>
+        <div class="text-xl mono font-semibold ${cls}">${escapeHtml(String(value))}</div>
+        <div class="text-[10px] text-slate-500">${escapeHtml(sub || '')}</div>
+      </div>
+    `;
+  }
+
+  function renderVitalsTrend(series) {
+    // Simple SVG line chart of systolic BP, pulse, SpO2 over last visits
+    const W = 720, H = 160, PAD = 30;
+    const n = series.length;
+    if (n < 2) return '';
+    const xAt = (i) => PAD + (i / (n - 1)) * (W - PAD * 2);
+    const metrics = [
+      { key: 'bp_sys', label: 'Systolic BP (mmHg)', color: '#dc2626', min: 80, max: 180 },
+      { key: 'pulse',  label: 'Pulse (bpm)',        color: '#0d9488', min: 50, max: 120 },
+      { key: 'spo2',   label: 'SpO2 (%)',           color: '#0891b2', min: 88, max: 100 },
+    ];
+    const lines = metrics.map(m => {
+      const vals = series.map(v => v[m.key]);
+      const yScale = (val) => {
+        if (val == null) return null;
+        return H - PAD - ((val - m.min) / (m.max - m.min)) * (H - PAD * 2);
+      };
+      const points = vals.map((v, i) => v == null ? null : `${xAt(i)},${yScale(v)}`).filter(Boolean);
+      const path = points.length > 1 ? `M ${points.join(' L ')}` : '';
+      const dots = vals.map((v, i) => v == null ? '' : `<circle cx="${xAt(i)}" cy="${yScale(v)}" r="3" fill="${m.color}"/>`).join('');
+      return `<path d="${path}" stroke="${m.color}" stroke-width="2" fill="none"/>${dots}`;
+    }).join('');
+    const xLabels = series.map((v, i) => `<text x="${xAt(i)}" y="${H - 8}" text-anchor="middle" font-size="9" fill="#64748b">${fmt.dateShort(v.date).slice(0, 5)}</text>`).join('');
+    return `
+      <div class="bg-white rounded border border-slate-200 p-3">
+        <div class="text-[12px] font-semibold mb-2">Trend — last ${n} visits</div>
+        <svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;height:auto">
+          <line x1="${PAD}" y1="${PAD}" x2="${PAD}" y2="${H-PAD}" stroke="#e2e8f0"/>
+          <line x1="${PAD}" y1="${H-PAD}" x2="${W-PAD}" y2="${H-PAD}" stroke="#e2e8f0"/>
+          ${lines}
+          ${xLabels}
+        </svg>
+        <div class="flex flex-wrap gap-4 text-[11px] mt-2">
+          ${metrics.map(m => `<span class="flex items-center gap-1"><span class="w-3 h-1 inline-block" style="background:${m.color}"></span>${escapeHtml(m.label)}</span>`).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // ── Rx pad module: prescription writing ────────────────────────
+  const DRUG_LIBRARY = [
+    // Antibiotics
+    { id: 'amox',     name: 'Amoxicillin',                        class: 'antibiotic', strengths: ['250 mg', '500 mg', '875 mg'], defaultSig: 'Take 1 capsule by mouth every 8 hours for 7 days', defaultQty: 21, refills: 0, contra: 'penicillin allergy' },
+    { id: 'amox-cla', name: 'Amoxicillin/Clavulanate (Augmentin)',class: 'antibiotic', strengths: ['500 mg', '875 mg'], defaultSig: 'Take 1 tablet by mouth every 12 hours for 7 days', defaultQty: 14, refills: 0, contra: 'penicillin allergy' },
+    { id: 'pen-v',    name: 'Penicillin V Potassium',             class: 'antibiotic', strengths: ['250 mg', '500 mg'], defaultSig: 'Take 1 tablet by mouth every 6 hours for 7 days', defaultQty: 28, refills: 0, contra: 'penicillin allergy' },
+    { id: 'clinda',   name: 'Clindamycin',                        class: 'antibiotic', strengths: ['150 mg', '300 mg'], defaultSig: 'Take 1 capsule by mouth every 6 hours for 7 days', defaultQty: 28, refills: 0 },
+    { id: 'azithro',  name: 'Azithromycin (Z-pak)',               class: 'antibiotic', strengths: ['250 mg'], defaultSig: '2 tablets first day, then 1 tablet daily for 4 days', defaultQty: 6, refills: 0 },
+    { id: 'metronid', name: 'Metronidazole',                      class: 'antibiotic', strengths: ['250 mg', '500 mg'], defaultSig: 'Take 1 tablet by mouth every 8 hours for 7 days', defaultQty: 21, refills: 0, contra: 'no alcohol — disulfiram-like reaction' },
+
+    // NSAIDs / analgesics
+    { id: 'ibu',      name: 'Ibuprofen',                          class: 'analgesic',  strengths: ['600 mg', '800 mg'], defaultSig: 'Take 1 tablet by mouth every 6 hours as needed for pain. Take with food.', defaultQty: 20, refills: 1, contra: 'GI bleed history, renal disease', prn: true },
+    { id: 'naprox',   name: 'Naproxen',                           class: 'analgesic',  strengths: ['250 mg', '500 mg'], defaultSig: 'Take 1 tablet by mouth every 12 hours as needed for pain. Take with food.', defaultQty: 14, refills: 1, prn: true },
+    { id: 'acet',     name: 'Acetaminophen',                      class: 'analgesic',  strengths: ['500 mg', '650 mg'], defaultSig: 'Take 1–2 tablets by mouth every 6 hours as needed for pain. Do not exceed 3 g/day.', defaultQty: 30, refills: 1, prn: true },
+
+    // Controlled analgesics (Schedule II)
+    { id: 'hyd-acet', name: 'Hydrocodone/Acetaminophen 5/325',    class: 'controlled', schedule: 'II', strengths: ['5/325 mg'], defaultSig: 'Take 1 tablet by mouth every 4–6 hours as needed for severe pain. Do not drive.', defaultQty: 12, refills: 0, prn: true, contra: 'Schedule II — no refills, paper / EPCS required' },
+    { id: 'oxy-acet', name: 'Oxycodone/Acetaminophen 5/325',      class: 'controlled', schedule: 'II', strengths: ['5/325 mg'], defaultSig: 'Take 1 tablet by mouth every 4–6 hours as needed for severe pain. Do not drive.', defaultQty: 10, refills: 0, prn: true, contra: 'Schedule II' },
+    { id: 'tram',     name: 'Tramadol',                           class: 'controlled', schedule: 'IV', strengths: ['50 mg'], defaultSig: 'Take 1 tablet by mouth every 6 hours as needed for pain.', defaultQty: 20, refills: 0, prn: true },
+
+    // Oral rinses / topical
+    { id: 'chx',      name: 'Chlorhexidine Gluconate 0.12% Rinse',class: 'rinse',      strengths: ['0.12%'], defaultSig: 'Rinse with 15 mL for 30 seconds twice daily after brushing. Do not eat / drink for 30 minutes after.', defaultQty: '473 mL', refills: 2 },
+    { id: 'fl-gel',   name: 'Sodium Fluoride 1.1% Gel (PreviDent 5000)', class: 'preventive', strengths: ['1.1%'], defaultSig: 'Apply pea-sized amount nightly in place of toothpaste. Spit, do not rinse.', defaultQty: '51 g', refills: 3 },
+
+    // Antifungals
+    { id: 'nystatin', name: 'Nystatin Oral Suspension',           class: 'antifungal', strengths: ['100,000 units/mL'], defaultSig: 'Swish 5 mL in mouth for 2 minutes, then swallow. Use 4 times daily for 14 days.', defaultQty: '60 mL', refills: 0 },
+    { id: 'flucon',   name: 'Fluconazole',                        class: 'antifungal', strengths: ['100 mg', '150 mg'], defaultSig: 'Take 1 tablet by mouth daily for 14 days', defaultQty: 14, refills: 0 },
+
+    // Antivirals
+    { id: 'acyclo',   name: 'Acyclovir',                          class: 'antiviral',  strengths: ['200 mg', '400 mg'], defaultSig: 'Take 1 tablet by mouth 5 times daily for 7 days', defaultQty: 35, refills: 0 },
+    { id: 'valacyc',  name: 'Valacyclovir',                       class: 'antiviral',  strengths: ['500 mg', '1 g'], defaultSig: 'Take 1 tablet by mouth twice daily for 7 days', defaultQty: 14, refills: 0 },
+
+    // Anxiolytics
+    { id: 'triaz',    name: 'Triazolam',                          class: 'controlled', schedule: 'IV', strengths: ['0.25 mg'], defaultSig: 'Take 1 tablet by mouth 1 hour before appointment. Patient must have escort.', defaultQty: 1, refills: 0 },
+    { id: 'diaz',     name: 'Diazepam',                           class: 'controlled', schedule: 'IV', strengths: ['5 mg', '10 mg'], defaultSig: 'Take 1 tablet by mouth 1 hour before appointment.', defaultQty: 1, refills: 0 },
+
+    // Other
+    { id: 'pred',     name: 'Prednisone',                         class: 'steroid',    strengths: ['10 mg', '20 mg'], defaultSig: 'Take 5 tablets day 1, 4 tablets day 2, decreasing by 1 tablet daily', defaultQty: 15, refills: 0 },
+    { id: 'lido-vis', name: 'Lidocaine Viscous 2%',               class: 'topical',    strengths: ['2%'], defaultSig: 'Swish and spit 15 mL every 3 hours as needed for pain. Do not swallow.', defaultQty: '100 mL', refills: 1, prn: true },
+  ];
+
+  function ensureRx(p) { p.prescriptions = p.prescriptions || []; return p.prescriptions; }
+
+  function checkRxAllergies(p, drug) {
+    const allergies = (p.medical?.allergies || []).join(' ').toLowerCase();
+    const warnings = [];
+    if (/penicillin/.test(allergies) && drug.contra && /penicillin/i.test(drug.contra)) warnings.push('⚠ PENICILLIN ALLERGY documented — DO NOT prescribe');
+    if (/sulfa/.test(allergies) && /sulfameth|sulfa/i.test(drug.name)) warnings.push('⚠ SULFA ALLERGY documented');
+    if (/codeine/.test(allergies) && /codein|hydrocodone|oxycodone/i.test(drug.name)) warnings.push('⚠ Patient documented intolerance to opioids');
+    if (drug.contra && !warnings.length) warnings.push('ℹ ' + drug.contra);
+    return warnings;
+  }
+
+  function renderRx(p) {
+    const list = ensureRx(p).slice().sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const tab = state.ui.rxTab || 'active';
+    const cutoff = '2026-04-04'; // 30 days
+    const active = list.filter(r => (r.date || '') >= cutoff);
+    const past = list.filter(r => (r.date || '') < cutoff);
+    const visible = tab === 'active' ? active : tab === 'past' ? past : list;
+    const allergyChips = (p.medical?.allergies || []).filter(a => a !== 'NKDA');
+
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-slate-200 p-3 flex flex-wrap items-center gap-2">
+          <h1 class="text-lg font-semibold text-slate-900 mr-2">Rx — ${escapeHtml(p.first)} ${escapeHtml(p.last)}</h1>
+          ${allergyChips.length ? `<span class="chip chip-rose">⚠ ${escapeHtml(allergyChips.join(', '))}</span>` : '<span class="chip chip-emerald">NKDA</span>'}
+          ${p.medical?.premedicate ? `<span class="chip chip-amber">Premed required</span>` : ''}
+          <span class="flex-1"></span>
+          <button class="btn btn-primary" data-action="open-modal" data-modal="rx-write">✎ Write Rx</button>
+        </div>
+
+        <div class="bg-white rounded border border-slate-200 px-1 flex flex-wrap gap-0.5">
+          ${[
+            { id: 'active', label: 'Active', n: active.length },
+            { id: 'past',   label: 'Past',   n: past.length },
+            { id: 'all',    label: 'All',    n: list.length },
+          ].map(t => `<button data-action="rx-tab" data-t="${t.id}"
+              class="px-3 py-2 text-[12px] font-medium rounded-t ${tab === t.id ? 'text-teal-700 border-b-2 border-teal-600 -mb-px bg-teal-50/50' : 'text-slate-600 hover:text-slate-900 border-b-2 border-transparent'}">
+              ${t.label} <span class="ml-1 text-[10px] mono px-1.5 py-0.5 rounded ${tab === t.id ? 'bg-teal-100 text-teal-800' : 'bg-slate-100 text-slate-600'}">${t.n}</span>
+            </button>`).join('')}
+        </div>
+
+        ${visible.length === 0 ? `<div class="bg-white rounded border border-slate-200 p-8 text-center text-[12px] text-slate-500">No ${tab === 'active' ? 'active' : tab === 'past' ? 'past' : ''} prescriptions.</div>` :
+        `<div class="space-y-2">
+          ${visible.map(r => `
+            <div class="bg-white rounded border border-slate-200 p-3">
+              <div class="flex items-start justify-between gap-3">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-baseline gap-2 flex-wrap">
+                    <span class="text-[14px] font-semibold text-slate-900">${escapeHtml(r.drug)}</span>
+                    <span class="mono text-[12px] text-teal-700 font-medium">${escapeHtml(r.strength)}</span>
+                    ${r.schedule ? `<span class="chip chip-rose">Schedule ${r.schedule}</span>` : ''}
+                    ${r.prn ? '<span class="chip chip-slate">PRN</span>' : ''}
+                  </div>
+                  <div class="text-[12px] text-slate-700 mt-1 italic">"${escapeHtml(r.sig)}"</div>
+                  <div class="text-[11px] text-slate-500 mt-1 mono">Disp ${escapeHtml(String(r.qty))} · Refills ${r.refills} · ${r.indication ? 'Indication: ' + escapeHtml(r.indication) : ''}</div>
+                </div>
+                <div class="text-right shrink-0">
+                  <div class="text-[11px] text-slate-500 mono">${fmt.dateShort(r.date)}</div>
+                  <div class="text-[11px] text-slate-500">${escapeHtml(r.prescriber)}</div>
+                </div>
+              </div>
+              <div class="mt-2 flex flex-wrap gap-1.5">
+                <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="rx-pdf" data-id="${r.id}">⬇ Rx form</button>
+                <button class="btn btn-soft !py-1 !px-2 !text-[11px]" data-action="rx-resend" data-id="${r.id}">Renew</button>
+                <button class="btn btn-ghost !py-1 !px-2 !text-[11px] text-rose-600" data-action="rx-delete" data-id="${r.id}">Void</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>`}
+      </div>
+    `;
   }
 
   // ── Imaging module: FMX, BWs, Pano, Ceph, CBCT, photos ─────────
@@ -2961,6 +3221,8 @@
       'form-sign':    modalFormSign,
       'form-view':    modalFormView,
       'lab-add':      modalLabAdd,
+      'vitals-take':  modalVitalsTake,
+      'rx-write':     modalRxWrite,
     })[m.type];
     if (!content) return '';
     return `
@@ -3594,6 +3856,81 @@
     `;
   }
 
+  function modalVitalsTake() {
+    const today = '2026-05-04';
+    const p = currentPatient();
+    const lastV = (p?.vitals || []).slice().sort((a,b) => (b.date||'').localeCompare(a.date||''))[0];
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Take vitals</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-vitals" class="p-4 grid grid-cols-2 gap-3 text-[12px]">
+        <label><span class="label">Date</span><input name="date" type="date" value="${today}" class="input mono" /></label>
+        <label><span class="label">Taken by</span><input name="takenBy" value="${escapeHtml(activeStaff().name)}" class="input" /></label>
+        <label><span class="label">Systolic BP</span><input name="bp_sys" type="number" min="50" max="250" placeholder="120" class="input mono" autofocus /></label>
+        <label><span class="label">Diastolic BP</span><input name="bp_dia" type="number" min="30" max="150" placeholder="80" class="input mono" /></label>
+        <label><span class="label">Pulse (bpm)</span><input name="pulse" type="number" min="30" max="220" placeholder="72" class="input mono" /></label>
+        <label><span class="label">Respiratory rate</span><input name="resp" type="number" min="6" max="40" placeholder="16" class="input mono" /></label>
+        <label><span class="label">SpO2 (%)</span><input name="spo2" type="number" min="50" max="100" placeholder="99" class="input mono" /></label>
+        <label><span class="label">Temperature (°F)</span><input name="temp" type="number" step="0.1" min="90" max="110" placeholder="98.6" class="input mono" /></label>
+        <label><span class="label">Weight (lb)</span><input name="weight" type="number" min="20" max="500" value="${lastV?.weight || ''}" class="input mono" /></label>
+        <label><span class="label">Height (in)</span><input name="height" type="number" min="20" max="90" value="${lastV?.height || ''}" class="input mono" /></label>
+        <label><span class="label">Glucose (mg/dL, optional)</span><input name="glucose" type="number" min="20" max="600" placeholder="—" class="input mono" /></label>
+        <label class="col-span-2"><span class="label">Notes</span><textarea name="notes" rows="2" class="input" placeholder="Patient anxious, repeat BP after 5 min, etc."></textarea></label>
+        <div class="col-span-2 flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save vitals</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalRxWrite() {
+    const p = currentPatient();
+    const allergies = (p?.medical?.allergies || []).filter(a => a !== 'NKDA');
+    const drugId = state.ui.rxDraftDrug || '';
+    const drug = DRUG_LIBRARY.find(d => d.id === drugId);
+    const warnings = drug && p ? checkRxAllergies(p, drug) : [];
+    const grouped = DRUG_LIBRARY.reduce((acc, d) => { (acc[d.class] = acc[d.class] || []).push(d); return acc; }, {});
+    return `
+      <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+        <h2>Write prescription — ${escapeHtml(p.first)} ${escapeHtml(p.last)}</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-rx" class="p-4 grid sm:grid-cols-2 gap-3 text-[12px]">
+        ${allergies.length ? `<div class="sm:col-span-2 bg-rose-50 border border-rose-200 rounded p-2 text-[12px] text-rose-900 font-medium">⚠ Patient allergies: ${escapeHtml(allergies.join(', '))}</div>` : ''}
+        <label class="sm:col-span-2"><span class="label">Drug (select from library)</span>
+          <select name="drugId" data-action="rx-pick-drug" class="input" required>
+            <option value="">— Select drug —</option>
+            ${Object.entries(grouped).map(([cls, drugs]) => `
+              <optgroup label="${cls.toUpperCase()}">
+                ${drugs.map(d => `<option value="${d.id}" ${d.id === drugId ? 'selected' : ''}>${escapeHtml(d.name)}${d.schedule ? ' (Sch ' + d.schedule + ')' : ''}</option>`).join('')}
+              </optgroup>
+            `).join('')}
+          </select>
+        </label>
+        ${warnings.length ? `<div class="sm:col-span-2 bg-amber-50 border border-amber-200 rounded p-2 text-[12px] text-amber-900 font-medium">${warnings.map(w => `<div>${escapeHtml(w)}</div>`).join('')}</div>` : ''}
+        <label><span class="label">Strength</span>
+          <select name="strength" class="input mono" ${!drug ? 'disabled' : ''}>
+            ${drug ? drug.strengths.map(s => `<option>${escapeHtml(s)}</option>`).join('') : '<option>—</option>'}
+          </select>
+        </label>
+        <label><span class="label">Quantity</span><input name="qty" value="${drug?.defaultQty || ''}" class="input mono" /></label>
+        <label class="sm:col-span-2"><span class="label">Sig (directions)</span><textarea name="sig" rows="2" class="input">${drug?.defaultSig || ''}</textarea></label>
+        <label><span class="label">Refills</span>
+          <select name="refills" class="input mono">${[0,1,2,3,4,5].map(n => `<option ${(drug?.refills ?? 0) === n ? 'selected' : ''}>${n}</option>`).join('')}</select>
+        </label>
+        <label><span class="label">Indication</span><input name="indication" class="input" placeholder="e.g. acute apical abscess #14" /></label>
+        <label class="flex items-center gap-2 sm:col-span-2"><input type="checkbox" name="prn" ${drug?.prn ? 'checked' : ''} class="accent-teal-700" /> PRN (as needed)</label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2 border-t border-slate-200">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Sign &amp; print Rx</button>
+        </div>
+      </form>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -3908,6 +4245,32 @@
           break;
         }
         case 'lab-tab': state.ui.labTab = t.dataset.t; rerender(); break;
+        case 'rx-tab': state.ui.rxTab = t.dataset.t; rerender(); break;
+        case 'rx-pick-drug': {
+          state.ui.rxDraftDrug = ev.target.value;
+          rerender();
+          break;
+        }
+        case 'rx-pdf': downloadRxPDF(t.dataset.id); break;
+        case 'rx-resend': {
+          const p = currentPatient(); if (!p) break;
+          const r = (p.prescriptions || []).find(x => x.id === t.dataset.id);
+          if (!r) break;
+          const renew = { ...r, id: 'RX-' + Math.floor(Math.random() * 90000 + 10000), date: '2026-05-04' };
+          p.prescriptions.unshift(renew);
+          saveSoon(); logAction('rx_renew', { id: renew.id });
+          rerender();
+          toast(`${r.drug} renewed`, { tone: 'success' });
+          break;
+        }
+        case 'rx-delete': {
+          const p = currentPatient(); if (!p) break;
+          if (!confirm('Void this prescription?')) break;
+          p.prescriptions = (p.prescriptions || []).filter(r => r.id !== t.dataset.id);
+          saveSoon(); logAction('rx_void', { id: t.dataset.id }); rerender();
+          toast('Prescription voided', { tone: 'warn' });
+          break;
+        }
         case 'lab-receive': {
           const c = ensureLabCases().find(x => x.id === t.dataset.id);
           if (!c) break;
@@ -4226,6 +4589,8 @@
       if (a === 'submit-claim-eob')   return submitClaimEOB(t);
       if (a === 'submit-form-sign')   return submitFormSign(t);
       if (a === 'submit-lab-add')     return submitLabAdd(t);
+      if (a === 'submit-vitals')      return submitVitals(t);
+      if (a === 'submit-rx')          return submitRx(t);
     };
 
     // Tooth surface paint (delegated to root)
@@ -4714,6 +5079,107 @@
     toast(`Lab case sent to ${fd.get('labName')}`, { tone: 'success' });
   }
 
+  function submitVitals(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const v = {
+      date: fd.get('date') || '2026-05-04',
+      takenBy: fd.get('takenBy') || '',
+      bp_sys: +fd.get('bp_sys') || null,
+      bp_dia: +fd.get('bp_dia') || null,
+      pulse: +fd.get('pulse') || null,
+      resp: +fd.get('resp') || null,
+      spo2: fd.get('spo2') ? +fd.get('spo2') : null,
+      temp: fd.get('temp') ? +fd.get('temp') : null,
+      weight: +fd.get('weight') || null,
+      height: +fd.get('height') || null,
+      glucose: fd.get('glucose') ? +fd.get('glucose') : null,
+      notes: fd.get('notes') || '',
+    };
+    ensureVitals(p).push(v);
+    saveSoon(); logAction('vitals_take', { id: p.id, bp_sys: v.bp_sys, bp_dia: v.bp_dia });
+    // Alert hand-off if dangerous
+    const alerts = vitalAlerts(v);
+    if (alerts.some(a => a.tone === 'rose')) {
+      appendComm(p, { kind: 'note', direction: 'in', text: `Vitals taken showed critical values: ${alerts.map(a => a.text).join('; ')}` });
+    }
+    closeModal();
+    toast(alerts.length ? `Vitals saved — ${alerts.length} alert${alerts.length>1?'s':''}` : 'Vitals saved', { tone: alerts.some(a => a.tone === 'rose') ? 'error' : alerts.length ? 'warn' : 'success' });
+  }
+
+  function submitRx(form) {
+    const p = currentPatient(); if (!p) return;
+    const fd = new FormData(form);
+    const drug = DRUG_LIBRARY.find(d => d.id === fd.get('drugId'));
+    if (!drug) return toast('Select a drug', { tone: 'warn' });
+    const rx = {
+      id: 'RX-' + Math.floor(Math.random() * 90000 + 10000),
+      date: '2026-05-04',
+      drug: drug.name,
+      strength: fd.get('strength') || drug.strengths[0],
+      sig: fd.get('sig') || drug.defaultSig,
+      qty: fd.get('qty') || drug.defaultQty,
+      refills: +fd.get('refills') || 0,
+      schedule: drug.schedule,
+      indication: fd.get('indication') || '',
+      prn: !!fd.get('prn'),
+      class: drug.class,
+      prescriber: activeStaff().name,
+    };
+    ensureRx(p).unshift(rx);
+    state.ui.rxDraftDrug = '';
+    saveSoon(); logAction('rx_write', { id: rx.id, drug: drug.name, schedule: drug.schedule });
+    appendComm(p, { kind: 'note', direction: 'out', text: `Rx written: ${drug.name} ${rx.strength} — ${rx.sig}` });
+    closeModal();
+    toast(`${drug.name} prescribed`, { tone: 'success' });
+    // Auto-download Rx PDF
+    setTimeout(() => downloadRxPDF(rx.id), 200);
+  }
+
+  async function downloadRxPDF(rxId) {
+    const p = currentPatient();
+    const r = (p?.prescriptions || []).find(x => x.id === rxId);
+    if (!r) return;
+    const html = `
+      <div style="font-family:Inter,sans-serif;color:#0f172a">
+        <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:14px"><tr>
+          <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
+          <span style="color:#64748b;font-size:11px">123 Practice Way · Longview, TX 75601 · (903) 555-0100<br/>NPI 1234567890 · DEA AB1234567 · TX License 12345</span></td>
+          <td style="text-align:right">
+            <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Prescription</div>
+            <div style="font-family:monospace;font-size:14px">${escapeHtml(r.id)}</div>
+            <div style="font-family:monospace;font-size:11px">${fmt.dateShort(r.date)}</div>
+          </td>
+        </tr></table>
+        <table style="width:100%;font-size:13px;margin-bottom:18px"><tr>
+          <td><strong>Patient:</strong> ${escapeHtml(p.last + ', ' + p.first)}<br/>
+          DOB: <span style="font-family:monospace">${fmt.dateShort(p.dob)}</span> · Age ${fmt.age(p.dob)}<br/>
+          ${escapeHtml(p.address || '')}, ${escapeHtml(p.city || '')} ${escapeHtml(p.state || '')} ${escapeHtml(p.zip || '')}</td>
+        </tr></table>
+        <div style="border:2px solid #0f172a;border-radius:4px;padding:18px;font-size:14px">
+          <div style="font-size:36px;font-weight:700;font-style:italic;color:#475569;line-height:1">℞</div>
+          <div style="margin-top:8px"><strong>${escapeHtml(r.drug)} ${escapeHtml(r.strength)}</strong>${r.schedule ? ` <span style="color:#dc2626;font-weight:600">[Schedule ${r.schedule}]</span>` : ''}</div>
+          <div style="margin-top:6px"><strong>Sig:</strong> ${escapeHtml(r.sig)}</div>
+          <div style="margin-top:6px"><strong>Disp:</strong> ${escapeHtml(String(r.qty))} <strong style="margin-left:24px">Refills:</strong> ${r.refills}</div>
+          ${r.prn ? '<div style="margin-top:4px;font-size:12px;color:#64748b">PRN — as needed</div>' : ''}
+          ${r.indication ? `<div style="margin-top:4px;font-size:12px;color:#475569"><strong>Indication:</strong> ${escapeHtml(r.indication)}</div>` : ''}
+        </div>
+        <div style="margin-top:32px;font-size:11px;color:#64748b">
+          <p style="margin-bottom:8px">☐ <strong>Dispense as written</strong> &nbsp;&nbsp; ☐ Substitution permitted</p>
+          <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:28px">
+            <div>
+              <div style="border-top:1px solid #0f172a;padding-top:4px;min-width:200px">Prescriber signature</div>
+              <div style="font-size:11px;color:#64748b">${escapeHtml(r.prescriber || '')} · ${fmt.dateShort(r.date)}</div>
+            </div>
+            <div style="font-style:italic;color:#94a3b8">Training simulator only — not a valid prescription</div>
+          </div>
+        </div>
+      </div>
+    `;
+    try { await exportPDF(html, `rx-${r.id}.pdf`); }
+    catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
+  }
+
   async function downloadFormPDF(formId) {
     const p = currentPatient();
     const tpl = FORM_TEMPLATES.find(t => t.id === formId);
@@ -4952,6 +5418,8 @@
         case '4': setModule('tx'); break;
         case '7': setModule('recall'); break;
         case 'r': setModule('reports'); break;
+        case 'v': setModule('vitals'); break;
+        case 'x': setModule('rx'); break;
         case 'b': setModule('lab'); break;
         case '9': setModule('claims'); break;
         case '0': setModule('forms'); break;
