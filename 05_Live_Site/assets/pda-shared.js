@@ -150,10 +150,31 @@
       .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
-  // ── Avatar (Dicebear initials) ───────────────────────────────────
+  // ── Avatar: inline SVG initials (no external service, never breaks) ──
+  // Hashes the name to one of ~10 brand colours so each patient has a
+  // stable, recognisable colour until a real photo is uploaded.
+  const AVATAR_PALETTE = [
+    '#0d9488', '#0891b2', '#0e7490', '#115e59',
+    '#7c3aed', '#a16207', '#db2777', '#dc2626',
+    '#0284c7', '#65a30d',
+  ];
   function avatarUrl(seed) {
-    const s = encodeURIComponent(seed || 'patient');
-    return `https://api.dicebear.com/9.x/initials/svg?seed=${s}&backgroundColor=0f766e,0d9488,0891b2,0e7490,115e59&fontFamily=Inter`;
+    const name = String(seed || 'Patient').trim();
+    const parts = name.split(/\s+/).filter(Boolean);
+    const initials = (parts.length >= 2
+      ? parts[0][0] + parts[parts.length - 1][0]
+      : (name[0] || '?')
+    ).toUpperCase();
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+    const bg = AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+      + '<circle cx="50" cy="50" r="50" fill="' + bg + '"/>'
+      + '<text x="50" y="50" text-anchor="middle" dominant-baseline="central" '
+      +   'font-family="Inter, system-ui, -apple-system, sans-serif" font-size="42" '
+      +   'font-weight="600" fill="#ffffff">' + initials + '</text>'
+      + '</svg>';
+    return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg);
   }
 
   // ── Toast ────────────────────────────────────────────────────────
