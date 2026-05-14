@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Contact — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Reach Premier Dental Academy of Longview by phone, email, or visit our Longview, TX campus." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+
+<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+      <span>Premier Dental Academy</span>
+    </a>
+    <a href="/" class="text-sm text-teal-700 hover:text-teal-900">← Back to home</a>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-12">
+  <div class="text-center mb-12">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Contact</p>
+    <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Let's talk.</h1>
+    <p class="text-slate-600 mt-3">We respond to every message within 1 business day.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-5 gap-8">
+    <!-- Form -->
+    <div class="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+      <h2 class="display text-2xl font-bold mb-1">Send us a message</h2>
+      <p class="text-sm text-slate-500 mb-6">Question about a program, scheduling a tour, employer inquiry — anything.</p>
+
+      <form id="contact-form" class="space-y-4">
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-medium">Your name *</span>
+            <input name="name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Email *</span>
+            <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+        </div>
+        <label class="block">
+          <span class="text-sm font-medium">Phone</span>
+          <input name="phone" type="tel" placeholder="(903) 555-0100" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">I'm reaching out about *</span>
+          <select name="reason" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>The RDA Foundation program</option>
+            <option>The RDA Career Track program</option>
+            <option>Scheduling a campus tour</option>
+            <option>Funding / financial aid eligibility</option>
+            <option>Employer / hiring partnerships</option>
+            <option>The practice management trainers</option>
+            <option>Something else</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Message *</span>
+          <textarea name="message" rows="5" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600"></textarea>
+        </label>
+        <button id="submit-btn" type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-lg transition">Send message</button>
+      </form>
+
+      <div id="success" class="hidden text-center py-8">
+        <div class="text-5xl mb-3">✉️</div>
+        <h3 class="display text-2xl font-bold">Message received!</h3>
+        <p class="text-slate-600 mt-2">We'll be in touch within 1 business day.</p>
+      </div>
+    </div>
+
+    <!-- Sidebar info -->
+    <div class="lg:col-span-2 space-y-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-2xl mb-2">📞</div>
+        <div class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Call us</div>
+        <a href="tel:+19035550100" class="block text-2xl font-bold text-slate-900 hover:text-teal-700 mt-1">(903) 555-0100</a>
+        <div class="text-xs text-slate-500 mt-1">Mon-Fri, 9am-6pm CT</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-2xl mb-2">✉️</div>
+        <div class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Email</div>
+        <a href="mailto:hello@pda.edu" class="block text-lg font-bold text-slate-900 hover:text-teal-700 mt-1">hello@pda.edu</a>
+        <div class="text-xs text-slate-500 mt-1">We reply within 1 business day</div>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-2xl mb-2">📍</div>
+        <div class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Campus</div>
+        <div class="font-bold text-slate-900 mt-1">Longview, TX 75601</div>
+        <div class="text-xs text-slate-500 mt-1">Street address shared after tour scheduling</div>
+        <a href="/apply" class="inline-block mt-3 text-sm text-teal-700 hover:text-teal-900 font-semibold">Schedule a campus tour →</a>
+      </div>
+      <div class="bg-gradient-to-br from-teal-700 to-cyan-800 text-white rounded-2xl p-6">
+        <div class="text-xs uppercase tracking-widest text-teal-200 font-semibold">For dental offices</div>
+        <h3 class="font-bold mt-1">Looking to hire?</h3>
+        <p class="text-sm text-teal-100 mt-1">Tell us what you need — we match graduates to East Texas offices every cohort.</p>
+        <a href="mailto:hire@pda.edu" class="inline-block mt-3 bg-amber-500 hover:bg-amber-600 text-slate-900 text-sm font-bold px-4 py-2 rounded-lg">hire@pda.edu</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">
+    <p>© 2026 Premier Dental Academy of Longview · <a href="/privacy" class="hover:text-white">Privacy</a> · <a href="/terms" class="hover:text-white">Terms</a> · <a href="/about" class="hover:text-white">About</a></p>
+  </div>
+</footer>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  let sb = null;
+  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){} }
+
+  const form = document.getElementById('contact-form');
+  const success = document.getElementById('success');
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const lead = {
+      first_name: (fd.get('name') || '').split(' ')[0],
+      last_name: (fd.get('name') || '').split(' ').slice(1).join(' '),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      metadata: { reason: fd.get('reason'), message: fd.get('message') },
+      source: 'contact.html',
+    };
+    if (sb) await sb.from('leads').insert(lead);
+    form.classList.add('hidden');
+    success.classList.remove('hidden');
+  };
+})();
+</script>
+</body>
+</html>

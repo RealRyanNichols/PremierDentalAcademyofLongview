@@ -178,10 +178,9 @@
       const { error } = await sb.from('leads').insert(lead);
       saved = !error;
     }
-    // Always show success — leads also get emailed via Supabase Edge (future)
-    form.classList.add('hidden');
-    success.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Redirect to dedicated thank-you page
+    location.href = '/thank-you';
+    return;
 
     if (!saved) {
       // Stash locally as a backup so nothing is lost
