@@ -1325,7 +1325,7 @@
     { id: 'photo-release', name: 'Photo / Video Release',            cat: 'Marketing',  ver: 'v1 — 2024',
       body: `Optional release authorizing the practice to use clinical photographs and video (with PHI removed) for educational presentations, before/after showcases, and marketing materials.` },
     { id: 'postop-ext',    name: 'Post-Op: Extraction',              cat: 'Patient education', ver: 'v3 — 2025',
-      body: `Bite firmly on gauze for 30 minutes. Avoid spitting, rinsing, smoking, or using a straw for 24 hours. Soft diet x 24 hours. Saltwater rinses starting day 2. Call (903) 555-0100 for unusual bleeding, swelling, or pain.` },
+      body: `Bite firmly on gauze for 30 minutes. Avoid spitting, rinsing, smoking, or using a straw for 24 hours. Soft diet x 24 hours. Saltwater rinses starting day 2. Call (903) 913-6444 for unusual bleeding, swelling, or pain.` },
     { id: 'postop-rct',    name: 'Post-Op: Root Canal',              cat: 'Patient education', ver: 'v3 — 2025',
       body: `Mild discomfort 24-72 hours is normal. Take ibuprofen 400-600 mg as directed unless contraindicated. Avoid chewing on the treated tooth until permanent crown placed. Call if severe pain, swelling, or biting pressure persists > 5 days.` },
     { id: 'covid-screen',  name: 'COVID-19 / Wellness Screening',    cat: 'Compliance', ver: 'v2 — 2024',
@@ -3466,7 +3466,7 @@
     const p = state.patients.find(x => x.id === props.id) || currentPatient();
     const name = p ? p.preferred || p.first : 'patient';
     const recallDate = p?.recall?.due ? fmt.date(p.recall.due) : 'soon';
-    const tpl = props.template || `Hi ${name}! This is Premier Dental reminding you it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 555-0100. Thanks!`;
+    const tpl = props.template || `Hi ${name}! This is Premier Dental reminding you it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 913-6444. Thanks!`;
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
         <h2>Send text — ${escapeHtml(p?.last)}, ${escapeHtml(p?.first)}</h2>
@@ -4323,10 +4323,10 @@
           const recallDate = p?.recall?.due ? fmt.date(p.recall.due) : 'soon';
           const balance = p ? balanceFor(p) : 0;
           const bodies = {
-            recall:  `Hi ${name}! This is Premier Dental — it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 555-0100. Thanks!`,
-            confirm: `Hi ${name}, confirming your appointment with us. Reply C to confirm, R to reschedule, or call (903) 555-0100.`,
-            postop:  `Hi ${name}, it's Premier Dental checking in after your visit. How are you feeling? Any questions or concerns? Reply or call (903) 555-0100.`,
-            balance: `Hi ${name}, you have an outstanding balance of ${fmt.money(balance)} with Premier Dental. Pay online or call (903) 555-0100. Thanks!`,
+            recall:  `Hi ${name}! This is Premier Dental — it's time for your next recare visit (due ${recallDate}). Reply YES to schedule, or call (903) 913-6444. Thanks!`,
+            confirm: `Hi ${name}, confirming your appointment with us. Reply C to confirm, R to reschedule, or call (903) 913-6444.`,
+            postop:  `Hi ${name}, it's Premier Dental checking in after your visit. How are you feeling? Any questions or concerns? Reply or call (903) 913-6444.`,
+            balance: `Hi ${name}, you have an outstanding balance of ${fmt.money(balance)} with Premier Dental. Pay online or call (903) 913-6444. Thanks!`,
           };
           if (ta && bodies[tpl]) {
             ta.value = bodies[tpl];
@@ -5158,7 +5158,7 @@
       <div style="font-family:Inter,sans-serif;color:#0f172a">
         <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:14px"><tr>
           <td><strong style="font-size:18px">ADA Dental Claim Form</strong><br/>
-          <span style="color:#64748b;font-size:11px">Premier Dental Academy of Longview · 123 Practice Way · Longview, TX 75601 · NPI 1234567890</span></td>
+          <span style="color:#64748b;font-size:11px">Premier Dental Academy of Longview · 2800 Gilmer Rd Suite 106 · Longview, TX 75604 · NPI 1234567890</span></td>
           <td style="text-align:right">
             <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Claim</div>
             <div style="font-family:monospace;font-size:14px">${escapeHtml(c.id)}</div>
@@ -5312,7 +5312,7 @@
       <div style="font-family:Inter,sans-serif;color:#0f172a">
         <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:14px"><tr>
           <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
-          <span style="color:#64748b;font-size:11px">123 Practice Way · Longview, TX 75601 · (903) 555-0100<br/>NPI 1234567890 · DEA AB1234567 · TX License 12345</span></td>
+          <span style="color:#64748b;font-size:11px">2800 Gilmer Rd Suite 106 · Longview, TX 75604 · (903) 913-6444<br/>NPI 1234567890 · DEA AB1234567 · TX License 12345</span></td>
           <td style="text-align:right">
             <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Prescription</div>
             <div style="font-family:monospace;font-size:14px">${escapeHtml(r.id)}</div>
@@ -5421,7 +5421,7 @@
       <div style="font-family:Inter,sans-serif;color:#0f172a">
         <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:16px"><tr>
           <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
-          <span style="color:#64748b;font-size:12px">123 Practice Way · Longview, TX 75601 · (903) 555-0100</span></td>
+          <span style="color:#64748b;font-size:12px">2800 Gilmer Rd Suite 106 · Longview, TX 75604 · (903) 913-6444</span></td>
           <td style="text-align:right">
             <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Treatment plan</div>
             <div style="font-family:monospace;font-size:14px">${today}</div>
@@ -5515,7 +5515,7 @@
       <div style="font-family:Inter,sans-serif;color:#0f172a;">
         <table style="width:100%;border-bottom:2px solid #0f172a;padding-bottom:8px;margin-bottom:16px"><tr>
           <td><strong style="font-size:18px">Premier Dental Academy of Longview</strong><br/>
-          <span style="color:#64748b;font-size:12px">123 Practice Way · Longview, TX 75601 · (903) 555-0100</span></td>
+          <span style="color:#64748b;font-size:12px">2800 Gilmer Rd Suite 106 · Longview, TX 75604 · (903) 913-6444</span></td>
           <td style="text-align:right">
             <div style="font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.06em">Walkout statement</div>
             <div style="font-family:monospace;font-size:14px">${today}</div>
