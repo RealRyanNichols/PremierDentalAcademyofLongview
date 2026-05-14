@@ -92,8 +92,13 @@
   const SEED = window.PDA_SEED;
   const TPLS = SEED.noteTemplates;
 
+  // Marketing site (sign-up / pricing) — students return here to enroll
+  const MARKETING_URL = '/';
+  const SIGNUP_URL    = '/';
+
   const state = {
     user: null,
+    access: 'preview',         // 'preview' | 'student' — set on boot
     patients: [],
     currentPatientId: null,
     module: 'patient',
@@ -105,8 +110,20 @@
       clinicalTab: 'restorative',
       smartDocSelected: 'Prophy Adult',
       smartDocBody: '',
+      helpMode: !localStorage.getItem('pda.cs.helpModeOff'),
     },
     audit: [],
+  };
+
+  // Module-level help content — plain-English explainer per screen
+  const CS_MODULE_HELP = {
+    patient:    { what: "Everything about this person.", desc: "Name, address, phone, insurance, medical history. Click any field to edit; changes save automatically." },
+    onschedule: { what: "Today's appointments by operatory.", desc: "Each colored block is a patient appointment, colored by provider. This is the schedule that the front desk lives in." },
+    clinical:   { what: "Clinical history — chart, perio, notes, alerts.", desc: "Four sub-tabs: Restorative (what's been done), Perio (gum exam summary), Notes (your clinical documentation), Medical (allergies + alerts)." },
+    smartdoc:   { what: "Write a clinical note using a SmartDoc template.", desc: "Pick a template on the left (Prophy, Restorative, Crown Seat, RCT…) — the note body pre-fills with the SOAP structure. Edit and save. Saved notes lock for legal compliance; amendments are tracked separately." },
+    imaging:    { what: "X-rays and intraoral photos.", desc: "Quick view of what's on file. For full FMX mounting and drag-drop uploads, use Practice Pro." },
+    ledger:     { what: "Money in, money out for this patient.", desc: "Every charge, every payment, and the running balance. Jump to Walkout from here." },
+    walkout:    { what: "End-of-visit receipt.", desc: "Print or PDF a register-style receipt showing today's services, payments, and remaining balance. Hand to the patient on the way out." },
   };
 
   async function loadState() {
@@ -123,7 +140,10 @@
     state.patients.forEach(p => { p.csNotes = p.csNotes || []; });
   }
 
-  const saveSoon = debounce(() => Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId }), 350);
+  const saveSoon = debounce(() => {
+    if (state.access !== 'student') return;
+    Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
+  }, 350);
 
   function logAction(action, metadata) {
     state.audit.unshift({ at: new Date().toISOString(), action, metadata });
@@ -137,6 +157,7 @@
   function render() {
     document.getElementById('app').innerHTML = `
       ${renderTitleBar()}
+      ${renderPreviewStrip()}
       ${renderRibbon()}
       <div class="flex-1 flex overflow-hidden">
         ${renderSidebar()}
@@ -152,21 +173,59 @@
   }
   const rerender = () => requestAnimationFrame(render);
 
+  function renderPreviewStrip() {
+    if (state.access === 'student') return '';
+    return `
+      <div class="bg-amber-50 border-b border-amber-200 px-3 py-2 text-[12px] text-amber-900 flex items-center gap-3 flex-wrap">
+        <span class="text-base">🔒</span>
+        <strong>Preview mode</strong>
+        <span class="flex-1 min-w-[200px]">You're seeing a limited view. Enroll at Premier Dental Academy to unlock SmartDoc note saving, PDFs, persistence, and certificate of completion.</span>
+        <a href="${SIGNUP_URL}" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded whitespace-nowrap">Enroll now →</a>
+      </div>
+    `;
+  }
+
+  function renderModuleHelp(moduleId) {
+    if (!state.ui.helpMode) return '';
+    const m = CS_MODULE_HELP[moduleId];
+    if (!m) return '';
+    return `
+      <div class="bg-cyan-50 border border-cyan-200 rounded p-3 mb-3 text-[12px] flex items-start gap-3">
+        <div class="text-2xl select-none">💡</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-cyan-900">${escapeHtml(m.what)}</div>
+          <div class="text-cyan-800 mt-0.5">${escapeHtml(m.desc)}</div>
+        </div>
+        <button data-action="dismiss-help" class="text-cyan-700 hover:bg-cyan-100 px-2 py-0.5 rounded text-[10px] font-semibold">Hide</button>
+      </div>
+    `;
+  }
+
   function renderTitleBar() {
+    const isStudent = state.access === 'student';
     return `
       <header class="cs-chrome flex items-center justify-between px-3 py-2 text-[12px]">
         <div class="flex items-center gap-3">
           <button data-action="toggle-sidebar" class="md:hidden text-white">☰</button>
-          <span class="flex items-center gap-2 font-semibold tracking-wide text-white">
+          <a href="${MARKETING_URL}" class="flex items-center gap-2 font-semibold tracking-wide text-white hover:text-cyan-200" title="Back to Premier Dental Academy">
             <span class="inline-block w-3 h-3 bg-cyan-300 rounded-sm"></span>
             PDA ChairSide
             <span class="text-cyan-200 font-normal hidden sm:inline">— Clinical Workflow Trainer</span>
-          </span>
+          </a>
+          ${!isStudent ? `<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">PREVIEW</span>` : ''}
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-cyan-200 hidden sm:inline">${escapeHtml(state.user ? `${state.user.first_name || 'Student'}` : 'Student')}</span>
-          <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white" title="Switch to Practice Pro">↹ Practice Pro</a>
-          <button data-action="audit-toggle" class="text-cyan-200 hover:text-white" title="Audit log">⏱</button>
+          ${isStudent ? `
+            <span class="text-cyan-200 hidden sm:inline">${escapeHtml(state.user ? `${state.user.first_name || 'Student'}` : 'Student')}</span>
+            <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white" title="Switch to Practice Pro">↹ Practice Pro</a>
+            <button data-action="toggle-help" class="${state.ui.helpMode ? 'bg-white text-cyan-800' : 'bg-cyan-900/40 text-cyan-100'} px-2 py-1 rounded font-medium" title="Toggle explanatory banners">
+              ${state.ui.helpMode ? '✓ Help' : 'Help'}
+            </button>
+            <button data-action="audit-toggle" class="text-cyan-200 hover:text-white" title="Audit log">⏱</button>
+          ` : `
+            <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white hidden sm:inline" title="Preview Practice Pro">↹ Practice Pro</a>
+            <a href="${SIGNUP_URL}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold px-3 py-1 rounded">Enroll to unlock →</a>
+          `}
         </div>
       </header>
     `;
@@ -315,7 +374,8 @@
   function renderModule() {
     const p = currentPatient();
     if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
-    const wrap = (inner) => `<div class="cs-fade p-4 max-w-[1400px] mx-auto">${inner}</div>`;
+    const help = renderModuleHelp(state.module);
+    const wrap = (inner) => `<div class="cs-fade p-4 max-w-[1400px] mx-auto">${help}${inner}</div>`;
     switch (state.module) {
       case 'patient':     return wrap(renderPatient(p));
       case 'onschedule':  return wrap(renderOnSchedule());
@@ -687,9 +747,45 @@
   function renderModal() {
     const m = state.ui.modal;
     if (!m) return '';
-    const content = ({ 'new-patient': modalNewPatient, 'audit': modalAudit })[m.type];
+    const content = ({ 'new-patient': modalNewPatient, 'audit': modalAudit, 'welcome': modalWelcome })[m.type];
     if (!content) return '';
     return `<div class="modal-back" data-action="close-modal"><div class="modal" onclick="event.stopPropagation()">${content(m.props || {})}</div></div>`;
+  }
+
+  function modalWelcome() {
+    const isPreview = state.access !== 'student';
+    return `
+      <div class="px-5 py-4 border-b border-cyan-200 bg-gradient-to-r from-cyan-50 to-sky-50">
+        <h2 class="text-lg font-semibold text-cyan-900">Welcome to ChairSide 👋</h2>
+        <p class="text-[12px] text-slate-600 mt-1">PDA's clinical workflow trainer — focused on the operatory, not the office.</p>
+      </div>
+      <div class="p-5 space-y-3 text-[13px] text-slate-700">
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">1️⃣</div>
+          <div><strong>Pick a patient on the left.</strong> 25 sample patients with realistic medical histories. No real PHI.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">2️⃣</div>
+          <div><strong>SmartDoc is the signature feature.</strong> Pick from 15 clinical-note templates (Prophy, Restorative, RCT, Crown Seat, SRP…) — the SOAP framework pre-fills. Saved notes lock for legal compliance; amendments are tracked.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">3️⃣</div>
+          <div><strong>The Power Bar at the bottom</strong> shows today's production, monthly production, Tx acceptance %, and patient count — always visible while you work.</div>
+        </div>
+        ${isPreview ? `
+          <div class="bg-amber-50 border border-amber-200 rounded p-3">
+            <div class="font-semibold text-amber-900">You're in Preview mode.</div>
+            <div class="text-amber-800 text-[12px] mt-1">Click around freely. To save notes, persist your work, and earn your certificate, enroll at Premier Dental Academy.</div>
+            <a href="${SIGNUP_URL}" class="inline-block mt-2 bg-amber-500 hover:bg-amber-600 text-white text-[12px] font-semibold px-3 py-1.5 rounded">Enroll & unlock →</a>
+          </div>
+        ` : `
+          <div class="bg-emerald-50 border border-emerald-200 rounded p-3 text-[12px]"><strong>You're enrolled.</strong> Notes save to your account.</div>
+        `}
+        <div class="flex justify-end pt-2 border-t border-cyan-100">
+          <button data-action="close-modal" class="btn btn-primary">Got it</button>
+        </div>
+      </div>
+    `;
   }
 
   function modalNewPatient() {
@@ -747,6 +843,19 @@
         case 'toggle-sidebar': state.ui.sidebarOpen = !state.ui.sidebarOpen; rerender(); break;
         case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'audit-toggle': openModal('audit'); break;
+        case 'toggle-help': {
+          state.ui.helpMode = !state.ui.helpMode;
+          try { localStorage.setItem('pda.cs.helpModeOff', state.ui.helpMode ? '' : '1'); } catch(e){}
+          rerender();
+          break;
+        }
+        case 'dismiss-help': {
+          state.ui.helpMode = false;
+          try { localStorage.setItem('pda.cs.helpModeOff', '1'); } catch(e){}
+          rerender();
+          toast('Help banners hidden — toggle "Help" in the title bar to bring them back.', { ms: 3500 });
+          break;
+        }
         case 'set-module': setModule(t.dataset.module); break;
         case 'select-patient': selectPatient(t.dataset.id); break;
         case 'open-modal': openModal(t.dataset.modal); break;
@@ -889,9 +998,22 @@
 
   async function boot() {
     try {
-      state.user = await window.PDA.requireAuth?.('/login.html').then(() => window.PDA.getProfile()).catch(() => null);
-    } catch (e) { state.user = null; }
-    await loadState();
+      const session = await window.PDA?.getSession?.();
+      if (session) {
+        state.user = await window.PDA.getProfile();
+        state.access = 'student';
+      } else {
+        state.access = 'preview';
+      }
+    } catch (e) { state.user = null; state.access = 'preview'; }
+
+    if (state.access === 'preview') {
+      state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.patients.forEach(p => { p.csNotes = p.csNotes || []; });
+      state.currentPatientId = state.patients[0].id;
+    } else {
+      await loadState();
+    }
     const mq = window.matchMedia('(max-width: 768px)');
     const onMQ = () => {
       state.ui.isMobile = mq.matches;
@@ -900,6 +1022,10 @@
     };
     if (mq.addEventListener) mq.addEventListener('change', onMQ);
     render();
+    if (!localStorage.getItem('pda.cs.welcomed')) {
+      try { localStorage.setItem('pda.cs.welcomed', '1'); } catch(e){}
+      setTimeout(() => openModal('welcome'), 350);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', boot);

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Premier Dental Academy of Longview — Student Tools</title>
+  <title>Premier Dental Academy of Longview — Trainers</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -13,33 +13,87 @@
     .display { font-family: 'Fraunces', serif; }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
-  <main class="max-w-5xl mx-auto px-6 py-16">
-    <header class="mb-12">
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 text-slate-900 min-h-screen">
+  <main class="max-w-5xl mx-auto px-6 py-12 sm:py-16">
+
+    <header class="mb-10">
       <p class="text-sm uppercase tracking-widest text-teal-700 font-semibold">Premier Dental Academy of Longview</p>
-      <h1 class="display text-5xl mt-2">Student Practice Tools</h1>
-      <p class="text-slate-600 mt-3 max-w-2xl">Two web-based practice management trainers that mirror the software you'll see on day one in any East Texas dental office.</p>
+      <h1 class="display text-4xl sm:text-5xl mt-2 leading-tight">Train on the software<br/>before your first day.</h1>
+      <p class="text-slate-600 mt-3 max-w-2xl text-[15px]">Two web-based practice management trainers built for new dental assistants, RDAs, and front-desk staff. Practice for hours in a safe environment, then walk into any East Texas office already fluent.</p>
     </header>
+
+    <!-- Preview banner -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex flex-wrap items-center gap-3">
+      <span class="text-2xl">🔓</span>
+      <div class="flex-1 min-w-[200px]">
+        <div class="font-semibold text-amber-900">Try the preview free.</div>
+        <div class="text-amber-800 text-sm mt-0.5">Click into either trainer to see 5 essential tabs and click around with sample patients. Enroll at PDA to unlock the full 16-module curriculum, save your work, print PDFs, and earn your certificate.</div>
+      </div>
+      <a href="/" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded whitespace-nowrap">Enroll at PDA →</a>
+    </div>
 
     <div class="grid sm:grid-cols-2 gap-6">
       <a href="/tools/practice-pro" class="group block bg-white border border-slate-200 rounded-xl p-6 hover:border-teal-600 hover:shadow-lg transition">
-        <div class="h-2 w-12 bg-slate-900 rounded-full mb-4"></div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="h-2 w-12 bg-slate-900 rounded-full"></div>
+          <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Preview available</span>
+        </div>
         <h2 class="text-xl font-semibold text-slate-900">PDA Practice Pro</h2>
-        <p class="text-sm text-slate-500 mt-1">Practice management trainer</p>
-        <p class="text-slate-700 mt-4 text-sm leading-relaxed">Patient banner, full odontogram + perio chart, treatment plans, ledger with walkout PDF, schedule, and Cmd-K command palette.</p>
-        <p class="mt-4 text-teal-700 font-medium text-sm group-hover:underline">Open trainer →</p>
+        <p class="text-sm text-teal-700 mt-1 font-medium">Front-desk &amp; business management</p>
+        <ul class="text-[13px] text-slate-700 mt-4 space-y-1.5">
+          <li>📅 Schedule + drag-drop appointments</li>
+          <li>🦷 Anatomical tooth chart + perio exam</li>
+          <li>💵 Ledger, walkout statement, insurance claims</li>
+          <li>📊 Production reports, A/R aging, recall pipeline</li>
+          <li>📝 16 form templates with e-signature</li>
+          <li>💊 Rx pad with allergy interaction warnings</li>
+          <li>🏥 Vitals + lab case tracking + imaging viewer</li>
+        </ul>
+        <p class="mt-5 text-teal-700 font-medium text-sm group-hover:underline">Open trainer →</p>
       </a>
+
       <a href="/tools/chairside" class="group block bg-white border border-slate-200 rounded-xl p-6 hover:border-cyan-700 hover:shadow-lg transition">
-        <div class="h-2 w-12 bg-cyan-700 rounded-full mb-4"></div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="h-2 w-12 bg-cyan-700 rounded-full"></div>
+          <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Preview available</span>
+        </div>
         <h2 class="text-xl font-semibold text-slate-900">PDA ChairSide</h2>
-        <p class="text-sm text-slate-500 mt-1">Clinical workflow trainer</p>
-        <p class="text-slate-700 mt-4 text-sm leading-relaxed">Cyan ribbon, sticky patient banner, on-schedule color-coded grid, SmartDoc note templates, power bar stats, walkout receipt PDF.</p>
-        <p class="mt-4 text-cyan-700 font-medium text-sm group-hover:underline">Open trainer →</p>
+        <p class="text-sm text-cyan-700 mt-1 font-medium">Clinical workflow at the chair</p>
+        <ul class="text-[13px] text-slate-700 mt-4 space-y-1.5">
+          <li>👤 Sticky patient banner across every screen</li>
+          <li>📅 Color-coded OnSchedule operatory grid</li>
+          <li>📝 SmartDoc — 15 locked clinical-note templates</li>
+          <li>🦷 Restorative + perio summary views</li>
+          <li>⚠ Real-time medical alert chips</li>
+          <li>🧾 Receipt-style walkout PDF</li>
+          <li>📈 Live Power Bar with production stats</li>
+        </ul>
+        <p class="mt-5 text-cyan-700 font-medium text-sm group-hover:underline">Open trainer →</p>
       </a>
     </div>
 
-    <footer class="mt-16 text-xs text-slate-400">
-      Tools use fictional patient data only. No real PHI. © PDA.
+    <!-- Why PDA -->
+    <section class="mt-12 grid sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="text-2xl mb-2">🎯</div>
+        <h3 class="font-semibold text-slate-900">Built to teach</h3>
+        <p class="text-[13px] text-slate-600 mt-1">Every screen has plain-English explanations. New hires don't drown in 16 tabs — start with 5 essentials and grow as you go.</p>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="text-2xl mb-2">🦷</div>
+        <h3 class="font-semibold text-slate-900">Real workflows</h3>
+        <p class="text-[13px] text-slate-600 mt-1">25 fictional patients with realistic medical histories, insurance carriers, and chart findings. Practice charting, claims, perio, and SmartDoc notes against believable data.</p>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="text-2xl mb-2">📜</div>
+        <h3 class="font-semibold text-slate-900">In-house certification</h3>
+        <p class="text-[13px] text-slate-600 mt-1">Enrolled students earn a PDA Certificate of Completion. East Texas offices know what that means.</p>
+      </div>
+    </section>
+
+    <footer class="mt-12 pt-6 border-t border-slate-200 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
+      <span>Trainers use fictional patient data only — no real PHI. © Premier Dental Academy of Longview.</span>
+      <span>Visual treatments resemble industry-standard practice management software but are PDA-original products.</span>
     </footer>
   </main>
 </body>
