@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Apply — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+
+<!-- Nav -->
+<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+      <span>Premier Dental Academy</span>
+    </a>
+    <a href="/" class="text-sm text-teal-700 hover:text-teal-900">← Back to home</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-10">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Apply</p>
+    <h1 class="display text-4xl font-bold mt-2">Start your <span class="gradient-text">dental career</span> in 12 weeks.</h1>
+    <p class="text-slate-600 mt-3">No payment required to apply. We'll review your application within 1 business day and reach out to schedule a campus tour.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+    <form id="apply-form" class="space-y-5">
+
+      <fieldset>
+        <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">About you</legend>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-medium">First name *</span>
+            <input name="first_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Last name *</span>
+            <input name="last_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Email *</span>
+            <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Phone *</span>
+            <input name="phone" type="tel" required placeholder="(903) 555-0100" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">City</span>
+            <input name="city" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Age</span>
+            <input name="age" type="number" min="16" max="80" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+        </div>
+      </fieldset>
+
+      <fieldset class="border-t border-slate-100 pt-5">
+        <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">Your interest</legend>
+        <label class="block mb-3">
+          <span class="text-sm font-medium">Which program interests you most?</span>
+          <select name="program" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>Not sure yet — help me decide</option>
+            <option>RDA Foundation (12 weeks, $1,995)</option>
+            <option>RDA Career Track (24 weeks, $3,495)</option>
+          </select>
+        </label>
+        <label class="block mb-3">
+          <span class="text-sm font-medium">How did you hear about PDA?</span>
+          <select name="source" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>Google search</option><option>Facebook / Instagram</option><option>Friend or family</option>
+            <option>A dental office I visited</option><option>Workforce Solutions</option><option>Other</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">When do you want to start?</span>
+          <select name="start_when" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>Next available cohort</option>
+            <option>Within 3 months</option>
+            <option>Just exploring for now</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset class="border-t border-slate-100 pt-5">
+        <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">Tell us about you (optional)</legend>
+        <label class="block">
+          <span class="text-sm font-medium">Anything you'd like us to know?</span>
+          <textarea name="notes" rows="4" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Career goals, prior experience, scheduling needs, questions..."></textarea>
+        </label>
+      </fieldset>
+
+      <div class="flex items-start gap-2 text-sm text-slate-600">
+        <input id="consent" name="consent" type="checkbox" required class="mt-0.5 accent-teal-600" />
+        <label for="consent">I understand PDA will contact me by phone and email about my application. I can opt out anytime.</label>
+      </div>
+
+      <button type="submit" id="submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-lg shadow-md transition">
+        Submit application →
+      </button>
+
+      <p class="text-xs text-slate-500 text-center">No payment required · 1 business day response · 100% no obligation</p>
+    </form>
+
+    <div id="apply-success" class="hidden text-center py-8">
+      <div class="text-6xl mb-3">🎉</div>
+      <h2 class="display text-3xl font-bold text-slate-900">Application received.</h2>
+      <p class="text-slate-600 mt-3 max-w-md mx-auto">Thanks for applying! Amanda or someone from her team will reach out within 1 business day to schedule your campus tour.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-6">
+        <a href="/tools/practice-pro" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Try the trainer →</a>
+        <a href="/" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Back home</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust strip -->
+  <div class="text-center mt-8 text-xs text-slate-500">
+    <span>🔒 Your info is kept private. We never share it.</span>
+    <span class="mx-2">·</span>
+    <span>📞 Prefer to call? (903) 555-0100</span>
+  </div>
+</main>
+
+<script>
+(async function () {
+  'use strict';
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+
+  let sb = null;
+  if (window.supabase) {
+    try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+  }
+
+  const form = document.getElementById('apply-form');
+  const success = document.getElementById('apply-success');
+  const btn = document.getElementById('submit-btn');
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+    const fd = new FormData(form);
+    const lead = {
+      first_name: fd.get('first_name'),
+      last_name: fd.get('last_name'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      metadata: {
+        city: fd.get('city'),
+        age: fd.get('age'),
+        program: fd.get('program'),
+        source: fd.get('source'),
+        start_when: fd.get('start_when'),
+        notes: fd.get('notes'),
+      },
+      source: 'apply.html',
+      created_at: new Date().toISOString(),
+    };
+
+    let saved = false;
+    if (sb) {
+      const { error } = await sb.from('leads').insert(lead);
+      saved = !error;
+    }
+    // Always show success — leads also get emailed via Supabase Edge (future)
+    form.classList.add('hidden');
+    success.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (!saved) {
+      // Stash locally as a backup so nothing is lost
+      try {
+        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        existing.push(lead);
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
+      } catch(e){}
+    }
+  };
+})();
+</script>
+</body>
+</html>

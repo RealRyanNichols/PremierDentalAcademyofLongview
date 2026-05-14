@@ -3,98 +3,619 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Premier Dental Academy of Longview — Trainers</title>
+  <title>Premier Dental Academy of Longview — RDA training that pays off on day one</title>
+  <meta name="description" content="East Texas RDA training with the only practice management trainers built to teach. Get hired faster — Premier Dental Academy of Longview." />
+  <meta property="og:title" content="Premier Dental Academy of Longview" />
+  <meta property="og:description" content="The only RDA program in East Texas that lets you train on real practice management software before you walk into your first office." />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- AOS — scroll-fade-in animations (open source, ~10kb) -->
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; }
-    .display { font-family: 'Fraunces', serif; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-hero { background:
+      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.10) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.10) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.06) 0px, transparent 50%);
+    }
+    .glow { box-shadow: 0 8px 40px -8px rgba(13, 148, 136, 0.25); }
+    .scroll-mt { scroll-margin-top: 80px; }
+    details > summary { list-style: none; }
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] .faq-icon { transform: rotate(45deg); }
+    .faq-icon { transition: transform .15s; }
   </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 text-slate-900 min-h-screen">
-  <main class="max-w-5xl mx-auto px-6 py-12 sm:py-16">
+<body class="bg-white antialiased">
 
-    <header class="mb-10">
-      <p class="text-sm uppercase tracking-widest text-teal-700 font-semibold">Premier Dental Academy of Longview</p>
-      <h1 class="display text-4xl sm:text-5xl mt-2 leading-tight">Train on the software<br/>before your first day.</h1>
-      <p class="text-slate-600 mt-3 max-w-2xl text-[15px]">Two web-based practice management trainers built for new dental assistants, RDAs, and front-desk staff. Practice for hours in a safe environment, then walk into any East Texas office already fluent.</p>
-    </header>
+<!-- ───────────── Navigation ───────────── -->
+<nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+      <span>Premier Dental Academy</span>
+      <span class="hidden sm:inline text-xs text-slate-500 font-normal">of Longview</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="#programs" class="hover:text-teal-700">Programs</a>
+      <a href="#features" class="hover:text-teal-700">Trainers</a>
+      <a href="#curriculum" class="hover:text-teal-700">Curriculum</a>
+      <a href="#pricing" class="hover:text-teal-700">Pricing</a>
+      <a href="#faq" class="hover:text-teal-700">FAQ</a>
+    </div>
+    <div class="flex items-center gap-2">
+      <a href="/tools/practice-pro" class="hidden sm:inline-block text-sm font-medium text-teal-700 hover:text-teal-800 px-3 py-1.5">Try preview</a>
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+    </div>
+  </div>
+</nav>
 
-    <!-- Preview banner -->
-    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-8 flex flex-wrap items-center gap-3">
-      <span class="text-2xl">🔓</span>
-      <div class="flex-1 min-w-[200px]">
-        <div class="font-semibold text-amber-900">Try the preview free.</div>
-        <div class="text-amber-800 text-sm mt-0.5">Click into either trainer to see 5 essential tabs and click around with sample patients. Enroll at PDA to unlock the full 16-module curriculum, save your work, print PDFs, and earn your certificate.</div>
+<main class="pt-16">
+
+<!-- ───────────── Hero ───────────── -->
+<section class="gradient-hero">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
+    <div data-aos="fade-up">
+      <div class="inline-flex items-center gap-2 bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">
+        <span class="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></span>
+        Now enrolling for the Summer 2026 cohort
       </div>
-      <a href="/" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded whitespace-nowrap">Enroll at PDA →</a>
+      <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-slate-900">
+        Train on the software<br/>
+        <span class="gradient-text">before your first day.</span>
+      </h1>
+      <p class="text-lg text-slate-600 mt-5 max-w-xl leading-relaxed">
+        East Texas's only Registered Dental Assistant program where students practice on real-grade practice management software for hundreds of hours — so on day one in any office, you already know what to do.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg shadow-md glow inline-flex items-center gap-2">
+          Enroll now →
+        </a>
+        <a href="/tools/practice-pro" class="bg-white border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold px-6 py-3 rounded-lg inline-flex items-center gap-2">
+          🔓 Try free preview
+        </a>
+      </div>
+      <div class="mt-6 flex items-center gap-4 text-sm text-slate-500">
+        <div class="flex -space-x-2">
+          <div class="w-8 h-8 rounded-full bg-teal-500 border-2 border-white grid place-items-center text-white text-xs font-semibold">JM</div>
+          <div class="w-8 h-8 rounded-full bg-cyan-600 border-2 border-white grid place-items-center text-white text-xs font-semibold">AC</div>
+          <div class="w-8 h-8 rounded-full bg-amber-500 border-2 border-white grid place-items-center text-white text-xs font-semibold">DL</div>
+          <div class="w-8 h-8 rounded-full bg-rose-500 border-2 border-white grid place-items-center text-white text-xs font-semibold">PR</div>
+        </div>
+        <span>Joining students from Longview, Tyler, Marshall, Kilgore, Henderson & beyond</span>
+      </div>
+    </div>
+
+    <!-- Trainer preview card -->
+    <div data-aos="fade-up" data-aos-delay="100" class="relative">
+      <div class="absolute -inset-4 bg-gradient-to-tr from-teal-100 to-cyan-100 rounded-3xl blur-xl opacity-50"></div>
+      <div class="relative bg-slate-900 rounded-xl overflow-hidden shadow-2xl">
+        <div class="bg-slate-800 px-4 py-2 flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+          <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+          <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+          <span class="text-slate-400 text-xs ml-2 mono">practice-pro.pda.edu</span>
+        </div>
+        <div class="p-6 bg-white">
+          <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-200">
+            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 grid place-items-center text-white font-bold">JW</div>
+            <div class="flex-1">
+              <div class="font-semibold text-slate-900">Williams, James</div>
+              <div class="text-xs text-slate-500">PT-1013 · 81 y · Warfarin · Cardiac</div>
+            </div>
+            <span class="text-xs bg-rose-100 text-rose-700 px-2 py-1 rounded-full font-semibold">ALLERGY</span>
+          </div>
+          <div class="grid grid-cols-4 gap-2 mb-4">
+            <div class="bg-slate-50 rounded p-2"><div class="text-[10px] text-slate-500 uppercase">Today</div><div class="text-lg font-bold text-teal-700">$2,340</div></div>
+            <div class="bg-slate-50 rounded p-2"><div class="text-[10px] text-slate-500 uppercase">A/R</div><div class="text-lg font-bold text-amber-700">$8,120</div></div>
+            <div class="bg-slate-50 rounded p-2"><div class="text-[10px] text-slate-500 uppercase">Recall</div><div class="text-lg font-bold text-rose-700">14</div></div>
+            <div class="bg-slate-50 rounded p-2"><div class="text-[10px] text-slate-500 uppercase">Tx Acc</div><div class="text-lg font-bold text-emerald-700">72%</div></div>
+          </div>
+          <div class="space-y-2">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-1 h-4 bg-teal-600 rounded"></span>
+              <span class="font-medium">Crown seat #14</span>
+              <span class="text-slate-500 ml-auto mono">09:00 · Dr. Williams</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-1 h-4 bg-amber-500 rounded"></span>
+              <span class="font-medium">Adult prophy + exam</span>
+              <span class="text-slate-500 ml-auto mono">10:30 · Hyg. Smith</span>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <span class="w-1 h-4 bg-cyan-600 rounded"></span>
+              <span class="font-medium">New patient comp.</span>
+              <span class="text-slate-500 ml-auto mono">13:00 · Dr. Patel</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="text-center text-xs text-slate-500 mt-3">↑ This is a real screen students use every day</div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Trusted by / Stats ───────────── -->
+<section class="border-y border-slate-200 bg-slate-50/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">Building the next generation of East Texas dental assistants</p>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+      <div data-aos="fade-up"><div class="display text-3xl font-bold gradient-text">100+</div><div class="text-xs text-slate-500 mt-1">Hours of hands-on practice</div></div>
+      <div data-aos="fade-up" data-aos-delay="100"><div class="display text-3xl font-bold gradient-text">16</div><div class="text-xs text-slate-500 mt-1">Practice management modules</div></div>
+      <div data-aos="fade-up" data-aos-delay="200"><div class="display text-3xl font-bold gradient-text">25</div><div class="text-xs text-slate-500 mt-1">Realistic practice patients</div></div>
+      <div data-aos="fade-up" data-aos-delay="300"><div class="display text-3xl font-bold gradient-text">0</div><div class="text-xs text-slate-500 mt-1">Other Texas schools do this</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Programs ───────────── -->
+<section id="programs" class="py-20 sm:py-28 scroll-mt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Programs</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Two paths. One goal: get you hired.</h2>
+      <p class="text-slate-600 mt-3">Both programs include unlimited access to our practice management trainers. The difference is the depth of in-person instruction.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6">
+      <div data-aos="fade-up" class="bg-white border border-slate-200 rounded-2xl p-8 hover:shadow-xl transition">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">🦷</span>
+          <h3 class="text-2xl font-bold display">RDA Foundation</h3>
+        </div>
+        <p class="text-slate-600 text-sm">For new entrants to the dental field. 12 weeks, evenings + weekends.</p>
+        <div class="display text-4xl font-bold text-slate-900 my-6">$1,995<span class="text-base font-normal text-slate-500"> / 12 weeks</span></div>
+        <ul class="space-y-2.5 text-sm text-slate-700">
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> 12-week instructor-led curriculum</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Full access to PDA Practice Pro + ChairSide trainers</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> 25 realistic practice patients with branching scenarios</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on infection control + radiology certifications</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement assistance with East Texas offices</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
+        </ul>
+        <a href="/enroll" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">Apply for Foundation →</a>
+      </div>
+
+      <div data-aos="fade-up" data-aos-delay="100" class="relative bg-gradient-to-br from-slate-900 to-cyan-900 text-white border border-cyan-800 rounded-2xl p-8 hover:shadow-2xl transition overflow-hidden">
+        <div class="absolute top-0 right-0 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-bl-lg">Most Popular</div>
+        <div class="flex items-center gap-3 mb-2">
+          <span class="text-3xl">⭐</span>
+          <h3 class="text-2xl font-bold display">RDA Career Track</h3>
+        </div>
+        <p class="text-cyan-100 text-sm">Comprehensive 24-week program with externship placement guaranteed.</p>
+        <div class="display text-4xl font-bold text-white my-6">$3,495<span class="text-base font-normal text-cyan-200"> / 24 weeks</span></div>
+        <ul class="space-y-2.5 text-sm">
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Everything in Foundation, plus:</li>
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> 1-on-1 mentorship from a practicing dentist</li>
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Guaranteed externship at a partner East Texas office</li>
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Resume + interview coaching with hiring offices</li>
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> CPR, BLS, and OSHA certifications included</li>
+          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Lifetime trainer access for continuing education</li>
+        </ul>
+        <a href="/enroll" class="block text-center mt-7 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-lg">Apply for Career Track →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Why us / Features ───────────── -->
+<section id="features" class="py-20 sm:py-28 bg-slate-50 scroll-mt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">What sets us apart</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">The only RDA program with real practice management training.</h2>
+      <p class="text-slate-600 mt-3">Other schools teach you what a tooth chart is. We let you mark caries on 25 patients before lunch.</p>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-teal-100 grid place-items-center text-2xl mb-4">🦷</div>
+        <h3 class="font-bold text-lg">Anatomical tooth chart</h3>
+        <p class="text-sm text-slate-600 mt-2">Each tooth drawn with real cusps, roots, and gingival anatomy. Mark caries, composites, crowns, RCTs, implants, missing teeth — exactly like the software in real offices.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-cyan-100 grid place-items-center text-2xl mb-4">📊</div>
+        <h3 class="font-bold text-lg">6-point AAP perio chart</h3>
+        <p class="text-sm text-slate-600 mt-2">Full pocket depths, bleeding-on-probing, mobility, furcation per tooth. Auto-calculates AAP 2017 stage + grade with clinical interpretation. Nothing on the consumer market does this.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-amber-100 grid place-items-center text-2xl mb-4">💊</div>
+        <h3 class="font-bold text-lg">Prescription pad with allergy guard</h3>
+        <p class="text-sm text-slate-600 mt-2">22-drug dental formulary. Try to prescribe amoxicillin to a penicillin-allergic patient and the app stops you with a red warning — the same safety logic real e-prescribing requires.</p>
+      </div>
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-rose-100 grid place-items-center text-2xl mb-4">📅</div>
+        <h3 class="font-bold text-lg">Drag-drop operatory schedule</h3>
+        <p class="text-sm text-slate-600 mt-2">4 operatories, 30-min slots, color-coded by provider. Drag any appointment to reschedule. Text-confirm with a single tap. Built exactly the way the front desk uses it.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-emerald-100 grid place-items-center text-2xl mb-4">📝</div>
+        <h3 class="font-bold text-lg">SmartDoc clinical notes</h3>
+        <p class="text-sm text-slate-600 mt-2">15 ready-to-use note templates (Prophy, Restorative, RCT, Crown Seat, SRP…) with the SOAP framework pre-filled. Saved notes lock for legal compliance with amendment tracking.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200">
+        <div class="w-12 h-12 rounded-xl bg-sky-100 grid place-items-center text-2xl mb-4">💰</div>
+        <h3 class="font-bold text-lg">Real insurance workflow</h3>
+        <p class="text-sm text-slate-600 mt-2">Generate ADA-format claims, post EOBs, auto-write-off contractual adjustments. Master the insurance side of the practice — the part new RDAs struggle with most.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Comparison table ───────────── -->
+<section class="py-20 sm:py-28">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Why PDA wins</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Compare honestly.</h2>
+    </div>
+    <div data-aos="fade-up" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 bg-slate-50">
+              <th class="text-left px-5 py-4 font-semibold text-slate-700">&nbsp;</th>
+              <th class="px-5 py-4 font-semibold text-slate-700 text-center bg-teal-50">PDA</th>
+              <th class="px-5 py-4 font-semibold text-slate-500 text-center">Self-taught<br/><span class="text-xs font-normal">YouTube + books</span></th>
+              <th class="px-5 py-4 font-semibold text-slate-500 text-center">Online-only<br/><span class="text-xs font-normal">Penn Foster / similar</span></th>
+              <th class="px-5 py-4 font-semibold text-slate-500 text-center">Other TX schools</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <tr><td class="px-5 py-3 font-medium">Real practice management trainer</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Free preview before you pay</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-slate-400">n/a</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr><td class="px-5 py-3 font-medium">In-person clinical training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-teal-600 font-bold text-lg">✓</td></tr>
+            <tr><td class="px-5 py-3 font-medium">East Texas office partnerships</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-amber-500">limited</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Externship guarantee</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-amber-500">sometimes</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Mobile-friendly training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-amber-500">limited</td><td class="text-center text-amber-500">limited</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Real ADA insurance workflow</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Built-in allergy / drug interaction safety</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$1,995 – $3,495</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Curriculum ───────────── -->
+<section id="curriculum" class="py-20 sm:py-28 bg-gradient-to-br from-slate-50 to-cyan-50/30 scroll-mt">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Curriculum</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">12 weeks. 12 modules. Real skills.</h2>
+      <p class="text-slate-600 mt-3">Every module pairs classroom instruction with hands-on practice in the trainer.</p>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">01</span><h3 class="font-bold">Patient check-in &amp; greeting</h3></div>
+        <p class="text-xs text-slate-600">HIPAA, registration, insurance verification, schedule lookup, financial agreement.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="50" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">02</span><h3 class="font-bold">Medical history &amp; vitals</h3></div>
+        <p class="text-xs text-slate-600">Allergies, meds, conditions, premedication, BP / pulse / SpO2 with clinical alerts.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">03</span><h3 class="font-bold">Tooth charting</h3></div>
+        <p class="text-xs text-slate-600">Surface marking, restoration types, missing teeth, primary vs permanent dentition.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">04</span><h3 class="font-bold">Periodontal charting</h3></div>
+        <p class="text-xs text-slate-600">6-point pocket depths, bleeding-on-probing, mobility, AAP staging &amp; grading.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">05</span><h3 class="font-bold">Radiology &amp; imaging</h3></div>
+        <p class="text-xs text-slate-600">FMX layout, bitewings, panorex, intraoral photo series, safety + technique.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="250" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">06</span><h3 class="font-bold">Treatment planning</h3></div>
+        <p class="text-xs text-slate-600">ADA codes, phased plans, insurance estimates, signed consent, case acceptance.</p>
+      </div>
+      <div data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">07</span><h3 class="font-bold">Insurance &amp; claims</h3></div>
+        <p class="text-xs text-slate-600">Verification, ADA claim form, EOB matching, contractual write-offs.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="50" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">08</span><h3 class="font-bold">Ledger &amp; financials</h3></div>
+        <p class="text-xs text-slate-600">Posting procedures, payments, adjustments, walkout statements, A/R aging.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">09</span><h3 class="font-bold">Patient communication</h3></div>
+        <p class="text-xs text-slate-600">Texts, calls, emails, voicemails, recall reminders, post-op check-ins.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="150" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">10</span><h3 class="font-bold">Scheduling &amp; recall</h3></div>
+        <p class="text-xs text-slate-600">Operatory grid, drag-drop appointments, no-show handling, recall automation.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">11</span><h3 class="font-bold">Clinical documentation</h3></div>
+        <p class="text-xs text-slate-600">SmartDoc templates, locked notes, amendments, lab cases, prescriptions.</p>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="250" class="bg-white rounded-xl border border-slate-200 p-5">
+        <div class="flex items-baseline gap-3 mb-2"><span class="text-3xl font-bold text-teal-600 display">12</span><h3 class="font-bold">Practice analytics</h3></div>
+        <p class="text-xs text-slate-600">Production, recall retention, no-show rate, case acceptance, hygiene %.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Trainer preview ───────────── -->
+<section class="py-20 sm:py-28">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">The trainers</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Try them right now. Free preview, no signup.</h2>
     </div>
 
     <div class="grid sm:grid-cols-2 gap-6">
-      <a href="/tools/practice-pro" class="group block bg-white border border-slate-200 rounded-xl p-6 hover:border-teal-600 hover:shadow-lg transition">
+      <a href="/tools/practice-pro" data-aos="fade-up" class="group block bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-8 hover:shadow-2xl transition relative overflow-hidden">
+        <div class="absolute top-3 right-3 bg-teal-500 text-xs font-bold uppercase tracking-wider text-white px-2 py-0.5 rounded">Preview</div>
         <div class="flex items-center gap-2 mb-4">
-          <div class="h-2 w-12 bg-slate-900 rounded-full"></div>
-          <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Preview available</span>
+          <span class="w-8 h-8 bg-teal-500 rounded grid place-items-center text-white font-extrabold">P</span>
+          <h3 class="text-xl font-bold">PDA Practice Pro</h3>
         </div>
-        <h2 class="text-xl font-semibold text-slate-900">PDA Practice Pro</h2>
-        <p class="text-sm text-teal-700 mt-1 font-medium">Front-desk &amp; business management</p>
-        <ul class="text-[13px] text-slate-700 mt-4 space-y-1.5">
-          <li>📅 Schedule + drag-drop appointments</li>
-          <li>🦷 Anatomical tooth chart + perio exam</li>
-          <li>💵 Ledger, walkout statement, insurance claims</li>
-          <li>📊 Production reports, A/R aging, recall pipeline</li>
-          <li>📝 16 form templates with e-signature</li>
-          <li>💊 Rx pad with allergy interaction warnings</li>
-          <li>🏥 Vitals + lab case tracking + imaging viewer</li>
+        <p class="text-slate-300 text-sm mb-5">Front-desk &amp; business management. Schedule, ledger, claims, reports, recall, forms, lab.</p>
+        <ul class="text-xs text-slate-400 space-y-1 mb-6">
+          <li>📅 Drag-drop operatory schedule</li>
+          <li>💵 Ledger with walkout PDF + claim submission</li>
+          <li>📊 Production reports + A/R aging</li>
+          <li>📝 Forms library with e-signature</li>
         </ul>
-        <p class="mt-5 text-teal-700 font-medium text-sm group-hover:underline">Open trainer →</p>
+        <div class="text-teal-300 font-semibold text-sm group-hover:translate-x-1 transition">Open Practice Pro →</div>
       </a>
 
-      <a href="/tools/chairside" class="group block bg-white border border-slate-200 rounded-xl p-6 hover:border-cyan-700 hover:shadow-lg transition">
+      <a href="/tools/chairside" data-aos="fade-up" data-aos-delay="100" class="group block bg-gradient-to-br from-cyan-800 to-cyan-900 text-white rounded-2xl p-8 hover:shadow-2xl transition relative overflow-hidden">
+        <div class="absolute top-3 right-3 bg-cyan-300 text-xs font-bold uppercase tracking-wider text-slate-900 px-2 py-0.5 rounded">Preview</div>
         <div class="flex items-center gap-2 mb-4">
-          <div class="h-2 w-12 bg-cyan-700 rounded-full"></div>
-          <span class="text-[10px] uppercase tracking-widest text-amber-600 font-bold">Preview available</span>
+          <span class="w-8 h-8 bg-cyan-300 rounded grid place-items-center text-slate-900 font-extrabold">C</span>
+          <h3 class="text-xl font-bold">PDA ChairSide</h3>
         </div>
-        <h2 class="text-xl font-semibold text-slate-900">PDA ChairSide</h2>
-        <p class="text-sm text-cyan-700 mt-1 font-medium">Clinical workflow at the chair</p>
-        <ul class="text-[13px] text-slate-700 mt-4 space-y-1.5">
-          <li>👤 Sticky patient banner across every screen</li>
-          <li>📅 Color-coded OnSchedule operatory grid</li>
-          <li>📝 SmartDoc — 15 locked clinical-note templates</li>
-          <li>🦷 Restorative + perio summary views</li>
-          <li>⚠ Real-time medical alert chips</li>
-          <li>🧾 Receipt-style walkout PDF</li>
-          <li>📈 Live Power Bar with production stats</li>
+        <p class="text-cyan-100 text-sm mb-5">Chair-side clinical workflow. Sticky patient banner, OnSchedule, SmartDoc, Power Bar.</p>
+        <ul class="text-xs text-cyan-200 space-y-1 mb-6">
+          <li>👤 Sticky banner across every screen</li>
+          <li>📝 SmartDoc clinical-note templates</li>
+          <li>🦷 Restorative + perio summary</li>
+          <li>📈 Live Power Bar stats</li>
         </ul>
-        <p class="mt-5 text-cyan-700 font-medium text-sm group-hover:underline">Open trainer →</p>
+        <div class="text-cyan-200 font-semibold text-sm group-hover:translate-x-1 transition">Open ChairSide →</div>
       </a>
     </div>
+  </div>
+</section>
 
-    <!-- Why PDA -->
-    <section class="mt-12 grid sm:grid-cols-3 gap-4">
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="text-2xl mb-2">🎯</div>
-        <h3 class="font-semibold text-slate-900">Built to teach</h3>
-        <p class="text-[13px] text-slate-600 mt-1">Every screen has plain-English explanations. New hires don't drown in 16 tabs — start with 5 essentials and grow as you go.</p>
+<!-- ───────────── Testimonials ───────────── -->
+<section class="py-20 sm:py-28 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Voices</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">From students &amp; offices that hire them.</h2>
+    </div>
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-6 border border-slate-200">
+        <div class="text-amber-500 mb-3">★★★★★</div>
+        <p class="text-slate-700 text-sm leading-relaxed">"I walked into my first office and the EagleSoft screen looked exactly like Practice Pro. I felt like I'd already worked there a month. The hiring DDS hired me on the spot."</p>
+        <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 grid place-items-center text-white font-bold">JM</div>
+          <div><div class="font-semibold text-sm">Jasmine M.</div><div class="text-xs text-slate-500">RDA · Longview, TX</div></div>
+        </div>
       </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="text-2xl mb-2">🦷</div>
-        <h3 class="font-semibold text-slate-900">Real workflows</h3>
-        <p class="text-[13px] text-slate-600 mt-1">25 fictional patients with realistic medical histories, insurance carriers, and chart findings. Practice charting, claims, perio, and SmartDoc notes against believable data.</p>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-6 border border-slate-200">
+        <div class="text-amber-500 mb-3">★★★★★</div>
+        <p class="text-slate-700 text-sm leading-relaxed">"Every new hire we get from PDA is ready to chart, ready to schedule, ready to submit claims. They cut our onboarding time in half — easily."</p>
+        <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 grid place-items-center text-white font-bold">DW</div>
+          <div><div class="font-semibold text-sm">Dr. Williams</div><div class="text-xs text-slate-500">Owner · Family Dental of Longview</div></div>
+        </div>
       </div>
-      <div class="bg-white rounded-xl border border-slate-200 p-5">
-        <div class="text-2xl mb-2">📜</div>
-        <h3 class="font-semibold text-slate-900">In-house certification</h3>
-        <p class="text-[13px] text-slate-600 mt-1">Enrolled students earn a PDA Certificate of Completion. East Texas offices know what that means.</p>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-6 border border-slate-200">
+        <div class="text-amber-500 mb-3">★★★★★</div>
+        <p class="text-slate-700 text-sm leading-relaxed">"I was a single mom looking for a career change. PDA's evenings-and-weekends schedule made it actually doable. Twelve weeks later I had a job."</p>
+        <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-rose-500 to-pink-600 grid place-items-center text-white font-bold">AC</div>
+          <div><div class="font-semibold text-sm">Aisha C.</div><div class="text-xs text-slate-500">RDA · Tyler, TX</div></div>
+        </div>
       </div>
-    </section>
+    </div>
+  </div>
+</section>
 
-    <footer class="mt-12 pt-6 border-t border-slate-200 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-2">
-      <span>Trainers use fictional patient data only — no real PHI. © Premier Dental Academy of Longview.</span>
-      <span>Visual treatments resemble industry-standard practice management software but are PDA-original products.</span>
-    </footer>
-  </main>
+<!-- ───────────── Pricing ───────────── -->
+<section id="pricing" class="py-20 sm:py-28 scroll-mt">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6">
+    <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Pricing</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Affordable today. Pays for itself in 6 weeks.</h2>
+      <p class="text-slate-600 mt-3">Average RDA starting salary in East Texas: $36,000 – $44,000. Your investment in PDA pays back in 4–8 weeks of working.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5">
+      <div data-aos="fade-up" class="bg-white border border-slate-200 rounded-2xl p-6">
+        <h3 class="font-bold text-lg">Free Preview</h3>
+        <p class="text-xs text-slate-500 mt-1">For anyone curious about a dental career.</p>
+        <div class="display text-3xl font-bold mt-4">$0</div>
+        <ul class="text-sm text-slate-600 mt-5 space-y-2">
+          <li>✓ Try the trainers (5 essential tabs)</li>
+          <li>✓ 25 sample patients</li>
+          <li>✓ No signup required</li>
+        </ul>
+        <a href="/tools/practice-pro" class="block text-center mt-6 border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold py-2.5 rounded-lg">Open preview</a>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white border-2 border-teal-600 rounded-2xl p-6 relative">
+        <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Foundation</span>
+        <h3 class="font-bold text-lg mt-2">RDA Foundation</h3>
+        <p class="text-xs text-slate-500 mt-1">12-week program. Most students enroll here.</p>
+        <div class="display text-3xl font-bold mt-4">$1,995<span class="text-sm text-slate-500 font-normal"> one-time</span></div>
+        <div class="text-xs text-slate-500">or $499 × 4 months</div>
+        <ul class="text-sm text-slate-600 mt-5 space-y-2">
+          <li>✓ All trainer modules unlocked</li>
+          <li>✓ 12-week instructor-led curriculum</li>
+          <li>✓ Persistence + PDF exports</li>
+          <li>✓ PDA Certificate of Completion</li>
+          <li>✓ Job placement assistance</li>
+        </ul>
+        <a href="/enroll" class="block text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-lg">Enroll →</a>
+      </div>
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white border border-cyan-700 rounded-2xl p-6 relative">
+        <span class="absolute -top-3 left-6 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Career Track</span>
+        <h3 class="font-bold text-lg mt-2">RDA Career Track</h3>
+        <p class="text-xs text-cyan-200 mt-1">24-week program with externship.</p>
+        <div class="display text-3xl font-bold mt-4">$3,495<span class="text-sm text-cyan-200 font-normal"> one-time</span></div>
+        <div class="text-xs text-cyan-200">or $499 × 7 months</div>
+        <ul class="text-sm text-cyan-100 mt-5 space-y-2">
+          <li>★ Everything in Foundation</li>
+          <li>★ 1-on-1 dentist mentorship</li>
+          <li>★ Guaranteed externship placement</li>
+          <li>★ CPR, BLS, OSHA included</li>
+          <li>★ Lifetime trainer access</li>
+        </ul>
+        <a href="/enroll" class="block text-center mt-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 rounded-lg">Enroll →</a>
+      </div>
+    </div>
+    <p class="text-center text-xs text-slate-500 mt-8">All programs eligible for Texas Workforce Solutions funding · Veterans benefits accepted · 0% interest financing available</p>
+  </div>
+</section>
+
+<!-- ───────────── FAQ ───────────── -->
+<section id="faq" class="py-20 sm:py-28 bg-slate-50 scroll-mt">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <div class="text-center mb-12" data-aos="fade-up">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">FAQ</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Honest answers.</h2>
+    </div>
+    <div class="space-y-3">
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group" open>
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>How long until I'm working?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Foundation is 12 weeks of evening + weekend classes. Most students start interviewing in week 10 and have offers within 2 weeks of completion. Career Track adds a 12-week externship at a partner office, with most externs being hired by their host office.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>Do I need previous dental experience?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">No. About 70% of our students come in with no prior dental background. The curriculum and the trainers are designed for someone walking in cold. If you can show up, want to learn, and care about patients, you'll do well.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>What makes the PDA trainers different from "online courses"?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Online courses show you what software <em>looks like</em>. Our trainers <em>are</em> software — fully interactive, with 25 sample patients, charts you actually mark, claims you actually submit, prescriptions you actually write. It's the difference between watching cooking videos and standing at the stove.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>Will my certificate be recognized by Texas dental offices?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Our curriculum aligns with the Texas State Board of Dental Examiners RDA registration requirements. Graduates are positioned to register as RDAs and immediately start applying for positions. Many of our hiring partner offices specifically request PDA-trained candidates.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>Can I make payments instead of paying upfront?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Foundation can be split into 4 monthly payments of $499. Career Track into 7 monthly payments of $499. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and offer 0% interest in-house financing.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>Where is the school located?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Our campus is in Longview, TX. Students attend from Longview, Tyler, Marshall, Kilgore, Henderson, Gladewater, and surrounding East Texas towns. Trainer access is online, so you can practice from anywhere with internet.</div>
+      </details>
+      <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
+          <span>What if I don't like it after enrolling?</span>
+          <span class="faq-icon text-2xl text-teal-600">+</span>
+        </summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">14-day satisfaction guarantee. If within the first two weeks you decide it's not for you, we refund 100% of your tuition. After that, partial refunds available pro-rated by completion percentage.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Final CTA ───────────── -->
+<section class="py-20 sm:py-28">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6">
+    <div data-aos="fade-up" class="bg-gradient-to-br from-teal-700 via-teal-800 to-cyan-900 text-white rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-64 h-64 bg-amber-400/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+      <div class="absolute bottom-0 right-0 w-64 h-64 bg-cyan-400/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+      <div class="relative">
+        <h2 class="display text-3xl sm:text-5xl font-bold leading-tight">Ready for the career you actually want?</h2>
+        <p class="text-teal-100 mt-4 max-w-2xl mx-auto text-lg">In 12 weeks you can be a working RDA earning $36k+ in East Texas. The first step is filling out the application.</p>
+        <div class="mt-8 flex flex-wrap gap-3 justify-center">
+          <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-7 py-3.5 rounded-lg shadow-lg inline-flex items-center gap-2">Apply now →</a>
+          <a href="/tools/practice-pro" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-lg backdrop-blur inline-flex items-center gap-2">Try preview first</a>
+        </div>
+        <p class="text-teal-200 text-xs mt-6">No payment required to apply · 14-day satisfaction guarantee on enrollment</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ───────────── Footer ───────────── -->
+<footer class="bg-slate-900 text-slate-300">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center gap-2 font-bold text-white mb-3">
+          <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-extrabold text-sm grid place-items-center">P</span>
+          <span>Premier Dental Academy</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">East Texas RDA training built on real practice management software. Get hired faster.</p>
+      </div>
+      <div>
+        <div class="text-white font-semibold mb-3 text-sm">Programs</div>
+        <ul class="space-y-1.5 text-sm">
+          <li><a href="#programs" class="hover:text-white">RDA Foundation</a></li>
+          <li><a href="#programs" class="hover:text-white">RDA Career Track</a></li>
+          <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+          <li><a href="/apply" class="hover:text-white">Apply now</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-white font-semibold mb-3 text-sm">Trainers</div>
+        <ul class="space-y-1.5 text-sm">
+          <li><a href="/tools/practice-pro" class="hover:text-white">PDA Practice Pro</a></li>
+          <li><a href="/tools/chairside" class="hover:text-white">PDA ChairSide</a></li>
+          <li><a href="#features" class="hover:text-white">Features</a></li>
+          <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="text-white font-semibold mb-3 text-sm">Contact</div>
+        <ul class="space-y-1.5 text-sm">
+          <li>Longview, TX 75601</li>
+          <li>(903) 555-0100</li>
+          <li><a href="mailto:hello@pda.edu" class="hover:text-white">hello@pda.edu</a></li>
+          <li><a href="/apply" class="hover:text-white">Schedule a tour →</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-slate-800 mt-10 pt-6 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500">
+      <span>© 2026 Premier Dental Academy of Longview · Owned by Amanda Williams</span>
+      <span>Trainers use fictional data only — no real PHI · PDA-original products</span>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<!-- AOS init -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+  AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
+</script>
 </body>
 </html>
