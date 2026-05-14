@@ -139,8 +139,13 @@
   const SEED = window.PDA_SEED;
 
   // ── State ──────────────────────────────────────────────────────
+  // Marketing site (sign-up / pricing) — students return here to enroll
+  const MARKETING_URL = '/';     // landing page
+  const SIGNUP_URL    = '/';     // change to your enrollment URL
+
   const state = {
     user: null,
+    access: 'preview',        // 'preview' | 'student' — set on boot
     patients: [],
     currentPatientId: null,
     module: 'today',        // today | overview | chart | perio | tx | ledger | comms | schedule | recall | docs
@@ -150,9 +155,11 @@
       chartMarker: 'caries',
       toothContext: null,
       paletteOpen: false,
-      modal: null,          // { type, props }
+      modal: null,
       patientFilter: '',
-      patientFilterTab: 'all', // all | recall | new | overdue
+      patientFilterTab: 'all',
+      helpMode: !localStorage.getItem('pda.pp.helpModeOff'),    // explanatory banners on by default
+      skillLevel: localStorage.getItem('pda.pp.skillLevel') || 'new', // new | standard | all
     },
     audit: [],
   };
@@ -175,6 +182,8 @@
     }
   }
   const saveSoon = debounce(() => {
+    // Preview mode: do NOT persist — keep the preview ephemeral so each new visitor starts fresh
+    if (state.access !== 'student') return;
     Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
   }, 350);
 
@@ -211,6 +220,7 @@
     const root = document.getElementById('app');
     root.innerHTML = `
       ${renderTopChrome()}
+      ${renderPreviewStrip()}
       ${renderRibbon()}
       <div class="flex-1 flex overflow-hidden">
         ${renderSidebar()}
@@ -230,67 +240,138 @@
 
   // ── Top chrome (dark navy title bar) ───────────────────────────
   function renderTopChrome() {
-    const p = currentPatient();
+    const isStudent = state.access === 'student';
     return `
       <header class="pp-chrome flex items-center justify-between px-3 py-1.5 text-[12px]">
         <div class="flex items-center gap-3">
           <button data-action="toggle-sidebar" class="md:hidden text-slate-300 hover:text-white">☰</button>
-          <span class="flex items-center gap-1.5 font-semibold tracking-wide">
+          <a href="${MARKETING_URL}" class="flex items-center gap-1.5 font-semibold tracking-wide hover:text-teal-300" title="Back to Premier Dental Academy">
             <span class="inline-block w-2.5 h-2.5 bg-teal-500 rounded-sm"></span>
             PDA Practice Pro
-            <span class="text-slate-500 font-normal">— Practice Management Trainer</span>
-          </span>
+            <span class="text-slate-500 font-normal hidden sm:inline">— Practice Management Trainer</span>
+          </a>
+          ${!isStudent ? `<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">PREVIEW</span>` : ''}
         </div>
         <div class="flex items-center gap-3">
-          ${(() => { const a = activeStaff(); return `
-            <select data-action="switch-staff" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2 py-1 rounded border-0 focus:outline-none cursor-pointer" title="Switch staff perspective (training mode)">
-              ${STAFF.map(s => `<option value="${s.id}" ${s.id === a.id ? 'selected' : ''}>${escapeHtml(s.name)} · ${escapeHtml(s.role)}</option>`).join('')}
-            </select>
-          `; })()}
-          <button data-action="open-palette" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded flex items-center gap-2 text-slate-200">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
-            <span>Search</span>
-            <kbd>⌘K</kbd>
-          </button>
-          <button data-action="audit-toggle" class="text-slate-300 hover:text-white" title="Audit log">⏱</button>
+          ${isStudent ? `
+            ${(() => { const a = activeStaff(); return `
+              <select data-action="switch-staff" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2 py-1 rounded border-0 focus:outline-none cursor-pointer" title="Switch staff perspective (training mode)">
+                ${STAFF.map(s => `<option value="${s.id}" ${s.id === a.id ? 'selected' : ''}>${escapeHtml(s.name)} · ${escapeHtml(s.role)}</option>`).join('')}
+              </select>
+            `; })()}
+            <button data-action="open-palette" class="bg-slate-800 hover:bg-slate-700 px-2 py-1 rounded flex items-center gap-2 text-slate-200">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 110-15 7.5 7.5 0 010 15z"/></svg>
+              <span>Search</span>
+              <kbd>⌘K</kbd>
+            </button>
+            <button data-action="audit-toggle" class="text-slate-300 hover:text-white" title="Audit log">⏱</button>
+          ` : `
+            <a href="${SIGNUP_URL}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold px-3 py-1 rounded">Enroll to unlock →</a>
+          `}
         </div>
       </header>
     `;
   }
 
-  // ── Ribbon (module switcher) ───────────────────────────────────
+  function renderPreviewStrip() {
+    if (state.access === 'student') return '';
+    return `
+      <div class="bg-amber-50 border-b border-amber-200 px-3 py-2 text-[12px] text-amber-900 flex items-center gap-3 flex-wrap">
+        <span class="text-base">🔒</span>
+        <strong>Preview mode</strong>
+        <span class="flex-1 min-w-[200px]">You're seeing 5 essential tabs. Enroll at Premier Dental Academy to unlock all 16 modules, save your work, print PDFs, and earn your certificate.</span>
+        <a href="${SIGNUP_URL}" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded whitespace-nowrap">Enroll now →</a>
+      </div>
+    `;
+  }
+
+  // ── Module help content + skill levels ─────────────────────────
+  // 1 = New hire essentials, 2 = Standard practice, 3 = Advanced / business
+  const MODULES = {
+    today:    { label: 'Today',    shortcut: 'H', level: 1, what: "Your morning briefing.",
+                desc: "See who's coming in today, who's overdue for a cleaning, how much money is outstanding, and what production looks like. Open this tab first thing every morning." },
+    overview: { label: 'Patient',  shortcut: '1', level: 1, what: "Everything about this person.",
+                desc: "Name, address, phone, insurance, medical history. Click any field to edit; changes save automatically." },
+    chart:    { label: 'Chart',    shortcut: 'T', level: 1, what: "The tooth chart.",
+                desc: "Pick a marker at the top (caries, composite, crown, etc.) then click any tooth surface to mark it. Right-click a tooth for more options like 'Plan a procedure.'" },
+    schedule: { label: 'Schedule', shortcut: 'S', level: 1, what: "Today's appointments by operatory.",
+                desc: "Click an empty slot to book. Drag any appointment to a new time. Click an appointment to text-confirm, log a call, or change status (arrived / no-show / cancelled)." },
+    ledger:   { label: 'Ledger',   shortcut: 'L', level: 1, what: "Money in, money out.",
+                desc: "Every charge, every payment, and the running balance. Use this to post a procedure, take a payment, and print a walkout statement." },
+    perio:    { label: 'Perio',    shortcut: '3', level: 2, what: "Periodontal exam.",
+                desc: "Six pocket-depth readings per tooth. Click any cell to enter a depth in mm. The app auto-calculates AAP stage and grade and recommends a recall interval." },
+    tx:       { label: 'Tx Plan',  shortcut: '4', level: 2, what: "What's planned for this patient.",
+                desc: "Phased treatment with per-procedure insurance estimates. Mark a procedure 'Accepted' and 'Sign & accept' the whole plan with patient signature." },
+    comms:    { label: 'Comms',    shortcut: 'C', level: 2, what: "All texts, calls, emails, voicemails.",
+                desc: "Every touchpoint with this patient in one timeline. 'Send text' has four ready-to-send templates: recall, confirmation, post-op, balance reminder." },
+    recall:   { label: 'Recall',   shortcut: '7', level: 2, what: "Who needs a cleaning soon.",
+                desc: "Filter to overdue, due-30, due-60. Each row has buttons to text, log a call, or mark contacted. Export the list to CSV for the front desk." },
+    vitals:   { label: 'Vitals',   shortcut: 'V', level: 2, what: "Blood pressure, pulse, SpO2.",
+                desc: "Take vitals before treatment. The app warns about hypertension, low SpO2, fever, and blood-sugar emergencies." },
+    rx:       { label: 'Rx',       shortcut: 'X', level: 2, what: "Write a prescription.",
+                desc: "Pick a drug, the strength and sig pre-fill. If the patient has an allergy that conflicts (e.g. penicillin + amoxicillin) a red warning appears before you can sign." },
+    imaging:  { label: 'Imaging',  shortcut: 'I', level: 2, what: "X-rays + photos.",
+                desc: "Standard FMX layout, bitewings, panorex, intraoral photos, documents. Drag any JPEG onto an empty slot to mount it." },
+    forms:    { label: 'Forms',    shortcut: '0', level: 2, what: "Patient paperwork.",
+                desc: "HIPAA, medical history, financial agreement, treatment consent, post-op instructions. Sign electronically or text the patient a portal link." },
+    claims:   { label: 'Claims',   shortcut: '9', level: 3, what: "Submit insurance claims, post EOBs.",
+                desc: "All completed procedures with insurance group up by patient + carrier. One click to generate a claim. When the EOB comes back, post the allowed and paid amounts; the app auto-creates the ledger payment + write-off." },
+    lab:      { label: 'Lab',      shortcut: 'B', level: 3, what: "Crowns, dentures, night guards sent to a lab.",
+                desc: "New case form picks the procedure (PFM crown, zirconia, e.max, denture, etc.) and auto-sets a due date. Receive a case when the lab delivers; mark Seated after the patient appointment." },
+    reports:  { label: 'Reports',  shortcut: 'R', level: 3, what: "Practice performance.",
+                desc: "Production by provider, A/R aging, case-acceptance %, no-show rate, recare retention, top procedures. Use this to find what's slowing the practice down." },
+  };
+
+  function ribbonTabs() {
+    // Preview mode shows only the 5 essentials no matter the skill-level selector
+    const previewIds = new Set(['today','overview','chart','schedule','ledger']);
+    if (state.access !== 'student') {
+      return Object.entries(MODULES).filter(([id]) => previewIds.has(id)).map(([id, m]) => ({ id, ...m }));
+    }
+    const level = state.ui.skillLevel === 'all' ? 3 : state.ui.skillLevel === 'standard' ? 2 : 1;
+    return Object.entries(MODULES).filter(([_, m]) => m.level <= level).map(([id, m]) => ({ id, ...m }));
+  }
+
   function renderRibbon() {
-    const tabs = [
-      { id: 'today',    label: 'Today',    shortcut: 'H' },
-      { id: 'overview', label: 'Patient',  shortcut: '1' },
-      { id: 'chart',    label: 'Chart',    shortcut: 'T' },
-      { id: 'perio',    label: 'Perio',    shortcut: '3' },
-      { id: 'vitals',   label: 'Vitals',   shortcut: 'V' },
-      { id: 'tx',       label: 'Tx Plan',  shortcut: '4' },
-      { id: 'rx',       label: 'Rx',       shortcut: 'X' },
-      { id: 'ledger',   label: 'Ledger',   shortcut: 'L' },
-      { id: 'comms',    label: 'Comms',    shortcut: 'C' },
-      { id: 'schedule', label: 'Schedule', shortcut: 'S' },
-      { id: 'recall',   label: 'Recall',   shortcut: '7' },
-      { id: 'imaging',  label: 'Imaging',  shortcut: 'I' },
-      { id: 'claims',   label: 'Claims',   shortcut: '9' },
-      { id: 'forms',    label: 'Forms',    shortcut: '0' },
-      { id: 'lab',      label: 'Lab',      shortcut: 'B' },
-      { id: 'reports',  label: 'Reports',  shortcut: 'R' },
-    ];
+    const tabs = ribbonTabs();
     return `
       <div class="pp-ribbon px-3 flex items-center gap-1 overflow-x-auto">
         ${tabs.map(t => `
-          <button data-action="set-module" data-module="${t.id}"
+          <button data-action="set-module" data-module="${t.id}" title="${escapeHtml(t.what)}"
             class="px-3 py-2.5 text-[12px] font-medium border-b-2 ${state.module === t.id ? 'pp-tab-active' : 'border-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-100'}">
             ${t.label}
             <kbd class="ml-1.5 opacity-60">${t.shortcut}</kbd>
           </button>
         `).join('')}
         <span class="flex-1"></span>
-        <div class="hidden sm:flex items-center gap-2 text-slate-500 pr-2">
-          <kbd>?</kbd><span>help</span>
+        <div class="flex items-center gap-2 pr-1">
+          <span class="text-[10px] uppercase tracking-wider text-slate-500 font-semibold hidden sm:inline">Mode</span>
+          <select data-action="skill-level" class="text-[11px] bg-white border border-slate-300 rounded px-1.5 py-1" title="Show fewer or more tabs based on your experience level">
+            <option value="new"      ${state.ui.skillLevel === 'new' ? 'selected' : ''}>New hire (essentials)</option>
+            <option value="standard" ${state.ui.skillLevel === 'standard' ? 'selected' : ''}>Standard</option>
+            <option value="all"      ${state.ui.skillLevel === 'all' ? 'selected' : ''}>Advanced (all tabs)</option>
+          </select>
+          <button data-action="toggle-help" class="${state.ui.helpMode ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-700'} px-2 py-1 rounded text-[11px] font-medium" title="Turn explanatory banners on/off">
+            ${state.ui.helpMode ? '✓ Help on' : 'Help'}
+          </button>
         </div>
+      </div>
+    `;
+  }
+
+  // ── Module help banner shown above each module's content ───────
+  function renderHelpBanner(moduleId) {
+    if (!state.ui.helpMode) return '';
+    const m = MODULES[moduleId];
+    if (!m) return '';
+    return `
+      <div class="bg-teal-50 border border-teal-200 rounded p-3 mb-3 text-[12px] flex items-start gap-3">
+        <div class="text-2xl select-none" aria-hidden="true">💡</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-teal-900">${escapeHtml(m.what)}</div>
+          <div class="text-teal-800 mt-0.5">${escapeHtml(m.desc)}</div>
+        </div>
+        <button data-action="dismiss-help" class="text-teal-700 hover:bg-teal-100 px-2 py-0.5 rounded text-[10px] font-semibold" title="Hide help banners on every screen">Hide</button>
       </div>
     `;
   }
@@ -429,7 +510,8 @@
 
   // ── Module router ──────────────────────────────────────────────
   function renderModule() {
-    const wrap = (inner) => `<div class="pp-fade p-4 max-w-[1400px] mx-auto">${inner}</div>`;
+    const helpBanner = renderHelpBanner(state.module);
+    const wrap = (inner) => `<div class="pp-fade p-4 max-w-[1400px] mx-auto">${helpBanner}${inner}</div>`;
     // Practice-wide modules don't require a selected patient
     if (state.module === 'today')    return wrap(renderToday());
     if (state.module === 'recall')   return wrap(renderRecall());
@@ -3221,6 +3303,8 @@
       'form-sign':    modalFormSign,
       'form-view':    modalFormView,
       'lab-add':      modalLabAdd,
+      'welcome':      modalWelcome,
+      'paywall':      modalPaywall,
       'vitals-take':  modalVitalsTake,
       'rx-write':     modalRxWrite,
     })[m.type];
@@ -3931,6 +4015,68 @@
     `;
   }
 
+  function modalWelcome() {
+    const isPreview = state.access !== 'student';
+    return `
+      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-teal-50 to-slate-50">
+        <h2 class="text-lg font-semibold text-slate-900">Welcome to Practice Pro 👋</h2>
+        <p class="text-[12px] text-slate-600 mt-1">A safe, life-like practice management trainer from Premier Dental Academy of Longview.</p>
+      </div>
+      <div class="p-5 space-y-4 text-[13px] text-slate-700">
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">1️⃣</div>
+          <div><strong>Pick a patient on the left.</strong> You're starting with 25 sample patients with realistic ages, insurance, and medical histories. Nothing real — no PHI.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">2️⃣</div>
+          <div><strong>Use the ribbon at the top to switch screens.</strong> Each tab is a real workflow you'll do every day at a dental office. Tabs you've never used show a help banner explaining what they're for.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">3️⃣</div>
+          <div><strong>The "Mode" selector controls how much you see.</strong> Start in <em>New hire</em> (5 essential tabs), graduate to <em>Standard</em> as you grow, then <em>Advanced</em> when you're running the practice.</div>
+        </div>
+        ${isPreview ? `
+          <div class="bg-amber-50 border border-amber-200 rounded p-3">
+            <div class="font-semibold text-amber-900">You're in Preview mode.</div>
+            <div class="text-amber-800 text-[12px] mt-1">You can click around the 5 essential tabs. To unlock the full trainer (perio chart, treatment plans, insurance claims, prescriptions, certificates), enroll at Premier Dental Academy.</div>
+            <a href="${SIGNUP_URL}" class="inline-block mt-2 bg-amber-500 hover:bg-amber-600 text-white text-[12px] font-semibold px-3 py-1.5 rounded">Enroll & unlock →</a>
+          </div>
+        ` : `
+          <div class="bg-emerald-50 border border-emerald-200 rounded p-3 text-[12px]">
+            <strong>You're enrolled.</strong> Full trainer unlocked. Your work auto-saves to your account.
+          </div>
+        `}
+        <div class="flex justify-end pt-2 border-t border-slate-200">
+          <button data-action="close-modal" class="btn btn-primary">Got it — let's go</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function modalPaywall(props) {
+    return `
+      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
+        <h2 class="text-lg font-semibold text-slate-900">🔒 Enroll to unlock this feature</h2>
+        <p class="text-[12px] text-slate-600 mt-1">${escapeHtml(props.feature || 'This module')} is part of the full Practice Pro trainer.</p>
+      </div>
+      <div class="p-5 space-y-3 text-[13px]">
+        <p class="text-slate-700">Premier Dental Academy of Longview's full curriculum includes:</p>
+        <ul class="space-y-1.5 text-slate-700 text-[12px]">
+          <li>✓ 16 hands-on practice management modules</li>
+          <li>✓ Real workflows for charting, perio, claims, prescriptions, treatment planning</li>
+          <li>✓ SmartDoc clinical notes with legal compliance pattern</li>
+          <li>✓ Certificate of completion</li>
+          <li>✓ Live instructor support + in-house training</li>
+          <li>✓ Job placement assistance with East Texas dental offices</li>
+        </ul>
+        <div class="flex gap-2 justify-end pt-3 border-t border-slate-200">
+          <button data-action="close-modal" class="btn btn-ghost">Maybe later</button>
+          <a href="${SIGNUP_URL}" class="btn btn-primary !bg-amber-500 hover:!bg-amber-600">Enroll now →</a>
+        </div>
+      </div>
+    `;
+  }
+
   function modalAudit() {
     return `
       <div class="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
@@ -4104,6 +4250,27 @@
       const a = t.dataset.action;
       switch (a) {
         case 'toggle-sidebar': state.ui.sidebarOpen = !state.ui.sidebarOpen; rerender(); break;
+        case 'toggle-help': {
+          state.ui.helpMode = !state.ui.helpMode;
+          try { localStorage.setItem('pda.pp.helpModeOff', state.ui.helpMode ? '' : '1'); } catch(e){}
+          rerender();
+          break;
+        }
+        case 'dismiss-help': {
+          state.ui.helpMode = false;
+          try { localStorage.setItem('pda.pp.helpModeOff', '1'); } catch(e){}
+          rerender();
+          toast('Help banners hidden. Click "Help" in the ribbon to turn back on.', { ms: 3500 });
+          break;
+        }
+        case 'skill-level': {
+          state.ui.skillLevel = ev.target.value;
+          try { localStorage.setItem('pda.pp.skillLevel', state.ui.skillLevel); } catch(e){}
+          rerender();
+          break;
+        }
+        case 'open-paywall': openModal('paywall', { feature: t.dataset.feature || '' }); break;
+        case 'go-signup':   location.href = SIGNUP_URL; break;
         case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'open-palette': openPalette(); break;
         case 'close-palette': closePalette(); break;
@@ -5431,10 +5598,31 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
+    // Check auth session — paid students get full access, anyone else gets preview
     try {
-      state.user = await window.PDA.requireAuth?.('/login.html').then(() => window.PDA.getProfile()).catch(() => null);
-    } catch (e) { state.user = null; }
-    await loadState();
+      const session = await window.PDA?.getSession?.();
+      if (session) {
+        state.user = await window.PDA.getProfile();
+        state.access = 'student';
+      } else {
+        state.user = null;
+        state.access = 'preview';
+      }
+    } catch (e) {
+      state.user = null;
+      state.access = 'preview';
+    }
+
+    // In preview mode, lock the skill level to 'new' and disable persistence
+    if (state.access === 'preview') {
+      state.ui.skillLevel = 'new';
+      // Skip persistent load; seed only
+      state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.patients.forEach(p => { p.comms = p.comms || []; });
+      state.currentPatientId = state.patients[0].id;
+    } else {
+      await loadState();
+    }
     bindKeys();
     // Track viewport width — keeps isMobile + sidebar default in sync
     const mq = window.matchMedia('(max-width: 768px)');
@@ -5445,10 +5633,15 @@
     };
     if (mq.addEventListener) mq.addEventListener('change', onMQ);
     render();
-    if ((window.PDA?.sb && state.user) || true) {
-      // Show the welcome toast once per session
+    // First-time welcome modal — shown once per browser, then suppressed
+    if (!localStorage.getItem('pda.pp.welcomed')) {
+      try { localStorage.setItem('pda.pp.welcomed', '1'); } catch(e){}
+      setTimeout(() => openModal('welcome'), 350);
+    } else if ((window.PDA?.sb && state.user) || true) {
+      // Returning visitor — quiet toast greeting
       if (!sessionStorage.getItem('pp.greeted')) {
-        toast(`Welcome, ${state.user?.first_name || 'student'}. ${state.patients.length} patients loaded.`, { tone: 'info', ms: 3000 });
+        const who = state.user?.first_name || (state.access === 'preview' ? 'visitor' : 'student');
+        toast(`Welcome back, ${who}. ${state.patients.length} patients loaded.`, { tone: 'info', ms: 3000 });
         sessionStorage.setItem('pp.greeted', '1');
       }
     }
