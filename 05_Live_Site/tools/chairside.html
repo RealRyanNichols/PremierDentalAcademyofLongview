@@ -96,6 +96,7 @@
   const MARKETING_URL = '/';
   const SIGNUP_URL    = '/enroll';
   const APPLY_URL     = '/apply';
+  const DASHBOARD_URL = '/dashboard';
 
   const state = {
     user: null,
@@ -217,7 +218,8 @@
         </div>
         <div class="flex items-center gap-3">
           ${isStudent ? `
-            <span class="text-cyan-200 hidden sm:inline">${escapeHtml(state.user ? `${state.user.first_name || 'Student'}` : 'Student')}</span>
+            <a href="${DASHBOARD_URL}" class="text-cyan-200 hover:text-white text-[11px] hidden sm:inline" title="Back to your dashboard">⌂ Dashboard</a>
+            <span class="text-cyan-200 hidden md:inline">${escapeHtml(state.user ? `${state.user.first_name || 'Student'}` : 'Student')}</span>
             <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white" title="Switch to Practice Pro">↹ Practice Pro</a>
             <button data-action="toggle-help" class="${state.ui.helpMode ? 'bg-white text-cyan-800' : 'bg-cyan-900/40 text-cyan-100'} px-2 py-1 rounded font-medium" title="Toggle explanatory banners">
               ${state.ui.helpMode ? '✓ Help' : 'Help'}

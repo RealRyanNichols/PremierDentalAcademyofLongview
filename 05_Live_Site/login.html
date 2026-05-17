@@ -116,7 +116,7 @@
 
   // Auto-redirect if already signed in
   const { data: { session } } = await sb.auth.getSession();
-  if (session) location.href = '/tools/practice-pro';
+  if (session) location.href = '/dashboard';
 
   document.getElementById('form-signin').onsubmit = async (e) => {
     e.preventDefault();
@@ -124,7 +124,7 @@
     const { error } = await sb.auth.signInWithPassword({ email: fd.get('email'), password: fd.get('password') });
     if (error) return show(error.message, 'error');
     show('Welcome back. Redirecting…', 'success');
-    setTimeout(() => location.href = '/tools/practice-pro', 600);
+    setTimeout(() => location.href = '/dashboard', 600);
   };
 
   document.getElementById('form-signup').onsubmit = async (e) => {
@@ -144,7 +144,7 @@
     const fd = new FormData(e.target);
     const { error } = await sb.auth.signInWithOtp({
       email: fd.get('email'),
-      options: { emailRedirectTo: location.origin + '/tools/practice-pro' },
+      options: { emailRedirectTo: location.origin + '/dashboard' },
     });
     if (error) return show(error.message, 'error');
     show('Sign-in link sent. Check your email.', 'success');

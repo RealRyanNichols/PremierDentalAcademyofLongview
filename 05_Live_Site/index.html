@@ -86,7 +86,7 @@
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
     <div class="flex items-center gap-2">
-      <a href="/login" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5">Sign in</a>
+      <a id="nav-account" href="/login" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5">Sign in</a>
       <a href="/tools/practice-pro" class="hidden sm:inline-block text-sm font-medium text-teal-700 hover:text-teal-800 px-3 py-1.5">Try preview</a>
       <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
     </div>
@@ -668,11 +668,16 @@
 <script>
   AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
 
-  // Newsletter signup
+  // Newsletter signup + nav account swap
   (async () => {
     const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // If signed in, swap "Sign in" -> "Dashboard"
+    const { data: { session } } = await sb.auth.getSession();
+    const navAcct = document.getElementById('nav-account');
+    if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
     const error = document.getElementById('subscribe-error');

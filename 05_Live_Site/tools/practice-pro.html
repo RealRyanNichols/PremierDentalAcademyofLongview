@@ -143,6 +143,7 @@
   const MARKETING_URL = '/';            // landing page
   const SIGNUP_URL    = '/enroll';      // enrollment / payment page
   const APPLY_URL     = '/apply';       // free application form
+  const DASHBOARD_URL = '/dashboard';   // signed-in student portal
 
   const state = {
     user: null,
@@ -255,6 +256,7 @@
         </div>
         <div class="flex items-center gap-3">
           ${isStudent ? `
+            <a href="${DASHBOARD_URL}" class="text-slate-300 hover:text-white text-[11px] hidden sm:inline-flex items-center gap-1" title="Back to your dashboard">⌂ Dashboard</a>
             ${(() => { const a = activeStaff(); return `
               <select data-action="switch-staff" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] px-2 py-1 rounded border-0 focus:outline-none cursor-pointer" title="Switch staff perspective (training mode)">
                 ${STAFF.map(s => `<option value="${s.id}" ${s.id === a.id ? 'selected' : ''}>${escapeHtml(s.name)} · ${escapeHtml(s.role)}</option>`).join('')}

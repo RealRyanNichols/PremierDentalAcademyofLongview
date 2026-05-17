@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dashboard — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-hero { background:
+      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.10) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.10) 0px, transparent 50%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<!-- Top nav -->
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold">
+      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+      <span>Premier Dental Academy</span>
+      <span class="hidden sm:inline text-xs text-slate-500 font-normal">of Longview</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/dashboard" class="text-teal-700">Dashboard</a>
+      <a href="/tools/practice-pro" class="hover:text-teal-700">Practice Pro</a>
+      <a href="/tools/chairside" class="hover:text-teal-700">ChairSide</a>
+      <a href="/contact" class="hover:text-teal-700">Support</a>
+    </div>
+    <div class="flex items-center gap-3 text-sm">
+      <span id="user-label" class="text-slate-500 hidden sm:inline"></span>
+      <div class="relative" id="user-menu">
+        <button id="avatar-btn" class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold grid place-items-center hover:ring-2 hover:ring-teal-300">?</button>
+        <div id="avatar-dropdown" class="hidden absolute right-0 top-12 bg-white border border-slate-200 rounded-lg shadow-lg w-52 py-1 z-50">
+          <div class="px-3 py-2 border-b border-slate-100">
+            <div id="dd-name" class="font-semibold text-sm">—</div>
+            <div id="dd-email" class="text-xs text-slate-500">—</div>
+          </div>
+          <a href="/dashboard#account" class="block px-3 py-2 text-sm hover:bg-slate-50">⚙ Account settings</a>
+          <a id="admin-link" href="/admin/leads" class="hidden px-3 py-2 text-sm hover:bg-slate-50">🛠 Admin inbox</a>
+          <a href="/contact" class="block px-3 py-2 text-sm hover:bg-slate-50">💬 Get help</a>
+          <button id="signout-btn" class="w-full text-left px-3 py-2 text-sm text-rose-600 hover:bg-rose-50">Sign out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Auth wall -->
+<div id="auth-wall" class="hidden min-h-[80vh] flex items-center justify-center px-6">
+  <div class="max-w-md w-full bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Sign in to access your dashboard.</h1>
+    <p class="text-slate-600 mt-2 text-sm">If you're a student or staff, sign in with the email Amanda set up for you.</p>
+    <div class="flex flex-wrap gap-2 justify-center mt-6">
+      <a href="/login" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Sign in →</a>
+      <a href="/enroll" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Enroll</a>
+    </div>
+    <p class="mt-5 text-xs text-slate-500"><a href="/" class="text-teal-700 hover:underline">← Back to home</a></p>
+  </div>
+</div>
+
+<!-- Main dashboard -->
+<main id="dashboard" class="hidden max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+  <!-- Hero greeting -->
+  <section class="gradient-hero rounded-2xl border border-slate-200 p-6 sm:p-8 mb-6 bg-white">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold" id="hero-tag">Welcome back</p>
+    <h1 class="display text-3xl sm:text-4xl font-bold mt-1 leading-tight">
+      <span id="hero-greet">Good morning</span>, <span class="gradient-text" id="hero-name">student</span>.
+    </h1>
+    <p class="text-slate-600 mt-2 max-w-2xl" id="hero-sub">Here's everything you need to keep moving forward.</p>
+    <div class="mt-5 flex flex-wrap gap-2">
+      <a href="/tools/practice-pro" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm">
+        ▶ Open Practice Pro
+      </a>
+      <a href="/tools/chairside" class="bg-cyan-700 hover:bg-cyan-800 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm">
+        ▶ Open ChairSide
+      </a>
+    </div>
+  </section>
+
+  <!-- Stat tiles -->
+  <section class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Program</div>
+      <div id="stat-program" class="text-lg font-bold text-slate-900 mt-1">—</div>
+      <div id="stat-program-sub" class="text-xs text-slate-500 mt-0.5">—</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Trainer activity</div>
+      <div id="stat-actions" class="text-2xl font-bold text-teal-700 mono mt-1">0</div>
+      <div class="text-xs text-slate-500 mt-0.5">actions logged</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Patients touched</div>
+      <div id="stat-patients" class="text-2xl font-bold text-cyan-700 mono mt-1">0</div>
+      <div class="text-xs text-slate-500 mt-0.5">in practice mode</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4">
+      <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Streak</div>
+      <div id="stat-streak" class="text-2xl font-bold text-amber-600 mono mt-1">0</div>
+      <div class="text-xs text-slate-500 mt-0.5">days active</div>
+    </div>
+  </section>
+
+  <div class="grid lg:grid-cols-3 gap-4">
+
+    <!-- Continue learning -->
+    <section class="lg:col-span-2 space-y-4">
+      <div>
+        <h2 class="display text-xl font-bold mb-3">Continue learning</h2>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <a href="/tools/practice-pro" class="block bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-5 hover:shadow-xl transition group">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-8 h-8 bg-teal-500 rounded grid place-items-center text-white font-extrabold">P</span>
+              <h3 class="font-bold">PDA Practice Pro</h3>
+            </div>
+            <p class="text-xs text-slate-300">Front-desk + business management. Schedule, ledger, claims, reports, recall, forms.</p>
+            <div id="last-pp" class="text-xs text-teal-300 mt-3">Open trainer →</div>
+          </a>
+          <a href="/tools/chairside" class="block bg-gradient-to-br from-cyan-800 to-cyan-900 text-white rounded-2xl p-5 hover:shadow-xl transition group">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="w-8 h-8 bg-cyan-300 rounded grid place-items-center text-slate-900 font-extrabold">C</span>
+              <h3 class="font-bold">PDA ChairSide</h3>
+            </div>
+            <p class="text-xs text-cyan-100">Chair-side clinical workflow. SmartDoc notes, perio, vitals, prescriptions.</p>
+            <div id="last-cs" class="text-xs text-cyan-200 mt-3">Open trainer →</div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Curriculum progress -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="display text-xl font-bold">Curriculum progress</h2>
+          <span class="text-xs text-slate-500" id="progress-summary">0 of 12 modules touched</span>
+        </div>
+        <div id="modules-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="display text-xl font-bold mb-3">Recent practice</h2>
+        <ul id="activity-list" class="space-y-2 text-sm"></ul>
+      </div>
+    </section>
+
+    <!-- Sidebar -->
+    <aside class="space-y-4">
+
+      <!-- Account card -->
+      <section id="account" class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="display text-xl font-bold mb-3">Account</h2>
+        <form id="account-form" class="space-y-3 text-sm">
+          <label class="block">
+            <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">First name</span>
+            <input name="first_name" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Last name</span>
+            <input name="last_name" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+          <label class="block">
+            <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold">Phone</span>
+            <input name="phone" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </label>
+          <div class="text-xs text-slate-500">Email (read-only): <span id="account-email" class="mono"></span></div>
+          <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2 rounded-lg">Save changes</button>
+        </form>
+      </section>
+
+      <!-- Cohort info -->
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="display text-xl font-bold mb-3">Your cohort</h2>
+        <dl class="space-y-2 text-sm">
+          <div class="flex justify-between"><dt class="text-slate-500">Status</dt><dd id="cohort-status" class="font-semibold">—</dd></div>
+          <div class="flex justify-between"><dt class="text-slate-500">Enrolled</dt><dd id="cohort-since" class="font-mono">—</dd></div>
+          <div class="flex justify-between"><dt class="text-slate-500">Cohort</dt><dd id="cohort-name">—</dd></div>
+        </dl>
+      </section>
+
+      <!-- Quick links -->
+      <section class="bg-gradient-to-br from-teal-700 to-cyan-800 text-white rounded-2xl p-5">
+        <h2 class="display text-xl font-bold mb-3">Need help?</h2>
+        <div class="space-y-2 text-sm">
+          <a href="tel:+19039136444" class="block bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2">📞 Call (903) 913-6444</a>
+          <a href="mailto:hello@PremierDentalAcademyOfLongview.com" class="block bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2 truncate">✉️ Email Amanda</a>
+          <a href="/contact" class="block bg-white/10 hover:bg-white/20 rounded-lg px-3 py-2">💬 Send a message</a>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    document.getElementById('auth-wall').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('dashboard').classList.remove('hidden');
+
+  // Fetch profile
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  const p = profile || {
+    id: session.user.id, email: session.user.email,
+    first_name: '', last_name: '', phone: '', program: 'preview', is_admin: false,
+  };
+
+  // Top nav identity
+  const initials = ((p.first_name?.[0] || p.email[0] || '?') + (p.last_name?.[0] || '')).toUpperCase();
+  document.getElementById('avatar-btn').textContent = initials;
+  document.getElementById('dd-name').textContent = (p.first_name || '') + ' ' + (p.last_name || '');
+  document.getElementById('dd-email').textContent = p.email;
+  document.getElementById('user-label').textContent = p.first_name || p.email;
+  if (p.is_admin) document.getElementById('admin-link').classList.remove('hidden');
+
+  // Hero
+  const hour = new Date().getHours();
+  document.getElementById('hero-greet').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('hero-name').textContent = p.first_name || 'student';
+  const programLabels = {
+    preview:      { name: 'Free preview', sub: 'Try the trainers, no save' },
+    foundation:   { name: 'RDA Foundation', sub: '12-week program' },
+    career_track: { name: 'RDA Career Track', sub: '24-week with externship' },
+    staff:        { name: 'PDA Staff', sub: 'Full access' },
+    admin:        { name: 'PDA Admin', sub: 'Full access + inbox' },
+  };
+  const prog = programLabels[p.program] || programLabels.preview;
+  document.getElementById('stat-program').textContent = prog.name;
+  document.getElementById('stat-program-sub').textContent = prog.sub;
+  document.getElementById('cohort-status').textContent = prog.name;
+  document.getElementById('cohort-since').textContent = p.enrolled_at ? new Date(p.enrolled_at).toLocaleDateString() : '—';
+  document.getElementById('cohort-name').textContent = p.cohort || (p.program === 'preview' ? 'n/a' : 'TBD');
+  if (p.program === 'preview') {
+    document.getElementById('hero-tag').textContent = 'Preview mode';
+    document.getElementById('hero-sub').textContent = 'You\'re in preview mode. Enroll to unlock save, PDFs, and your certificate.';
+  }
+
+  // Account form
+  const accForm = document.getElementById('account-form');
+  accForm.first_name.value = p.first_name || '';
+  accForm.last_name.value = p.last_name || '';
+  accForm.phone.value = p.phone || '';
+  document.getElementById('account-email').textContent = p.email;
+  accForm.onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(accForm);
+    const updates = {
+      first_name: fd.get('first_name'),
+      last_name: fd.get('last_name'),
+      phone: fd.get('phone'),
+    };
+    const { error } = await sb.from('profiles').update(updates).eq('id', p.id);
+    const btn = accForm.querySelector('button[type=submit]');
+    btn.textContent = error ? '✗ Save failed' : '✓ Saved';
+    btn.classList.toggle('bg-emerald-600', !error);
+    btn.classList.toggle('bg-teal-700', !!error);
+    setTimeout(() => { btn.textContent = 'Save changes'; btn.classList.remove('bg-emerald-600'); btn.classList.add('bg-teal-700'); }, 1500);
+  };
+
+  // Practice log → trainer activity stats + recent activity feed + curriculum progress
+  const { data: logs } = await sb.from('pp_practice_log')
+    .select('*').eq('student_id', p.id).order('created_at', { ascending: false }).limit(200);
+
+  const all = logs || [];
+  document.getElementById('stat-actions').textContent = all.length;
+
+  // Patients touched — count distinct patient ids from metadata.id
+  const patientIds = new Set();
+  all.forEach(l => { const id = l.metadata?.id; if (id) patientIds.add(id); });
+  document.getElementById('stat-patients').textContent = patientIds.size;
+
+  // Day streak — consecutive days with at least one action, ending today/yesterday
+  const dayKeys = new Set(all.map(l => new Date(l.created_at).toISOString().slice(0,10)));
+  let streak = 0;
+  const d = new Date();
+  while (true) {
+    const k = d.toISOString().slice(0,10);
+    if (dayKeys.has(k)) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
+    if (streak > 365) break;
+  }
+  document.getElementById('stat-streak').textContent = streak;
+
+  // Recent activity feed
+  const actList = document.getElementById('activity-list');
+  if (all.length === 0) {
+    actList.innerHTML = '<li class="text-slate-500">No practice activity yet. Open a trainer to start practicing.</li>';
+  } else {
+    actList.innerHTML = all.slice(0, 8).map(l => {
+      const action = l.action.replace(/_/g, ' ');
+      const when = new Date(l.created_at);
+      const ago = timeAgo(when);
+      const app = l.app === 'practice_pro' ? 'Practice Pro' : 'ChairSide';
+      return `<li class="flex items-center justify-between border-b border-slate-100 pb-1.5"><span class="capitalize">${action}</span><span class="text-xs text-slate-500"><span class="mono">${ago}</span> · ${app}</span></li>`;
+    }).join('');
+  }
+  const lastPP = all.find(l => l.app === 'practice_pro');
+  const lastCS = all.find(l => l.app === 'chairside');
+  if (lastPP) document.getElementById('last-pp').textContent = `Last used ${timeAgo(new Date(lastPP.created_at))} →`;
+  if (lastCS) document.getElementById('last-cs').textContent = `Last used ${timeAgo(new Date(lastCS.created_at))} →`;
+
+  // Curriculum module progress (touched if action contains any matching keyword)
+  const MODULES = [
+    ['Patient check-in',   /patient|created|edit_demographics/i],
+    ['Medical history',    /medical|allergy|vitals/i],
+    ['Tooth chart',        /chart|tooth|surface/i],
+    ['Perio',              /perio/i],
+    ['Imaging',            /imaging|fmx/i],
+    ['Treatment plan',     /tx_|treatment|tx-add|tx-edit/i],
+    ['Insurance / claims', /claim|eob/i],
+    ['Ledger',             /procedure|payment|posted|walkout/i],
+    ['Communication',      /text|call|email|comm_logged/i],
+    ['Schedule',           /appt|sched/i],
+    ['Documentation',      /smartdoc|form_sign|note/i],
+    ['Analytics',          /report/i],
+  ];
+  const grid = document.getElementById('modules-grid');
+  let touched = 0;
+  grid.innerHTML = MODULES.map(([name, re]) => {
+    const hit = all.some(l => re.test(l.action || ''));
+    if (hit) touched++;
+    return `<div class="bg-${hit?'teal-50':'slate-50'} border border-${hit?'teal-200':'slate-200'} rounded-lg p-2.5 text-center">
+      <div class="text-lg">${hit ? '✅' : '⬜'}</div>
+      <div class="text-[11px] font-medium mt-0.5">${name}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('progress-summary').textContent = `${touched} of ${MODULES.length} modules touched`;
+
+  function timeAgo(d) {
+    const s = Math.floor((Date.now() - d.getTime()) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    if (s < 604800) return Math.floor(s / 86400) + 'd ago';
+    return d.toLocaleDateString();
+  }
+
+  // Avatar dropdown
+  document.getElementById('avatar-btn').onclick = (e) => {
+    e.stopPropagation();
+    document.getElementById('avatar-dropdown').classList.toggle('hidden');
+  };
+  document.addEventListener('click', () => document.getElementById('avatar-dropdown').classList.add('hidden'));
+  document.getElementById('signout-btn').onclick = async () => {
+    await sb.auth.signOut();
+    location.href = '/';
+  };
+})();
+</script>
+</body>
+</html>
