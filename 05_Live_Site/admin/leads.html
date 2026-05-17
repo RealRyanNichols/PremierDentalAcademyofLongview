@@ -41,7 +41,7 @@
     <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
       <div>
         <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Inbox</p>
-        <h1 class="display text-3xl font-bold mt-1">Applications &amp; inquiries</h1>
+        <h1 class="display text-3xl font-bold mt-1">Applications, contacts &amp; subscribers</h1>
       </div>
       <div class="flex gap-2">
         <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
@@ -52,17 +52,33 @@
           <option value="closed">Closed</option>
         </select>
         <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
-        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export CSV</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export leads CSV</button>
+        <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export subscribers CSV</button>
       </div>
+    </div>
+
+    <!-- Inbox tabs -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4">
+      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">Applications &amp; contacts</button>
+      <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">Newsletter subscribers</button>
     </div>
 
     <!-- Stats -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" id="stats"></div>
 
     <!-- Leads table -->
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+    <div id="panel-leads" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
       <div id="leads-list" class="divide-y divide-slate-100"></div>
       <div id="empty" class="p-10 text-center text-slate-500 hidden">No applications yet. Once people apply, they'll appear here.</div>
+    </div>
+
+    <!-- Subscribers panel -->
+    <div id="panel-subs" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hidden">
+      <div class="p-4 border-b border-slate-100 text-xs text-slate-600 bg-slate-50">
+        <strong>Tip:</strong> Click "Export subscribers CSV" to import into Resend / MailerLite / Mailchimp / ConvertKit. The CSV columns match each service's standard import format (email, first_name, source, status).
+      </div>
+      <div id="subs-list" class="divide-y divide-slate-100"></div>
+      <div id="subs-empty" class="p-10 text-center text-slate-500 hidden">No newsletter subscribers yet. The signup widget on the homepage feeds this list.</div>
     </div>
   </div>
 </main>
@@ -83,32 +99,39 @@
   document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
   let allLeads = [];
+  let allSubs = [];
+  let currentTab = 'leads';
 
   async function load() {
-    const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
-    if (error) { alert('Failed to load: ' + error.message); return; }
-    allLeads = data || [];
+    const [leadsRes, subsRes] = await Promise.all([
+      sb.from('leads').select('*').order('created_at', { ascending: false }),
+      sb.from('subscribers').select('*').order('created_at', { ascending: false }),
+    ]);
+    if (leadsRes.error) alert('Failed to load leads: ' + leadsRes.error.message);
+    if (subsRes.error)  console.warn('Subscribers load failed:', subsRes.error.message);
+    allLeads = leadsRes.data || [];
+    allSubs  = subsRes.data || [];
     render();
   }
 
   function render() {
     const filter = document.getElementById('status-filter').value;
     const leads = filter ? allLeads.filter(l => l.status === filter) : allLeads;
-    const list = document.getElementById('leads-list');
-    document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
 
-    // Stats
+    // Stats — combined view
     const stats = { new: 0, contacted: 0, enrolled: 0, closed: 0 };
     allLeads.forEach(l => { stats[l.status || 'new'] = (stats[l.status || 'new'] || 0) + 1; });
+    const subscribed = allSubs.filter(s => s.status === 'subscribed').length;
     document.getElementById('stats').innerHTML = `
-      ${[['New','new','rose'],['Contacted','contacted','amber'],['Enrolled','enrolled','emerald'],['Closed','closed','slate']].map(([label,k,tone]) => `
-        <div class="bg-white rounded-xl border border-slate-200 p-3">
-          <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">${label}</div>
-          <div class="text-2xl font-bold mono text-${tone}-700">${stats[k] || 0}</div>
-        </div>
-      `).join('')}
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">New leads</div><div class="text-2xl font-bold mono text-rose-700">${stats.new || 0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enrolled</div><div class="text-2xl font-bold mono text-emerald-700">${stats.enrolled || 0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Total applications</div><div class="text-2xl font-bold mono text-slate-700">${allLeads.length}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Newsletter subs</div><div class="text-2xl font-bold mono text-cyan-700">${subscribed}</div></div>
     `;
 
+    // Leads panel
+    const list = document.getElementById('leads-list');
+    document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
     list.innerHTML = leads.map(l => {
       const meta = l.metadata || {};
       return `
@@ -140,7 +163,7 @@
                 ${['new','contacted','enrolled','closed'].map(s => `<option value="${s}" ${(l.status||'new')===s?'selected':''}>${s}</option>`).join('')}
               </select>
               <div>
-                <a href="mailto:${l.email}" class="text-xs text-teal-700 hover:underline">Reply →</a>
+                <a href="mailto:${l.email}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="text-xs text-teal-700 hover:underline">Reply →</a>
               </div>
             </div>
           </div>
@@ -156,23 +179,65 @@
         render();
       };
     });
+
+    // Subscribers panel
+    const subsList = document.getElementById('subs-list');
+    document.getElementById('subs-empty').classList.toggle('hidden', allSubs.length > 0);
+    subsList.innerHTML = allSubs.map(s => `
+      <div class="p-4 flex items-center justify-between hover:bg-slate-50">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${(s.email[0] || '?').toUpperCase()}</div>
+          <div class="min-w-0">
+            <a href="mailto:${s.email}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${s.email}</a>
+            <div class="text-xs text-slate-500">${new Date(s.created_at).toLocaleDateString()} · ${s.source || 'site'}</div>
+          </div>
+        </div>
+        <span class="text-xs px-2 py-0.5 rounded-full ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${s.status}</span>
+      </div>
+    `).join('');
   }
+
+  // Tab switching
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    b.onclick = () => {
+      currentTab = b.dataset.tab;
+      document.querySelectorAll('[data-tab]').forEach(x => {
+        if (x === b) { x.classList.add('bg-slate-900','text-white'); x.classList.remove('text-slate-700','hover:bg-slate-100'); }
+        else { x.classList.remove('bg-slate-900','text-white'); x.classList.add('text-slate-700','hover:bg-slate-100'); }
+      });
+      document.getElementById('panel-leads').classList.toggle('hidden', currentTab !== 'leads');
+      document.getElementById('panel-subs').classList.toggle('hidden', currentTab !== 'subs');
+    };
+  });
 
   document.getElementById('status-filter').onchange = render;
   document.getElementById('refresh').onclick = load;
+
+  // CSV: leads (full info)
   document.getElementById('export').onclick = () => {
-    const rows = [['Created','Name','Email','Phone','Source','Program','City','Reason','Notes','Status']];
+    const rows = [['Created','First','Last','Email','Phone','Source','Program','City','Reason','Notes','Status']];
     allLeads.forEach(l => {
       const m = l.metadata || {};
-      rows.push([new Date(l.created_at).toISOString(), `${l.first_name || ''} ${l.last_name || ''}`, l.email, l.phone, l.source, m.program || '', m.city || '', m.reason || '', m.notes || m.message || '', l.status || 'new']);
+      rows.push([new Date(l.created_at).toISOString(), l.first_name || '', l.last_name || '', l.email, l.phone, l.source, m.program || '', m.city || '', m.reason || '', m.notes || m.message || '', l.status || 'new']);
     });
+    downloadCSV(rows, `leads-${new Date().toISOString().slice(0,10)}.csv`);
+  };
+
+  // CSV: subscribers (clean format ready for Resend / Mailchimp / MailerLite import)
+  document.getElementById('export-subs').onclick = () => {
+    const rows = [['email','first_name','source','status','subscribed_at']];
+    allSubs.forEach(s => rows.push([s.email, s.first_name || '', s.source || '', s.status, new Date(s.created_at).toISOString()]));
+    downloadCSV(rows, `subscribers-${new Date().toISOString().slice(0,10)}.csv`);
+  };
+
+  function downloadCSV(rows, filename) {
     const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `leads-${new Date().toISOString().slice(0,10)}.csv`;
+    a.download = filename;
     a.click();
-  };
+  }
 
   load();
 })();

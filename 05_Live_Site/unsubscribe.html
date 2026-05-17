@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Unsubscribe — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>body{font-family:Inter,sans-serif}.display{font-family:Fraunces,serif}</style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen flex items-center">
+  <main class="max-w-md mx-auto p-6 w-full">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+      <a href="/" class="inline-flex items-center gap-2 font-bold text-slate-900 mb-6">
+        <span class="w-8 h-8 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span>
+        <span>Premier Dental Academy</span>
+      </a>
+      <div id="loading">
+        <div class="text-4xl mb-3">⏳</div>
+        <p class="text-slate-600">Processing your request…</p>
+      </div>
+      <div id="success" class="hidden">
+        <div class="text-5xl mb-3">👋</div>
+        <h1 class="display text-2xl font-bold">You're unsubscribed.</h1>
+        <p class="text-slate-600 mt-2 text-sm">We won't email you again. If this was a mistake, just <a href="/" class="text-teal-700 hover:underline">subscribe again from our homepage</a>.</p>
+        <a href="/" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Back to home</a>
+      </div>
+      <div id="error" class="hidden">
+        <div class="text-5xl mb-3">⚠️</div>
+        <h1 class="display text-2xl font-bold">Hmm, something went wrong.</h1>
+        <p class="text-slate-600 mt-2 text-sm" id="error-msg"></p>
+        <p class="text-slate-500 mt-4 text-xs">Email <a href="mailto:unsubscribe@pda.edu" class="text-teal-700">unsubscribe@pda.edu</a> and we'll remove you manually.</p>
+      </div>
+    </div>
+  </main>
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const params = new URLSearchParams(location.search);
+  const token = params.get('token');
+  const loading = document.getElementById('loading');
+  const success = document.getElementById('success');
+  const error = document.getElementById('error');
+
+  if (!token) {
+    loading.classList.add('hidden');
+    error.classList.remove('hidden');
+    document.getElementById('error-msg').textContent = 'No unsubscribe token in the URL.';
+    return;
+  }
+  const { error: err } = await sb.from('subscribers')
+    .update({ status: 'unsubscribed', unsubscribed_at: new Date().toISOString() })
+    .eq('unsubscribe_token', token);
+  loading.classList.add('hidden');
+  if (err) {
+    error.classList.remove('hidden');
+    document.getElementById('error-msg').textContent = err.message;
+  } else {
+    success.classList.remove('hidden');
+  }
+})();
+</script>
+</body>
+</html>

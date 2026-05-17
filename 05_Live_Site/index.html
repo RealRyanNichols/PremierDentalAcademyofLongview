@@ -598,6 +598,22 @@
   </div>
 </section>
 
+<!-- ───────────── Newsletter ───────────── -->
+<section class="py-12 bg-gradient-to-br from-teal-50 to-cyan-50 border-y border-teal-100">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Stay in touch</p>
+    <h2 class="display text-2xl sm:text-3xl font-bold mt-1">Not ready to apply? Get cohort dates + tips by email.</h2>
+    <p class="text-slate-600 mt-2 text-sm">One short email per month. Cohort start dates, scholarship deadlines, dental career advice from Amanda. No spam, unsubscribe anytime.</p>
+    <form id="subscribe-form" class="mt-5 flex flex-wrap gap-2 max-w-md mx-auto justify-center">
+      <input type="email" name="email" required placeholder="you@example.com"
+        class="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm whitespace-nowrap">Subscribe →</button>
+    </form>
+    <div id="subscribe-success" class="hidden mt-4 text-emerald-700 font-semibold">✓ You're on the list. See you in your inbox.</div>
+    <div id="subscribe-error" class="hidden mt-4 text-rose-700"></div>
+  </div>
+</section>
+
 <!-- ───────────── Footer ───────────── -->
 <footer class="bg-slate-900 text-slate-300">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
@@ -648,8 +664,30 @@
 
 <!-- AOS init -->
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
+
+  // Newsletter signup
+  (async () => {
+    const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const form = document.getElementById('subscribe-form');
+    const success = document.getElementById('subscribe-success');
+    const error = document.getElementById('subscribe-error');
+    if (!form) return;
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = new FormData(form).get('email');
+      const { error: err } = await sb.from('subscribers').insert({ email, source: 'homepage-footer' });
+      if (err && !/duplicate/i.test(err.message)) {
+        error.textContent = '✗ ' + err.message; error.classList.remove('hidden'); return;
+      }
+      form.classList.add('hidden');
+      success.classList.remove('hidden');
+    };
+  })();
 </script>
 </body>
 </html>
