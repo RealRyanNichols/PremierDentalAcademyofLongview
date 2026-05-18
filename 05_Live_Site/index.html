@@ -194,9 +194,10 @@
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
       <a href="#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/classes" class="hover:text-teal-700">Classes</a>
+      <a href="/graduates" class="hover:text-teal-700">Graduates</a>
       <a href="/blog" class="hover:text-teal-700">Blog</a>
       <a href="/salary" class="hover:text-teal-700">Salary</a>
-      <a href="#pricing" class="hover:text-teal-700">Pricing</a>
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
@@ -293,15 +294,42 @@
   </div>
 </section>
 
-<!-- ───────────── Trusted by / Stats ───────────── -->
+<!-- ───────────── By the numbers (live stats) ───────────── -->
 <section class="border-y border-slate-200 bg-slate-50/50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">Building the next generation of East Texas dental assistants</p>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
-      <div data-aos="fade-up"><div class="display text-3xl font-bold gradient-text">100+</div><div class="text-xs text-slate-500 mt-1">Hours of hands-on practice</div></div>
-      <div data-aos="fade-up" data-aos-delay="100"><div class="display text-3xl font-bold gradient-text">16</div><div class="text-xs text-slate-500 mt-1">Practice management modules</div></div>
-      <div data-aos="fade-up" data-aos-delay="200"><div class="display text-3xl font-bold gradient-text">25</div><div class="text-xs text-slate-500 mt-1">Realistic practice patients</div></div>
-      <div data-aos="fade-up" data-aos-delay="300"><div class="display text-3xl font-bold gradient-text">0</div><div class="text-xs text-slate-500 mt-1">Other Texas schools do this</div></div>
+    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">PDA by the numbers — live from our records</p>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
+      <a href="/graduates" data-aos="fade-up" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
+        <div class="display text-3xl font-bold gradient-text" id="stat-grads">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Students graduated</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">See them →</div>
+      </a>
+      <a href="/classes#current" data-aos="fade-up" data-aos-delay="50" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
+        <div class="display text-3xl font-bold gradient-text" id="stat-enrolled">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Currently enrolled</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">View cohorts →</div>
+      </a>
+      <a href="/classes#current" data-aos="fade-up" data-aos-delay="100" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
+        <div class="display text-3xl font-bold gradient-text" id="stat-in-session">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Classes in session</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">View now →</div>
+      </a>
+      <a href="/classes#upcoming" data-aos="fade-up" data-aos-delay="150" class="group bg-white rounded-2xl border-2 border-amber-300 hover:border-amber-500 hover:shadow-lg transition p-4 relative">
+        <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-amber-500 text-white text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">Sign up</span>
+        <div class="display text-3xl font-bold gradient-text" id="stat-upcoming">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Classes upcoming</div>
+        <div class="text-[10px] text-amber-700 mt-1 font-semibold">Reserve seat →</div>
+      </a>
+      <a href="/graduates" data-aos="fade-up" data-aos-delay="200" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
+        <div class="display text-3xl font-bold gradient-text" id="stat-placed">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Jobs placed</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">See the wall →</div>
+      </a>
+      <a href="/hiring-partners" data-aos="fade-up" data-aos-delay="250" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
+        <div class="display text-3xl font-bold gradient-text" id="stat-partners">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Hiring partners</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">For offices →</div>
+      </a>
     </div>
   </div>
 </section>
@@ -798,14 +826,40 @@
     const navAcct = document.getElementById('nav-account');
     if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
 
-    // Live cohort countdown
-    const cohortStart = new Date('2026-08-19T00:00:00');
+    // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
+    let nextStart = new Date('2026-08-19T00:00:00');
+    try {
+      const { data: next } = await sb.from('cohorts')
+        .select('start_date').eq('status', 'upcoming').order('start_date', { ascending: true }).limit(1).maybeSingle();
+      if (next?.start_date) nextStart = new Date(next.start_date + 'T00:00:00');
+    } catch (e) {}
     const tick = () => {
-      const days = Math.max(0, Math.ceil((cohortStart - new Date()) / 86400000));
+      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
       const el = document.getElementById('cohort-countdown');
       if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
     };
     tick(); setInterval(tick, 60000);
+
+    // Live "By the numbers" stats
+    try {
+      const [cohorts, placements] = await Promise.all([
+        sb.from('cohorts').select('status, enrolled_count'),
+        sb.from('placements').select('id, hired_at_office, visible').eq('visible', true),
+      ]);
+      const cs = cohorts.data || [];
+      const ps = placements.data || [];
+      const inSession = cs.filter(c => c.status === 'current');
+      const upcoming = cs.filter(c => c.status === 'upcoming');
+      const enrolledNow = inSession.reduce((a, c) => a + (c.enrolled_count || 0), 0);
+      const offices = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
+      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      set('stat-grads',      ps.length);
+      set('stat-enrolled',   enrolledNow);
+      set('stat-in-session', inSession.length);
+      set('stat-upcoming',   upcoming.length);
+      set('stat-placed',     ps.length);
+      set('stat-partners',   offices.size);
+    } catch (e) { console.warn('Stats load failed:', e); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
     const error = document.getElementById('subscribe-error');

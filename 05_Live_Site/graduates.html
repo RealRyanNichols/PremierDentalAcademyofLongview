@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Our Graduates Are Working — Premier Dental Academy of Longview</title>
+  <meta name="description" content="See the East Texas dental offices that have hired PDA graduates. Real names, real placements, real careers built in 12 weeks." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+</head>
+<body class="bg-white">
+
+<nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span> Premier Dental Academy</a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/classes" class="hover:text-teal-700">Classes</a>
+      <a href="/graduates" class="text-teal-700">Graduates</a>
+      <a href="/salary" class="hover:text-teal-700">Salary</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">Enroll →</a>
+  </div>
+</nav>
+
+<main class="pt-16">
+
+<section class="py-16 sm:py-20 bg-gradient-to-br from-teal-50 via-white to-cyan-50 text-center">
+  <div class="max-w-3xl mx-auto px-6">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold" data-aos="fade-up">Where our graduates are working</p>
+    <h1 class="display text-4xl sm:text-5xl font-bold mt-2 leading-tight" data-aos="fade-up">Real names. Real careers. <span class="gradient-text">Real East Texas offices.</span></h1>
+    <p class="text-slate-600 mt-4 text-lg" data-aos="fade-up">Every person below was a PDA student. Every job below was at a Longview-area dental office that called us asking for help.</p>
+  </div>
+</section>
+
+<!-- Stats bar -->
+<section class="bg-slate-50 border-y border-slate-200">
+  <div class="max-w-6xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+    <div data-aos="fade-up"><div class="display text-4xl font-bold gradient-text" id="stat-grads">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Graduates placed</div></div>
+    <div data-aos="fade-up" data-aos-delay="100"><div class="display text-4xl font-bold gradient-text" id="stat-offices">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">East Texas offices</div></div>
+    <div data-aos="fade-up" data-aos-delay="200"><div class="display text-4xl font-bold gradient-text" id="stat-rate">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Placed within 30 days</div></div>
+    <div data-aos="fade-up" data-aos-delay="300"><div class="display text-4xl font-bold gradient-text" id="stat-cities">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Cities served</div></div>
+  </div>
+</section>
+
+<!-- Filter chips -->
+<section class="py-8 max-w-6xl mx-auto px-6">
+  <div class="flex flex-wrap gap-2 items-center" id="filter-chips">
+    <span class="text-xs uppercase tracking-widest text-slate-500 font-semibold mr-2">Filter</span>
+    <button data-filter="all" class="chip-btn px-3 py-1.5 text-sm bg-slate-900 text-white rounded-full font-medium">All</button>
+  </div>
+</section>
+
+<!-- Grid -->
+<section class="pb-16 max-w-6xl mx-auto px-6">
+  <div id="grad-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="bg-slate-50 rounded-2xl p-8 animate-pulse">loading…</div>
+  </div>
+  <div id="grad-empty" class="hidden text-center py-16 text-slate-500">No graduates match that filter — try another city or year.</div>
+</section>
+
+<!-- CTA -->
+<section class="py-16 bg-gradient-to-br from-teal-700 to-cyan-900 text-white text-center">
+  <div class="max-w-3xl mx-auto px-6">
+    <h2 class="display text-3xl sm:text-4xl font-bold" data-aos="fade-up">Be next on this wall.</h2>
+    <p class="text-teal-100 mt-3 max-w-xl mx-auto" data-aos="fade-up">12 weeks of training. Free application. We don't stop until you're working.</p>
+    <div class="mt-7 flex flex-wrap gap-3 justify-center" data-aos="fade-up">
+      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/classes" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">See upcoming classes</a>
+    </div>
+  </div>
+</section>
+
+<footer class="bg-slate-900 text-slate-300 py-8">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/contact" class="hover:text-white">Contact</a></div>
+</footer>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+AOS.init({ duration: 500, once: true });
+
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+
+  const PALETTE = ['#0d9488','#0891b2','#0e7490','#7c3aed','#db2777','#dc2626','#0284c7','#65a30d','#a16207','#115e59'];
+  const colorFor = (s) => {
+    let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+    return PALETTE[Math.abs(h) % PALETTE.length];
+  };
+
+  const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
+  const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
+
+  const { data: grads, error } = await sb.from('placements').select('*').eq('visible', true).order('hire_date', { ascending: false });
+  if (error) { console.warn(error); return; }
+
+  // Stats
+  document.getElementById('stat-grads').textContent = grads.length;
+  document.getElementById('stat-offices').textContent = new Set(grads.map(g => g.hired_at_office).filter(Boolean)).size;
+  const cities = new Set(grads.map(g => g.city).filter(Boolean));
+  document.getElementById('stat-cities').textContent = cities.size;
+  const placedFast = grads.filter(g => g.graduation_date && g.hire_date && daysBetween(g.graduation_date, g.hire_date) <= 30).length;
+  document.getElementById('stat-rate').textContent = grads.length > 0 ? Math.round(placedFast / grads.length * 100) + '%' : '—';
+
+  // Filter chips by city
+  const chipBox = document.getElementById('filter-chips');
+  cities.forEach(city => {
+    const b = document.createElement('button');
+    b.dataset.filter = city;
+    b.className = 'chip-btn px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full font-medium';
+    b.textContent = city;
+    chipBox.appendChild(b);
+  });
+
+  const render = (filter) => {
+    const list = filter === 'all' ? grads : grads.filter(g => g.city === filter);
+    const grid = document.getElementById('grad-grid');
+    document.getElementById('grad-empty').classList.toggle('hidden', list.length > 0);
+    grid.innerHTML = list.map((g, i) => {
+      const name = g.first_name + (g.last_initial ? ' ' + g.last_initial + '.' : '');
+      const initials = (g.first_name[0] + (g.last_initial || '')).toUpperCase();
+      const bg = colorFor(name);
+      const daysToHire = g.graduation_date && g.hire_date ? daysBetween(g.graduation_date, g.hire_date) : null;
+      return `
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="${(i%9)*50}">
+          <div class="flex items-start gap-3 mb-3">
+            <div class="w-12 h-12 rounded-full text-white font-bold text-lg grid place-items-center shrink-0" style="background:${bg}">${initials}</div>
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-slate-900">${name}</div>
+              <div class="text-xs text-slate-500">${g.role || 'Dental Assistant'} · ${g.city || ''}</div>
+            </div>
+            <span class="text-[10px] uppercase tracking-widest font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Hired</span>
+          </div>
+          <div class="text-sm text-slate-700">
+            <span class="text-slate-500">Now at</span>
+            <strong class="block text-slate-900">${g.hired_at_office || '—'}</strong>
+          </div>
+          <div class="grid grid-cols-2 gap-2 mt-3 text-[11px] text-slate-500">
+            <div><span class="block uppercase tracking-widest">Graduated</span><span class="font-mono text-slate-700">${fmt(g.graduation_date)}</span></div>
+            <div><span class="block uppercase tracking-widest">Hired</span><span class="font-mono text-slate-700">${fmt(g.hire_date)}</span></div>
+          </div>
+          ${daysToHire != null && daysToHire <= 30 ? `<div class="text-[11px] text-emerald-700 font-semibold mt-2">⚡ Placed in ${daysToHire} days</div>` : ''}
+          ${g.quote ? `<blockquote class="mt-3 text-sm italic text-slate-600 border-l-2 border-teal-500 pl-3">"${g.quote}"</blockquote>` : ''}
+        </div>
+      `;
+    }).join('');
+    AOS.refresh();
+  };
+
+  render('all');
+
+  chipBox.addEventListener('click', (e) => {
+    const b = e.target.closest('.chip-btn'); if (!b) return;
+    chipBox.querySelectorAll('.chip-btn').forEach(x => { x.classList.remove('bg-slate-900','text-white'); x.classList.add('bg-slate-100','text-slate-700'); });
+    b.classList.remove('bg-slate-100','text-slate-700'); b.classList.add('bg-slate-900','text-white');
+    render(b.dataset.filter);
+  });
+})();
+</script>
+</body>
+</html>
