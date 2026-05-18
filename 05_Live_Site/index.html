@@ -318,7 +318,10 @@
 <!-- ───────────── By the numbers (live stats) ───────────── -->
 <section class="border-y border-slate-200 bg-slate-50/50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">PDA by the numbers — live from our records</p>
+    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-1">PDA by the numbers</p>
+    <p class="text-center text-sm sm:text-base text-slate-700 font-medium mb-6 max-w-2xl mx-auto">
+      <strong class="text-teal-700">85%+ of our graduates</strong> are working in East Texas dental offices — many with job offers in their graduation week or within 30 days.
+    </p>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
       <a href="/graduates" data-aos="fade-up" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
         <div class="display text-3xl font-bold gradient-text" id="stat-grads">—</div>
@@ -342,9 +345,9 @@
         <div class="text-[10px] text-amber-700 mt-1 font-semibold">Reserve seat →</div>
       </a>
       <a href="/graduates" data-aos="fade-up" data-aos-delay="200" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
-        <div class="display text-3xl font-bold gradient-text" id="stat-placed">—</div>
-        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Jobs placed</div>
-        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">See the wall →</div>
+        <div class="display text-3xl font-bold gradient-text" id="stat-placement-rate">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Placement rate</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">East Texas →</div>
       </a>
       <a href="/hiring-partners" data-aos="fade-up" data-aos-delay="250" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
         <div class="display text-3xl font-bold gradient-text" id="stat-partners">—</div>
@@ -890,25 +893,31 @@
     };
     tick(); setInterval(tick, 60000);
 
-    // Live "By the numbers" stats
+    // Live "By the numbers" stats — live counts + admin overrides for marketing numbers
     try {
-      const [cohorts, placements] = await Promise.all([
+      const [cohorts, placements, overrides] = await Promise.all([
         sb.from('cohorts').select('status, enrolled_count'),
         sb.from('placements').select('id, hired_at_office, visible').eq('visible', true),
+        sb.from('public_stats_overrides').select('key, value'),
       ]);
       const cs = cohorts.data || [];
       const ps = placements.data || [];
+      const ov = Object.fromEntries((overrides.data || []).map(r => [r.key, r.value]));
       const inSession = cs.filter(c => c.status === 'current');
-      const upcoming = cs.filter(c => c.status === 'upcoming');
+      const upcoming  = cs.filter(c => c.status === 'upcoming');
       const enrolledNow = inSession.reduce((a, c) => a + (c.enrolled_count || 0), 0);
       const offices = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      set('stat-grads',      ps.length);
-      set('stat-enrolled',   enrolledNow);
-      set('stat-in-session', inSession.length);
-      set('stat-upcoming',   upcoming.length);
-      set('stat-placed',     ps.length);
-      set('stat-partners',   offices.size);
+
+      const totalGrads     = ps.length + (ov.graduates_extra   || 0);
+      const placementRate  = ov.placement_rate_pct || null;
+
+      set('stat-grads',           totalGrads.toLocaleString());
+      set('stat-enrolled',        enrolledNow);
+      set('stat-in-session',      inSession.length);
+      set('stat-upcoming',        upcoming.length);
+      set('stat-placement-rate',  placementRate ? `${placementRate}%+` : '—');
+      set('stat-partners',        offices.size);
     } catch (e) { console.warn('Stats load failed:', e); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
