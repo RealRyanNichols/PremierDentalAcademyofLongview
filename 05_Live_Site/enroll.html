@@ -4,48 +4,55 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Enroll — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; background: #0c3a36; }
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    #card-container { min-height: 90px; }
+    .seat-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 9999px; }
+    .seat-pill.normal { background: #ecfeff; color: #155e75; }
+    .seat-pill.urgent { background: #fef3c7; color: #92400e; }
+    .seat-pill.full   { background: #fee2e2; color: #991b1b; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
-  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/seat-mask.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://web.squarecdn.com/v1/square.js"></script>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+<body class="min-h-screen">
 
-<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
-      <span>Premier Dental Academy</span>
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
     </a>
     <a href="/" class="text-sm text-teal-700 hover:text-teal-900">← Back to home</a>
   </div>
 </nav>
 
-<main class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
-  <div class="text-center mb-10">
-    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Enroll</p>
+  <div class="text-center mb-10 text-white">
+    <p class="text-xs uppercase tracking-widest text-teal-300 font-semibold">Enroll</p>
     <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">format.</span></h1>
-    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
+    <p class="text-teal-100/80 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
   </div>
 
-  <div class="grid lg:grid-cols-3 gap-6">
+  <!-- ───────── Format cards ───────── -->
+  <div class="grid lg:grid-cols-3 gap-5 mb-12">
 
-    <!-- In-Person card -->
     <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
       <div class="flex items-center gap-2"><span class="text-2xl">🏫</span><h3 class="font-bold text-xl">In-Person</h3></div>
       <p class="text-sm text-slate-500 mt-1">At the Longview campus</p>
       <div class="display text-4xl font-bold mt-5">$1,997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · payment plans available</div>
+      <div class="text-xs text-slate-500 mt-0.5">tuition · $200 down, then daily/weekly/monthly</div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live instruction at our Longview campus</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment</li>
@@ -54,18 +61,17 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
       </ul>
-      <button type="button" data-action="enroll" data-plan="in-person" data-price="1997"
+      <button type="button" data-action="pick-plan" data-plan="in-person"
         class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
-        Enroll — In-Person →
+        Choose In-Person →
       </button>
     </div>
 
-    <!-- Online card -->
     <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
       <div class="flex items-center gap-2"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
       <p class="text-sm text-slate-500 mt-1">Live classes, attend from anywhere</p>
-      <div class="display text-4xl font-bold mt-5">$1,997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · payment plans available</div>
+      <div class="display text-4xl font-bold mt-5">$997</div>
+      <div class="text-xs text-slate-500 mt-0.5">tuition · $200 down, then daily/weekly/monthly</div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live video instruction with our instructors</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum as in-person</li>
@@ -74,13 +80,12 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
       </ul>
-      <button type="button" data-action="enroll" data-plan="online" data-price="1997"
+      <button type="button" data-action="pick-plan" data-plan="online"
         class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
-        Enroll — Online →
+        Choose Online →
       </button>
     </div>
 
-    <!-- Workforce / Veterans card -->
     <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
       <h3 class="font-bold text-xl">Workforce / Veterans</h3>
       <p class="text-sm text-slate-500 mt-1">Funded enrollment</p>
@@ -99,63 +104,393 @@
     </div>
   </div>
 
-  <!-- Stripe payment hand-off (placeholder until live keys) -->
-  <div id="stripe-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6">
-      <div class="flex items-start justify-between mb-3">
-        <div>
-          <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Checkout</div>
-          <h3 class="font-bold text-lg" id="stripe-plan-name">—</h3>
-        </div>
-        <button type="button" data-action="close-stripe" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+  <!-- ───────── Checkout (hidden until plan picked) ───────── -->
+  <section id="checkout" hidden class="bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-300">Reserve your seat</div>
+        <h2 class="font-bold text-xl mt-0.5" id="co-plan-name">—</h2>
       </div>
-      <div class="bg-slate-50 rounded-xl p-4 mb-4">
-        <div class="text-xs text-slate-500 uppercase tracking-wider">Today's charge</div>
-        <div class="display text-3xl font-bold mt-1" id="stripe-amount">—</div>
-      </div>
-      <p class="text-sm text-slate-700 mb-4">When live, this opens a secure Stripe checkout. For now, please submit an application and we'll send a payment link directly.</p>
-      <div class="flex gap-2">
-        <a href="/apply" class="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg">Submit application instead</a>
-        <button type="button" data-action="close-stripe" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg">Close</button>
-      </div>
+      <button type="button" data-action="reset" class="text-slate-400 hover:text-white text-sm">Change format</button>
     </div>
+
+    <div class="grid lg:grid-cols-5 gap-6 p-5 sm:p-6">
+
+      <!-- Left: form -->
+      <div class="lg:col-span-3 space-y-5">
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Choose your class</label>
+          <select id="cohort" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none"></select>
+          <p id="cohort-meta" class="text-xs text-slate-500 mt-1.5">—</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-sm font-semibold text-slate-900 mb-1.5">Your name</label>
+            <input id="name" type="text" required autocomplete="name" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          </div>
+          <div>
+            <label class="block text-sm font-semibold text-slate-900 mb-1.5">Email</label>
+            <input id="email" type="email" required autocomplete="email" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Phone</label>
+          <input id="phone" type="tel" autocomplete="tel" class="w-full sm:w-1/2 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Down payment today
+            <span class="text-slate-400 font-normal">— $200 minimum, pay more to lower installments</span>
+          </label>
+          <div class="relative">
+            <span class="absolute left-3 top-2.5 text-slate-500">$</span>
+            <input id="down" type="number" min="200" step="1" value="200" class="w-full sm:w-48 border-2 border-slate-200 rounded-lg pl-7 pr-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">How do you want to pay the rest?</label>
+          <div class="grid grid-cols-3 gap-2" id="cadence-group">
+            <label class="cadence-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
+              <input type="radio" name="cadence" value="daily" class="sr-only" />
+              <div class="text-sm font-semibold">Daily</div>
+              <div class="text-xs text-slate-500">small payments</div>
+            </label>
+            <label class="cadence-opt cursor-pointer border-2 border-teal-600 bg-teal-50 rounded-lg p-3 text-center transition">
+              <input type="radio" name="cadence" value="weekly" checked class="sr-only" />
+              <div class="text-sm font-semibold">Weekly</div>
+              <div class="text-xs text-slate-500">most popular</div>
+            </label>
+            <label class="cadence-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
+              <input type="radio" name="cadence" value="monthly" class="sr-only" />
+              <div class="text-sm font-semibold">Monthly</div>
+              <div class="text-xs text-slate-500">fewest charges</div>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Start paying on</label>
+          <input id="first-date" type="date" class="w-full sm:w-56 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          <p class="text-xs text-slate-500 mt-1.5">Final payment must be done by the time class ends.</p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Card</label>
+          <div id="card-container" class="border-2 border-slate-200 rounded-lg p-3 bg-white"></div>
+          <p class="text-xs text-slate-500 mt-1.5">🔒 Card processed securely by Square. We don't see or store your card number.</p>
+        </div>
+      </div>
+
+      <!-- Right: live summary -->
+      <aside class="lg:col-span-2">
+        <div class="lg:sticky lg:top-24 bg-slate-50 border border-slate-200 rounded-xl p-5">
+          <div class="text-xs uppercase tracking-wider text-slate-500 font-semibold">Your plan</div>
+          <div class="display text-3xl font-bold mt-1" id="sum-total">—</div>
+          <div class="text-xs text-slate-500" id="sum-plan-name">—</div>
+
+          <div class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between"><span class="text-slate-600">Today</span><span class="font-semibold text-slate-900" id="sum-today">—</span></div>
+            <div class="flex justify-between"><span class="text-slate-600">Remaining</span><span class="font-semibold text-slate-900" id="sum-remaining">—</span></div>
+            <div class="flex justify-between"><span class="text-slate-600">Plan</span><span class="font-semibold text-slate-900 text-right" id="sum-plan-desc">—</span></div>
+            <div class="flex justify-between"><span class="text-slate-600">Final payment</span><span class="font-semibold text-slate-900" id="sum-final">—</span></div>
+          </div>
+
+          <details class="mt-3 text-xs text-slate-600">
+            <summary class="cursor-pointer hover:text-slate-900">See full schedule</summary>
+            <ol id="sum-schedule" class="mt-2 space-y-1 list-decimal list-inside"></ol>
+          </details>
+
+          <div id="sum-warning" hidden class="mt-3 text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded p-2"></div>
+
+          <button type="button" id="pay-btn" data-action="submit"
+            class="block w-full text-center mt-5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg">
+            Reserve seat & pay today
+          </button>
+          <p class="text-[11px] text-slate-500 text-center mt-2">Remaining installments are auto-billed to this card on the dates above. Square emails a receipt for every payment.</p>
+
+          <div id="err" hidden class="mt-3 text-xs bg-rose-50 border border-rose-200 text-rose-900 rounded p-2"></div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="text-center mt-10 text-sm text-teal-100/80 max-w-2xl mx-auto">
+    <p class="font-semibold text-white">14-day satisfaction guarantee</p>
+    <p class="mt-1">If you decide the program isn't for you within 14 days of enrollment, we refund 100% of your tuition. No questions asked.</p>
   </div>
 
-  <!-- Trust strip -->
-  <div class="text-center mt-12 text-sm text-slate-600 max-w-2xl mx-auto">
-    <p class="font-semibold">14-day satisfaction guarantee</p>
-    <p class="mt-1 text-slate-500">If you decide the program isn't for you within 14 days of enrollment, we refund 100% of your tuition. No questions asked.</p>
-  </div>
-
-  <div class="text-center mt-8 text-xs text-slate-500">
-    <span>🔒 Secure checkout via Stripe</span>
+  <div class="text-center mt-6 text-xs text-teal-100/60">
+    <span>🔒 Secure checkout via Square</span>
     <span class="mx-2">·</span>
     <span>📞 Questions? (903) 913-6444</span>
     <span class="mx-2">·</span>
-    <a href="/apply" class="text-teal-700 hover:underline">Not ready to pay? Apply first →</a>
+    <a href="/apply" class="text-teal-200 hover:text-white hover:underline">Not ready to pay? Apply first →</a>
   </div>
 </main>
 
 <script>
-const PLANS = {
-  'in-person': { name: 'PDA RDA Program — In-Person', amount: '$1,997.00' },
-  'online':    { name: 'PDA RDA Program — Online',    amount: '$1,997.00' },
+const SQUARE_APP_ID = 'sq0idp-wP-0xugR7vYxfPzzYDVt7Q';
+const SQUARE_LOCATION_ID = '2P2ZE3FJNEYTV';
+
+const PLAN_DEFS = {
+  'in-person': { name: 'PDA RDA Program — In-Person', total: 199700, mode: 'in_person' },
+  'online':    { name: 'PDA RDA Program — Online',    total:  99700, mode: 'online' },
 };
+
+const sb = window.supabase.createClient(
+  'https://lmbsuwslsycukynzpzik.supabase.co',
+  'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'
+);
+
+const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayments: null };
+
+const fmt = (cents) => '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
+const isoToday = () => new Date().toISOString().slice(0, 10);
+const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+const diffDays = (a, b) => Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
+const fmtDate = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+const cohortEnd = (c) => c.end_date || addDays(c.start_date, 12 * 7);
+
+async function loadCohorts() {
+  const { data } = await sb.from('cohorts')
+    .select('id,name,delivery_mode,start_date,end_date,status,capacity,enrolled_count')
+    .eq('status', 'upcoming')
+    .order('start_date', { ascending: true });
+  state.cohorts = data || [];
+}
+
+function cohortLabel(c) {
+  const remaining = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+  const daysOut = window.PDASeats.daysUntil(c.start_date);
+  const seats = window.PDASeats.maskSeats(remaining, daysOut);
+  return `${c.name} — ${seats.label}`;
+}
+
+function renderCohortOptions() {
+  const sel = document.getElementById('cohort');
+  const want = state.plan === 'online' ? 'online' : 'in_person';
+  const filtered = state.cohorts.filter(c => c.delivery_mode === want);
+  if (!filtered.length) {
+    sel.innerHTML = '<option value="">No upcoming classes — call (903) 913-6444</option>';
+    state.cohort = null;
+  } else {
+    sel.innerHTML = filtered.map(c => `<option value="${c.id}">${cohortLabel(c)}</option>`).join('');
+    const preselect = new URLSearchParams(location.search).get('cohort');
+    sel.value = (preselect && filtered.find(c => c.id === preselect)) ? preselect : filtered[0].id;
+    state.cohort = filtered.find(c => c.id === sel.value);
+  }
+  updateCohortMeta();
+}
+
+// If the user arrived with ?cohort=<id>, auto-pick the matching plan format.
+function autoPickFromUrl() {
+  const id = new URLSearchParams(location.search).get('cohort');
+  if (!id) return;
+  const c = state.cohorts.find(x => x.id === id);
+  if (!c) return;
+  pickPlan(c.delivery_mode === 'online' ? 'online' : 'in-person');
+}
+
+function updateCohortMeta() {
+  const sel = document.getElementById('cohort');
+  state.cohort = state.cohorts.find(c => c.id === sel.value) || null;
+  const el = document.getElementById('cohort-meta');
+  if (!state.cohort) { el.textContent = '—'; return; }
+  const c = state.cohort;
+  const end = cohortEnd(c);
+  const remaining = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+  const seats = window.PDASeats.maskSeats(remaining, window.PDASeats.daysUntil(c.start_date));
+  const pillClass = seats.full ? 'full' : (seats.urgent ? 'urgent' : 'normal');
+  el.innerHTML = `Class runs <b>${fmtDate(c.start_date)}</b> → <b>${fmtDate(end)}</b>${c.end_date ? '' : ' (estimated)'} · <span class="seat-pill ${pillClass}">${seats.label}</span>`;
+
+  const fp = document.getElementById('first-date');
+  fp.min = isoToday();
+  fp.max = end;
+  if (!fp.value || fp.value > end || fp.value < isoToday()) {
+    const d = addDays(isoToday(), 7);
+    fp.value = d > end ? end : d;
+  }
+}
+
+function computeSchedule() {
+  const plan = PLAN_DEFS[state.plan];
+  const total = plan.total;
+  const down = Math.round(Number(document.getElementById('down').value) * 100);
+  const cadence = document.querySelector('[name="cadence"]:checked').value;
+  const firstDate = document.getElementById('first-date').value;
+  const end = state.cohort ? cohortEnd(state.cohort) : null;
+  const out = { total, down, cadence, firstDate, end, valid: false, warning: '', plan };
+
+  if (!end || !firstDate) { out.warning = 'Pick a class first.'; return out; }
+  if (down < 20000) { out.warning = 'Minimum down payment is $200.'; return out; }
+  if (down > total) { out.warning = "Down payment can't exceed total tuition."; return out; }
+
+  const remaining = total - down;
+  out.remaining = remaining;
+  if (remaining === 0) { out.valid = true; out.count = 0; out.dates = []; return out; }
+
+  const step = cadence === 'daily' ? 1 : cadence === 'weekly' ? 7 : 30;
+  const window = diffDays(firstDate, end);
+  if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
+
+  let count = Math.floor(window / step) + 1;
+  if (count < 1) count = 1;
+  if (count > 13) {
+    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} would need more than 13 payments before class ends. Pick a later start date, a slower cadence, or pay more down.`;
+    return out;
+  }
+
+  const per = Math.floor(remaining / count);
+  const lastAmount = remaining - per * (count - 1);
+  out.count = count;
+  out.per = per;
+  out.lastAmount = lastAmount;
+  out.dates = Array.from({ length: count }, (_, i) => addDays(firstDate, i * step));
+  out.valid = true;
+  return out;
+}
+
+function renderSummary() {
+  if (!state.plan) return;
+  const s = computeSchedule();
+  document.getElementById('sum-plan-name').textContent = s.plan.name;
+  document.getElementById('sum-total').textContent = fmt(s.total);
+  document.getElementById('sum-today').textContent = fmt(s.down || 0);
+  document.getElementById('sum-remaining').textContent = fmt(s.remaining ?? (s.total - (s.down||0)));
+
+  const desc  = document.getElementById('sum-plan-desc');
+  const final = document.getElementById('sum-final');
+  const list  = document.getElementById('sum-schedule');
+  list.innerHTML = '';
+  if (s.count === 0 && s.valid) {
+    desc.textContent  = 'Paid in full today';
+    final.textContent = '—';
+  } else if (s.valid) {
+    const perTxt = s.lastAmount && s.lastAmount !== s.per
+      ? `${s.count - 1} × ${fmt(s.per)} + ${fmt(s.lastAmount)}`
+      : `${s.count} × ${fmt(s.per)}`;
+    desc.textContent  = `${perTxt} ${s.cadence}`;
+    final.textContent = fmtDate(s.dates[s.dates.length - 1]);
+    s.dates.forEach((d, i) => {
+      const isLast = i === s.dates.length - 1;
+      const amt = isLast ? s.lastAmount : s.per;
+      list.insertAdjacentHTML('beforeend', `<li>${fmtDate(d)} — ${fmt(amt)}</li>`);
+    });
+  } else {
+    desc.textContent = '—';
+    final.textContent = '—';
+  }
+
+  const warn = document.getElementById('sum-warning');
+  if (s.warning) { warn.textContent = s.warning; warn.hidden = false; }
+  else { warn.hidden = true; }
+
+  document.getElementById('pay-btn').disabled = !s.valid || !state.card;
+}
+
+async function initSquare() {
+  if (state.squarePayments) return;
+  if (!window.Square) { console.warn('Square SDK failed to load'); return; }
+  state.squarePayments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+  state.card = await state.squarePayments.card();
+  await state.card.attach('#card-container');
+  renderSummary();
+}
+
+async function pickPlan(plan) {
+  state.plan = plan;
+  document.getElementById('co-plan-name').textContent = PLAN_DEFS[plan].name;
+  document.getElementById('checkout').hidden = false;
+  renderCohortOptions();
+  renderSummary();
+  document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  await initSquare();
+  renderSummary();
+}
+
+async function submit() {
+  const btn = document.getElementById('pay-btn');
+  const err = document.getElementById('err');
+  err.hidden = true;
+
+  const s = computeSchedule();
+  if (!s.valid) { err.textContent = s.warning || 'Please fix the plan first.'; err.hidden = false; return; }
+
+  const name  = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  if (!name || !email) { err.textContent = 'Name and email are required.'; err.hidden = false; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Processing…';
+  try {
+    const tokenRes = await state.card.tokenize();
+    if (tokenRes.status !== 'OK') {
+      throw new Error(tokenRes.errors?.[0]?.message || 'Card was rejected. Try another card.');
+    }
+    const body = {
+      plan: state.plan, downCents: s.down, cadence: s.cadence,
+      firstPaymentDate: s.firstDate, classEndDate: s.end,
+      sourceId: tokenRes.token, email, name, phone,
+      cohortName: state.cohort?.name || null,
+    };
+    const resp = await fetch('/api/enroll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const out = await resp.json();
+    if (!resp.ok || !out.ok) throw new Error(out.error || 'Payment failed.');
+
+    const params = new URLSearchParams({
+      plan: out.plan,
+      total: out.totalCents,
+      down: out.downCents,
+      remaining: out.remainingCents,
+      receipt: out.receiptUrl || '',
+      cadence: out.schedule?.cadence || '',
+      count: String(out.schedule?.count || 0),
+      per: String(out.schedule?.perCents || 0),
+      last: String(out.schedule?.lastAmountCents || 0),
+      finalDate: out.schedule?.dates?.[out.schedule.dates.length - 1] || '',
+      cohort: state.cohort?.name || '',
+    });
+    window.location.href = '/enroll-success?' + params.toString();
+  } catch (e) {
+    err.textContent = e.message;
+    err.hidden = false;
+    btn.disabled = false;
+    btn.textContent = 'Reserve seat & pay today';
+  }
+}
 
 document.addEventListener('click', (ev) => {
   const t = ev.target.closest('[data-action]');
   if (!t) return;
-  if (t.dataset.action === 'enroll') {
-    const plan = PLANS[t.dataset.plan];
-    if (!plan) return;
-    document.getElementById('stripe-plan-name').textContent = plan.name;
-    document.getElementById('stripe-amount').textContent = plan.amount;
-    document.getElementById('stripe-modal').classList.remove('hidden');
-  }
-  if (t.dataset.action === 'close-stripe') {
-    document.getElementById('stripe-modal').classList.add('hidden');
-  }
+  if (t.dataset.action === 'pick-plan') pickPlan(t.dataset.plan);
+  if (t.dataset.action === 'reset')      document.getElementById('checkout').hidden = true;
+  if (t.dataset.action === 'submit')     submit();
 });
+
+document.addEventListener('change', (ev) => {
+  if (ev.target.matches('[name="cadence"]')) {
+    document.querySelectorAll('.cadence-opt').forEach(el => {
+      const checked = el.querySelector('input').checked;
+      el.classList.toggle('border-teal-600', checked);
+      el.classList.toggle('bg-teal-50',      checked);
+      el.classList.toggle('border-slate-200', !checked);
+    });
+    renderSummary();
+  }
+  if (ev.target.id === 'cohort')     { updateCohortMeta(); renderSummary(); }
+  if (ev.target.id === 'first-date') { renderSummary(); }
+  if (ev.target.id === 'down')       { renderSummary(); }
+});
+
+loadCohorts().then(autoPickFromUrl);
 </script>
 </body>
 </html>

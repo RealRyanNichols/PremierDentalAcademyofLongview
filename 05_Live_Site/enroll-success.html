@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Welcome — Premier Dental Academy of Longview</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0c3a36; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+</head>
+<body class="min-h-screen">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+
+  <div class="text-center text-white mb-8">
+    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-400 mb-4">
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-300"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <h1 class="display text-4xl sm:text-5xl font-bold">You're <span class="gradient-text">enrolled.</span></h1>
+    <p class="text-teal-100/80 mt-3" id="welcome-line">Welcome to PDA. Here's what just happened and what comes next.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
+    <div class="bg-slate-900 text-white px-6 py-4">
+      <div class="text-xs uppercase tracking-widest text-teal-300">Receipt</div>
+      <h2 class="font-bold text-xl mt-0.5" id="plan-name">—</h2>
+      <p class="text-sm text-teal-100/80 mt-0.5" id="cohort-line"></p>
+    </div>
+    <div class="p-6 space-y-2 text-sm">
+      <div class="flex justify-between"><span class="text-slate-600">Total tuition</span><span class="font-semibold" id="total">—</span></div>
+      <div class="flex justify-between text-emerald-700"><span>Paid today</span><span class="font-semibold" id="down">—</span></div>
+      <div class="flex justify-between"><span class="text-slate-600">Remaining balance</span><span class="font-semibold" id="remaining">—</span></div>
+      <div class="flex justify-between"><span class="text-slate-600">Payment plan</span><span class="font-semibold text-right" id="plan-line">—</span></div>
+      <div class="flex justify-between"><span class="text-slate-600">Final payment</span><span class="font-semibold" id="final-date">—</span></div>
+    </div>
+    <div class="border-t border-slate-100 p-6 bg-slate-50">
+      <a id="receipt-link" href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 text-sm text-teal-700 hover:text-teal-900 font-medium">📧 View / print Square receipt →</a>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl p-6 mb-6">
+    <h3 class="font-bold text-lg mb-3">What happens next</h3>
+    <ol class="space-y-3 text-sm text-slate-700 list-decimal list-inside">
+      <li>Check your inbox — Square emailed your receipt for today's payment.</li>
+      <li>Your remaining installments are <b>auto-charged to the same card</b> on the dates above. Square emails a receipt for each one.</li>
+      <li>If a payment ever fails, Square will email you and try again automatically. To update your card, click the link in any Square email.</li>
+      <li>About a week before class starts, an instructor will email you with your login, class link / address, and a checklist.</li>
+      <li>Questions? Call <a href="tel:+19039136444" class="text-teal-700 hover:underline">(903) 913-6444</a> or email <a href="mailto:hello@PremierDentalAcademyOfLongview.com" class="text-teal-700 hover:underline">hello@PremierDentalAcademyOfLongview.com</a>.</li>
+    </ol>
+  </div>
+
+  <div class="text-center">
+    <a href="/" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-lg">Back to home →</a>
+  </div>
+</main>
+
+<script>
+(() => {
+  const p = new URLSearchParams(window.location.search);
+  const fmt = (c) => '$' + (Number(c) / 100).toLocaleString(undefined, { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 });
+  const fmtDate = (iso) => iso ? new Date(iso + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '—';
+
+  document.getElementById('plan-name').textContent  = p.get('plan')   || 'PDA RDA Program';
+  document.getElementById('cohort-line').textContent = p.get('cohort') || '';
+  document.getElementById('total').textContent      = fmt(p.get('total')     || 0);
+  document.getElementById('down').textContent       = fmt(p.get('down')      || 0);
+  document.getElementById('remaining').textContent  = fmt(p.get('remaining') || 0);
+  document.getElementById('final-date').textContent = fmtDate(p.get('finalDate'));
+
+  const count = Number(p.get('count') || 0);
+  const per   = Number(p.get('per')   || 0);
+  const last  = Number(p.get('last')  || 0);
+  const cad   = p.get('cadence') || '';
+  const planLine =
+    count === 0 ? 'Paid in full today' :
+    last && last !== per ? `${count - 1} × ${fmt(per)} + ${fmt(last)} ${cad}` :
+    `${count} × ${fmt(per)} ${cad}`;
+  document.getElementById('plan-line').textContent = planLine;
+
+  const r = p.get('receipt');
+  const link = document.getElementById('receipt-link');
+  if (r) { link.href = r; } else { link.style.display = 'none'; }
+})();
+</script>
+</body>
+</html>
