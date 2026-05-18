@@ -165,50 +165,58 @@
 </head>
 <body class="bg-white antialiased">
 
-<!-- ───────────── Live cohort countdown ───────────── -->
-<div class="fixed top-0 inset-x-0 z-50 bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-sm font-semibold text-center py-2 px-4">
-  <span class="inline-flex items-center gap-2 flex-wrap justify-center">
-    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></span>
-    Next cohort starts <span class="underline">Aug 19, 2026</span> —
-    <span id="cohort-countdown" class="font-mono font-bold">— days left</span> ·
-    <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2.5 py-0.5 rounded ml-1">Reserve seat →</a>
-  </span>
-</div>
-
 <!-- ───────────── Navigation ───────────── -->
-<nav class="fixed inset-x-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200" style="top:36px;">
+<nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
-      <span>Premier Dental Academy</span>
-      <span class="hidden sm:inline text-xs text-slate-500 font-normal">of Longview</span>
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
     </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+    <div class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-700">
       <a href="#programs" class="hover:text-teal-700">Programs</a>
       <a href="/calendar" class="hover:text-teal-700">Calendar</a>
-      <a href="/graduates" class="hover:text-teal-700">Graduates</a>
       <a href="/salary" class="hover:text-teal-700">Salary</a>
-      <a href="/blog" class="hover:text-teal-700">Blog</a>
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
     <div class="flex items-center gap-2">
-      <a id="nav-account" href="/login" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5">Sign in</a>
-      <a href="/tools/practice-pro" class="hidden sm:inline-block text-sm font-medium text-teal-700 hover:text-teal-800 px-3 py-1.5">Try preview</a>
-      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+      <a href="/enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+      <button id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
+        <svg id="nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <svg id="nav-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile overlay -->
+  <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-16 bottom-0 z-40 bg-white">
+    <div class="h-full overflow-y-auto px-6 py-6 flex flex-col">
+      <a href="#programs"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Programs</a>
+      <a href="/calendar"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Calendar</a>
+      <a href="/salary"    class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Salary</a>
+      <a href="/about"     class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">About</a>
+      <a href="/contact"   class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
+      <a href="/blog"      class="block py-4 border-b border-slate-100 text-base text-slate-600">Blog</a>
+      <a href="/graduates" class="block py-4 border-b border-slate-100 text-base text-slate-600">Our graduates</a>
+      <a href="/login"     class="block py-4 border-b border-slate-100 text-base text-slate-600">Sign in</a>
+      <a href="/tools/practice-pro" class="block py-4 border-b border-slate-100 text-base text-slate-600">Try free preview</a>
+      <a href="/enroll" class="mt-6 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-4 rounded-lg shadow">Enroll →</a>
+      <a href="tel:+19039136444" class="mt-3 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
     </div>
   </div>
 </nav>
 
-<main class="pt-[100px]">
+<main>
 
 <!-- ───────────── Hero ───────────── -->
 <section class="gradient-hero">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
     <div data-aos="fade-up">
-      <div class="inline-flex items-center gap-2 bg-teal-50 border border-teal-200 text-teal-800 text-xs font-semibold px-3 py-1 rounded-full mb-4">
-        <span class="w-1.5 h-1.5 bg-teal-500 rounded-full animate-pulse"></span>
-        Now enrolling for the Summer 2026 cohort
+      <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
+        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
+        Next cohort starts <span class="underline decoration-amber-400">Aug 19, 2026</span>
+        <span class="text-amber-700">·</span>
+        <span id="cohort-countdown" class="font-mono">— days left</span>
       </div>
       <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-slate-900">
         Train on the software<br/>
@@ -785,6 +793,7 @@
           <li><a href="tel:+19039136444" class="hover:text-white">(903) 913-6444</a></li>
           <li><a href="mailto:hello@PremierDentalAcademyOfLongview.com" class="hover:text-white">hello@PremierDentalAcademyOfLongview.com</a></li>
           <li><a href="/apply" class="hover:text-white">Schedule a tour →</a></li>
+          <li class="pt-3 border-t border-slate-800 mt-3"><a href="/login" class="hover:text-white">Sign in</a> · <a href="/tools/practice-pro" class="hover:text-white">Free trainer preview</a></li>
         </ul>
       </div>
     </div>
@@ -803,16 +812,30 @@
 <script>
   AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
 
-  // Newsletter signup + nav account swap
+  // Mobile menu toggle
+  (() => {
+    const btn   = document.getElementById('nav-toggle');
+    const panel = document.getElementById('mobile-menu');
+    const iOpen = document.getElementById('nav-icon-open');
+    const iClose= document.getElementById('nav-icon-close');
+    if (!btn || !panel) return;
+    const close = () => { panel.classList.add('hidden'); iOpen.classList.remove('hidden'); iClose.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; };
+    btn.addEventListener('click', () => {
+      const opening = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !opening);
+      iOpen.classList.toggle('hidden',  opening);
+      iClose.classList.toggle('hidden', !opening);
+      btn.setAttribute('aria-expanded', String(opening));
+      document.body.style.overflow = opening ? 'hidden' : '';
+    });
+    panel.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
+  })();
+
+  // Newsletter signup + countdown
   (async () => {
     const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-    // If signed in, swap "Sign in" -> "Dashboard"
-    const { data: { session } } = await sb.auth.getSession();
-    const navAcct = document.getElementById('nav-account');
-    if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
 
     // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
     let nextStart = new Date('2026-08-19T00:00:00');
