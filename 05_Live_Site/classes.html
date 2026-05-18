@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Upcoming Classes — Premier Dental Academy of Longview</title>
-  <meta name="description" content="See PDA's current and upcoming RDA training cohorts. Reserve your seat in any 2026 class. Foundation (12 weeks) and Career Track (24 weeks) options." />
+  <meta name="description" content="See PDA's current and upcoming RDA training cohorts. Reserve your seat in any 2026 class. Choose In-Person at our Longview campus or Online from anywhere." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -85,7 +85,7 @@
       <div class="bg-slate-50 rounded-xl p-5">
         <div class="text-2xl mb-2">👶</div>
         <h3 class="font-bold">Childcare-friendly</h3>
-        <p class="text-sm text-slate-600 mt-1">Saturday classes end at 1pm (Foundation) or 3pm (Career Track) so you're home for dinner.</p>
+        <p class="text-sm text-slate-600 mt-1">Saturday classes wrap by mid-afternoon so you're home for dinner.</p>
       </div>
       <div class="bg-slate-50 rounded-xl p-5">
         <div class="text-2xl mb-2">🚗</div>
@@ -141,7 +141,12 @@ AOS.init({ duration: 500, once: true });
 
   const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
   const fmtRange = (a, b) => fmtDate(a) + ' – ' + fmtDate(b);
-  const PROGRAMS = { foundation: { label: 'Foundation', price: '$1,995', dur: '12 weeks' }, career_track: { label: 'Career Track', price: '$3,495', dur: '24 weeks' } };
+  const PROGRAMS = {
+    foundation:   { label: 'In-Person', price: '$1,997', dur: 'At our Longview campus' },
+    career_track: { label: 'Online',    price: '$1,997', dur: 'Live video from home' },
+    in_person:    { label: 'In-Person', price: '$1,997', dur: 'At our Longview campus' },
+    online:       { label: 'Online',    price: '$1,997', dur: 'Live video from home' },
+  };
 
   const renderCohortCard = (c, isUpcoming) => {
     const p = PROGRAMS[c.program] || { label: c.program || 'Program', price: '—', dur: '—' };
