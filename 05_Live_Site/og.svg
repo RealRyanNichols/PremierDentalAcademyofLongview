@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset=".5" stop-color="#0d9488"/>
+      <stop offset="1" stop-color="#0891b2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="900" cy="200" r="450" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fbbf24" stop-opacity=".25"/>
+      <stop offset="1" stop-color="#fbbf24" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#glow)"/>
+
+  <!-- Decorative tooth icon -->
+  <g transform="translate(950 140)" opacity=".15" fill="white">
+    <path d="M150 40 C 110 35, 70 60, 70 110 C 70 160, 80 200, 90 240 C 95 260, 105 300, 130 300 C 145 300, 150 280, 152 260 L 156 260 C 158 280, 163 300, 178 300 C 195 300, 200 270, 205 250 C 215 200, 225 160, 225 110 C 225 60, 190 35, 150 40 Z"/>
+  </g>
+
+  <!-- Wordmark -->
+  <g transform="translate(80 100)">
+    <rect x="0" y="0" width="64" height="64" rx="12" fill="white" fill-opacity=".95"/>
+    <text x="32" y="48" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Inter,sans-serif" font-size="42" font-weight="800" fill="#0d9488">P</text>
+
+    <text x="84" y="40" font-family="system-ui,-apple-system,'Segoe UI',Inter,sans-serif" font-size="24" font-weight="600" fill="white" fill-opacity=".75" letter-spacing="2">PREMIER DENTAL ACADEMY</text>
+    <text x="84" y="62" font-family="system-ui,-apple-system,'Segoe UI',Inter,sans-serif" font-size="14" font-weight="500" fill="white" fill-opacity=".5" letter-spacing="3">OF LONGVIEW, TEXAS</text>
+  </g>
+
+  <!-- Headline -->
+  <g transform="translate(80 280)">
+    <text font-family="Georgia,serif" font-size="84" font-weight="700" fill="white">
+      <tspan x="0" dy="0">Train on the software</tspan>
+      <tspan x="0" dy="100">before your first day.</tspan>
+    </text>
+  </g>
+
+  <!-- Subline -->
+  <g transform="translate(80 510)">
+    <text font-family="system-ui,-apple-system,'Segoe UI',Inter,sans-serif" font-size="28" font-weight="400" fill="white" fill-opacity=".8">
+      East Texas's only RDA program with real practice management trainers.
+    </text>
+  </g>
+
+  <!-- CTA pill -->
+  <g transform="translate(80 555)">
+    <rect x="0" y="0" width="280" height="48" rx="24" fill="#fbbf24"/>
+    <text x="140" y="32" text-anchor="middle" font-family="system-ui,-apple-system,'Segoe UI',Inter,sans-serif" font-size="20" font-weight="700" fill="#0f172a">Enroll → 12 weeks to hired</text>
+  </g>
+</svg>

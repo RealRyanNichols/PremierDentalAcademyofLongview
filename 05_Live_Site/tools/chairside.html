@@ -1,0 +1,1038 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDA ChairSide — Clinical Workflow Trainer</title>
+  <meta name="description" content="Premier Dental Academy of Longview — ChairSide clinical workflow trainer." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230e7490'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='%23e0f2fe'%3EC%3C/text%3E%3C/svg%3E" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    html, body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+    body { font-size: 13px; color: #0f172a; background: #f1f5f9; }
+    .mono { font-family: 'SFMono-Regular', Menlo, Consolas, monospace; }
+
+    .cs-chrome  { background: linear-gradient(180deg, #0e7490 0%, #0c6379 100%); color: #e0f2fe; }
+    .cs-ribbon  { background: #e0f2fe; border-bottom: 1px solid #67e8f9; }
+    .cs-banner  { background: linear-gradient(180deg, #ffffff 0%, #f0f9ff 100%); border-bottom: 1px solid #67e8f9; }
+    .cs-tab-active { background: #ffffff !important; color: #0e7490 !important; border-bottom: 3px solid #0891b2 !important; }
+    .cs-powerbar { background: #0c6379; color: #e0f2fe; }
+
+    @keyframes fade { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: none; } }
+    .cs-fade { animation: fade .14s ease-out; }
+
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #67e8f9; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #22d3ee; }
+
+    table.cs { width: 100%; border-collapse: collapse; }
+    table.cs th { background: #cffafe; text-align: left; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #155e75; padding: 8px 10px; border-bottom: 1px solid #67e8f9; }
+    table.cs td { padding: 8px 10px; border-bottom: 1px solid #ecfeff; vertical-align: top; }
+    table.cs tr:hover td { background: #f0f9ff; }
+
+    .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+    .chip-amber   { background: #fef3c7; color: #92400e; }
+    .chip-rose    { background: #ffe4e6; color: #9f1239; }
+    .chip-cyan    { background: #cffafe; color: #155e75; }
+    .chip-emerald { background: #d1fae5; color: #065f46; }
+    .chip-slate   { background: #e2e8f0; color: #334155; }
+
+    kbd { background: #155e75; color: #e0f2fe; padding: 1px 6px; border-radius: 3px; font-family: 'SFMono-Regular', monospace; font-size: 10px; border-bottom: 2px solid #0c4a6e; }
+
+    .modal-back { position: fixed; inset: 0; background: rgba(15, 23, 42, .55); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 16px; }
+    .modal { background: #fff; border-radius: 8px; box-shadow: 0 20px 50px rgba(0,0,0,.25); width: 100%; max-width: 600px; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
+    .modal h2 { font-size: 14px; font-weight: 600; }
+
+    @media (max-width: 768px) {
+      .cs-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 40; transform: translateX(-100%); transition: transform .2s; width: 86vw; max-width: 320px; box-shadow: 4px 0 18px rgba(0,0,0,.15); background: white; }
+      .cs-sidebar.open { transform: none; }
+      .cs-backdrop { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 35; }
+    }
+  </style>
+
+  <style type="text/tailwindcss">
+    @layer components {
+      .input { @apply w-full px-2 py-1.5 bg-white border border-cyan-200 rounded text-[13px] focus:outline-none focus:border-cyan-600 focus:ring-1 focus:ring-cyan-600; }
+      .label { @apply block text-[11px] uppercase tracking-wide text-slate-500 font-semibold mb-0.5; }
+      .btn { @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-[12px] font-medium transition; }
+      .btn-primary { @apply bg-cyan-700 text-white hover:bg-cyan-800; }
+      .btn-ghost { @apply text-slate-700 hover:bg-cyan-50; }
+      .btn-soft { @apply bg-cyan-50 text-cyan-900 hover:bg-cyan-100 border border-cyan-200; }
+      .btn-danger { @apply bg-rose-600 text-white hover:bg-rose-700; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app" class="h-screen flex flex-col"></div>
+
+<script src="/auth.js"></script>
+<script src="/assets/pda-shared.js"></script>
+<script src="/assets/pda-seed-patients.js"></script>
+
+<script>
+/* ============================================================
+ * PDA ChairSide v1
+ * Cyan-ribbon clinical workflow trainer. Distinct visual identity
+ * and workflow from PDA Practice Pro. SmartDoc note system is the
+ * differentiator.
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  const APP = 'chairside';
+  const { fmt, uid, debounce, escapeHtml, avatarUrl, toast, exportPDF, Store } = window.PDA_SHARED;
+  const SEED = window.PDA_SEED;
+  const TPLS = SEED.noteTemplates;
+
+  // Marketing site (sign-up / pricing) — students return here to enroll
+  const MARKETING_URL = '/';
+  const SIGNUP_URL    = '/enroll';
+  const APPLY_URL     = '/apply';
+  const DASHBOARD_URL = '/dashboard';
+
+  const state = {
+    user: null,
+    access: 'preview',         // 'preview' | 'student' — set on boot
+    patients: [],
+    currentPatientId: null,
+    module: 'patient',
+    ui: {
+      sidebarOpen: window.matchMedia('(min-width: 769px)').matches,
+      isMobile: window.matchMedia('(max-width: 768px)').matches,
+      modal: null,
+      patientFilter: '',
+      clinicalTab: 'restorative',
+      smartDocSelected: 'Prophy Adult',
+      smartDocBody: '',
+      helpMode: !localStorage.getItem('pda.cs.helpModeOff'),
+    },
+    audit: [],
+  };
+
+  // Module-level help content — plain-English explainer per screen
+  const CS_MODULE_HELP = {
+    patient:    { what: "Everything about this person.", desc: "Name, address, phone, insurance, medical history. Click any field to edit; changes save automatically." },
+    onschedule: { what: "Today's appointments by operatory.", desc: "Each colored block is a patient appointment, colored by provider. This is the schedule that the front desk lives in." },
+    clinical:   { what: "Clinical history — chart, perio, notes, alerts.", desc: "Four sub-tabs: Restorative (what's been done), Perio (gum exam summary), Notes (your clinical documentation), Medical (allergies + alerts)." },
+    smartdoc:   { what: "Write a clinical note using a SmartDoc template.", desc: "Pick a template on the left (Prophy, Restorative, Crown Seat, RCT…) — the note body pre-fills with the SOAP structure. Edit and save. Saved notes lock for legal compliance; amendments are tracked separately." },
+    imaging:    { what: "X-rays and intraoral photos.", desc: "Quick view of what's on file. For full FMX mounting and drag-drop uploads, use Practice Pro." },
+    ledger:     { what: "Money in, money out for this patient.", desc: "Every charge, every payment, and the running balance. Jump to Walkout from here." },
+    walkout:    { what: "End-of-visit receipt.", desc: "Print or PDF a register-style receipt showing today's services, payments, and remaining balance. Hand to the patient on the way out." },
+  };
+
+  async function loadState() {
+    const saved = await Store.load(APP);
+    if (saved && Array.isArray(saved.patients) && saved.patients.length) {
+      state.patients = saved.patients;
+      state.currentPatientId = saved.currentPatientId || saved.patients[0].id;
+    } else {
+      state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.currentPatientId = state.patients[0].id;
+      await Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
+      Store.log(APP, 'seeded_patients', { count: state.patients.length });
+    }
+    state.patients.forEach(p => { p.csNotes = p.csNotes || []; });
+  }
+
+  const saveSoon = debounce(() => {
+    if (state.access !== 'student') return;
+    Store.save(APP, { patients: state.patients, currentPatientId: state.currentPatientId });
+  }, 350);
+
+  function logAction(action, metadata) {
+    state.audit.unshift({ at: new Date().toISOString(), action, metadata });
+    if (state.audit.length > 80) state.audit.length = 80;
+    Store.log(APP, action, metadata);
+  }
+
+  function currentPatient() { return state.patients.find(p => p.id === state.currentPatientId) || null; }
+  function balanceFor(p) { return (p.ledger || []).reduce((a, e) => a + (Number(e.fee) || 0) - (Number(e.payment) || 0), 0); }
+
+  function render() {
+    document.getElementById('app').innerHTML = `
+      ${renderTitleBar()}
+      ${renderPreviewStrip()}
+      ${renderRibbon()}
+      <div class="flex-1 flex overflow-hidden">
+        ${renderSidebar()}
+        <main class="flex-1 flex flex-col overflow-hidden bg-slate-50">
+          ${renderBanner()}
+          <div class="flex-1 overflow-auto">${renderModule()}</div>
+          ${renderPowerBar()}
+        </main>
+      </div>
+      ${renderModal()}
+    `;
+    bindEvents();
+  }
+  const rerender = () => requestAnimationFrame(render);
+
+  function renderPreviewStrip() {
+    if (state.access === 'student') return '';
+    return `
+      <div class="bg-amber-50 border-b border-amber-200 px-3 py-2 text-[12px] text-amber-900 flex items-center gap-3 flex-wrap">
+        <span class="text-base">🔒</span>
+        <strong>Preview mode</strong>
+        <span class="flex-1 min-w-[200px]">You're seeing a limited view. Enroll at Premier Dental Academy to unlock SmartDoc note saving, PDFs, persistence, and certificate of completion.</span>
+        <a href="${SIGNUP_URL}" class="bg-amber-500 hover:bg-amber-600 text-white text-[11px] font-semibold px-2.5 py-1 rounded whitespace-nowrap">Enroll now →</a>
+      </div>
+    `;
+  }
+
+  function renderModuleHelp(moduleId) {
+    if (!state.ui.helpMode) return '';
+    const m = CS_MODULE_HELP[moduleId];
+    if (!m) return '';
+    return `
+      <div class="bg-cyan-50 border border-cyan-200 rounded p-3 mb-3 text-[12px] flex items-start gap-3">
+        <div class="text-2xl select-none">💡</div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-cyan-900">${escapeHtml(m.what)}</div>
+          <div class="text-cyan-800 mt-0.5">${escapeHtml(m.desc)}</div>
+        </div>
+        <button data-action="dismiss-help" class="text-cyan-700 hover:bg-cyan-100 px-2 py-0.5 rounded text-[10px] font-semibold">Hide</button>
+      </div>
+    `;
+  }
+
+  function renderTitleBar() {
+    const isStudent = state.access === 'student';
+    return `
+      <header class="cs-chrome flex items-center justify-between px-3 py-2 text-[12px]">
+        <div class="flex items-center gap-3">
+          <button data-action="toggle-sidebar" class="md:hidden text-white">☰</button>
+          <a href="${MARKETING_URL}" class="flex items-center gap-2 font-semibold tracking-wide text-white hover:text-cyan-200" title="Back to Premier Dental Academy">
+            <span class="inline-block w-3 h-3 bg-cyan-300 rounded-sm"></span>
+            PDA ChairSide
+            <span class="text-cyan-200 font-normal hidden sm:inline">— Clinical Workflow Trainer</span>
+          </a>
+          ${!isStudent ? `<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">PREVIEW</span>` : ''}
+        </div>
+        <div class="flex items-center gap-3">
+          ${isStudent ? `
+            <a href="${DASHBOARD_URL}" class="text-cyan-200 hover:text-white text-[11px] hidden sm:inline" title="Back to your dashboard">⌂ Dashboard</a>
+            <span class="text-cyan-200 hidden md:inline">${escapeHtml(state.user ? `${state.user.first_name || 'Student'}` : 'Student')}</span>
+            <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white" title="Switch to Practice Pro">↹ Practice Pro</a>
+            <button data-action="toggle-help" class="${state.ui.helpMode ? 'bg-white text-cyan-800' : 'bg-cyan-900/40 text-cyan-100'} px-2 py-1 rounded font-medium" title="Toggle explanatory banners">
+              ${state.ui.helpMode ? '✓ Help' : 'Help'}
+            </button>
+            <button data-action="audit-toggle" class="text-cyan-200 hover:text-white" title="Audit log">⏱</button>
+          ` : `
+            <a href="/tools/practice-pro" class="bg-cyan-900/40 hover:bg-cyan-900/70 px-2 py-1 rounded text-white hidden sm:inline" title="Preview Practice Pro">↹ Practice Pro</a>
+            <a href="${SIGNUP_URL}" class="bg-amber-400 hover:bg-amber-300 text-slate-900 font-semibold px-3 py-1 rounded">Enroll to unlock →</a>
+          `}
+        </div>
+      </header>
+    `;
+  }
+
+  function renderRibbon() {
+    const tabs = [
+      { id: 'patient',    label: 'Patient',     icon: '👤' },
+      { id: 'onschedule', label: 'OnSchedule',  icon: '📅' },
+      { id: 'clinical',   label: 'Clinical',    icon: '🦷' },
+      { id: 'smartdoc',   label: 'SmartDoc',    icon: '📝' },
+      { id: 'imaging',    label: 'Imaging',     icon: '📷' },
+      { id: 'ledger',     label: 'Ledger',      icon: '💵' },
+      { id: 'walkout',    label: 'Walkout',     icon: '🚪' },
+    ];
+    return `
+      <div class="cs-ribbon px-2 flex items-center gap-1 overflow-x-auto">
+        ${tabs.map(t => `
+          <button data-action="set-module" data-module="${t.id}"
+            class="px-4 py-2.5 text-[12px] font-semibold border-b-2 border-transparent text-cyan-900 hover:bg-cyan-100 ${state.module === t.id ? 'cs-tab-active' : ''}"
+            style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:14px">${t.icon}</span>${t.label}
+          </button>
+        `).join('')}
+        <span class="flex-1"></span>
+      </div>
+    `;
+  }
+
+  function renderSidebar() {
+    const q = state.ui.patientFilter.trim().toLowerCase();
+    let list = state.patients.slice();
+    if (q) list = list.filter(p => [p.first, p.last, p.id, p.phone].filter(Boolean).some(s => String(s).toLowerCase().includes(q)));
+    list.sort((a, b) => (a.last + a.first).localeCompare(b.last + b.first));
+
+    return `
+      ${state.ui.sidebarOpen && state.ui.isMobile ? '<div class="cs-backdrop" data-action="close-sidebar"></div>' : ''}
+      <aside class="cs-sidebar w-64 flex flex-col bg-white border-r border-cyan-100 ${state.ui.sidebarOpen ? 'open' : ''}">
+        <div class="p-2 border-b border-cyan-100">
+          <div class="flex items-center gap-1 mb-1.5 md:hidden">
+            <span class="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold flex-1">Patients</span>
+            <button data-action="close-sidebar" class="text-slate-500 hover:text-slate-900 px-2 py-1 rounded hover:bg-cyan-50">✕</button>
+          </div>
+          <input data-action="patient-filter"
+            value="${escapeHtml(state.ui.patientFilter)}"
+            placeholder="Find patient..."
+            class="w-full px-2 py-1.5 text-[12px] bg-cyan-50 border border-cyan-200 rounded focus:outline-none focus:border-cyan-600" />
+          <button data-action="open-modal" data-modal="new-patient" class="w-full mt-1.5 btn btn-soft text-[11px] !py-1 justify-center">＋ New patient</button>
+        </div>
+        <div class="flex-1 overflow-auto">
+          ${list.length === 0 ? `<div class="p-6 text-center text-[12px] text-slate-500">No matches.</div>` : list.map(p => {
+            const sel = p.id === state.currentPatientId;
+            const due = p.recall?.due ? new Date(p.recall.due) : null;
+            const overdue = due && (due < new Date('2026-05-04'));
+            return `
+              <button data-action="select-patient" data-id="${p.id}"
+                class="w-full text-left px-3 py-2 border-b border-cyan-50 hover:bg-cyan-50 ${sel ? 'bg-cyan-100 border-l-4 border-l-cyan-600' : 'border-l-4 border-l-transparent'}">
+                <div class="flex items-center gap-2">
+                  <img src="${avatarUrl(p.first + ' ' + p.last)}" alt="" class="w-7 h-7 rounded-full bg-cyan-100" />
+                  <div class="flex-1 min-w-0">
+                    <div class="text-[13px] font-semibold text-slate-900 truncate">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</div>
+                    <div class="text-[11px] text-slate-500 mono">${p.id} · ${fmt.age(p.dob)}y ${escapeHtml(p.sex || '')}</div>
+                  </div>
+                  ${(p.alerts || []).length ? '<span class="chip chip-rose">!</span>' : ''}
+                  ${overdue ? '<span class="chip chip-amber">recall</span>' : ''}
+                </div>
+              </button>
+            `;
+          }).join('')}
+        </div>
+        <div class="p-2 border-t border-cyan-100 text-[11px] text-slate-500 flex justify-between">
+          <span>${list.length} of ${state.patients.length} pts</span>
+          <button data-action="open-modal" data-modal="audit" class="hover:text-cyan-700">Audit</button>
+        </div>
+      </aside>
+    `;
+  }
+
+  function renderBanner() {
+    const p = currentPatient();
+    if (!p) return `<div class="p-8 text-slate-400">No patient selected.</div>`;
+    const ins = p.insurance?.primary;
+    const alerts = (p.alerts || []);
+    const balance = balanceFor(p);
+    return `
+      <header class="cs-banner px-4 py-3 flex flex-wrap gap-4 items-center sticky top-0 z-10 shadow-sm">
+        <img src="${avatarUrl(p.first + ' ' + p.last)}" class="w-14 h-14 rounded-full border-2 border-cyan-300" alt="" />
+        <div class="flex-1 min-w-[220px]">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h1 class="text-lg font-semibold text-slate-900">${escapeHtml(p.last)}, ${escapeHtml(p.first)}</h1>
+            ${p.preferred && p.preferred !== p.first ? `<span class="text-slate-400 text-[12px]">"${escapeHtml(p.preferred)}"</span>` : ''}
+            <span class="chip chip-cyan mono">${escapeHtml(p.id)}</span>
+            ${p.medical?.premedicate ? '<span class="chip chip-amber">PREMED</span>' : ''}
+            ${(p.medical?.allergies || []).filter(a => a !== 'NKDA').length ? '<span class="chip chip-rose">ALLERGY</span>' : ''}
+          </div>
+          <div class="text-[12px] text-slate-600 flex flex-wrap gap-x-4 gap-y-0.5 mt-0.5">
+            <span>DOB <span class="mono text-slate-800">${fmt.dateShort(p.dob)}</span> (${fmt.age(p.dob)} y)</span>
+            <span>${escapeHtml(p.sex || '')}</span>
+            <span class="mono">${escapeHtml(p.phone || '')}</span>
+            <span>Provider: ${escapeHtml(p.provider || '—')}</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <div class="text-[10px] uppercase tracking-wider text-cyan-700 font-semibold">Insurance</div>
+          <div class="text-[12px] text-slate-800">${escapeHtml(ins?.carrier || 'Self-pay')}</div>
+          <div class="text-[11px] text-slate-500 mono">Used ${fmt.money(ins?.used || 0)}/${ins?.max ? fmt.money(ins.max) : '—'}</div>
+        </div>
+        <div class="text-right border-l border-cyan-200 pl-4">
+          <div class="text-[10px] uppercase tracking-wider text-cyan-700 font-semibold">Balance</div>
+          <div class="text-lg ${balance > 0 ? 'text-rose-600' : 'text-slate-700'} font-semibold mono">${fmt.money(balance)}</div>
+        </div>
+        ${alerts.length ? `<div class="basis-full flex flex-wrap gap-1.5 pt-2 border-t border-cyan-100 -mx-4 px-4">${alerts.map(a => `<span class="chip chip-amber">⚠ ${escapeHtml(a)}</span>`).join('')}</div>` : ''}
+      </header>
+    `;
+  }
+
+  function renderPowerBar() {
+    const today = '2026-05-04';
+    let prodToday = 0, prodMonth = 0;
+    const monthPrefix = today.slice(0, 7);
+    state.patients.forEach(p => (p.ledger || []).forEach(e => {
+      const fee = Number(e.fee) || 0;
+      if ((e.date || '') === today) prodToday += fee;
+      if ((e.date || '').startsWith(monthPrefix)) prodMonth += fee;
+    }));
+    let txPresented = 0, txAccepted = 0;
+    state.patients.forEach(p => (p.treatmentPlan || []).forEach(l => {
+      const fee = Number(l.fee) || 0;
+      txPresented += fee;
+      if (['accepted','scheduled','inprogress','completed'].includes(l.status)) txAccepted += fee;
+    }));
+    const acceptPct = txPresented > 0 ? Math.round(txAccepted / txPresented * 100) : 0;
+
+    return `
+      <div class="cs-powerbar px-3 py-1.5 text-[11px] flex flex-wrap gap-x-5 gap-y-1 items-center border-t border-cyan-900">
+        <span><span class="text-cyan-300 uppercase tracking-wider mr-1">Today</span><span class="mono font-semibold">${fmt.money(prodToday)}</span></span>
+        <span><span class="text-cyan-300 uppercase tracking-wider mr-1">Month</span><span class="mono font-semibold">${fmt.money(prodMonth)}</span></span>
+        <span><span class="text-cyan-300 uppercase tracking-wider mr-1">Patients</span><span class="mono">${state.patients.length}</span></span>
+        <span><span class="text-cyan-300 uppercase tracking-wider mr-1">Tx Acceptance</span><span class="mono font-semibold ${acceptPct >= 70 ? 'text-emerald-300' : acceptPct >= 40 ? 'text-amber-300' : 'text-rose-300'}">${acceptPct}%</span></span>
+        <span class="flex-1"></span>
+        <span class="text-cyan-300 mono">${today}</span>
+      </div>
+    `;
+  }
+
+  function renderModule() {
+    const p = currentPatient();
+    if (!p) return `<div class="p-8 text-slate-400">Select a patient.</div>`;
+    const help = renderModuleHelp(state.module);
+    const wrap = (inner) => `<div class="cs-fade p-4 max-w-[1400px] mx-auto">${help}${inner}</div>`;
+    switch (state.module) {
+      case 'patient':     return wrap(renderPatient(p));
+      case 'onschedule':  return wrap(renderOnSchedule());
+      case 'clinical':    return wrap(renderClinical(p));
+      case 'smartdoc':    return wrap(renderSmartDoc(p));
+      case 'imaging':     return wrap(renderImaging(p));
+      case 'ledger':      return wrap(renderLedger(p));
+      case 'walkout':     return wrap(renderWalkout(p));
+      default: return '';
+    }
+  }
+
+  function renderPatient(p) {
+    const ins = p.insurance?.primary || {};
+    const med = p.medical || {};
+    return `
+      <div class="grid lg:grid-cols-3 gap-4">
+        <section class="bg-white rounded border border-cyan-200 p-4 lg:col-span-2">
+          <h2 class="font-semibold text-cyan-800 text-[13px] mb-3">Demographics</h2>
+          <div class="grid sm:grid-cols-2 gap-3">
+            ${field('first', 'First name', p.first)}
+            ${field('last', 'Last name', p.last)}
+            ${field('preferred', 'Goes by', p.preferred || '')}
+            ${field('dob', 'Date of birth', p.dob, 'date')}
+            ${field('sex', 'Sex', p.sex || '')}
+            ${field('pronouns', 'Pronouns', p.pronouns || '')}
+            ${field('phone', 'Phone', p.phone || '')}
+            ${field('email', 'Email', p.email || '')}
+            ${field('address', 'Address', p.address || '', 'text', 2)}
+            ${field('city', 'City', p.city || '')}
+            ${field('state', 'State', p.state || '')}
+            ${field('zip', 'ZIP', p.zip || '')}
+          </div>
+        </section>
+
+        <section class="bg-white rounded border border-cyan-200 p-4">
+          <h2 class="font-semibold text-cyan-800 text-[13px] mb-3">Insurance</h2>
+          <dl class="space-y-1.5 text-[12px]">
+            <div class="flex justify-between"><dt class="text-slate-500">Carrier</dt><dd>${escapeHtml(ins.carrier || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Plan</dt><dd>${escapeHtml(ins.plan || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Group</dt><dd class="mono">${escapeHtml(ins.group || '—')}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Annual max</dt><dd class="mono">${ins.max != null ? fmt.money(ins.max) : '—'}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Used</dt><dd class="mono">${fmt.money(ins.used || 0)}</dd></div>
+            <div class="flex justify-between"><dt class="text-slate-500">Deductible</dt><dd class="mono">${fmt.money(ins.deductible || 0)}</dd></div>
+          </dl>
+          ${ins.max ? `
+            <div class="mt-3">
+              <div class="text-[11px] text-slate-500 flex justify-between"><span>Used</span><span>${Math.round(((ins.used || 0) / ins.max) * 100)}%</span></div>
+              <div class="h-1.5 bg-cyan-100 rounded mt-1"><div class="h-1.5 rounded bg-cyan-600" style="width:${Math.min(100, ((ins.used || 0) / ins.max) * 100)}%"></div></div>
+            </div>` : ''}
+        </section>
+
+        <section class="bg-white rounded border border-cyan-200 p-4 lg:col-span-3">
+          <h2 class="font-semibold text-cyan-800 text-[13px] mb-3">Medical history</h2>
+          <div class="grid sm:grid-cols-3 gap-4 text-[12px]">
+            <div>
+              <div class="label">Allergies</div>
+              <ul class="space-y-1">${(med.allergies || []).map(a => `<li class="${a === 'NKDA' ? 'text-slate-500' : 'text-rose-700 font-medium'}">${escapeHtml(a)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+            <div>
+              <div class="label">Medications</div>
+              <ul class="space-y-1">${(med.meds || []).map(m => `<li>${escapeHtml(m)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+            <div>
+              <div class="label">Conditions</div>
+              <ul class="space-y-1">${(med.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+            </div>
+          </div>
+          ${med.notes ? `<div class="mt-3 p-2 bg-amber-50 border border-amber-200 rounded text-[12px]"><span class="font-semibold">Note:</span> ${escapeHtml(med.notes)}</div>` : ''}
+        </section>
+      </div>
+    `;
+  }
+
+  function field(key, label, value, type = 'text', span = 1) {
+    return `
+      <label class="block ${span === 2 ? 'sm:col-span-2' : ''}">
+        <span class="label">${escapeHtml(label)}</span>
+        <input type="${type}" data-edit="${key}" value="${escapeHtml(value || '')}" class="input" />
+      </label>
+    `;
+  }
+
+  const PROVIDERS = [
+    { id: 'will',  name: 'Dr. Williams', color: '#0e7490' },
+    { id: 'pat',   name: 'Dr. Patel',    color: '#0d9488' },
+    { id: 'smith', name: 'Hyg. Smith',   color: '#f59e0b' },
+    { id: 'jord',  name: 'Hyg. Jordan',  color: '#a16207' },
+  ];
+
+  function renderOnSchedule() {
+    const slots = [];
+    for (let h = 8; h < 17; h++) slots.push(`${String(h).padStart(2,'0')}:00`, `${String(h).padStart(2,'0')}:30`);
+    const ops = ['Op 1', 'Op 2', 'Op 3', 'Op 4'];
+    const fakeAppts = [
+      { op: 0, time: '08:00', dur: 2, prov: 0, patient: 'Williams, J.',   reason: 'Crown seat #14' },
+      { op: 2, time: '08:00', dur: 2, prov: 2, patient: 'Carter, E.',     reason: 'Adult prophy + exam' },
+      { op: 3, time: '08:00', dur: 1, prov: 3, patient: 'Carter, A.',     reason: 'Child prophy' },
+      { op: 0, time: '09:00', dur: 3, prov: 0, patient: "O'Connor, T.",   reason: 'RCT #8' },
+      { op: 1, time: '09:00', dur: 2, prov: 1, patient: 'Miller, J.',     reason: 'Composite #19 OD' },
+      { op: 2, time: '09:00', dur: 2, prov: 2, patient: 'Davis, J.',      reason: 'Perio maintenance' },
+      { op: 2, time: '10:30', dur: 2, prov: 2, patient: 'Castillo, F.',   reason: 'SRP LR/LL' },
+      { op: 1, time: '10:30', dur: 2, prov: 1, patient: 'Patel, P.',      reason: 'Crown prep #14' },
+      { op: 0, time: '13:00', dur: 2, prov: 0, patient: 'Tran, O.',       reason: 'New patient comp' },
+      { op: 1, time: '13:00', dur: 2, prov: 1, patient: 'Thompson, G.',   reason: 'Denture try-in' },
+      { op: 2, time: '13:00', dur: 2, prov: 2, patient: 'Robinson, A.',   reason: 'Adult prophy + BWX' },
+      { op: 0, time: '15:00', dur: 2, prov: 0, patient: 'Anderson, R.',   reason: 'Crown delivery #3' },
+    ];
+    const SLOT_H = 28;
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-cyan-200 p-3 flex flex-wrap items-center gap-2">
+          <h1 class="text-lg font-semibold text-cyan-900">OnSchedule</h1>
+          <span class="text-[11px] text-slate-500">Monday, May 4, 2026</span>
+          <span class="flex-1"></span>
+          ${PROVIDERS.map(p => `<span class="text-[11px] flex items-center gap-1"><span class="inline-block w-3 h-3 rounded-sm" style="background:${p.color}"></span>${escapeHtml(p.name)}</span>`).join('')}
+        </div>
+        <div class="bg-white rounded border border-cyan-200 overflow-x-auto">
+          <div class="min-w-[820px] grid" style="grid-template-columns: 60px repeat(${ops.length}, 1fr);">
+            <div class="bg-cyan-50 border-b border-cyan-200"></div>
+            ${ops.map(op => `<div class="bg-cyan-50 border-b border-l border-cyan-200 px-2 py-1.5 text-[12px] font-semibold text-cyan-900">${op}</div>`).join('')}
+            <div class="border-r border-cyan-200" style="height:${slots.length*SLOT_H}px;position:relative">
+              ${slots.map((s, i) => `<div class="absolute left-0 right-0 px-1 text-[10px] mono ${s.endsWith(':00') ? 'border-t border-cyan-200 font-semibold text-cyan-700' : 'text-slate-400'}" style="top:${i*SLOT_H}px;height:${SLOT_H}px">${s.endsWith(':00') ? s : ''}</div>`).join('')}
+            </div>
+            ${ops.map((_, oi) => `
+              <div class="border-l border-cyan-200 relative" style="height:${slots.length*SLOT_H}px">
+                ${slots.map((s, i) => `<div class="absolute left-0 right-0 ${s.endsWith(':00') ? 'border-t border-cyan-200' : 'border-t border-dashed border-cyan-100'}" style="top:${i*SLOT_H}px;height:${SLOT_H}px"></div>`).join('')}
+                ${fakeAppts.filter(a => a.op === oi).map(a => {
+                  const idx = slots.indexOf(a.time);
+                  const prov = PROVIDERS[a.prov];
+                  return `<div class="absolute left-1 right-1 rounded shadow-sm text-[11px] overflow-hidden cursor-pointer hover:ring-2 hover:ring-cyan-500" style="top:${idx*SLOT_H + 1}px;height:${a.dur*SLOT_H - 2}px;background:${prov.color}20;border-left:4px solid ${prov.color}">
+                    <div class="px-1.5 py-1 leading-tight">
+                      <div class="font-semibold text-slate-900 truncate">${escapeHtml(a.patient)}</div>
+                      <div class="text-slate-600 truncate text-[10px]">${escapeHtml(a.reason)}</div>
+                      <div class="text-[10px] text-slate-500 mono">${a.time} · ${a.dur*30}m</div>
+                    </div>
+                  </div>`;
+                }).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-500">Full drag-drop OnSchedule (matching Practice Pro's interactive grid) ships in the next push. View-only preview shown above.</p>
+      </div>
+    `;
+  }
+
+  function renderClinical(p) {
+    const tab = state.ui.clinicalTab || 'restorative';
+    const tabs = [
+      { id: 'restorative', label: 'Restorative' },
+      { id: 'perio',       label: 'Perio' },
+      { id: 'notes',       label: 'Clinical notes' },
+      { id: 'medical',     label: 'Medical alerts' },
+    ];
+    return `
+      <div class="space-y-3">
+        <div class="bg-white rounded border border-cyan-200 px-1 flex flex-wrap gap-0.5">
+          ${tabs.map(t => `
+            <button data-action="clinical-tab" data-t="${t.id}"
+              class="px-4 py-2.5 text-[12px] font-semibold rounded-t ${tab === t.id ? 'text-cyan-800 border-b-2 border-cyan-600 -mb-px bg-cyan-50/50' : 'text-slate-600 hover:text-cyan-900 border-b-2 border-transparent'}">
+              ${t.label}
+            </button>
+          `).join('')}
+        </div>
+        ${tab === 'restorative' ? renderClinicalRestorative(p) : ''}
+        ${tab === 'perio'       ? renderClinicalPerio(p) : ''}
+        ${tab === 'notes'       ? renderClinicalNotes(p) : ''}
+        ${tab === 'medical'     ? renderClinicalMedical(p) : ''}
+      </div>
+    `;
+  }
+
+  function renderClinicalRestorative(p) {
+    const ledger = (p.ledger || []).filter(e => /^D2|^D3|^D4|^D5|^D6|^D7/.test(e.code || ''));
+    return `
+      <div class="bg-white rounded border border-cyan-200 overflow-hidden">
+        <div class="px-3 py-2 border-b border-cyan-200 bg-cyan-50 text-[12px] font-semibold text-cyan-900">Restorative + clinical history (${ledger.length})</div>
+        ${ledger.length === 0 ? '<div class="p-6 text-center text-[12px] text-slate-500">No restorative procedures on file.</div>' :
+        `<table class="cs">
+          <thead><tr><th>Date</th><th>Code</th><th>Description</th><th>Tooth</th><th>Provider</th><th class="text-right">Fee</th></tr></thead>
+          <tbody>${ledger.slice().reverse().map(e => `<tr><td class="mono">${fmt.dateShort(e.date)}</td><td class="mono font-semibold">${escapeHtml(e.code || '')}</td><td>${escapeHtml(e.desc || '')}</td><td class="mono">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td><td>${escapeHtml(e.provider || '')}</td><td class="text-right mono">${fmt.money(e.fee)}</td></tr>`).join('')}</tbody>
+        </table>`}
+      </div>
+    `;
+  }
+
+  function renderClinicalPerio(p) {
+    const summary = p.perio || {};
+    const last = (p.perioExams && p.perioExams[p.perioExams.length - 1]) || null;
+    if (!last && Object.keys(summary).length === 0) {
+      return '<div class="bg-white rounded border border-cyan-200 p-6 text-center text-[12px] text-slate-500">No perio exam on file.</div>';
+    }
+    return `
+      <div class="bg-white rounded border border-cyan-200 p-4">
+        <div class="text-[13px] font-semibold text-cyan-900 mb-2">Last perio exam${last ? ' — ' + fmt.dateShort(last.date) : ''}</div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[12px]">
+          <div class="bg-cyan-50 rounded p-2 border border-cyan-200"><div class="text-[10px] uppercase tracking-wide text-cyan-700 font-semibold">Avg pocket</div><div class="text-xl mono font-semibold">${summary.avgPocket != null ? summary.avgPocket + ' mm' : '—'}</div></div>
+          <div class="bg-cyan-50 rounded p-2 border border-cyan-200"><div class="text-[10px] uppercase tracking-wide text-cyan-700 font-semibold">Bleeding %</div><div class="text-xl mono font-semibold ${summary.bopPct >= 30 ? 'text-rose-700' : summary.bopPct >= 10 ? 'text-amber-700' : 'text-emerald-700'}">${summary.bopPct != null ? summary.bopPct + '%' : '—'}</div></div>
+          <div class="bg-cyan-50 rounded p-2 border border-cyan-200"><div class="text-[10px] uppercase tracking-wide text-cyan-700 font-semibold">Source</div><div class="text-[12px] mono">${last ? escapeHtml(last.examiner || '') : 'Summary only'}</div></div>
+          <div class="bg-cyan-50 rounded p-2 border border-cyan-200"><div class="text-[10px] uppercase tracking-wide text-cyan-700 font-semibold">Recall interval</div><div class="text-[12px] mono">${p.recall?.interval || 6} months</div></div>
+        </div>
+        <p class="text-[11px] text-slate-500 mt-3">Full 6-point perio entry is in Practice Pro. ChairSide shows summary stats only.</p>
+      </div>
+    `;
+  }
+
+  function renderClinicalNotes(p) {
+    const notes = (p.csNotes || []).slice().sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+    return `
+      <div class="space-y-2">
+        ${notes.length === 0 ? '<div class="bg-white rounded border border-cyan-200 p-6 text-center text-[12px] text-slate-500">No clinical notes yet. Use SmartDoc to write one.</div>' :
+        notes.map(n => `
+          <div class="bg-white rounded border border-cyan-200 p-3">
+            <div class="flex items-baseline gap-2 mb-1">
+              <span class="text-[11px] mono text-cyan-700 font-semibold">${fmt.dateShort(n.at)}</span>
+              <span class="chip chip-cyan">${escapeHtml(n.template || 'Note')}</span>
+              <span class="text-[11px] text-slate-500">by ${escapeHtml(n.by || '—')}</span>
+              <span class="flex-1"></span>
+              <button class="btn btn-soft !py-0.5 !px-1.5 !text-[10px]" data-action="note-amend" data-id="${n.id}">amend</button>
+            </div>
+            <div class="text-[12px] text-slate-700 whitespace-pre-wrap">${escapeHtml(n.text || '')}</div>
+            ${n.amendments && n.amendments.length ? `<div class="mt-2 pt-2 border-t border-cyan-100 text-[11px] text-cyan-700"><strong>Amendments:</strong><ul class="space-y-0.5 mt-1">${n.amendments.map(a => `<li>${fmt.dateShort(a.at)} — ${escapeHtml(a.text)}</li>`).join('')}</ul></div>` : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  function renderClinicalMedical(p) {
+    const m = p.medical || {};
+    const alerts = (p.alerts || []);
+    return `
+      <div class="space-y-3">
+        ${alerts.length ? `<div class="bg-amber-50 border border-amber-200 rounded p-3">${alerts.map(a => `<div class="text-[12px] text-amber-900 font-medium">⚠ ${escapeHtml(a)}</div>`).join('')}</div>` : '<div class="bg-emerald-50 border border-emerald-200 rounded p-2 text-[12px] text-emerald-800">No clinical alerts.</div>'}
+        <div class="grid sm:grid-cols-3 gap-3">
+          <div class="bg-white rounded border border-cyan-200 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold mb-2">Allergies</div>
+            <ul class="text-[12px] space-y-1">${(m.allergies || []).map(a => `<li class="${a === 'NKDA' ? 'text-slate-500' : 'text-rose-700 font-medium'}">${escapeHtml(a)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+          </div>
+          <div class="bg-white rounded border border-cyan-200 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold mb-2">Medications</div>
+            <ul class="text-[12px] space-y-1">${(m.meds || []).map(x => `<li>${escapeHtml(x)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+          </div>
+          <div class="bg-white rounded border border-cyan-200 p-3">
+            <div class="text-[11px] uppercase tracking-wide text-cyan-700 font-semibold mb-2">Conditions</div>
+            <ul class="text-[12px] space-y-1">${(m.conditions || []).map(c => `<li>${escapeHtml(c)}</li>`).join('') || '<li class="text-slate-500">—</li>'}</ul>
+          </div>
+        </div>
+        ${m.notes ? `<div class="bg-amber-50 border border-amber-200 rounded p-3 text-[12px]"><span class="font-semibold">Provider note:</span> ${escapeHtml(m.notes)}</div>` : ''}
+      </div>
+    `;
+  }
+
+  function renderSmartDoc(p) {
+    const selected = state.ui.smartDocSelected;
+    const body = state.ui.smartDocBody || TPLS[selected] || '';
+    const templates = Object.keys(TPLS);
+    return `
+      <div class="grid lg:grid-cols-[260px_1fr] gap-3">
+        <aside class="bg-white rounded border border-cyan-200 p-2">
+          <div class="text-[11px] uppercase tracking-wider text-cyan-700 font-semibold px-2 py-1.5">Templates</div>
+          <ul class="space-y-0.5">
+            ${templates.map(t => `
+              <li><button data-action="smartdoc-pick" data-t="${escapeHtml(t)}"
+                class="w-full text-left px-2 py-1.5 rounded text-[12px] ${selected === t ? 'bg-cyan-100 text-cyan-900 font-medium' : 'text-slate-700 hover:bg-cyan-50'}">${escapeHtml(t)}</button></li>
+            `).join('')}
+          </ul>
+        </aside>
+        <section class="bg-white rounded border border-cyan-200 flex flex-col">
+          <header class="px-3 py-2 border-b border-cyan-200 bg-cyan-50 flex items-center justify-between gap-2">
+            <div>
+              <div class="text-[13px] font-semibold text-cyan-900">${escapeHtml(selected)}</div>
+              <div class="text-[11px] text-slate-500">Edit and save the note. Saved notes are locked; amendments are tracked.</div>
+            </div>
+            <div class="flex gap-1.5">
+              <button class="btn btn-soft" data-action="smartdoc-reset" title="Restore template">⟲ Reset</button>
+              <button class="btn btn-primary" data-action="smartdoc-save">💾 Save note</button>
+            </div>
+          </header>
+          <textarea id="smartdoc-body" data-action="smartdoc-edit" class="flex-1 p-4 text-[13px] font-mono outline-none resize-none border-0 min-h-[420px]" placeholder="Note body...">${escapeHtml(body)}</textarea>
+        </section>
+      </div>
+    `;
+  }
+
+  function renderImaging(p) {
+    return `
+      <div class="bg-white rounded border border-cyan-200 p-4 text-center">
+        <div class="text-[13px] font-semibold text-cyan-900 mb-2">Imaging integration</div>
+        <p class="text-[12px] text-slate-500 mb-4">Full FMX + intraoral photo + CBCT viewer lives in <a href="/tools/practice-pro" class="text-cyan-700 underline">Practice Pro</a>. ChairSide focuses on the clinical-note workflow.</p>
+        <div class="grid grid-cols-4 gap-2 max-w-2xl mx-auto">
+          ${['FMX', 'BWX', 'Pano', 'Photos'].map(t => `
+            <div class="aspect-square border-2 border-dashed border-cyan-300 rounded flex items-center justify-center bg-cyan-50/50 text-[11px] text-cyan-700 font-semibold">${t}</div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderLedger(p) {
+    const entries = (p.ledger || []).slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    let running = 0;
+    return `
+      <div class="bg-white rounded border border-cyan-200 overflow-hidden">
+        <div class="px-3 py-2 border-b border-cyan-200 bg-cyan-50 flex items-center justify-between">
+          <div class="text-[13px] font-semibold text-cyan-900">Ledger — ${escapeHtml(p.last)}, ${escapeHtml(p.first)}</div>
+          <button class="btn btn-primary !py-1 !px-2 !text-[11px]" data-action="set-module" data-module="walkout">Walkout →</button>
+        </div>
+        ${entries.length === 0 ? '<div class="p-6 text-center text-[12px] text-slate-500">No ledger entries.</div>' :
+        `<table class="cs">
+          <thead><tr><th>Date</th><th>Code</th><th>Description</th><th>Tooth</th><th>Provider</th><th class="text-right">Charge</th><th class="text-right">Payment</th><th class="text-right">Balance</th></tr></thead>
+          <tbody>
+            ${entries.map(e => {
+              const charge = Number(e.fee) || 0;
+              const payment = Number(e.payment) || 0;
+              running += charge - payment;
+              return `<tr><td class="mono">${fmt.dateShort(e.date)}</td><td class="mono">${escapeHtml(e.code || '')}</td><td>${escapeHtml(e.desc || '')}</td><td class="mono">${e.tooth || '—'}${e.surface ? ' ' + escapeHtml(e.surface) : ''}</td><td>${escapeHtml(e.provider || '')}</td><td class="text-right mono">${charge ? fmt.money(charge) : '—'}</td><td class="text-right mono">${payment ? fmt.money(payment) : '—'}</td><td class="text-right mono ${running > 0 ? 'text-rose-700 font-semibold' : 'text-slate-700'}">${fmt.money(running)}</td></tr>`;
+            }).join('')}
+          </tbody>
+        </table>`}
+      </div>
+    `;
+  }
+
+  function renderWalkout(p) {
+    const today = '2026-05-04';
+    const todays = (p.ledger || []).filter(e => (e.date || '').slice(0, 10) === today);
+    const balance = balanceFor(p);
+    const charges = todays.reduce((a, e) => a + (Number(e.fee) || 0), 0);
+    const payments = todays.reduce((a, e) => a + (Number(e.payment) || 0), 0);
+    return `
+      <div class="space-y-3 max-w-2xl mx-auto">
+        <div class="flex gap-2 justify-end">
+          <button class="btn btn-soft" data-action="walkout-print">⎙ Print</button>
+          <button class="btn btn-primary" data-action="walkout-pdf">⬇ PDF receipt</button>
+        </div>
+        <div class="bg-white rounded shadow border-2 border-cyan-200 p-6 mono" style="font-family: 'SFMono-Regular', Menlo, monospace;">
+          <div class="text-center pb-3 border-b-2 border-dashed border-cyan-300">
+            <div class="text-[14px] font-bold text-cyan-900">PREMIER DENTAL ACADEMY</div>
+            <div class="text-[11px] text-slate-600">OF LONGVIEW</div>
+            <div class="text-[10px] text-slate-500 mt-1">2800 Gilmer Rd Suite 106 · Longview TX 75604</div>
+            <div class="text-[10px] text-slate-500">(903) 913-6444</div>
+          </div>
+          <div class="py-2 text-[11px] text-slate-700">
+            <div class="flex justify-between"><span>Date</span><span>${today}</span></div>
+            <div class="flex justify-between"><span>Patient</span><span>${escapeHtml(p.last)}, ${escapeHtml(p.first)}</span></div>
+            <div class="flex justify-between"><span>ID</span><span>${escapeHtml(p.id)}</span></div>
+            <div class="flex justify-between"><span>Provider</span><span>${escapeHtml(p.provider || '—')}</span></div>
+          </div>
+          <div class="py-2 border-t border-dashed border-cyan-300 text-[11px]">
+            <div class="font-bold mb-1">SERVICES TODAY</div>
+            ${todays.length === 0 ? '<div class="text-slate-500">No services posted today.</div>' :
+            todays.map(e => `<div class="flex justify-between"><span class="truncate pr-2">${escapeHtml(e.code)} ${escapeHtml((e.desc || '').slice(0, 30))}${e.tooth ? ' #'+e.tooth : ''}</span><span>${fmt.money(e.fee || 0).replace('$','')}</span></div>`).join('')}
+          </div>
+          <div class="pt-2 border-t border-dashed border-cyan-300 text-[12px] space-y-1">
+            <div class="flex justify-between"><span>Today's charges</span><span>${fmt.money(charges)}</span></div>
+            <div class="flex justify-between"><span>Today's payments</span><span>−${fmt.money(payments)}</span></div>
+            <div class="flex justify-between font-bold border-t border-cyan-900 pt-1 mt-1"><span>BALANCE</span><span class="${balance > 0 ? 'text-rose-700' : ''}">${fmt.money(balance)}</span></div>
+          </div>
+          <div class="text-center text-[10px] text-slate-500 pt-3 border-t border-dashed border-cyan-300 mt-2">
+            Thank you for choosing Premier Dental!<br/>Reschedule: (903) 913-6444
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderModal() {
+    const m = state.ui.modal;
+    if (!m) return '';
+    const content = ({ 'new-patient': modalNewPatient, 'audit': modalAudit, 'welcome': modalWelcome })[m.type];
+    if (!content) return '';
+    return `<div class="modal-back" data-action="close-modal"><div class="modal" onclick="event.stopPropagation()">${content(m.props || {})}</div></div>`;
+  }
+
+  function modalWelcome() {
+    const isPreview = state.access !== 'student';
+    return `
+      <div class="px-5 py-4 border-b border-cyan-200 bg-gradient-to-r from-cyan-50 to-sky-50">
+        <h2 class="text-lg font-semibold text-cyan-900">Welcome to ChairSide 👋</h2>
+        <p class="text-[12px] text-slate-600 mt-1">PDA's clinical workflow trainer — focused on the operatory, not the office.</p>
+      </div>
+      <div class="p-5 space-y-3 text-[13px] text-slate-700">
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">1️⃣</div>
+          <div><strong>Pick a patient on the left.</strong> 25 sample patients with realistic medical histories. No real PHI.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">2️⃣</div>
+          <div><strong>SmartDoc is the signature feature.</strong> Pick from 15 clinical-note templates (Prophy, Restorative, RCT, Crown Seat, SRP…) — the SOAP framework pre-fills. Saved notes lock for legal compliance; amendments are tracked.</div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="text-2xl shrink-0">3️⃣</div>
+          <div><strong>The Power Bar at the bottom</strong> shows today's production, monthly production, Tx acceptance %, and patient count — always visible while you work.</div>
+        </div>
+        ${isPreview ? `
+          <div class="bg-amber-50 border border-amber-200 rounded p-3">
+            <div class="font-semibold text-amber-900">You're in Preview mode.</div>
+            <div class="text-amber-800 text-[12px] mt-1">Click around freely. To save notes, persist your work, and earn your certificate, enroll at Premier Dental Academy.</div>
+            <a href="${SIGNUP_URL}" class="inline-block mt-2 bg-amber-500 hover:bg-amber-600 text-white text-[12px] font-semibold px-3 py-1.5 rounded">Enroll & unlock →</a>
+          </div>
+        ` : `
+          <div class="bg-emerald-50 border border-emerald-200 rounded p-3 text-[12px]"><strong>You're enrolled.</strong> Notes save to your account.</div>
+        `}
+        <div class="flex justify-end pt-2 border-t border-cyan-100">
+          <button data-action="close-modal" class="btn btn-primary">Got it</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function modalNewPatient() {
+    return `
+      <div class="px-4 py-3 border-b border-cyan-200 flex justify-between items-center">
+        <h2>New patient</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <form data-action="submit-new-patient" class="p-4 grid sm:grid-cols-2 gap-3">
+        <label><span class="label">First name *</span><input name="first" required class="input" autofocus /></label>
+        <label><span class="label">Last name *</span><input name="last" required class="input" /></label>
+        <label><span class="label">DOB</span><input name="dob" type="date" class="input" /></label>
+        <label><span class="label">Sex</span><select name="sex" class="input"><option value="">—</option><option>F</option><option>M</option><option>X</option></select></label>
+        <label class="sm:col-span-2"><span class="label">Phone</span><input name="phone" class="input" placeholder="(903) 555-0000" /></label>
+        <div class="sm:col-span-2 flex gap-2 justify-end pt-2">
+          <button type="button" class="btn btn-ghost" data-action="close-modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add patient</button>
+        </div>
+      </form>
+    `;
+  }
+
+  function modalAudit() {
+    return `
+      <div class="px-4 py-3 border-b border-cyan-200 flex justify-between items-center">
+        <h2>Session audit log</h2>
+        <button data-action="close-modal" class="text-slate-400 hover:text-slate-600">✕</button>
+      </div>
+      <div class="p-4 max-h-[60vh] overflow-auto text-[12px]">
+        ${state.audit.length === 0 ? '<div class="text-slate-500">No actions yet.</div>' :
+        `<ol class="space-y-1.5">${state.audit.map(a => `<li class="flex gap-2 items-baseline border-b border-cyan-100 pb-1"><span class="mono text-[10px] text-cyan-500 shrink-0">${a.at.slice(11, 19)}</span><span class="font-medium">${escapeHtml(a.action)}</span></li>`).join('')}</ol>`}
+      </div>
+    `;
+  }
+
+  function selectPatient(id) {
+    state.currentPatientId = id;
+    if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    saveSoon(); rerender();
+  }
+  function setModule(m) {
+    state.module = m;
+    if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    rerender();
+  }
+  function openModal(type, props = {}) { state.ui.modal = { type, props }; rerender(); }
+  function closeModal() { state.ui.modal = null; rerender(); }
+
+  function bindEvents() {
+    const root = document.getElementById('app');
+    root.onclick = (ev) => {
+      const t = ev.target.closest('[data-action]'); if (!t) return;
+      const a = t.dataset.action;
+      switch (a) {
+        case 'toggle-sidebar': state.ui.sidebarOpen = !state.ui.sidebarOpen; rerender(); break;
+        case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
+        case 'audit-toggle': openModal('audit'); break;
+        case 'toggle-help': {
+          state.ui.helpMode = !state.ui.helpMode;
+          try { localStorage.setItem('pda.cs.helpModeOff', state.ui.helpMode ? '' : '1'); } catch(e){}
+          rerender();
+          break;
+        }
+        case 'dismiss-help': {
+          state.ui.helpMode = false;
+          try { localStorage.setItem('pda.cs.helpModeOff', '1'); } catch(e){}
+          rerender();
+          toast('Help banners hidden — toggle "Help" in the title bar to bring them back.', { ms: 3500 });
+          break;
+        }
+        case 'set-module': setModule(t.dataset.module); break;
+        case 'select-patient': selectPatient(t.dataset.id); break;
+        case 'open-modal': openModal(t.dataset.modal); break;
+        case 'close-modal': if (ev.target === t) closeModal(); break;
+        case 'clinical-tab': state.ui.clinicalTab = t.dataset.t; rerender(); break;
+        case 'smartdoc-pick': {
+          state.ui.smartDocSelected = t.dataset.t;
+          state.ui.smartDocBody = TPLS[t.dataset.t] || '';
+          rerender();
+          break;
+        }
+        case 'smartdoc-reset':
+          state.ui.smartDocBody = TPLS[state.ui.smartDocSelected] || '';
+          rerender();
+          break;
+        case 'smartdoc-save': {
+          const p = currentPatient(); if (!p) break;
+          const body = (document.getElementById('smartdoc-body') || {}).value || '';
+          p.csNotes = p.csNotes || [];
+          p.csNotes.unshift({
+            id: uid('csn'),
+            at: new Date().toISOString(),
+            template: state.ui.smartDocSelected,
+            text: body,
+            by: state.user?.first_name || 'Student',
+            locked: true,
+            amendments: [],
+          });
+          state.ui.smartDocBody = '';
+          saveSoon(); logAction('smartdoc_save', { template: state.ui.smartDocSelected });
+          toast('Clinical note saved & locked', { tone: 'success' });
+          state.module = 'clinical'; state.ui.clinicalTab = 'notes';
+          rerender();
+          break;
+        }
+        case 'note-amend': {
+          const p = currentPatient(); if (!p) break;
+          const n = (p.csNotes || []).find(x => x.id === t.dataset.id);
+          if (!n) break;
+          const amend = prompt('Add an amendment to this note:');
+          if (!amend) break;
+          n.amendments = n.amendments || [];
+          n.amendments.push({ at: new Date().toISOString(), text: amend, by: state.user?.first_name || 'Student' });
+          saveSoon(); logAction('note_amend', { id: n.id });
+          rerender();
+          toast('Amendment added', { tone: 'success' });
+          break;
+        }
+        case 'walkout-print': window.print(); break;
+        case 'walkout-pdf':   downloadWalkoutPDF(); break;
+      }
+    };
+
+    root.oninput = (ev) => {
+      const t = ev.target.closest('[data-action]'); if (!t) return;
+      if (t.dataset.action === 'patient-filter') {
+        state.ui.patientFilter = t.value;
+        rerender();
+      }
+      if (t.dataset.action === 'smartdoc-edit') state.ui.smartDocBody = t.value;
+    };
+
+    root.onsubmit = (ev) => {
+      const t = ev.target.closest('[data-action]'); if (!t) return;
+      ev.preventDefault();
+      if (t.dataset.action === 'submit-new-patient') return submitNewPatient(t);
+    };
+
+    root.addEventListener('blur', (ev) => {
+      const inp = ev.target;
+      if (!inp.matches?.('[data-edit]')) return;
+      const p = currentPatient(); if (!p) return;
+      const key = inp.dataset.edit;
+      if (p[key] !== inp.value) {
+        p[key] = inp.value;
+        saveSoon();
+        logAction('edit_demographics', { id: p.id, field: key });
+        toast(`Saved ${key}`, { tone: 'success', ms: 1200 });
+      }
+    }, true);
+  }
+
+  function submitNewPatient(form) {
+    const fd = new FormData(form);
+    const id = `PT-${(Math.max(0, ...state.patients.map(p => parseInt(p.id.split('-')[1] || 0))) + 1).toString().padStart(4, '0')}`;
+    state.patients.push({
+      id, mrn: id.split('-')[1],
+      first: fd.get('first'), last: fd.get('last'),
+      dob: fd.get('dob') || null, sex: fd.get('sex') || '',
+      phone: fd.get('phone') || '', email: '',
+      insurance: { primary: { carrier: 'Self-pay' } },
+      medical: { allergies: ['NKDA'], meds: [], conditions: [], premedicate: false, notes: '' },
+      alerts: [], ledger: [], treatmentPlan: [], csNotes: [],
+      provider: 'Dr. Williams', type: 'new',
+    });
+    state.currentPatientId = id;
+    saveSoon();
+    logAction('created_patient', { id });
+    closeModal();
+    toast('Patient added', { tone: 'success' });
+  }
+
+  async function downloadWalkoutPDF() {
+    const p = currentPatient();
+    const today = '2026-05-04';
+    const todays = (p.ledger || []).filter(e => (e.date || '').slice(0, 10) === today);
+    const balance = balanceFor(p);
+    const charges = todays.reduce((a, e) => a + (Number(e.fee) || 0), 0);
+    const payments = todays.reduce((a, e) => a + (Number(e.payment) || 0), 0);
+    const html = `
+      <div style="font-family:'SFMono-Regular',Menlo,monospace;color:#0f172a;max-width:380px;margin:0 auto">
+        <div style="text-align:center;padding-bottom:10px;border-bottom:2px dashed #0e7490">
+          <div style="font-size:14px;font-weight:700;color:#0c4a6e">PREMIER DENTAL ACADEMY</div>
+          <div style="font-size:11px;color:#475569">OF LONGVIEW</div>
+          <div style="font-size:10px;color:#64748b;margin-top:4px">2800 Gilmer Rd Suite 106 · Longview TX 75604 · (903) 913-6444</div>
+        </div>
+        <div style="padding:10px 0;font-size:11px">
+          <div style="display:flex;justify-content:space-between"><span>Date</span><span>${today}</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Patient</span><span>${escapeHtml(p.last + ', ' + p.first)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span>ID</span><span>${escapeHtml(p.id)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Provider</span><span>${escapeHtml(p.provider || '—')}</span></div>
+        </div>
+        <div style="padding:10px 0;border-top:1px dashed #0e7490;font-size:11px">
+          <div style="font-weight:700;margin-bottom:4px">SERVICES TODAY</div>
+          ${todays.length === 0 ? '<div style="color:#64748b">No services today.</div>' : todays.map(e => `<div style="display:flex;justify-content:space-between"><span>${escapeHtml(e.code)} ${escapeHtml((e.desc || '').slice(0, 24))}${e.tooth ? ' #'+e.tooth : ''}</span><span>${fmt.money(e.fee || 0).replace('$','')}</span></div>`).join('')}
+        </div>
+        <div style="padding-top:10px;border-top:1px dashed #0e7490;font-size:12px">
+          <div style="display:flex;justify-content:space-between"><span>Today charges</span><span>${fmt.money(charges)}</span></div>
+          <div style="display:flex;justify-content:space-between"><span>Today payments</span><span>−${fmt.money(payments)}</span></div>
+          <div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #0c4a6e;padding-top:4px;margin-top:4px"><span>BALANCE</span><span ${balance > 0 ? 'style="color:#be123c"' : ''}>${fmt.money(balance)}</span></div>
+        </div>
+        <div style="text-align:center;font-size:10px;color:#64748b;padding-top:12px;border-top:1px dashed #0e7490;margin-top:8px">
+          Thank you for choosing Premier Dental!<br/>Reschedule: (903) 913-6444
+        </div>
+      </div>
+    `;
+    try { await exportPDF(html, `walkout-${p.id}-${today}.pdf`); toast('Receipt downloaded', { tone: 'success' }); }
+    catch (e) { toast('PDF failed: ' + e.message, { tone: 'error' }); }
+  }
+
+  async function boot() {
+    try {
+      const session = await window.PDA?.getSession?.();
+      if (session) {
+        state.user = await window.PDA.getProfile();
+        state.access = 'student';
+      } else {
+        state.access = 'preview';
+      }
+    } catch (e) { state.user = null; state.access = 'preview'; }
+
+    if (state.access === 'preview') {
+      state.patients = JSON.parse(JSON.stringify(SEED.patients));
+      state.patients.forEach(p => { p.csNotes = p.csNotes || []; });
+      state.currentPatientId = state.patients[0].id;
+    } else {
+      await loadState();
+    }
+    const mq = window.matchMedia('(max-width: 768px)');
+    const onMQ = () => {
+      state.ui.isMobile = mq.matches;
+      if (!mq.matches) state.ui.sidebarOpen = true;
+      rerender();
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onMQ);
+    render();
+    if (!localStorage.getItem('pda.cs.welcomed')) {
+      try { localStorage.setItem('pda.cs.welcomed', '1'); } catch(e){}
+      setTimeout(() => openModal('welcome'), 350);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', boot);
+})();
+</script>
+</body>
+</html>

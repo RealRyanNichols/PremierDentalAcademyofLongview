@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Leads — PDA Admin</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/" class="flex items-center gap-2 font-bold">
+        <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+        <span>PDA Admin</span>
+      </a>
+      <span class="text-slate-400 text-sm">/ Leads</span>
+    </div>
+    <div class="flex items-center gap-3 text-sm">
+      <span id="user-label" class="text-slate-400"></span>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-8" id="main">
+
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Staff access only</h1>
+    <p class="text-slate-600 mt-2">Sign in with your PDA staff account to view applications.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+  </div>
+
+  <div id="leads-view" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Inbox</p>
+        <h1 class="display text-3xl font-bold mt-1">Applications, contacts &amp; subscribers</h1>
+      </div>
+      <div class="flex gap-2">
+        <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="contacted">Contacted</option>
+          <option value="enrolled">Enrolled</option>
+          <option value="closed">Closed</option>
+        </select>
+        <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export leads CSV</button>
+        <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export subscribers CSV</button>
+      </div>
+    </div>
+
+    <!-- Inbox tabs -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4">
+      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">Applications &amp; contacts</button>
+      <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">Newsletter subscribers</button>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" id="stats"></div>
+
+    <!-- Leads table -->
+    <div id="panel-leads" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      <div id="leads-list" class="divide-y divide-slate-100"></div>
+      <div id="empty" class="p-10 text-center text-slate-500 hidden">No applications yet. Once people apply, they'll appear here.</div>
+    </div>
+
+    <!-- Subscribers panel -->
+    <div id="panel-subs" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hidden">
+      <div class="p-4 border-b border-slate-100 text-xs text-slate-600 bg-slate-50">
+        <strong>Tip:</strong> Click "Export subscribers CSV" to import into Resend / MailerLite / Mailchimp / ConvertKit. The CSV columns match each service's standard import format (email, first_name, source, status).
+      </div>
+      <div id="subs-list" class="divide-y divide-slate-100"></div>
+      <div id="subs-empty" class="p-10 text-center text-slate-500 hidden">No newsletter subscribers yet. The signup widget on the homepage feeds this list.</div>
+    </div>
+  </div>
+</main>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) {
+    document.getElementById('auth-wall').classList.remove('hidden');
+    return;
+  }
+
+  // Admin gate — must have profiles.is_admin = true
+  const { data: profile } = await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle();
+  if (!profile || !profile.is_admin) {
+    document.getElementById('auth-wall').classList.remove('hidden');
+    const wall = document.getElementById('auth-wall');
+    wall.innerHTML = `
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center">
+        <div class="text-5xl mb-3">🚫</div>
+        <h1 class="display text-2xl font-bold">Staff access only</h1>
+        <p class="text-slate-600 mt-2">Your account isn't authorized to view the lead inbox. If you should have access, ask Amanda to grant admin status.</p>
+        <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
+  document.getElementById('leads-view').classList.remove('hidden');
+  document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+
+  let allLeads = [];
+  let allSubs = [];
+  let currentTab = 'leads';
+
+  async function load() {
+    const [leadsRes, subsRes] = await Promise.all([
+      sb.from('leads').select('*').order('created_at', { ascending: false }),
+      sb.from('subscribers').select('*').order('created_at', { ascending: false }),
+    ]);
+    if (leadsRes.error) alert('Failed to load leads: ' + leadsRes.error.message);
+    if (subsRes.error)  console.warn('Subscribers load failed:', subsRes.error.message);
+    allLeads = leadsRes.data || [];
+    allSubs  = subsRes.data || [];
+    render();
+  }
+
+  function render() {
+    const filter = document.getElementById('status-filter').value;
+    const leads = filter ? allLeads.filter(l => l.status === filter) : allLeads;
+
+    // Stats — combined view
+    const stats = { new: 0, contacted: 0, enrolled: 0, closed: 0 };
+    allLeads.forEach(l => { stats[l.status || 'new'] = (stats[l.status || 'new'] || 0) + 1; });
+    const subscribed = allSubs.filter(s => s.status === 'subscribed').length;
+    document.getElementById('stats').innerHTML = `
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">New leads</div><div class="text-2xl font-bold mono text-rose-700">${stats.new || 0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enrolled</div><div class="text-2xl font-bold mono text-emerald-700">${stats.enrolled || 0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Total applications</div><div class="text-2xl font-bold mono text-slate-700">${allLeads.length}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Newsletter subs</div><div class="text-2xl font-bold mono text-cyan-700">${subscribed}</div></div>
+    `;
+
+    // Leads panel
+    const list = document.getElementById('leads-list');
+    document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
+    list.innerHTML = leads.map(l => {
+      const meta = l.metadata || {};
+      return `
+        <div class="p-5 hover:bg-slate-50">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-sm shrink-0">
+              ${(l.first_name?.[0] || '?').toUpperCase()}${(l.last_name?.[0] || '').toUpperCase()}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 flex-wrap">
+                <span class="font-semibold">${l.first_name || ''} ${l.last_name || ''}</span>
+                <span class="text-xs mono text-slate-500">${new Date(l.created_at).toLocaleString()}</span>
+                <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${l.source || 'site'}</span>
+              </div>
+              <div class="text-sm text-slate-600 mt-1">
+                <a href="mailto:${l.email}" class="text-teal-700 hover:underline">${l.email || '—'}</a>
+                · <a href="tel:${l.phone}" class="text-teal-700 hover:underline">${l.phone || '—'}</a>
+                ${meta.city ? '· ' + meta.city : ''}
+                ${meta.age ? '· age ' + meta.age : ''}
+              </div>
+              ${meta.program ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Program:</strong> ${meta.program}</div>` : ''}
+              ${meta.reason ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Reason:</strong> ${meta.reason}</div>` : ''}
+              ${meta.source ? `<div class="text-sm text-slate-700 mt-1.5"><strong>How they heard:</strong> ${meta.source}</div>` : ''}
+              ${meta.notes ? `<div class="text-sm text-slate-700 mt-1.5 bg-amber-50 border border-amber-200 rounded p-2"><strong>Notes:</strong> ${meta.notes}</div>` : ''}
+              ${meta.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${meta.message}</div>` : ''}
+            </div>
+            <div class="text-right shrink-0 space-y-2">
+              <select data-id="${l.id}" class="status-sel bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                ${['new','contacted','enrolled','closed'].map(s => `<option value="${s}" ${(l.status||'new')===s?'selected':''}>${s}</option>`).join('')}
+              </select>
+              <div>
+                <a href="mailto:${l.email}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="text-xs text-teal-700 hover:underline">Reply →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    list.querySelectorAll('.status-sel').forEach(sel => {
+      sel.onchange = async (e) => {
+        await sb.from('leads').update({ status: e.target.value }).eq('id', e.target.dataset.id);
+        const target = allLeads.find(x => x.id === e.target.dataset.id);
+        if (target) target.status = e.target.value;
+        render();
+      };
+    });
+
+    // Subscribers panel
+    const subsList = document.getElementById('subs-list');
+    document.getElementById('subs-empty').classList.toggle('hidden', allSubs.length > 0);
+    subsList.innerHTML = allSubs.map(s => `
+      <div class="p-4 flex items-center justify-between hover:bg-slate-50">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${(s.email[0] || '?').toUpperCase()}</div>
+          <div class="min-w-0">
+            <a href="mailto:${s.email}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${s.email}</a>
+            <div class="text-xs text-slate-500">${new Date(s.created_at).toLocaleDateString()} · ${s.source || 'site'}</div>
+          </div>
+        </div>
+        <span class="text-xs px-2 py-0.5 rounded-full ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${s.status}</span>
+      </div>
+    `).join('');
+  }
+
+  // Tab switching
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    b.onclick = () => {
+      currentTab = b.dataset.tab;
+      document.querySelectorAll('[data-tab]').forEach(x => {
+        if (x === b) { x.classList.add('bg-slate-900','text-white'); x.classList.remove('text-slate-700','hover:bg-slate-100'); }
+        else { x.classList.remove('bg-slate-900','text-white'); x.classList.add('text-slate-700','hover:bg-slate-100'); }
+      });
+      document.getElementById('panel-leads').classList.toggle('hidden', currentTab !== 'leads');
+      document.getElementById('panel-subs').classList.toggle('hidden', currentTab !== 'subs');
+    };
+  });
+
+  document.getElementById('status-filter').onchange = render;
+  document.getElementById('refresh').onclick = load;
+
+  // CSV: leads (full info)
+  document.getElementById('export').onclick = () => {
+    const rows = [['Created','First','Last','Email','Phone','Source','Program','City','Reason','Notes','Status']];
+    allLeads.forEach(l => {
+      const m = l.metadata || {};
+      rows.push([new Date(l.created_at).toISOString(), l.first_name || '', l.last_name || '', l.email, l.phone, l.source, m.program || '', m.city || '', m.reason || '', m.notes || m.message || '', l.status || 'new']);
+    });
+    downloadCSV(rows, `leads-${new Date().toISOString().slice(0,10)}.csv`);
+  };
+
+  // CSV: subscribers (clean format ready for Resend / Mailchimp / MailerLite import)
+  document.getElementById('export-subs').onclick = () => {
+    const rows = [['email','first_name','source','status','subscribed_at']];
+    allSubs.forEach(s => rows.push([s.email, s.first_name || '', s.source || '', s.status, new Date(s.created_at).toISOString()]));
+    downloadCSV(rows, `subscribers-${new Date().toISOString().slice(0,10)}.csv`);
+  };
+
+  function downloadCSV(rows, filename) {
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>

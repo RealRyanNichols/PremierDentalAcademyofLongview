@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Enroll — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+
+<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+      <span>Premier Dental Academy</span>
+    </a>
+    <a href="/" class="text-sm text-teal-700 hover:text-teal-900">← Back to home</a>
+  </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+
+  <div class="text-center mb-10">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Enroll</p>
+    <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">program.</span></h1>
+    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Both programs unlock the full trainer with persistence, PDFs, and PDA Certificate of Completion. 14-day satisfaction guarantee.</p>
+  </div>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+
+    <!-- Foundation card -->
+    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
+      <h3 class="font-bold text-xl">RDA Foundation</h3>
+      <p class="text-sm text-slate-500 mt-1">12 weeks · evenings + weekends</p>
+      <div class="display text-4xl font-bold mt-5">$1,995</div>
+      <div class="text-xs text-slate-500 mt-0.5">one-time, or $499 × 4 monthly</div>
+      <ul class="text-sm text-slate-700 mt-5 space-y-2">
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Full Practice Pro + ChairSide trainer</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> 12-week instructor-led curriculum</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> 25 practice patients, persistence on</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDF certificate of completion</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement assistance</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> 14-day money-back guarantee</li>
+      </ul>
+      <button type="button" data-action="enroll" data-plan="foundation" data-price="1995"
+        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
+        Enroll in Foundation →
+      </button>
+      <button type="button" data-action="enroll" data-plan="foundation-monthly" data-price="499"
+        class="block w-full text-center mt-2 text-sm text-teal-700 hover:text-teal-900 font-semibold">
+        Or pay $499 / month
+      </button>
+    </div>
+
+    <!-- Career Track card (highlighted) -->
+    <div class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white border-2 border-cyan-700 rounded-2xl p-6 relative shadow-2xl">
+      <div class="absolute -top-3 left-6 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded">Most Popular</div>
+      <h3 class="font-bold text-xl mt-2">RDA Career Track</h3>
+      <p class="text-sm text-cyan-200 mt-1">24 weeks · with externship</p>
+      <div class="display text-4xl font-bold mt-5">$3,495</div>
+      <div class="text-xs text-cyan-200 mt-0.5">one-time, or $499 × 7 monthly</div>
+      <ul class="text-sm mt-5 space-y-2">
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> Everything in Foundation, plus:</li>
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> 1-on-1 dentist mentorship</li>
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> Guaranteed externship placement</li>
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> CPR, BLS, OSHA certifications</li>
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> Resume + interview coaching</li>
+        <li class="flex gap-2"><span class="text-amber-400 font-bold">★</span> Lifetime trainer access</li>
+      </ul>
+      <button type="button" data-action="enroll" data-plan="career" data-price="3495"
+        class="block w-full text-center mt-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-lg">
+        Enroll in Career Track →
+      </button>
+      <button type="button" data-action="enroll" data-plan="career-monthly" data-price="499"
+        class="block w-full text-center mt-2 text-sm text-cyan-200 hover:text-white font-semibold">
+        Or pay $499 / month × 7
+      </button>
+    </div>
+
+    <!-- Workforce / Veterans card -->
+    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
+      <h3 class="font-bold text-xl">Workforce / Veterans</h3>
+      <p class="text-sm text-slate-500 mt-1">Funded enrollment</p>
+      <div class="display text-4xl font-bold mt-5">$0<span class="text-base text-slate-500 font-normal"> out-of-pocket</span></div>
+      <div class="text-xs text-slate-500 mt-0.5">if you qualify for state / federal funding</div>
+      <ul class="text-sm text-slate-700 mt-5 space-y-2">
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> TWC vocational vouchers accepted</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> GI Bill / veterans benefits</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> WIOA workforce funding</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> 0% in-house financing if not eligible</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum as Foundation / Career</li>
+      </ul>
+      <a href="/apply" class="block text-center mt-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-lg">
+        Apply for funding →
+      </a>
+      <p class="text-xs text-slate-500 text-center mt-2">We'll help you navigate funding eligibility</p>
+    </div>
+  </div>
+
+  <!-- Stripe payment hand-off (placeholder until live keys) -->
+  <div id="stripe-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Checkout</div>
+          <h3 class="font-bold text-lg" id="stripe-plan-name">—</h3>
+        </div>
+        <button type="button" data-action="close-stripe" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4 mb-4">
+        <div class="text-xs text-slate-500 uppercase tracking-wider">Today's charge</div>
+        <div class="display text-3xl font-bold mt-1" id="stripe-amount">—</div>
+      </div>
+      <p class="text-sm text-slate-700 mb-4">When live, this opens a secure Stripe checkout. For now, please submit an application and we'll send a payment link directly.</p>
+      <div class="flex gap-2">
+        <a href="/apply" class="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg">Submit application instead</a>
+        <button type="button" data-action="close-stripe" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trust strip -->
+  <div class="text-center mt-12 text-sm text-slate-600 max-w-2xl mx-auto">
+    <p class="font-semibold">14-day satisfaction guarantee</p>
+    <p class="mt-1 text-slate-500">If you decide the program isn't for you within 14 days of enrollment, we refund 100% of your tuition. No questions asked.</p>
+  </div>
+
+  <div class="text-center mt-8 text-xs text-slate-500">
+    <span>🔒 Secure checkout via Stripe</span>
+    <span class="mx-2">·</span>
+    <span>📞 Questions? (903) 913-6444</span>
+    <span class="mx-2">·</span>
+    <a href="/apply" class="text-teal-700 hover:underline">Not ready to pay? Apply first →</a>
+  </div>
+</main>
+
+<script>
+const PLANS = {
+  'foundation':         { name: 'RDA Foundation — full payment',  amount: '$1,995.00' },
+  'foundation-monthly': { name: 'RDA Foundation — monthly plan',  amount: '$499.00 × 4 months' },
+  'career':             { name: 'RDA Career Track — full payment', amount: '$3,495.00' },
+  'career-monthly':     { name: 'RDA Career Track — monthly plan', amount: '$499.00 × 7 months' },
+};
+
+document.addEventListener('click', (ev) => {
+  const t = ev.target.closest('[data-action]');
+  if (!t) return;
+  if (t.dataset.action === 'enroll') {
+    const plan = PLANS[t.dataset.plan];
+    if (!plan) return;
+    document.getElementById('stripe-plan-name').textContent = plan.name;
+    document.getElementById('stripe-amount').textContent = plan.amount;
+    document.getElementById('stripe-modal').classList.remove('hidden');
+  }
+  if (t.dataset.action === 'close-stripe') {
+    document.getElementById('stripe-modal').classList.add('hidden');
+  }
+});
+</script>
+</body>
+</html>
