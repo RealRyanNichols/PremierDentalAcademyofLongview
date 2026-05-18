@@ -11,9 +11,21 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; }
+    body { font-family: 'Inter', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .text-slate-600 { color: #334155; }
+    .text-slate-500 { color: #475569; }
+    .text-slate-400 { color: #64748b; }
+    footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
+    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
+    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
+    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
+    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
+    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
+    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
+      color: #cbd5e1;
+    }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
@@ -21,10 +33,23 @@
 </head>
 <body class="bg-white">
 
-<nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span> Premier Dental Academy</a>
-    <a href="/" class="text-sm text-teal-700">← Home</a>
+<nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/salary" class="hover:text-teal-700">Salary</a>
+      <a href="/about" class="hover:text-teal-700">About</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+    </div>
   </div>
 </nav>
 
@@ -67,20 +92,31 @@
   </div>
 </section>
 
-<!-- Logo wall (placeholder until you send real logos) -->
+<!-- Partner offices -->
 <section class="py-12 bg-slate-50">
   <div class="max-w-6xl mx-auto px-6">
-    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">East Texas offices that have hired PDA graduates</p>
-    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-      <!-- Placeholder office tiles — swap with real logos when available -->
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">Longview Family Dental</div></div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">Tyler Smiles</div></div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">Marshall Dental Care</div></div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">Kilgore Pediatric Dental</div></div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">East Texas Orthodontics</div></div>
-      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-xs font-semibold text-slate-600">Henderson Family Dentistry</div></div>
+    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-2">Partner offices</p>
+    <h2 class="text-center display text-2xl sm:text-3xl font-bold mb-6">East Texas offices that hire PDA graduates</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Kindle Dental</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Pinnacle</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Fadal Pediatric Dentistry</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">White Oak Smiles</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">East Texas Maxillofacial Surgery</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Mack &amp; Hansen</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Darr Dentistry</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Aspen Dental</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Bella Smiles</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Dolive &amp; Acres Dentistry</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Forest Square Dental</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Distefano Dental Studio</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Vaca Cosmetic</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Brenda Copeland</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Rea Dental</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Goodland Dentistry</div></div>
+      <div class="bg-white rounded-xl p-4 border border-slate-200 text-center"><div class="text-2xl mb-1">🦷</div><div class="text-sm font-semibold text-slate-700">Pearl Dental</div></div>
     </div>
-    <p class="text-center text-xs text-slate-400 mt-4">These are placeholder names — Amanda is sourcing real partner logos.</p>
+    <p class="text-center text-xs text-slate-500 mt-5">Want your office listed here? <a href="#partner-form" class="text-teal-700 font-semibold underline">Tell us what you need →</a></p>
   </div>
 </section>
 

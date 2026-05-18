@@ -21,7 +21,7 @@
     "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
-    "priceRange": "$1,997",
+    "priceRange": "$997 – $1,997",
     "image": "https://premierdentalacademyoflongview.com/og.svg",
     "logo": "https://premierdentalacademyoflongview.com/og.svg",
     "address": {
@@ -43,7 +43,7 @@
       "name": "RDA Training Programs",
       "itemListElement": [
         { "@type": "Offer", "name": "PDA RDA Program — In-Person",  "price": "1997", "priceCurrency": "USD" },
-        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "1997", "priceCurrency": "USD" }
+        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "997",  "priceCurrency": "USD" }
       ]
     }
   }
@@ -69,7 +69,7 @@
       "name": "PDA RDA Program — Online",
       "description": "Same Registered Dental Assistant curriculum delivered via live video. Attend from anywhere in Texas.",
       "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
-      "offers": { "@type": "Offer", "price": "1997", "priceCurrency": "USD", "category": "Tuition" },
+      "offers": { "@type": "Offer", "price": "997", "priceCurrency": "USD", "category": "Tuition" },
       "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "Online" },
       "educationalCredentialAwarded": "PDA Certificate of Completion",
       "occupationalCategory": "31-9091"
@@ -106,7 +106,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tuition is $1,997 and payment plans are available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tuition is $1,997 for In-Person and $997 for Online, with payment plans available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
       },
       {
         "@type": "Question",
@@ -145,13 +145,14 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .gradient-hero { background:
-      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.10) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.10) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.06) 0px, transparent 50%);
+      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.28) 0px, transparent 55%),
+      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.28) 0px, transparent 55%),
+      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.14) 0px, transparent 55%),
+      #ecfeff;
     }
     .glow { box-shadow: 0 8px 40px -8px rgba(13, 148, 136, 0.25); }
     .scroll-mt { scroll-margin-top: 80px; }
@@ -159,12 +160,37 @@
     details > summary::-webkit-details-marker { display: none; }
     details[open] .faq-icon { transform: rotate(45deg); }
     .faq-icon { transition: transform .15s; }
+
+    /* Readability: darken muted gray text on light backgrounds */
+    .text-slate-600 { color: #334155; }
+    .text-slate-500 { color: #475569; }
+    .text-slate-400 { color: #64748b; }
+    /* Restore original lighter grays inside dark sections so they stay legible on dark bg */
+    footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
+    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
+    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
+    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
+    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
+    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
+    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
+      color: #cbd5e1;
+    }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
-<script src="/assets/pda-nav.js" defer></script>
 </head>
-<body class="antialiased" style="background:#155e75;">
+<body class="bg-white antialiased">
+
+<!-- ───────────── Top alert banner — cohort countdown ───────────── -->
+<div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
+    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse shrink-0"></span>
+    <span>Next cohort starts <span id="cohort-date" class="underline decoration-amber-900/40">—</span></span>
+    <span class="text-amber-900/70">·</span>
+    <span id="cohort-countdown" class="font-mono">— days left</span>
+    <a href="/enroll" class="ml-1 hidden sm:inline-flex underline underline-offset-2 hover:text-amber-900">Enroll →</a>
+  </div>
+</div>
 
 <!-- ───────────── Navigation ───────────── -->
 <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
@@ -180,7 +206,8 @@
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
+      <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
       <a href="/enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -188,24 +215,24 @@
       </button>
     </div>
   </div>
-</nav>
 
-<!-- Mobile overlay (outside nav so fixed positioning works on iOS Safari) -->
-<div id="mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto">
-  <div class="px-6 py-6 flex flex-col">
-    <a href="#programs"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Programs</a>
-    <a href="/calendar"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Calendar</a>
-    <a href="/salary"    class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Salary</a>
-    <a href="/about"     class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">About</a>
-    <a href="/contact"   class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
-    <a href="/blog"      class="block py-4 border-b border-slate-100 text-base text-slate-600">Blog</a>
-    <a href="/graduates" class="block py-4 border-b border-slate-100 text-base text-slate-600">Our graduates</a>
-    <a href="/login"     class="block py-4 border-b border-slate-100 text-base text-slate-600">Sign in</a>
-    <a href="/tools/practice-pro" class="block py-4 border-b border-slate-100 text-base text-slate-600">Try free preview</a>
-    <a href="/enroll" class="mt-6 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-4 rounded-lg shadow">Enroll →</a>
-    <a href="tel:+19039136444" class="mt-3 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
+  <!-- Mobile overlay -->
+  <div id="mobile-menu" class="hidden md:hidden fixed inset-x-0 top-16 bottom-0 z-40 bg-white">
+    <div class="h-full overflow-y-auto px-6 py-6 flex flex-col">
+      <a href="#programs"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Programs</a>
+      <a href="/calendar"  class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Calendar</a>
+      <a href="/salary"    class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Salary</a>
+      <a href="/about"     class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">About</a>
+      <a href="/contact"   class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
+      <a href="/blog"      class="block py-4 border-b border-slate-100 text-base text-slate-600">Blog</a>
+      <a href="/graduates" class="block py-4 border-b border-slate-100 text-base text-slate-600">Our graduates</a>
+      <a href="/login"     class="block py-4 border-b border-slate-100 text-base text-slate-600">Sign in</a>
+      <a href="/tools/practice-pro" class="block py-4 border-b border-slate-100 text-base text-slate-600">Try free preview</a>
+      <a href="/enroll" class="mt-6 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-4 rounded-lg shadow">Enroll →</a>
+      <a href="tel:+19039136444" class="mt-3 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
+    </div>
   </div>
-</div>
+</nav>
 
 <main>
 
@@ -213,12 +240,6 @@
 <section class="gradient-hero">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
     <div data-aos="fade-up">
-      <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
-        Next cohort starts <span class="underline decoration-amber-400">Aug 19, 2026</span>
-        <span class="text-amber-700">·</span>
-        <span id="cohort-countdown" class="font-mono">— days left</span>
-      </div>
       <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-slate-900">
         Train on the software<br/>
         <span class="gradient-text">before your first day.</span>
@@ -297,7 +318,10 @@
 <!-- ───────────── By the numbers (live stats) ───────────── -->
 <section class="border-y border-slate-200 bg-slate-50/50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-6">PDA by the numbers — live from our records</p>
+    <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-1">PDA by the numbers</p>
+    <p class="text-center text-sm sm:text-base text-slate-700 font-medium mb-6 max-w-2xl mx-auto">
+      <strong class="text-teal-700">85%+ of our graduates</strong> are working in East Texas dental offices — many with job offers in their graduation week or within 30 days.
+    </p>
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-center">
       <a href="/graduates" data-aos="fade-up" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
         <div class="display text-3xl font-bold gradient-text" id="stat-grads">—</div>
@@ -321,9 +345,9 @@
         <div class="text-[10px] text-amber-700 mt-1 font-semibold">Reserve seat →</div>
       </a>
       <a href="/graduates" data-aos="fade-up" data-aos-delay="200" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
-        <div class="display text-3xl font-bold gradient-text" id="stat-placed">—</div>
-        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Jobs placed</div>
-        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">See the wall →</div>
+        <div class="display text-3xl font-bold gradient-text" id="stat-placement-rate">—</div>
+        <div class="text-[11px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Placement rate</div>
+        <div class="text-[10px] text-teal-700 mt-1 opacity-0 group-hover:opacity-100 transition">East Texas →</div>
       </a>
       <a href="/hiring-partners" data-aos="fade-up" data-aos-delay="250" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-600 hover:shadow-lg transition p-4">
         <div class="display text-3xl font-bold gradient-text" id="stat-partners">—</div>
@@ -335,7 +359,7 @@
 </section>
 
 <!-- ───────────── Programs ───────────── -->
-<section id="programs" class="py-20 sm:py-28 scroll-mt bg-white">
+<section id="programs" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Programs</p>
@@ -368,7 +392,7 @@
           <h3 class="text-2xl font-bold display">Online</h3>
         </div>
         <p class="text-slate-600 text-sm">Same curriculum, attended live from home. Flexible for working adults.</p>
-        <div class="display text-4xl font-bold text-slate-900 my-6">$1,997<span class="text-base font-normal text-slate-500"> tuition</span></div>
+        <div class="display text-4xl font-bold text-slate-900 my-6">$997<span class="text-base font-normal text-slate-500"> tuition</span></div>
         <ul class="space-y-2.5 text-sm text-slate-700">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Live instructor-led classes via video</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Full access to PDA Practice Pro + ChairSide trainers</li>
@@ -428,7 +452,7 @@
 </section>
 
 <!-- ───────────── Comparison table ───────────── -->
-<section class="py-20 sm:py-28 bg-white">
+<section class="py-20 sm:py-28">
   <div class="max-w-5xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Why PDA wins</p>
@@ -455,7 +479,7 @@
             <tr><td class="px-5 py-3 font-medium">Mobile-friendly training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-amber-500">limited</td><td class="text-center text-amber-500">limited</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Real ADA insurance workflow</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Built-in allergy / drug interaction safety</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
-            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$1,997</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
+            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$997 – $1,997</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
           </tbody>
         </table>
       </div>
@@ -526,7 +550,7 @@
 </section>
 
 <!-- ───────────── Trainer preview ───────────── -->
-<section class="py-20 sm:py-28 bg-white">
+<section class="py-20 sm:py-28">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">The trainers</p>
@@ -606,7 +630,7 @@
 </section>
 
 <!-- ───────────── Pricing ───────────── -->
-<section id="pricing" class="py-20 sm:py-28 scroll-mt bg-white">
+<section id="pricing" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-5xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Pricing</p>
@@ -643,7 +667,7 @@
         <span class="absolute -top-3 left-6 bg-cyan-700 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Online</span>
         <h3 class="font-bold text-lg mt-2">Online</h3>
         <p class="text-xs text-slate-500 mt-1">Live classes from anywhere.</p>
-        <div class="display text-3xl font-bold mt-4">$1,997<span class="text-sm text-slate-500 font-normal"> tuition</span></div>
+        <div class="display text-3xl font-bold mt-4">$997<span class="text-sm text-slate-500 font-normal"> tuition</span></div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
           <li>✓ Live video instruction</li>
           <li>✓ Same curriculum as in-person</li>
@@ -699,7 +723,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Tuition is $1,997 and payment plans are available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Tuition is $1,997 for In-Person and $997 for Online, with payment plans available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -720,7 +744,7 @@
 </section>
 
 <!-- ───────────── Final CTA ───────────── -->
-<section class="py-20 sm:py-28 bg-white">
+<section class="py-20 sm:py-28">
   <div class="max-w-4xl mx-auto px-4 sm:px-6">
     <div data-aos="fade-up" class="bg-gradient-to-br from-teal-700 via-teal-800 to-cyan-900 text-white rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden">
       <div class="absolute top-0 left-0 w-64 h-64 bg-amber-400/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
@@ -813,25 +837,23 @@
 <script>
   AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
 
-  // Mobile menu toggle — uses the `hidden` HTML attribute (browser-native, can't be
-  // overridden by Tailwind) so we never fight with `md:hidden` or stacking context.
+  // Mobile menu toggle
   (() => {
     const btn   = document.getElementById('nav-toggle');
     const panel = document.getElementById('mobile-menu');
     const iOpen = document.getElementById('nav-icon-open');
     const iClose= document.getElementById('nav-icon-close');
     if (!btn || !panel) return;
-    const setOpen = (open) => {
-      panel.hidden = !open;
-      iOpen.classList.toggle('hidden',  open);
-      iClose.classList.toggle('hidden', !open);
-      btn.setAttribute('aria-expanded', String(open));
-      document.body.style.overflow = open ? 'hidden' : '';
-    };
-    btn.addEventListener('click', () => setOpen(panel.hidden));
-    panel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
-    // Close menu when window is resized up to desktop
-    window.addEventListener('resize', () => { if (window.innerWidth >= 768) setOpen(false); });
+    const close = () => { panel.classList.add('hidden'); iOpen.classList.remove('hidden'); iClose.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); document.body.style.overflow=''; };
+    btn.addEventListener('click', () => {
+      const opening = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !opening);
+      iOpen.classList.toggle('hidden',  opening);
+      iClose.classList.toggle('hidden', !opening);
+      btn.setAttribute('aria-expanded', String(opening));
+      document.body.style.overflow = opening ? 'hidden' : '';
+    });
+    panel.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
   })();
 
   // Newsletter signup + countdown
@@ -840,42 +862,67 @@
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
-    let nextStart = new Date('2026-08-19T00:00:00');
+    // Live cohort countdown — pulls the soonest cohort whose start date is today or later,
+    // including 'current' (the actively-enrolling one), 'upcoming', or 'open' status.
+    let nextStart = null;
     try {
+      const today = new Date().toISOString().slice(0, 10);
       const { data: next } = await sb.from('cohorts')
-        .select('start_date').eq('status', 'upcoming').order('start_date', { ascending: true }).limit(1).maybeSingle();
+        .select('start_date')
+        .gte('start_date', today)
+        .in('status', ['current', 'upcoming', 'open'])
+        .order('start_date', { ascending: true })
+        .limit(1)
+        .maybeSingle();
       if (next?.start_date) nextStart = new Date(next.start_date + 'T00:00:00');
     } catch (e) {}
+
+    const dateEl = document.getElementById('cohort-date');
+    if (dateEl) {
+      dateEl.textContent = nextStart
+        ? nextStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'soon — call us';
+    }
+
     const tick = () => {
-      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
       const el = document.getElementById('cohort-countdown');
-      if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
+      if (!el) return;
+      if (!nextStart) { el.textContent = ''; return; }
+      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
+      el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
     };
     tick(); setInterval(tick, 60000);
 
-    // Live "By the numbers" stats
+    // Live "By the numbers" stats — live counts + admin overrides for marketing numbers
     try {
-      const [cohorts, placements] = await Promise.all([
+      const [cohorts, placements, partners, overrides] = await Promise.all([
         sb.from('cohorts').select('status, enrolled_count'),
         sb.from('placements').select('id, hired_at_office, visible').eq('visible', true),
+        sb.from('hiring_partners').select('id, practice_name', { count: 'exact', head: false })
+          .eq('verified', true).neq('status', 'archived'),
+        sb.from('public_stats_overrides').select('key, value'),
       ]);
       const cs = cohorts.data || [];
       const ps = placements.data || [];
+      const hp = partners.data || [];
+      const ov = Object.fromEntries((overrides.data || []).map(r => [r.key, r.value]));
       const inSession = cs.filter(c => c.status === 'current');
-      const upcoming = cs.filter(c => c.status === 'upcoming');
+      const upcoming  = cs.filter(c => c.status === 'upcoming');
       const enrolledNow = inSession.reduce((a, c) => a + (c.enrolled_count || 0), 0);
-      const offices = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
+      const officesFromPlacements = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
+      const officesFromPartners   = new Set(hp.map(p => (p.practice_name || '').trim()).filter(Boolean));
+      const allOffices = new Set([...officesFromPartners, ...officesFromPlacements]);
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      // Total graduates across PDA's history. Bump this when the count grows;
-      // the placements table only captures the subset we've documented online.
-      const TOTAL_GRADUATES = 406;
-      set('stat-grads',      Math.max(TOTAL_GRADUATES, ps.length));
-      set('stat-enrolled',   enrolledNow);
-      set('stat-in-session', inSession.length);
-      set('stat-upcoming',   upcoming.length);
-      set('stat-placed',     ps.length);
-      set('stat-partners',   offices.size);
+
+      const totalGrads    = ps.length + (ov.graduates_extra   || 0);
+      const placementRate = ov.placement_rate_pct || null;
+
+      set('stat-grads',           totalGrads.toLocaleString());
+      set('stat-enrolled',        enrolledNow);
+      set('stat-in-session',      inSession.length);
+      set('stat-upcoming',        upcoming.length);
+      set('stat-placement-rate',  placementRate ? `${placementRate}%+` : '—');
+      set('stat-partners',        allOffices.size);
     } catch (e) { console.warn('Stats load failed:', e); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
