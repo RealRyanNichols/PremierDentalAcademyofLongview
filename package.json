@@ -1,0 +1,5 @@
+{
+  "name": "premier-dental-academy",
+  "private": true,
+  "engines": { "node": "20.x" }
+}

@@ -4,44 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Class Calendar — Premier Dental Academy of Longview</title>
-  <meta name="description" content="See every upcoming PDA dental assistant class with live seat availability, projected fill dates, and inquiry counts. Find a class that fits — before seats run out." />
+  <meta name="description" content="See every upcoming PDA dental assistant class — dates, schedule, format, and seats remaining. Find one that fits and reserve your seat in 60 seconds." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
-    .text-slate-600 { color: #334155; }
-    .text-slate-500 { color: #475569; }
-    .text-slate-400 { color: #64748b; }
-    footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
-    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
-    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
-    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
-    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
-    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
-    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
-      color: #cbd5e1;
-    }
+    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #155e75; }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .seat-pulse { animation: seat-pulse 1.5s ease-in-out infinite; }
-    @keyframes seat-pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .7; transform: scale(1.05); } }
-    .fill-bar { background: linear-gradient(90deg, #10b981 0%, #fbbf24 60%, #ef4444 100%); }
-    .cal-cell { aspect-ratio: 1; }
-    .cal-class-dot { background: radial-gradient(circle at center, #fbbf24, #f59e0b); box-shadow: 0 0 0 2px white, 0 0 0 3px #f59e0b; }
-    .cal-class-dot-hot { background: radial-gradient(circle at center, #f87171, #dc2626); box-shadow: 0 0 0 2px white, 0 0 0 3px #dc2626; animation: dot-pulse 1.8s infinite; }
-    @keyframes dot-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.25); } }
+    .seat-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; }
+    .seat-pill.normal { background: #ecfeff; color: #155e75; }
+    .seat-pill.urgent { background: #fef3c7; color: #92400e; }
+    .seat-pill.full   { background: #fee2e2; color: #991b1b; }
+    .seat-pill.urgent .dot { width: 0.4rem; height: 0.4rem; border-radius: 9999px; background: currentColor; animation: pulse 1.4s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .filter-btn[aria-pressed="true"] { background: #0f766e; color: white; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
-  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/seat-mask.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/pda-nav.js" defer></script>
 </head>
-<body class="bg-white">
+<body class="min-h-screen">
 
-<nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span> Premier Dental Academy</a>
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
       <a href="/#programs" class="hover:text-teal-700">Programs</a>
       <a href="/calendar" class="text-teal-700">Calendar</a>
@@ -56,295 +47,134 @@
   </div>
 </nav>
 
-<main class="pt-16">
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
-<section class="py-12 sm:py-16 bg-gradient-to-br from-slate-900 via-slate-900 to-cyan-900 text-white relative overflow-hidden">
-  <!-- Decorative -->
-  <div class="absolute top-0 right-0 w-96 h-96 bg-amber-500/20 rounded-full blur-3xl"></div>
-  <div class="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl"></div>
-  <div class="relative max-w-5xl mx-auto px-6 text-center">
-    <p class="text-xs uppercase tracking-widest text-amber-300 font-bold" data-aos="fade-up">Live class calendar</p>
-    <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold mt-2 leading-tight" data-aos="fade-up">Pick your <span class="text-amber-300">start date</span> — before someone else takes your seat.</h1>
-    <p class="text-cyan-100 mt-5 max-w-2xl mx-auto text-lg" data-aos="fade-up">8 seats per class. No more. We track who's signed up, who's inquired, and how fast each class is filling — so you can see exactly when to act.</p>
+  <div class="text-center text-white mb-8">
+    <p class="text-xs uppercase tracking-widest text-cyan-200 font-semibold">Live calendar</p>
+    <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">start date.</span></h1>
+    <p class="text-cyan-50/90 mt-3 max-w-2xl mx-auto">Every upcoming class — dates, schedule, format, and seats remaining. Tap one to reserve.</p>
+  </div>
 
-    <!-- Live summary metrics -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-10 max-w-3xl mx-auto" data-aos="fade-up">
-      <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
-        <div class="text-3xl font-bold display text-amber-300" id="m-classes">—</div>
-        <div class="text-xs uppercase tracking-widest text-cyan-200 mt-1">Upcoming classes</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
-        <div class="text-3xl font-bold display text-amber-300" id="m-seats">—</div>
-        <div class="text-xs uppercase tracking-widest text-cyan-200 mt-1">Seats remaining</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
-        <div class="text-3xl font-bold display text-rose-300" id="m-filling">—</div>
-        <div class="text-xs uppercase tracking-widest text-cyan-200 mt-1">Filling fast</div>
-      </div>
-      <div class="bg-white/10 backdrop-blur rounded-xl p-3 border border-white/20">
-        <div class="text-3xl font-bold display text-amber-300" id="m-inquiries">—</div>
-        <div class="text-xs uppercase tracking-widest text-cyan-200 mt-1">Recent inquiries</div>
-      </div>
+  <!-- Filter bar -->
+  <div class="flex flex-wrap gap-2 justify-center mb-8">
+    <button type="button" data-filter="all"       aria-pressed="true"  class="filter-btn bg-white text-slate-700 hover:bg-slate-100 text-sm font-semibold px-4 py-2 rounded-full">All formats</button>
+    <button type="button" data-filter="in_person" aria-pressed="false" class="filter-btn bg-white text-slate-700 hover:bg-slate-100 text-sm font-semibold px-4 py-2 rounded-full">🏫 In-Person</button>
+    <button type="button" data-filter="online"    aria-pressed="false" class="filter-btn bg-white text-slate-700 hover:bg-slate-100 text-sm font-semibold px-4 py-2 rounded-full">💻 Online</button>
+  </div>
+
+  <!-- Grid of class cards, grouped by month -->
+  <div id="months"></div>
+
+  <p id="empty-state" hidden class="text-center text-cyan-50/90 mt-8">No upcoming classes match that filter. Call (903) 913-6444 to ask about new dates.</p>
+
+  <div class="mt-12 bg-gradient-to-br from-amber-500 to-amber-400 rounded-2xl p-6 sm:p-8 text-center text-slate-900">
+    <h2 class="display text-2xl sm:text-3xl font-bold">Don't see a date that fits?</h2>
+    <p class="mt-2 text-base">Call Amanda — she'll get you on the next list.</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="tel:+19039136444" class="bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold px-5 py-2.5 rounded-lg">📞 (903) 913-6444</a>
+      <a href="/apply" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-5 py-2.5 rounded-lg">Apply free →</a>
     </div>
   </div>
-</section>
-
-<!-- Month-by-month visual calendar -->
-<section class="py-12 max-w-6xl mx-auto px-6">
-  <div class="flex items-baseline justify-between mb-5">
-    <div>
-      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Calendar view</p>
-      <h2 class="display text-2xl sm:text-3xl font-bold mt-1">Each dot is a start date. Pulsing means filling fast.</h2>
-    </div>
-    <span class="text-xs text-slate-500 hidden sm:block"><span class="inline-block w-2 h-2 rounded-full bg-amber-500 mr-1"></span> open <span class="inline-block w-2 h-2 rounded-full bg-rose-500 ml-3 mr-1 seat-pulse"></span> filling fast</span>
-  </div>
-  <div id="cal-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
-</section>
-
-<!-- Fill velocity chart -->
-<section class="py-12 bg-slate-50">
-  <div class="max-w-6xl mx-auto px-6">
-    <div class="text-center mb-8">
-      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Fill velocity</p>
-      <h2 class="display text-2xl sm:text-3xl font-bold mt-1">How fast each class is filling.</h2>
-      <p class="text-slate-600 mt-2 text-sm">Longer red bars = more seats taken = act now.</p>
-    </div>
-    <div id="velocity-chart" class="bg-white rounded-2xl border border-slate-200 p-6 space-y-3"></div>
-  </div>
-</section>
-
-<!-- Detailed urgency cards -->
-<section class="py-12 max-w-6xl mx-auto px-6">
-  <div class="text-center mb-8">
-    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Every upcoming class</p>
-    <h2 class="display text-3xl sm:text-4xl font-bold mt-1">The full breakdown.</h2>
-  </div>
-  <div id="urgency-cards" class="grid md:grid-cols-2 gap-5"></div>
-</section>
-
-<!-- Bottom-of-page sticky-ish CTA -->
-<section class="py-16 bg-gradient-to-br from-amber-500 via-amber-400 to-amber-500 text-slate-900">
-  <div class="max-w-3xl mx-auto px-6 text-center">
-    <h2 class="display text-3xl sm:text-4xl font-bold">Don't see a date that fits?</h2>
-    <p class="mt-3 text-lg">Call Amanda — we'll squeeze you in or get you on the next list.</p>
-    <div class="mt-6 flex flex-wrap gap-3 justify-center">
-      <a href="tel:+19039136444" class="bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold px-6 py-3 rounded-lg">📞 (903) 913-6444</a>
-      <a href="/apply" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
-    </div>
-  </div>
-</section>
-
-<footer class="bg-slate-900 text-slate-300 py-8">
-  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/contact" class="hover:text-white">Contact</a></div>
-</footer>
-
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<footer class="text-center py-8 text-xs text-cyan-100/80">
+  © 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/contact" class="hover:text-white">Contact</a>
+</footer>
+
 <script>
-AOS.init({ duration: 500, once: true });
+const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+const fmtMonth = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+const fmtDate  = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const fmtShort = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const PRICE = { in_person: '$1,997', online: '$997' };
+const ICON  = { in_person: '🏫', online: '💻' };
+const LABEL = { in_person: 'In-Person',  online: 'Online' };
 
-(async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+let cohorts = [];
+let filter = 'all';
 
-  // Track this page view per cohort displayed (writes to chat_messages just as a lightweight signal for now)
-  const fmt = { day: (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-    monthYear: (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-    short: (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    daysFromToday: (d) => Math.round((new Date(d + 'T00:00:00') - new Date()) / 86400000),
-  };
+async function loadCohorts() {
+  const { data } = await sb.from('cohorts')
+    .select('id,name,delivery_mode,start_date,end_date,schedule,instructor,location,capacity,enrolled_count,status')
+    .eq('status', 'upcoming')
+    .order('start_date', { ascending: true });
+  cohorts = data || [];
+  render();
+}
 
-  const [{ data: cohorts, error }, { data: leadsRows }] = await Promise.all([
-    sb.from('cohorts').select('*').eq('status', 'upcoming').order('start_date', { ascending: true }),
-    sb.from('leads').select('metadata').eq('source', 'classes-reservation'),
-  ]);
-  if (error) { document.body.innerHTML = '<p style="padding:40px;text-align:center">Could not load classes.</p>'; return; }
+function cardHTML(c) {
+  const remaining = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+  const daysOut = window.PDASeats.daysUntil(c.start_date);
+  const seats   = window.PDASeats.maskSeats(remaining, daysOut);
+  const pill    = seats.full ? 'full' : seats.urgent ? 'urgent' : 'normal';
+  const cls     = c.delivery_mode === 'online' ? 'online' : 'in_person';
+  const end     = c.end_date ? fmtShort(c.end_date) : 'TBD';
+  const daysLabel = daysOut === 0 ? 'starts today' : daysOut === 1 ? 'starts tomorrow' : `${daysOut} days away`;
+  const cta = seats.full
+    ? `<a href="/apply" class="flex-1 text-center bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-sm">Join waitlist</a>`
+    : `<a href="/enroll?cohort=${c.id}" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-lg text-sm">Reserve seat →</a>`;
 
-  // Count real inquiries per cohort
-  const inquiriesByCohort = {};
-  (leadsRows || []).forEach(l => {
-    const id = l.metadata?.cohort_id;
-    if (id) inquiriesByCohort[id] = (inquiriesByCohort[id] || 0) + 1;
+  return `
+  <div class="bg-white rounded-2xl shadow-sm border border-white/0 overflow-hidden hover:shadow-md transition">
+    <div class="flex items-center justify-between px-5 pt-4">
+      <span class="text-xs font-bold uppercase tracking-widest text-teal-700">${ICON[cls]} ${LABEL[cls]} · ${PRICE[cls]}</span>
+      <span class="seat-pill ${pill}">${seats.urgent ? '<span class="dot"></span>' : ''}${seats.label}</span>
+    </div>
+    <div class="px-5 pb-5 pt-3">
+      <div class="display text-2xl font-bold text-slate-900">${fmtDate(c.start_date)}</div>
+      <div class="text-xs text-slate-500 mt-0.5">${daysLabel} · runs through ${end}</div>
+      <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+        ${c.schedule   ? `<div class="text-slate-500">Schedule</div><div class="text-slate-900 font-medium">${c.schedule}</div>` : ''}
+        ${c.instructor ? `<div class="text-slate-500">Instructor</div><div class="text-slate-900 font-medium">${c.instructor}</div>` : ''}
+        ${c.location && cls === 'in_person' ? `<div class="text-slate-500">Location</div><div class="text-slate-900 font-medium">${c.location}</div>` : ''}
+      </div>
+      <div class="mt-4 flex gap-2">
+        ${cta}
+        <a href="tel:+19039136444" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm" aria-label="Call PDA">📞</a>
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const root = document.getElementById('months');
+  root.innerHTML = '';
+  const filtered = cohorts.filter(c =>
+    filter === 'all' ||
+    (filter === 'online' && c.delivery_mode === 'online') ||
+    (filter === 'in_person' && c.delivery_mode !== 'online')
+  );
+
+  document.getElementById('empty-state').hidden = filtered.length > 0;
+
+  // Group by month
+  const groups = {};
+  filtered.forEach(c => {
+    const key = fmtMonth(c.start_date);
+    (groups[key] = groups[key] || []).push(c);
   });
 
-  // Compute urgency for each cohort
-  const enriched = cohorts.map(c => {
-    const cap = c.capacity || 8;
-    const taken = c.enrolled_count || 0;
-    const left = Math.max(0, cap - taken);
-    const fillPct = (taken / cap) * 100;
-    const daysUntilStart = fmt.daysFromToday(c.start_date);
-    const inquiries = inquiriesByCohort[c.id] || 0;
-    // Heuristic for projected fill: if interest > seats left, "expected to fill before start"
-    // Otherwise project linearly: at current pace (taken / 30 days), how long until full?
-    let projection = '';
-    let projectionTone = 'slate';
-    if (left === 0) { projection = 'Closed — waitlist only'; projectionTone = 'rose'; }
-    else if (left === 1) { projection = '🔥 Last seat — could go any moment'; projectionTone = 'rose'; }
-    else if (left <= 2) { projection = `🔥 Only ${left} left — expect to fill within 7-14 days`; projectionTone = 'rose'; }
-    else if (inquiries >= left) { projection = `${inquiries} inquiries vs ${left} seats — expected to fill before start`; projectionTone = 'amber'; }
-    else if (taken > 0 && daysUntilStart > 0) {
-      // crude rate-based projection
-      const daysOpen = Math.max(7, 30); // assume cohorts opened ~30 days ago
-      const ratePerDay = taken / daysOpen;
-      const daysToFill = ratePerDay > 0 ? Math.round(left / ratePerDay) : 999;
-      if (daysToFill < daysUntilStart) {
-        projection = `Projected to fill in ~${daysToFill} days (before start)`;
-        projectionTone = 'amber';
-      } else {
-        projection = `${left} seats open · spots available`;
-        projectionTone = 'emerald';
-      }
-    } else if (taken === 0) {
-      projection = `Wide open — first to sign up gets best schedule fit`;
-      projectionTone = 'emerald';
-    }
-    return { ...c, left, taken, cap, fillPct, daysUntilStart, inquiries, projection, projectionTone };
+  Object.entries(groups).forEach(([month, classes]) => {
+    const section = document.createElement('section');
+    section.className = 'mb-10';
+    section.innerHTML = `
+      <h2 class="display text-2xl font-bold text-white mb-4">${month} <span class="text-cyan-100/70 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        ${classes.map(cardHTML).join('')}
+      </div>`;
+    root.appendChild(section);
   });
+}
 
-  // ── Summary metrics
-  const totalUpcoming = enriched.length;
-  const totalSeatsLeft = enriched.reduce((a, c) => a + c.left, 0);
-  const fillingFast = enriched.filter(c => c.left <= 2 && c.left > 0).length;
-  const totalInquiries = Object.values(inquiriesByCohort).reduce((a, n) => a + n, 0);
-  document.getElementById('m-classes').textContent = totalUpcoming;
-  document.getElementById('m-seats').textContent = totalSeatsLeft;
-  document.getElementById('m-filling').textContent = fillingFast;
-  document.getElementById('m-inquiries').textContent = totalInquiries;
+document.addEventListener('click', (ev) => {
+  const btn = ev.target.closest('.filter-btn');
+  if (!btn) return;
+  filter = btn.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
+  render();
+});
 
-  // ── Calendar view: group cohorts by month
-  const byMonth = {};
-  enriched.forEach(c => {
-    const key = fmt.monthYear(c.start_date);
-    (byMonth[key] = byMonth[key] || []).push(c);
-  });
-  const calGrid = document.getElementById('cal-grid');
-  Object.entries(byMonth).forEach(([month, classes], i) => {
-    const card = document.createElement('div');
-    card.className = 'bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition';
-    card.setAttribute('data-aos', 'fade-up');
-    card.setAttribute('data-aos-delay', String(i * 50));
-    card.innerHTML = `
-      <div class="flex items-center justify-between mb-3">
-        <h3 class="display text-xl font-bold">${month}</h3>
-        <span class="text-xs text-slate-500">${classes.length} class${classes.length>1?'es':''}</span>
-      </div>
-      <div class="space-y-2">
-        ${classes.map(c => {
-          const hot = c.left <= 2;
-          const fillCount = c.taken;
-          return `
-            <a href="#class-${c.id}" class="block bg-slate-50 hover:bg-${hot?'rose':'teal'}-50 rounded-lg p-3 border border-transparent hover:border-${hot?'rose':'teal'}-300 transition group">
-              <div class="flex items-center justify-between gap-2">
-                <div>
-                  <div class="font-bold text-slate-900 text-sm">${fmt.day(c.start_date)}</div>
-                  <div class="text-[11px] text-slate-500 mt-0.5">${c.schedule || ''}</div>
-                </div>
-                <div class="text-right shrink-0">
-                  <div class="${hot?'text-rose-600':'text-slate-700'} font-bold text-sm ${hot?'seat-pulse':''}">${c.left===0?'Full':c.left+' left'}</div>
-                  <div class="flex gap-0.5 justify-end mt-1">
-                    ${Array.from({length: c.cap}).map((_,i) => `<span class="w-1.5 h-3 rounded-sm ${i<fillCount?'bg-rose-500':'bg-slate-200'}"></span>`).join('')}
-                  </div>
-                </div>
-              </div>
-            </a>
-          `;
-        }).join('')}
-      </div>
-    `;
-    calGrid.appendChild(card);
-  });
-
-  // ── Fill velocity chart
-  const velocityBox = document.getElementById('velocity-chart');
-  const maxCap = Math.max(...enriched.map(c => c.cap), 1);
-  enriched.slice(0, 12).forEach((c, i) => {
-    const pct = c.fillPct;
-    const tone = c.left === 0 ? 'bg-rose-600' : c.left <= 2 ? 'bg-rose-500' : c.fillPct >= 50 ? 'bg-amber-500' : 'bg-emerald-500';
-    const row = document.createElement('div');
-    row.className = 'flex items-center gap-3';
-    row.setAttribute('data-aos', 'fade-right');
-    row.setAttribute('data-aos-delay', String(i * 40));
-    row.innerHTML = `
-      <div class="w-40 shrink-0 text-sm font-semibold text-slate-700 truncate" title="${c.name}">${fmt.short(c.start_date)} <span class="text-slate-400 font-normal text-xs">· ${c.name.split('—')[1] ? c.name.split('—')[1].trim() : ''}</span></div>
-      <div class="flex-1 bg-slate-100 rounded-full h-6 overflow-hidden relative">
-        <div class="${tone} h-full transition-all" style="width:${pct}%;"></div>
-        <div class="absolute inset-0 flex items-center px-3 text-xs font-bold text-slate-900">${c.taken} / ${c.cap} ${c.taken > 0 ? '· ' + Math.round(pct) + '% full' : ''}</div>
-      </div>
-      <div class="w-32 shrink-0 text-right text-xs font-semibold ${c.left===0?'text-rose-700':c.left<=2?'text-rose-600':c.fillPct>=50?'text-amber-700':'text-slate-500'}">${c.left===0?'Closed':c.left+' left'}</div>
-    `;
-    velocityBox.appendChild(row);
-  });
-
-  // ── Detailed urgency cards
-  const cards = document.getElementById('urgency-cards');
-  enriched.forEach((c, i) => {
-    const hot = c.left <= 2 && c.left > 0;
-    const full = c.left === 0;
-    const toneRing = full ? 'border-rose-500' : hot ? 'border-rose-400' : c.fillPct >= 50 ? 'border-amber-400' : 'border-slate-200';
-    const bg = full || hot ? 'bg-gradient-to-br from-white to-rose-50' : '';
-    const projBg = ({ rose: 'bg-rose-50 text-rose-900 border-rose-200', amber: 'bg-amber-50 text-amber-900 border-amber-200', emerald: 'bg-emerald-50 text-emerald-900 border-emerald-200', slate: 'bg-slate-50 text-slate-700 border-slate-200' })[c.projectionTone];
-
-    const card = document.createElement('div');
-    card.id = 'class-' + c.id;
-    card.className = `${bg} border-2 ${toneRing} rounded-2xl p-6 hover:shadow-xl transition relative overflow-hidden`;
-    card.setAttribute('data-aos', 'fade-up');
-    card.setAttribute('data-aos-delay', String((i % 4) * 50));
-    card.innerHTML = `
-      ${hot || full ? `<div class="absolute top-3 right-3 ${full?'bg-rose-600':'bg-rose-500'} text-white text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-full ${hot?'seat-pulse':''}">${full?'🚫 Closed':'🔥 Filling now'}</div>` : ''}
-
-      <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">${(c.delivery_mode === 'online' || c.program === 'online' || c.program === 'career_track') ? '💻 Online · $997' : '🏫 In-Person · $1,997'}</div>
-      <h3 class="display text-xl font-bold mt-1 leading-tight">${c.name}</h3>
-      <p class="text-xs text-slate-500 mt-0.5">${c.schedule || ''}</p>
-
-      <!-- Big seat visualization -->
-      <div class="mt-5">
-        <div class="flex items-baseline justify-between mb-2">
-          <div class="display text-3xl font-bold ${full?'text-rose-700':hot?'text-rose-600':c.fillPct>=50?'text-amber-700':'text-slate-900'}">
-            ${c.taken}<span class="text-slate-400 text-lg">/${c.cap}</span>
-          </div>
-          <div class="text-sm font-bold ${full?'text-rose-700':hot?'text-rose-600 seat-pulse':'text-slate-600'}">
-            ${full?'Closed':c.left+' seat'+(c.left===1?'':'s')+' left'}
-          </div>
-        </div>
-        <div class="flex gap-1">
-          ${Array.from({length:c.cap}).map((_,j)=>`<div class="flex-1 h-3 rounded ${j<c.taken?'bg-rose-500':'bg-slate-200'}"></div>`).join('')}
-        </div>
-      </div>
-
-      <!-- Urgency signals -->
-      <div class="mt-5 grid grid-cols-2 gap-3 text-xs">
-        <div class="bg-slate-50 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Inquiries received</div>
-          <div class="text-xl font-bold mono text-teal-700 mt-0.5">${c.inquiries}</div>
-        </div>
-        <div class="bg-slate-50 rounded-lg p-2.5">
-          <div class="text-[10px] uppercase tracking-widest text-slate-500 font-bold">Class starts</div>
-          <div class="text-xl font-bold mono text-slate-900 mt-0.5">${c.daysUntilStart < 0 ? 'In session' : c.daysUntilStart + 'd'}</div>
-        </div>
-      </div>
-
-      <!-- Projection -->
-      <div class="mt-3 ${projBg} border rounded-lg p-2.5 text-xs font-semibold">
-        ${c.projection}
-      </div>
-
-      <!-- CTA — routes to Square payment link when present, else /apply -->
-      <div class="mt-5 flex gap-2">
-        ${full
-          ? `<a href="/apply" class="flex-1 text-center bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg">Join waitlist →</a>`
-          : (c.payment_link_url
-              ? `<a href="${c.payment_link_url}" target="_blank" rel="noopener" class="flex-1 text-center ${hot?'bg-rose-600 hover:bg-rose-700':'bg-amber-500 hover:bg-amber-600'} text-white font-bold py-2.5 rounded-lg">${hot?'🔥 Pay & reserve now':'Pay & reserve →'}</a>`
-              : `<a href="/apply" class="flex-1 text-center ${hot?'bg-rose-600 hover:bg-rose-700':'bg-amber-500 hover:bg-amber-600'} text-white font-bold py-2.5 rounded-lg">${hot?'🔥 Reserve before it closes':'Reserve seat →'}</a>`)
-        }
-        <a href="tel:+19039136444" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm">📞</a>
-      </div>
-    `;
-    cards.appendChild(card);
-  });
-
-  AOS.refresh();
-})();
+loadCohorts();
 </script>
 </body>
 </html>
