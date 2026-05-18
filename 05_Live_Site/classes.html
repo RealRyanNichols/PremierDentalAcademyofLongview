@@ -144,14 +144,21 @@ AOS.init({ duration: 500, once: true });
 
   const renderCohortCard = (c, isUpcoming) => {
     const p = PROGRAMS[c.program] || { label: c.program || 'Program', price: '—', dur: '—' };
-    const seatsLeft = Math.max(0, (c.capacity || 20) - (c.enrolled_count || 0));
-    const filling = seatsLeft <= 4 && seatsLeft > 0;
+    const cap = c.capacity || 8;
+    const seatsLeft = Math.max(0, cap - (c.enrolled_count || 0));
+    const half = seatsLeft <= Math.ceil(cap / 2);          // half-or-fewer remaining
+    const critical = seatsLeft <= 2 && seatsLeft > 0;       // 2 or fewer
+    const lastOne = seatsLeft === 1;
     const full = seatsLeft === 0;
     const seatChip = full
-      ? '<span class="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full">Class full · waitlist</span>'
-      : filling
-        ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">Filling — only ${seatsLeft} ${seatsLeft===1?'seat':'seats'} left</span>`
-        : `<span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full">${seatsLeft} of ${c.capacity || 20} seats open</span>`;
+      ? '<span class="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full">Class full · waitlist only</span>'
+      : lastOne
+        ? '<span class="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full animate-pulse">🔥 Last seat — 1 left</span>'
+        : critical
+          ? `<span class="bg-rose-50 text-rose-700 text-xs font-bold px-2 py-1 rounded-full">🔥 Only ${seatsLeft} seats left</span>`
+          : half
+            ? `<span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">Filling fast — ${seatsLeft} of ${cap} seats open</span>`
+            : `<span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full">${seatsLeft} of ${cap} seats open</span>`;
     const isCareer = c.program === 'career_track';
     return `
       <div class="${isCareer ? 'bg-gradient-to-br from-slate-900 to-cyan-900 text-white' : 'bg-white border border-slate-200'} rounded-2xl p-6 hover:shadow-xl transition" data-aos="fade-up">
