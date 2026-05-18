@@ -14,12 +14,16 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "EducationalOrganization",
+    "@type": ["EducationalOrganization", "LocalBusiness"],
     "name": "Premier Dental Academy of Longview",
+    "alternateName": "PDA",
     "description": "East Texas's only RDA training program with hands-on practice management software trainers.",
-    "url": "https://premierdentalacademy.com",
+    "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
+    "priceRange": "$1,995 – $3,495",
+    "image": "https://premierdentalacademyoflongview.com/og.svg",
+    "logo": "https://premierdentalacademyoflongview.com/og.svg",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "2800 Gilmer Rd, Suite 106",
@@ -28,7 +32,12 @@
       "postalCode": "75604",
       "addressCountry": "US"
     },
-    "areaServed": ["Longview, TX", "Tyler, TX", "Marshall, TX", "Kilgore, TX", "Henderson, TX", "Gladewater, TX", "East Texas"],
+    "geo": { "@type": "GeoCoordinates", "latitude": "32.5193", "longitude": "-94.7613" },
+    "openingHoursSpecification": [
+      { "@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday"], "opens": "09:00", "closes": "18:00" }
+    ],
+    "areaServed": ["Longview, TX", "Tyler, TX", "Marshall, TX", "Kilgore, TX", "Henderson, TX", "Gladewater, TX", "Hallsville, TX", "White Oak, TX", "East Texas"],
+    "founder": { "@type": "Person", "name": "Amanda Williams", "jobTitle": "Founder & Director" },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "RDA Training Programs",
@@ -37,6 +46,101 @@
         { "@type": "Offer", "name": "RDA Career Track (24 weeks with externship)", "price": "3495", "priceCurrency": "USD" }
       ]
     }
+  }
+  </script>
+
+  <!-- Course schema — each program shows up in Google's rich results -->
+  <script type="application/ld+json">
+  [
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "RDA Foundation",
+      "description": "12-week Registered Dental Assistant training program with hands-on practice management software, evening and weekend classes.",
+      "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview", "sameAs": "https://premierdentalacademyoflongview.com" },
+      "offers": { "@type": "Offer", "price": "1995", "priceCurrency": "USD", "category": "Tuition" },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "Blended",
+        "location": "Longview, TX",
+        "courseWorkload": "PT12W"
+      },
+      "educationalCredentialAwarded": "PDA Certificate of Completion",
+      "occupationalCategory": "31-9091"
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Course",
+      "name": "RDA Career Track",
+      "description": "24-week intensive RDA program with guaranteed externship placement at an East Texas dental office, 1-on-1 mentorship, CPR/BLS/OSHA certs.",
+      "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
+      "offers": { "@type": "Offer", "price": "3495", "priceCurrency": "USD", "category": "Tuition" },
+      "hasCourseInstance": {
+        "@type": "CourseInstance",
+        "courseMode": "Blended",
+        "location": "Longview, TX",
+        "courseWorkload": "PT24W"
+      },
+      "educationalCredentialAwarded": "PDA Certificate of Completion + Externship",
+      "occupationalCategory": "31-9091"
+    }
+  ]
+  </script>
+
+  <!-- FAQ schema — powers Google rich-result FAQ accordions -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How long until I'm working as a dental assistant in East Texas?",
+        "acceptedAnswer": { "@type": "Answer", "text": "RDA Foundation is 12 weeks of evening + weekend classes. Most students start interviewing in week 10 and have offers within 2 weeks of completion. Career Track adds a 12-week externship at a partner office, with most externs hired by their host office." }
+      },
+      {
+        "@type": "Question",
+        "name": "Do I need previous dental experience to enroll?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. About 70% of PDA students come in with no prior dental background. The curriculum and the trainers are designed for someone walking in cold." }
+      },
+      {
+        "@type": "Question",
+        "name": "What makes PDA's practice management trainers different from online courses?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Online courses show you what dental software looks like. PDA's trainers are software — fully interactive, with 25 sample patients, charts you actually mark, claims you actually submit, prescriptions you actually write. It's the difference between watching cooking videos and standing at the stove." }
+      },
+      {
+        "@type": "Question",
+        "name": "Will my certificate be recognized by Texas dental offices?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Our curriculum aligns with the Texas State Board of Dental Examiners RDA registration requirements. Graduates are positioned to register as RDAs in Texas." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I pay in monthly installments?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Foundation can be split into 4 monthly payments of $499. Career Track into 7 monthly payments of $499. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and offer 0% interest in-house financing." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where is Premier Dental Academy located?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Our campus is at 2800 Gilmer Rd, Suite 106, Longview, TX 75604. Students attend from Longview, Tyler, Marshall, Kilgore, Henderson, Gladewater, and surrounding East Texas towns." }
+      },
+      {
+        "@type": "Question",
+        "name": "What's the refund policy if I change my mind?",
+        "acceptedAnswer": { "@type": "Answer", "text": "14-day satisfaction guarantee — full refund within the first two weeks of enrollment, no questions asked. After that, partial refunds are available pro-rated by completion percentage." }
+      }
+    ]
+  }
+  </script>
+
+  <!-- Person schema for Amanda -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Amanda Williams",
+    "jobTitle": "Founder & Director",
+    "worksFor": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
+    "knowsAbout": ["Dental assisting", "RDA training", "Texas dental practice management", "Periodontal charting", "Insurance claims"]
   }
   </script>
 
@@ -66,6 +170,7 @@
     details[open] .faq-icon { transform: rotate(45deg); }
     .faq-icon { transition: transform .15s; }
   </style>
+  <script src="/assets/pda-seo.js" defer></script>
 </head>
 <body class="bg-white antialiased">
 

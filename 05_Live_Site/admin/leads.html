@@ -94,7 +94,24 @@
     document.getElementById('auth-wall').classList.remove('hidden');
     return;
   }
-  document.getElementById('user-label').textContent = session.user.email;
+
+  // Admin gate — must have profiles.is_admin = true
+  const { data: profile } = await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle();
+  if (!profile || !profile.is_admin) {
+    document.getElementById('auth-wall').classList.remove('hidden');
+    const wall = document.getElementById('auth-wall');
+    wall.innerHTML = `
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center">
+        <div class="text-5xl mb-3">🚫</div>
+        <h1 class="display text-2xl font-bold">Staff access only</h1>
+        <p class="text-slate-600 mt-2">Your account isn't authorized to view the lead inbox. If you should have access, ask Amanda to grant admin status.</p>
+        <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
   document.getElementById('leads-view').classList.remove('hidden');
   document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
 
