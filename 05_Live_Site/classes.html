@@ -178,7 +178,9 @@ AOS.init({ duration: 500, once: true });
         <div class="flex items-center justify-between mt-5 gap-3 flex-wrap">
           ${seatChip}
           ${isUpcoming
-            ? `<button data-cohort-id="${c.id}" data-cohort-name="${c.name.replace(/"/g,'&quot;')}" data-cohort-meta="${(p.label+' · starts '+fmtDate(c.start_date)).replace(/"/g,'&quot;')}" class="reserve-btn ${full?'bg-slate-300 text-slate-500 cursor-not-allowed':'bg-amber-500 hover:bg-amber-600 text-slate-900'} font-bold px-4 py-2 rounded-lg" ${full?'disabled':''}>${full?'Join waitlist →':'Reserve seat →'}</button>`
+            ? (c.payment_link_url && !full
+                ? `<a href="${c.payment_link_url}" target="_blank" rel="noopener" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-4 py-2 rounded-lg">Pay &amp; reserve →</a>`
+                : `<button data-cohort-id="${c.id}" data-cohort-name="${c.name.replace(/"/g,'&quot;')}" data-cohort-meta="${(p.label+' · starts '+fmtDate(c.start_date)).replace(/"/g,'&quot;')}" class="reserve-btn ${full?'bg-slate-300 text-slate-500 cursor-not-allowed':'bg-amber-500 hover:bg-amber-600 text-slate-900'} font-bold px-4 py-2 rounded-lg" ${full?'disabled':''}>${full?'Join waitlist →':'Reserve seat →'}</button>`)
             : `<a href="/contact" class="${isCareer?'bg-white/10 hover:bg-white/20 border border-white/30 text-white':'bg-slate-100 hover:bg-slate-200 text-slate-700'} font-semibold px-4 py-2 rounded-lg text-sm">Ask about mid-term entry</a>`
           }
         </div>
