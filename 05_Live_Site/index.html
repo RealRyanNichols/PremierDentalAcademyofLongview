@@ -895,29 +895,34 @@
 
     // Live "By the numbers" stats — live counts + admin overrides for marketing numbers
     try {
-      const [cohorts, placements, overrides] = await Promise.all([
+      const [cohorts, placements, partners, overrides] = await Promise.all([
         sb.from('cohorts').select('status, enrolled_count'),
         sb.from('placements').select('id, hired_at_office, visible').eq('visible', true),
+        sb.from('hiring_partners').select('id, practice_name', { count: 'exact', head: false })
+          .eq('verified', true).neq('status', 'archived'),
         sb.from('public_stats_overrides').select('key, value'),
       ]);
       const cs = cohorts.data || [];
       const ps = placements.data || [];
+      const hp = partners.data || [];
       const ov = Object.fromEntries((overrides.data || []).map(r => [r.key, r.value]));
       const inSession = cs.filter(c => c.status === 'current');
       const upcoming  = cs.filter(c => c.status === 'upcoming');
       const enrolledNow = inSession.reduce((a, c) => a + (c.enrolled_count || 0), 0);
-      const offices = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
+      const officesFromPlacements = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
+      const officesFromPartners   = new Set(hp.map(p => (p.practice_name || '').trim()).filter(Boolean));
+      const allOffices = new Set([...officesFromPartners, ...officesFromPlacements]);
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
-      const totalGrads     = ps.length + (ov.graduates_extra   || 0);
-      const placementRate  = ov.placement_rate_pct || null;
+      const totalGrads    = ps.length + (ov.graduates_extra   || 0);
+      const placementRate = ov.placement_rate_pct || null;
 
       set('stat-grads',           totalGrads.toLocaleString());
       set('stat-enrolled',        enrolledNow);
       set('stat-in-session',      inSession.length);
       set('stat-upcoming',        upcoming.length);
       set('stat-placement-rate',  placementRate ? `${placementRate}%+` : '—');
-      set('stat-partners',        offices.size);
+      set('stat-partners',        allOffices.size);
     } catch (e) { console.warn('Stats load failed:', e); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
