@@ -9,7 +9,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #0c3a36; }
+    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #b2dfdb; }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .seat-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; }
@@ -38,10 +38,10 @@
 
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
-  <div class="text-center text-white mb-8">
-    <p class="text-xs uppercase tracking-widest text-teal-300 font-semibold">Live calendar</p>
+  <div class="text-center text-slate-900 mb-8">
+    <p class="text-xs uppercase tracking-widest text-teal-800 font-semibold">Live calendar</p>
     <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">start date.</span></h1>
-    <p class="text-teal-100/80 mt-3 max-w-2xl mx-auto">Every upcoming class — dates, schedule, format, and seats remaining. Tap one to reserve.</p>
+    <p class="text-slate-700 mt-3 max-w-2xl mx-auto">Every upcoming class — dates, schedule, format, and seats remaining. Tap one to reserve.</p>
   </div>
 
   <!-- Filter bar -->
@@ -54,7 +54,7 @@
   <!-- Grid of class cards, grouped by month -->
   <div id="months"></div>
 
-  <p id="empty-state" hidden class="text-center text-teal-100/70 mt-8">No upcoming classes match that filter. Call (903) 913-6444 to ask about new dates.</p>
+  <p id="empty-state" hidden class="text-center text-slate-700 mt-8">No upcoming classes match that filter. Call (903) 913-6444 to ask about new dates.</p>
 
   <div class="mt-12 bg-gradient-to-br from-amber-500 to-amber-400 rounded-2xl p-6 sm:p-8 text-center text-slate-900">
     <h2 class="display text-2xl sm:text-3xl font-bold">Don't see a date that fits?</h2>
@@ -66,8 +66,8 @@
   </div>
 </main>
 
-<footer class="text-center py-8 text-xs text-teal-100/60">
-  © 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/contact" class="hover:text-white">Contact</a>
+<footer class="text-center py-8 text-xs text-slate-600">
+  © 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-slate-900">Home</a> · <a href="/contact" class="hover:text-slate-900">Contact</a>
 </footer>
 
 <script>
@@ -147,7 +147,7 @@ function render() {
     const section = document.createElement('section');
     section.className = 'mb-10';
     section.innerHTML = `
-      <h2 class="display text-2xl font-bold text-white mb-4">${month} <span class="text-teal-300/70 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
+      <h2 class="display text-2xl font-bold text-slate-900 mb-4">${month} <span class="text-slate-600 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         ${classes.map(cardHTML).join('')}
       </div>`;
