@@ -103,6 +103,24 @@
     </div>
   </section>
 
+  <!-- My Kajabi courses -->
+  <section id="kajabi-section" class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 mb-6">
+    <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div>
+        <h2 class="display text-xl font-bold">My courses</h2>
+        <p class="text-sm text-slate-600 mt-0.5">Pulled live from your Kajabi account.</p>
+      </div>
+      <a id="kajabi-library-btn" href="#" target="_blank" rel="noopener" class="hidden text-sm font-semibold text-teal-700 hover:text-teal-900">Open Kajabi library →</a>
+    </div>
+    <div id="kajabi-loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div class="animate-pulse bg-slate-100 rounded-xl h-28"></div>
+      <div class="animate-pulse bg-slate-100 rounded-xl h-28"></div>
+      <div class="animate-pulse bg-slate-100 rounded-xl h-28"></div>
+    </div>
+    <div id="kajabi-empty" class="hidden text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-4"></div>
+    <div id="kajabi-grid" class="hidden grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
   <!-- Stat tiles -->
   <section class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
     <div class="bg-white rounded-xl border border-slate-200 p-4">
@@ -268,6 +286,9 @@
     document.getElementById('hero-sub').textContent = 'You\'re in preview mode. Enroll to unlock save, PDFs, and your certificate.';
   }
 
+  // Kajabi courses — fetch in background so the rest of the dashboard isn't blocked
+  loadKajabiCourses(sb, session).catch(err => console.warn('[kajabi] load failed', err));
+
   // Account form
   const accForm = document.getElementById('account-form');
   accForm.first_name.value = p.first_name || '';
@@ -366,6 +387,59 @@
     if (s < 86400) return Math.floor(s / 3600) + 'h ago';
     if (s < 604800) return Math.floor(s / 86400) + 'd ago';
     return d.toLocaleDateString();
+  }
+
+  async function loadKajabiCourses(sb, session) {
+    const loading = document.getElementById('kajabi-loading');
+    const empty   = document.getElementById('kajabi-empty');
+    const grid    = document.getElementById('kajabi-grid');
+    const libBtn  = document.getElementById('kajabi-library-btn');
+    const showEmpty = (msg, libraryUrl) => {
+      loading.classList.add('hidden');
+      grid.classList.add('hidden');
+      empty.classList.remove('hidden');
+      empty.innerHTML = msg + (libraryUrl ? ` <a href="${libraryUrl}" target="_blank" rel="noopener" class="text-teal-700 font-semibold hover:text-teal-900">Open Kajabi library →</a>` : '');
+    };
+
+    let resp;
+    try {
+      resp = await sb.functions.invoke('kajabi-my-courses');
+    } catch (e) {
+      showEmpty('Couldn’t load your Kajabi courses right now.', null);
+      return;
+    }
+    const data = resp?.data || {};
+    if (data.library_url) {
+      libBtn.href = data.library_url;
+      libBtn.classList.remove('hidden');
+    }
+    if (!data.configured) {
+      showEmpty(data.message || 'Kajabi integration is still being set up.', data.library_url);
+      return;
+    }
+    const courses = Array.isArray(data.courses) ? data.courses : [];
+    if (courses.length === 0) {
+      showEmpty(data.message || 'No Kajabi courses are linked to your account yet.', data.library_url);
+      return;
+    }
+    loading.classList.add('hidden');
+    empty.classList.add('hidden');
+    grid.classList.remove('hidden');
+    grid.innerHTML = courses.map(c => {
+      const title = (c.title || 'Course').replace(/</g, '&lt;');
+      const desc  = (c.description || '').replace(/<[^>]+>/g, '').slice(0, 120);
+      const href  = c.deep_link || data.library_url || '#';
+      return `<a href="${href}" target="_blank" rel="noopener" class="block bg-gradient-to-br from-cyan-700 to-teal-700 text-white rounded-xl p-4 hover:shadow-xl transition group">
+        <div class="flex items-start gap-2 mb-2">
+          <span class="w-8 h-8 bg-white/20 rounded grid place-items-center text-base">🎓</span>
+          <div class="flex-1 min-w-0">
+            <div class="font-bold text-sm leading-tight">${title}</div>
+            ${desc ? `<div class="text-xs text-cyan-100 mt-1 line-clamp-2">${desc}</div>` : ''}
+          </div>
+        </div>
+        <div class="text-xs font-semibold text-cyan-100 group-hover:translate-x-0.5 transition">Open course →</div>
+      </a>`;
+    }).join('');
   }
 
   // Avatar dropdown
