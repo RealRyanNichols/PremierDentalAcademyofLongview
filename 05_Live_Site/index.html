@@ -185,7 +185,7 @@
 <div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
     <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse shrink-0"></span>
-    <span>Next cohort starts <span class="underline decoration-amber-900/40">Aug 19, 2026</span></span>
+    <span>Next cohort starts <span id="cohort-date" class="underline decoration-amber-900/40">—</span></span>
     <span class="text-amber-900/70">·</span>
     <span id="cohort-countdown" class="font-mono">— days left</span>
     <a href="/enroll" class="ml-1 hidden sm:inline-flex underline underline-offset-2 hover:text-amber-900">Enroll →</a>
@@ -859,17 +859,34 @@
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
-    let nextStart = new Date('2026-08-19T00:00:00');
+    // Live cohort countdown — pulls the soonest cohort whose start date is today or later,
+    // including 'current' (the actively-enrolling one), 'upcoming', or 'open' status.
+    let nextStart = null;
     try {
+      const today = new Date().toISOString().slice(0, 10);
       const { data: next } = await sb.from('cohorts')
-        .select('start_date').eq('status', 'upcoming').order('start_date', { ascending: true }).limit(1).maybeSingle();
+        .select('start_date')
+        .gte('start_date', today)
+        .in('status', ['current', 'upcoming', 'open'])
+        .order('start_date', { ascending: true })
+        .limit(1)
+        .maybeSingle();
       if (next?.start_date) nextStart = new Date(next.start_date + 'T00:00:00');
     } catch (e) {}
+
+    const dateEl = document.getElementById('cohort-date');
+    if (dateEl) {
+      dateEl.textContent = nextStart
+        ? nextStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'soon — call us';
+    }
+
     const tick = () => {
-      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
       const el = document.getElementById('cohort-countdown');
-      if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
+      if (!el) return;
+      if (!nextStart) { el.textContent = ''; return; }
+      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
+      el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
     };
     tick(); setInterval(tick, 60000);
 
