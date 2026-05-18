@@ -27,11 +27,11 @@
   // Knowledge base — keyword matchers + canned responses
   const KB = [
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: 'Foundation is **$1,995** (12 weeks) — or **$499/month × 4**.\nCareer Track is **$3,495** (24 weeks, externship guaranteed) — or $499/month × 7.\n\nWant to see all the pricing options?',
-      cta: { label: 'See pricing →', href: '/enroll' } },
+      reply: 'Tuition is **$1,997** — same price whether you choose **In-Person** at our Longview campus or **Online** (live from home).\n\nPayment plans available, and we accept TWC vouchers, GI Bill, and WIOA funding.',
+      cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
-      reply: 'Foundation is **12 weeks** — evenings + Saturday mornings, designed so you can keep working.\nCareer Track is **24 weeks** with a 12-week externship at a partner East Texas office.',
+      reply: 'Pick the format that fits you:\n• **In-Person** at our Longview campus\n• **Online** — live video classes from anywhere\n\nSame curriculum, same instructors, same certificate. Tap to see class dates.',
       cta: { label: 'See upcoming classes →', href: '/classes' } },
 
     { match: /\b(when|next class|start|begin|cohort)\b/i,
@@ -39,7 +39,8 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: 'Yes — both programs split into monthly payments:\n• Foundation: **$499/month × 4**\n• Career Track: **$499/month × 7**\n\nWe also accept TWC vouchers, GI Bill, WIOA workforce funding, and offer 0% interest in-house financing.' },
+      reply: 'Yes — payment plans are available for the **$1,997** tuition. We also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Apply and we\'ll walk through what fits you.',
+      cta: { label: 'Apply →', href: '/apply' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
       reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. We help you navigate eligibility — submit a free application and we\'ll get on a call.',
@@ -50,7 +51,7 @@
       cta: { label: 'Run the numbers →', href: '/salary' } },
 
     { match: /\b(job|hire|hired|placement|placed|career|employed)\b/i,
-      reply: 'Most students interview by week 10 of the program and have offers within 2 weeks of graduation. Career Track guarantees an externship at a partner office — most externs are hired by their host.',
+      reply: 'Most students interview before graduation and have offers within 2 weeks after. We help match grads with East Texas offices that hire from PDA every cohort.',
       cta: { label: 'See where our grads work →', href: '/graduates' } },
 
     { match: /\b(apply|sign up|enroll|register|application)\b/i,

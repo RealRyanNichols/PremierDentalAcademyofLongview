@@ -277,7 +277,7 @@ AOS.init({ duration: 500, once: true });
     card.innerHTML = `
       ${hot || full ? `<div class="absolute top-3 right-3 ${full?'bg-rose-600':'bg-rose-500'} text-white text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-full ${hot?'seat-pulse':''}">${full?'🚫 Closed':'🔥 Filling now'}</div>` : ''}
 
-      <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">${c.program === 'career_track' ? 'Career Track · 24 weeks' : 'Foundation · 12 weeks'}</div>
+      <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">${(c.delivery_mode === 'online' || c.program === 'online' || c.program === 'career_track') ? '💻 Online' : '🏫 In-Person'} · $1,997</div>
       <h3 class="display text-xl font-bold mt-1 leading-tight">${c.name}</h3>
       <p class="text-xs text-slate-500 mt-0.5">${c.schedule || ''}</p>
 
