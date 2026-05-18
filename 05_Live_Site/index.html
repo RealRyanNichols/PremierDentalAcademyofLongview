@@ -175,42 +175,67 @@
 </head>
 <body class="bg-white antialiased">
 
-<!-- ───────────── Live cohort countdown ───────────── -->
-<div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-sm font-semibold text-center py-2 px-4">
-  <span class="inline-flex items-center gap-2 flex-wrap justify-center">
-    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></span>
-    Next cohort starts <span class="underline">Aug 19, 2026</span> —
-    <span id="cohort-countdown" class="font-mono font-bold">— days left</span> ·
-    <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2.5 py-0.5 rounded ml-1">Reserve seat →</a>
-  </span>
-</div>
-
-<!-- ───────────── Navigation ───────────── -->
-<nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200" style="top:36px;">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
-      <span>Premier Dental Academy</span>
-      <span class="hidden sm:inline text-xs text-slate-500 font-normal">of Longview</span>
-    </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
-      <a href="#programs" class="hover:text-teal-700">Programs</a>
-      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
-      <a href="/graduates" class="hover:text-teal-700">Graduates</a>
-      <a href="/salary" class="hover:text-teal-700">Salary</a>
-      <a href="/blog" class="hover:text-teal-700">Blog</a>
-      <a href="/about" class="hover:text-teal-700">About</a>
-      <a href="/contact" class="hover:text-teal-700">Contact</a>
-    </div>
-    <div class="flex items-center gap-2">
-      <a id="nav-account" href="/login" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5">Sign in</a>
-      <a href="/tools/practice-pro" class="hidden sm:inline-block text-sm font-medium text-teal-700 hover:text-teal-800 px-3 py-1.5">Try preview</a>
-      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+<!-- ───────────── Sticky header stack (countdown + nav) ───────────── -->
+<header class="sticky top-0 z-50">
+  <!-- Countdown — compact on mobile, never wraps -->
+  <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-3 overflow-hidden">
+    <div class="max-w-7xl mx-auto flex items-center gap-2 justify-center">
+      <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse flex-shrink-0"></span>
+      <span class="truncate"><span class="hidden sm:inline">Next cohort starts </span><span class="underline">Aug 19</span> · <span id="cohort-countdown" class="font-mono font-bold">— days left</span></span>
+      <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2 py-0.5 rounded text-xs flex-shrink-0 ml-1">Reserve →</a>
     </div>
   </div>
-</nav>
 
-<main class="pt-16">
+  <!-- Nav -->
+  <nav class="bg-white/95 backdrop-blur border-b border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+        <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
+        <span class="text-sm sm:text-base">Premier Dental Academy</span>
+        <span class="hidden lg:inline text-xs text-slate-500 font-normal">of Longview</span>
+      </a>
+      <!-- Desktop nav links -->
+      <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+        <a href="#programs" class="hover:text-teal-700">Programs</a>
+        <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+        <a href="/graduates" class="hover:text-teal-700">Graduates</a>
+        <a href="/salary" class="hover:text-teal-700">Salary</a>
+        <a href="/blog" class="hover:text-teal-700">Blog</a>
+        <a href="/about" class="hover:text-teal-700">About</a>
+        <a href="/contact" class="hover:text-teal-700">Contact</a>
+      </div>
+      <!-- Right-side actions -->
+      <div class="flex items-center gap-2">
+        <a id="nav-account" href="/login" class="hidden sm:inline-block text-sm font-medium text-slate-600 hover:text-slate-900 px-2 py-1.5">Sign in</a>
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-3 sm:px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+        <!-- Mobile hamburger -->
+        <button id="mobile-menu-btn" type="button" class="md:hidden ml-1 text-slate-700 hover:bg-slate-100 rounded p-2" aria-label="Open menu">
+          <svg id="mobile-menu-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile menu (collapsible) -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-slate-200 bg-white">
+      <div class="px-4 py-3 grid gap-1 text-sm font-medium">
+        <a href="#programs" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">Programs</a>
+        <a href="/calendar" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">📅 Calendar &amp; class dates</a>
+        <a href="/graduates" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">🎓 Graduates &amp; placements</a>
+        <a href="/salary" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">💰 Salary calculator</a>
+        <a href="/blog" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">📝 Blog</a>
+        <a href="/about" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">About PDA</a>
+        <a href="/contact" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">Contact</a>
+        <div class="border-t border-slate-100 mt-1 pt-2 grid gap-1">
+          <a href="/login" class="px-3 py-2.5 rounded hover:bg-slate-50 text-slate-700">Sign in</a>
+          <a href="/tools/practice-pro" class="px-3 py-2.5 rounded hover:bg-slate-50 text-teal-700 font-semibold">🔓 Try the free trainer</a>
+          <a href="/apply" class="px-3 py-2.5 rounded bg-amber-500 hover:bg-amber-600 text-white font-bold text-center">Apply now →</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main>
 
 <!-- ───────────── Hero ───────────── -->
 <section class="gradient-hero">
@@ -815,6 +840,19 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
+
+  // Mobile menu toggle
+  (function () {
+    const btn = document.getElementById('mobile-menu-btn');
+    const menu = document.getElementById('mobile-menu');
+    if (!btn || !menu) return;
+    btn.addEventListener('click', () => {
+      const open = menu.classList.toggle('hidden');
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    // Close mobile menu when clicking any link inside it
+    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
+  })();
 
   // Newsletter signup + nav account swap
   (async () => {
