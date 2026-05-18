@@ -149,9 +149,10 @@
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .gradient-hero { background:
-      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.10) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.10) 0px, transparent 50%),
-      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.06) 0px, transparent 50%);
+      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.28) 0px, transparent 55%),
+      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.28) 0px, transparent 55%),
+      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.14) 0px, transparent 55%),
+      #ecfeff;
     }
     .glow { box-shadow: 0 8px 40px -8px rgba(13, 148, 136, 0.25); }
     .scroll-mt { scroll-margin-top: 80px; }
@@ -179,6 +180,17 @@
   <script src="/assets/ask-premier.js" defer></script>
 </head>
 <body class="bg-white antialiased">
+
+<!-- ───────────── Top alert banner — cohort countdown ───────────── -->
+<div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
+    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse shrink-0"></span>
+    <span>Next cohort starts <span class="underline decoration-amber-900/40">Aug 19, 2026</span></span>
+    <span class="text-amber-900/70">·</span>
+    <span id="cohort-countdown" class="font-mono">— days left</span>
+    <a href="/enroll" class="ml-1 hidden sm:inline-flex underline underline-offset-2 hover:text-amber-900">Enroll →</a>
+  </div>
+</div>
 
 <!-- ───────────── Navigation ───────────── -->
 <nav class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
@@ -228,12 +240,6 @@
 <section class="gradient-hero">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
     <div data-aos="fade-up">
-      <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-        <span class="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
-        Next cohort starts <span class="underline decoration-amber-400">Aug 19, 2026</span>
-        <span class="text-amber-700">·</span>
-        <span id="cohort-countdown" class="font-mono">— days left</span>
-      </div>
       <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-slate-900">
         Train on the software<br/>
         <span class="gradient-text">before your first day.</span>
