@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Enroll — Premier Dental Academy of Longview</title>
+  <title>Enroll & Reserve Your Seat — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Reserve your seat with $200 down. Choose weekly or monthly payments. East Texas RDA training that pays off on day one." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
@@ -17,21 +19,25 @@
     .text-slate-500 { color: #475569; }
     .text-slate-400 { color: #64748b; }
     footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
-    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
-    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
-    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
-    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
-    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
-    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
-      color: #cbd5e1;
-    }
+    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400 { color: #cbd5e1; }
+    .cohort-card.is-selected { border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.18); }
+    .plan-radio:checked + .plan-tile { border-color: #0d9488; background: #f0fdfa; }
+    .mode-tab.is-active { background: #0d9488; color: white; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+<body class="bg-white antialiased">
 
+<!-- Top alert -->
+<div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
+    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse shrink-0"></span>
+    <span>Only <strong>8 seats per class</strong> · Reserve your seat with $200 today</span>
+  </div>
+</div>
+
+<!-- Nav -->
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
@@ -52,132 +58,433 @@
   </div>
 </nav>
 
-<main class="max-w-6xl mx-auto px-6 py-12 sm:py-16">
+<main>
 
-  <div class="text-center mb-10">
+<!-- Hero strip -->
+<section class="bg-gradient-to-br from-teal-50 via-white to-cyan-50/60 border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10 text-center">
     <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Enroll</p>
-    <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">format.</span></h1>
-    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
+    <h1 class="display text-3xl sm:text-4xl lg:text-5xl font-bold mt-2 leading-tight">
+      Reserve your seat in <span class="gradient-text">2 minutes</span>.
+    </h1>
+    <p class="text-slate-600 mt-3 max-w-xl mx-auto">Pick your start date, choose your payment plan, and put $200 down today to lock your seat.</p>
   </div>
+</section>
 
-  <div class="grid lg:grid-cols-3 gap-6">
-
-    <!-- In-Person card -->
-    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
-      <div class="flex items-center gap-2"><span class="text-2xl">🏫</span><h3 class="font-bold text-xl">In-Person</h3></div>
-      <p class="text-sm text-slate-500 mt-1">At the Longview campus</p>
-      <div class="display text-4xl font-bold mt-5">$1,997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · payment plans available</div>
-      <ul class="text-sm text-slate-700 mt-5 space-y-2">
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live instruction at our Longview campus</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Full Practice Pro + ChairSide trainer access</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Infection control + radiology training</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
-      </ul>
-      <button type="button" data-action="enroll" data-plan="in-person" data-price="1997"
-        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
-        Enroll — In-Person →
-      </button>
-    </div>
-
-    <!-- Online card -->
-    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
-      <div class="flex items-center gap-2"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
-      <p class="text-sm text-slate-500 mt-1">Live classes, attend from anywhere</p>
-      <div class="display text-4xl font-bold mt-5">$997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · payment plans available</div>
-      <ul class="text-sm text-slate-700 mt-5 space-y-2">
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live video instruction with our instructors</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum as in-person</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Full Practice Pro + ChairSide trainer access</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Infection control + radiology coursework</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
-      </ul>
-      <button type="button" data-action="enroll" data-plan="online" data-price="997"
-        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
-        Enroll — Online →
-      </button>
-    </div>
-
-    <!-- Workforce / Veterans card -->
-    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
-      <h3 class="font-bold text-xl">Workforce / Veterans</h3>
-      <p class="text-sm text-slate-500 mt-1">Funded enrollment</p>
-      <div class="display text-4xl font-bold mt-5">$0<span class="text-base text-slate-500 font-normal"> out-of-pocket</span></div>
-      <div class="text-xs text-slate-500 mt-0.5">if you qualify for state / federal funding</div>
-      <ul class="text-sm text-slate-700 mt-5 space-y-2">
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> TWC vocational vouchers accepted</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> GI Bill / veterans benefits</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> WIOA workforce funding</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum, Online or In-Person</li>
-      </ul>
-      <a href="/apply" class="block text-center mt-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-lg">
-        Apply for funding →
-      </a>
-      <p class="text-xs text-slate-500 text-center mt-2">We'll help you navigate funding eligibility</p>
+<!-- Mode toggle -->
+<section class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-center">
+    <div class="inline-flex bg-slate-100 rounded-xl p-1 text-sm font-semibold">
+      <button type="button" data-mode="in_person" class="mode-tab is-active px-5 py-2.5 rounded-lg transition">🏫 In-Person · $1,997</button>
+      <button type="button" data-mode="online"    class="mode-tab px-5 py-2.5 rounded-lg text-slate-700 hover:text-teal-700 transition">💻 Online · $997</button>
     </div>
   </div>
+</section>
 
-  <!-- Stripe payment hand-off (placeholder until live keys) -->
-  <div id="stripe-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6">
-      <div class="flex items-start justify-between mb-3">
-        <div>
-          <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Checkout</div>
-          <h3 class="font-bold text-lg" id="stripe-plan-name">—</h3>
-        </div>
-        <button type="button" data-action="close-stripe" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+<!-- Two columns: classes + reservation card -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+  <div class="grid lg:grid-cols-5 gap-6">
+
+    <!-- LEFT: cohort list -->
+    <div class="lg:col-span-3">
+      <div class="flex items-baseline justify-between mb-4">
+        <h2 class="display text-xl sm:text-2xl font-bold">Pick your start date</h2>
+        <span id="cohort-count" class="text-xs text-slate-500"></span>
       </div>
-      <div class="bg-slate-50 rounded-xl p-4 mb-4">
-        <div class="text-xs text-slate-500 uppercase tracking-wider">Today's charge</div>
-        <div class="display text-3xl font-bold mt-1" id="stripe-amount">—</div>
+      <div id="cohort-loading" class="space-y-3">
+        <div class="animate-pulse bg-slate-100 rounded-xl h-24"></div>
+        <div class="animate-pulse bg-slate-100 rounded-xl h-24"></div>
+        <div class="animate-pulse bg-slate-100 rounded-xl h-24"></div>
       </div>
-      <p class="text-sm text-slate-700 mb-4">When live, this opens a secure Stripe checkout. For now, please submit an application and we'll send a payment link directly.</p>
-      <div class="flex gap-2">
-        <a href="/apply" class="flex-1 text-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 rounded-lg">Submit application instead</a>
-        <button type="button" data-action="close-stripe" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-lg">Close</button>
+      <div id="cohort-list" class="space-y-3 hidden"></div>
+      <div id="cohort-empty" class="hidden text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-4"></div>
+    </div>
+
+    <!-- RIGHT: reservation card (sticky on desktop) -->
+    <aside class="lg:col-span-2">
+      <div class="lg:sticky lg:top-24">
+        <form id="reserve-form" class="bg-white border-2 border-slate-200 rounded-2xl p-5 sm:p-6 shadow-sm">
+          <h2 class="display text-xl font-bold mb-1">Your enrollment</h2>
+          <p id="selection-label" class="text-sm text-slate-600 mb-4">Select a class to see your payment options.</p>
+
+          <!-- Summary tiles -->
+          <div class="grid grid-cols-2 gap-2 mb-5">
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Tuition</div>
+              <div id="sum-tuition" class="display text-lg font-bold mt-0.5">—</div>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-3">
+              <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Start date</div>
+              <div id="sum-start" class="text-sm font-semibold mt-0.5">—</div>
+            </div>
+          </div>
+
+          <!-- Payment plan -->
+          <div class="mb-5">
+            <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold mb-2">Payment plan</div>
+            <div class="space-y-2">
+              <label class="block cursor-pointer">
+                <input type="radio" name="plan" value="weekly" class="plan-radio sr-only" checked />
+                <div class="plan-tile border-2 border-slate-200 rounded-lg p-3 flex items-baseline justify-between transition">
+                  <div>
+                    <div class="font-semibold text-sm">$200 today, then weekly</div>
+                    <div class="text-xs text-slate-500 mt-0.5">12 weekly payments while you're in class</div>
+                  </div>
+                  <div id="plan-weekly-amt" class="text-sm font-bold text-teal-700">—</div>
+                </div>
+              </label>
+              <label class="block cursor-pointer">
+                <input type="radio" name="plan" value="monthly" class="plan-radio sr-only" />
+                <div class="plan-tile border-2 border-slate-200 rounded-lg p-3 flex items-baseline justify-between transition">
+                  <div>
+                    <div class="font-semibold text-sm">$200 today, then monthly</div>
+                    <div class="text-xs text-slate-500 mt-0.5">3 monthly payments while you're in class</div>
+                  </div>
+                  <div id="plan-monthly-amt" class="text-sm font-bold text-teal-700">—</div>
+                </div>
+              </label>
+              <label class="block cursor-pointer">
+                <input type="radio" name="plan" value="paid_in_full" class="plan-radio sr-only" />
+                <div class="plan-tile border-2 border-slate-200 rounded-lg p-3 flex items-baseline justify-between transition">
+                  <div>
+                    <div class="font-semibold text-sm">Pay in full today</div>
+                    <div class="text-xs text-slate-500 mt-0.5">Save the hassle — one and done</div>
+                  </div>
+                  <div id="plan-full-amt" class="text-sm font-bold text-teal-700">—</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Calculator readout -->
+          <div id="calc-readout" class="bg-teal-50 border border-teal-200 rounded-lg p-3 mb-5 text-sm">
+            <div class="flex justify-between"><span class="text-slate-600">Today's deposit</span><span class="font-bold" id="calc-today">$200.00</span></div>
+            <div class="flex justify-between mt-1" id="calc-then-row"><span class="text-slate-600" id="calc-then-label">Then per week</span><span class="font-bold" id="calc-then-amt">—</span></div>
+            <div class="flex justify-between mt-1 pt-2 border-t border-teal-200"><span class="text-slate-700 font-semibold">Total tuition</span><span class="font-bold" id="calc-total">—</span></div>
+          </div>
+
+          <!-- Contact info -->
+          <div class="space-y-3 mb-5">
+            <div class="grid grid-cols-2 gap-2">
+              <input name="first_name" required placeholder="First name *" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+              <input name="last_name" placeholder="Last name" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+            </div>
+            <input name="email" type="email" required placeholder="Email *" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+            <input name="phone" type="tel" required placeholder="Phone *" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+          </div>
+
+          <button type="submit" id="reserve-btn" disabled
+            class="w-full bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-lg shadow-md transition">
+            Reserve my seat — pay $200 →
+          </button>
+
+          <p class="text-xs text-slate-500 text-center mt-3">
+            🔒 You'll get a secure Square payment link by text within minutes. Your seat is held the moment we receive your $200.
+          </p>
+          <p class="text-xs text-slate-500 text-center mt-2">
+            Need workforce / GI Bill funding? <a href="/apply" class="text-teal-700 underline">Apply for funded enrollment →</a>
+          </p>
+        </form>
       </div>
+    </aside>
+
+  </div>
+</section>
+
+<!-- Workforce funding callout -->
+<section class="bg-slate-50 border-t border-slate-200">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 grid sm:grid-cols-3 gap-6 text-sm">
+    <div>
+      <div class="font-bold text-base mb-1">🪖 GI Bill / Veterans</div>
+      <p class="text-slate-600">Use your VA education benefits — we accept GI Bill. Apply and we'll walk through eligibility.</p>
+    </div>
+    <div>
+      <div class="font-bold text-base mb-1">🏛 TWC / WIOA funding</div>
+      <p class="text-slate-600">Texas Workforce vouchers and WIOA grants cover full tuition for qualifying students.</p>
+    </div>
+    <div>
+      <div class="font-bold text-base mb-1">💚 14-day guarantee</div>
+      <p class="text-slate-600">If PDA isn't for you in the first two weeks, we refund 100% of what you've paid. No questions asked.</p>
     </div>
   </div>
+</section>
 
-  <!-- Trust strip -->
-  <div class="text-center mt-12 text-sm text-slate-600 max-w-2xl mx-auto">
-    <p class="font-semibold">14-day satisfaction guarantee</p>
-    <p class="mt-1 text-slate-500">If you decide the program isn't for you within 14 days of enrollment, we refund 100% of your tuition. No questions asked.</p>
+<!-- Success modal -->
+<div id="success-modal" class="hidden fixed inset-0 bg-slate-900/70 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 sm:p-8 text-center">
+    <div class="text-5xl mb-2">🎉</div>
+    <h3 class="display text-2xl font-bold">Seat reserved!</h3>
+    <p class="text-slate-600 mt-2" id="success-detail">We've alerted Amanda. You'll get a Square payment link by text within minutes — pay the $200 from your phone and your seat is locked.</p>
+    <div class="bg-slate-50 rounded-lg p-3 mt-5 text-left text-sm" id="success-summary"></div>
+    <a href="/dashboard" class="block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-lg">Go to your dashboard →</a>
+    <a href="/" class="block mt-2 text-sm text-slate-500 hover:text-teal-700">← Back to home</a>
   </div>
+</div>
 
-  <div class="text-center mt-8 text-xs text-slate-500">
-    <span>🔒 Secure checkout via Stripe</span>
-    <span class="mx-2">·</span>
-    <span>📞 Questions? (903) 913-6444</span>
-    <span class="mx-2">·</span>
-    <a href="/apply" class="text-teal-700 hover:underline">Not ready to pay? Apply first →</a>
-  </div>
 </main>
 
-<script>
-const PLANS = {
-  'in-person': { name: 'PDA RDA Program — In-Person', amount: '$1,997.00' },
-  'online':    { name: 'PDA RDA Program — Online',    amount: '$997.00' },
-};
+<footer class="bg-slate-900 text-slate-300 py-8">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">
+    © 2026 Premier Dental Academy of Longview ·
+    <a href="/privacy" class="hover:text-white">Privacy</a> ·
+    <a href="/terms" class="hover:text-white">Terms</a> ·
+    <a href="/contact" class="hover:text-white">Contact</a>
+  </div>
+</footer>
 
-document.addEventListener('click', (ev) => {
-  const t = ev.target.closest('[data-action]');
-  if (!t) return;
-  if (t.dataset.action === 'enroll') {
-    const plan = PLANS[t.dataset.plan];
-    if (!plan) return;
-    document.getElementById('stripe-plan-name').textContent = plan.name;
-    document.getElementById('stripe-amount').textContent = plan.amount;
-    document.getElementById('stripe-modal').classList.remove('hidden');
+<script>
+(function () {
+  'use strict';
+
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const TUITION_CENTS = { in_person: 199700, online: 99700 };
+  const DOWN_CENTS = 20000;
+  const WEEKLY_COUNT = 12;
+  const MONTHLY_COUNT = 3;
+
+  let allCohorts = [];
+  let selectedMode = 'in_person';
+  let selectedCohort = null;
+  let selectedPlan = 'weekly';
+
+  const usd = (cents) => '$' + (cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const dateLabel = (iso) => {
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+  const dateShort = (iso) => {
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  // Pricing helpers
+  const totalCents     = () => TUITION_CENTS[selectedMode];
+  const remainingCents = () => Math.max(0, totalCents() - DOWN_CENTS);
+  const weeklyCents    = () => Math.ceil(remainingCents() / WEEKLY_COUNT / 100) * 100;
+  const monthlyCents   = () => Math.ceil(remainingCents() / MONTHLY_COUNT / 100) * 100;
+
+  // ────────────────── Load cohorts ──────────────────
+  async function loadCohorts() {
+    const { data, error } = await sb
+      .from('cohorts')
+      .select('id, name, program, delivery_mode, start_date, end_date, capacity, enrolled_count, status, schedule')
+      .gte('start_date', new Date().toISOString().slice(0, 10))
+      .in('status', ['open', 'current', 'upcoming'])
+      .order('start_date', { ascending: true })
+      .limit(30);
+    if (error) { console.warn('[enroll] cohort load failed', error); }
+    allCohorts = (data || []).filter(c => c.start_date);
+    renderCohorts();
   }
-  if (t.dataset.action === 'close-stripe') {
-    document.getElementById('stripe-modal').classList.add('hidden');
+
+  function renderCohorts() {
+    const list  = document.getElementById('cohort-list');
+    const empty = document.getElementById('cohort-empty');
+    const count = document.getElementById('cohort-count');
+    const loading = document.getElementById('cohort-loading');
+    loading.classList.add('hidden');
+
+    const matching = allCohorts.filter(c => c.delivery_mode === selectedMode);
+    count.textContent = matching.length ? `${matching.length} class${matching.length === 1 ? '' : 'es'} available` : '';
+
+    if (matching.length === 0) {
+      list.classList.add('hidden');
+      empty.classList.remove('hidden');
+      empty.innerHTML = `No ${selectedMode === 'online' ? 'online' : 'in-person'} classes scheduled right now. <a href="/contact" class="text-teal-700 font-semibold">Contact Amanda</a> and she'll get you on the next list.`;
+      return;
+    }
+
+    empty.classList.add('hidden');
+    list.classList.remove('hidden');
+    list.innerHTML = matching.map(c => {
+      const cap   = c.capacity || 8;
+      const taken = c.enrolled_count || 0;
+      const left  = Math.max(0, cap - taken);
+      const full  = left === 0;
+      const hot   = !full && left <= 3;
+      const seatColor = full ? 'text-rose-700' : hot ? 'text-rose-600' : 'text-teal-700';
+      const seatBadge = full
+        ? '<span class="text-xs font-bold uppercase tracking-widest text-rose-700 bg-rose-100 px-2 py-1 rounded-full">Closed</span>'
+        : hot
+          ? '<span class="text-xs font-bold uppercase tracking-widest text-rose-700 bg-rose-100 px-2 py-1 rounded-full animate-pulse">Filling fast</span>'
+          : '';
+
+      return `<button type="button" data-cohort-id="${c.id}" ${full ? 'disabled' : ''}
+        class="cohort-card w-full text-left bg-white border-2 border-slate-200 ${full ? 'opacity-60 cursor-not-allowed' : 'hover:border-teal-600 cursor-pointer'} rounded-xl p-4 transition">
+        <div class="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div class="font-bold text-base">${dateLabel(c.start_date)}</div>
+            <div class="text-xs text-slate-500 mt-0.5">${(c.schedule || '').replace(/</g, '&lt;')}</div>
+          </div>
+          ${seatBadge}
+        </div>
+        <div class="flex items-baseline justify-between">
+          <div class="${seatColor} text-sm font-bold">
+            ${full ? 'No seats left' : `${left} of ${cap} seat${left === 1 ? '' : 's'} left`}
+          </div>
+          <span class="text-xs font-semibold text-teal-700 cohort-cta">${full ? '' : 'Select →'}</span>
+        </div>
+      </button>`;
+    }).join('');
+
+    list.querySelectorAll('.cohort-card').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.disabled) return;
+        const id = btn.getAttribute('data-cohort-id');
+        selectCohort(id);
+      });
+    });
   }
-});
+
+  // ────────────────── Selection + calculator ──────────────────
+  function selectCohort(id) {
+    selectedCohort = allCohorts.find(c => c.id === id) || null;
+    document.querySelectorAll('.cohort-card').forEach(el => el.classList.toggle('is-selected', el.getAttribute('data-cohort-id') === id));
+    document.querySelectorAll('.cohort-card .cohort-cta').forEach(el => {
+      el.textContent = el.closest('.cohort-card').classList.contains('is-selected') ? '✓ Selected' : (el.closest('.cohort-card').disabled ? '' : 'Select →');
+    });
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const tuitionEl = document.getElementById('sum-tuition');
+    const startEl   = document.getElementById('sum-start');
+    const labelEl   = document.getElementById('selection-label');
+    const btn       = document.getElementById('reserve-btn');
+
+    tuitionEl.textContent = usd(totalCents());
+
+    if (selectedCohort) {
+      startEl.textContent = dateShort(selectedCohort.start_date);
+      labelEl.textContent = `${selectedMode === 'online' ? '💻 Online' : '🏫 In-Person'} · ${dateLabel(selectedCohort.start_date)}`;
+      btn.disabled = false;
+    } else {
+      startEl.textContent = '—';
+      labelEl.textContent = 'Select a class to see your payment options.';
+      btn.disabled = true;
+    }
+
+    // Plan tile amounts
+    document.getElementById('plan-weekly-amt').textContent  = usd(weeklyCents()) + ' / wk';
+    document.getElementById('plan-monthly-amt').textContent = usd(monthlyCents()) + ' / mo';
+    document.getElementById('plan-full-amt').textContent    = usd(totalCents());
+
+    renderCalcReadout();
+  }
+
+  function renderCalcReadout() {
+    const today = document.getElementById('calc-today');
+    const thenRow = document.getElementById('calc-then-row');
+    const thenLabel = document.getElementById('calc-then-label');
+    const thenAmt = document.getElementById('calc-then-amt');
+    const totalEl = document.getElementById('calc-total');
+
+    totalEl.textContent = usd(totalCents());
+
+    if (selectedPlan === 'paid_in_full') {
+      today.textContent = usd(totalCents());
+      thenRow.classList.add('hidden');
+    } else {
+      today.textContent = usd(DOWN_CENTS);
+      thenRow.classList.remove('hidden');
+      if (selectedPlan === 'weekly') {
+        thenLabel.textContent = `Then ${WEEKLY_COUNT} weekly payments`;
+        thenAmt.textContent = usd(weeklyCents()) + ' / wk';
+      } else {
+        thenLabel.textContent = `Then ${MONTHLY_COUNT} monthly payments`;
+        thenAmt.textContent = usd(monthlyCents()) + ' / mo';
+      }
+    }
+
+    // Update the reserve button label
+    const btn = document.getElementById('reserve-btn');
+    if (selectedPlan === 'paid_in_full') {
+      btn.textContent = `Reserve my seat — pay ${usd(totalCents())} →`;
+    } else {
+      btn.textContent = `Reserve my seat — pay ${usd(DOWN_CENTS)} →`;
+    }
+  }
+
+  // ────────────────── Wire UI ──────────────────
+  document.querySelectorAll('.mode-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      selectedMode = tab.getAttribute('data-mode');
+      document.querySelectorAll('.mode-tab').forEach(t => t.classList.toggle('is-active', t === tab));
+      selectedCohort = null;
+      renderCohorts();
+      updateSummary();
+    });
+  });
+
+  document.querySelectorAll('input[name="plan"]').forEach(r => {
+    r.addEventListener('change', (e) => {
+      selectedPlan = e.target.value;
+      renderCalcReadout();
+    });
+  });
+
+  // ────────────────── Submit ──────────────────
+  document.getElementById('reserve-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!selectedCohort) { alert('Please pick a class first.'); return; }
+
+    const fd = new FormData(e.target);
+    const payload = {
+      first_name:        fd.get('first_name'),
+      last_name:         fd.get('last_name'),
+      email:             fd.get('email'),
+      phone:             fd.get('phone'),
+      path:              selectedMode === 'online' ? 'online' : 'in-person',
+      total_cents:       totalCents(),
+      down_cents:        selectedPlan === 'paid_in_full' ? totalCents() : DOWN_CENTS,
+      plan:              selectedPlan,
+      installment_cents: selectedPlan === 'weekly' ? weeklyCents() : selectedPlan === 'monthly' ? monthlyCents() : 0,
+      installment_count: selectedPlan === 'weekly' ? WEEKLY_COUNT : selectedPlan === 'monthly' ? MONTHLY_COUNT : 0,
+      start_date:        selectedCohort.start_date,
+      cohort_id:         selectedCohort.id,
+      cohort_name:       selectedCohort.name,
+    };
+
+    const btn = document.getElementById('reserve-btn');
+    btn.disabled = true;
+    btn.textContent = 'Reserving…';
+
+    try {
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/tuition-reserve`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json', apikey: SUPABASE_KEY, authorization: `Bearer ${SUPABASE_KEY}` },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json();
+      if (!resp.ok || data.error) throw new Error(data.error || 'Reservation failed');
+
+      // Success modal
+      const sum = data.summary || {};
+      document.getElementById('success-summary').innerHTML = `
+        <div class="grid grid-cols-2 gap-2">
+          <div><div class="text-xs text-slate-500">Class</div><div class="font-semibold">${(sum.cohort || '').replace(/</g, '&lt;')}</div></div>
+          <div><div class="text-xs text-slate-500">Total tuition</div><div class="font-semibold">${sum.total || '—'}</div></div>
+          <div><div class="text-xs text-slate-500">Today's deposit</div><div class="font-semibold">${sum.down_payment || '—'}</div></div>
+          <div><div class="text-xs text-slate-500">Plan</div><div class="font-semibold capitalize">${sum.plan || '—'}</div></div>
+          ${sum.installment_count ? `<div class="col-span-2"><div class="text-xs text-slate-500">Then</div><div class="font-semibold">${sum.installment_amount} × ${sum.installment_count} (starting ${sum.first_installment_date})</div></div>` : ''}
+        </div>`;
+      document.getElementById('success-modal').classList.remove('hidden');
+      btn.textContent = '✓ Reserved';
+    } catch (err) {
+      console.warn('[enroll] submit failed', err);
+      alert('Sorry — something went wrong. Please call (903) 913-6444 and we’ll lock your seat over the phone.');
+      btn.disabled = false;
+      btn.textContent = `Reserve my seat — pay ${usd(selectedPlan === 'paid_in_full' ? totalCents() : DOWN_CENTS)} →`;
+    }
+  });
+
+  // Boot
+  loadCohorts();
+  updateSummary();
+})();
 </script>
 </body>
 </html>
