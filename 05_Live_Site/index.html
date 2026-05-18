@@ -866,7 +866,10 @@
       const enrolledNow = inSession.reduce((a, c) => a + (c.enrolled_count || 0), 0);
       const offices = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
       const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-      set('stat-grads',      ps.length);
+      // Total graduates across PDA's history. Bump this when the count grows;
+      // the placements table only captures the subset we've documented online.
+      const TOTAL_GRADUATES = 406;
+      set('stat-grads',      Math.max(TOTAL_GRADUATES, ps.length));
       set('stat-enrolled',   enrolledNow);
       set('stat-in-session', inSession.length);
       set('stat-upcoming',   upcoming.length);
