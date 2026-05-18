@@ -5,6 +5,14 @@
   <url><loc>https://premierdentalacademyoflongview.com/enroll</loc><priority>0.9</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/apply</loc><priority>0.9</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/contact</loc><priority>0.7</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/salary</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/guide</loc><priority>0.8</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/hiring-partners</loc><priority>0.7</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog</loc><priority>0.8</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/how-much-do-dental-assistants-make-east-texas</loc><priority>0.9</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/texas-rda-registration-guide</loc><priority>0.8</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/why-east-texas-offices-hire-pda-graduates</loc><priority>0.7</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/day-in-the-life-dental-assistant</loc><priority>0.7</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/login</loc><priority>0.4</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/dashboard</loc><priority>0.3</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/tools/practice-pro</loc><priority>0.8</priority></url>

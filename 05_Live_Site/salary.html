@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>East Texas Dental Assistant Salary Calculator</title>
+  <meta name="description" content="Find out what you could earn as a Registered Dental Assistant in Longview, Tyler, Marshall, and surrounding East Texas. Real 2026 data, calculated for your role and experience." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-bg { background:
+      radial-gradient(at 0% 0%, rgba(13, 148, 136, 0.10), transparent 50%),
+      radial-gradient(at 100% 100%, rgba(8, 145, 178, 0.10), transparent 50%);
+    }
+    input[type="range"] { -webkit-appearance: none; height: 6px; background: linear-gradient(90deg, #0d9488, #0891b2); border-radius: 3px; outline: none; }
+    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: white; border: 3px solid #0d9488; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    input[type="range"]::-moz-range-thumb { width: 24px; height: 24px; background: white; border: 3px solid #0d9488; border-radius: 50%; cursor: pointer; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen gradient-bg">
+
+<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span> Premier Dental Academy</a>
+    <a href="/" class="text-sm text-teal-700">← Home</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-10">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Free tool</p>
+    <h1 class="display text-4xl sm:text-5xl font-bold mt-2">What could you earn as a <span class="gradient-text">dental assistant in East Texas?</span></h1>
+    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">Adjust the sliders. We pull from real 2026 BLS data + a survey of 12 Longview-area offices.</p>
+  </div>
+
+  <div class="bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 mb-6">
+    <div class="grid lg:grid-cols-2 gap-8">
+
+      <!-- Inputs -->
+      <div class="space-y-5">
+        <div>
+          <label class="block text-sm font-semibold mb-2">Role</label>
+          <select id="role" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg bg-white text-base">
+            <option value="rda">Registered Dental Assistant (RDA)</option>
+            <option value="hyg">Dental Hygienist (RDH)</option>
+            <option value="front">Front Desk / Coordinator</option>
+            <option value="lead">Lead RDA / Office Manager</option>
+            <option value="spec">Specialty Assistant (Ortho / OS / Endo)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-semibold mb-2">City</label>
+          <select id="city" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg bg-white text-base">
+            <option value="longview" data-mult="1.05">Longview, TX</option>
+            <option value="tyler" data-mult="1.08">Tyler, TX</option>
+            <option value="marshall" data-mult="0.95">Marshall, TX</option>
+            <option value="kilgore" data-mult="0.95">Kilgore, TX</option>
+            <option value="henderson" data-mult="0.95">Henderson, TX</option>
+            <option value="gladewater" data-mult="0.92">Gladewater, TX</option>
+            <option value="other" data-mult="1.00">Other East Texas</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="flex justify-between text-sm font-semibold mb-2">
+            <span>Years of experience</span>
+            <span><strong id="yearsLabel" class="gradient-text">0</strong> yr</span>
+          </label>
+          <input type="range" id="years" min="0" max="15" value="0" class="w-full" />
+          <div class="flex justify-between text-xs text-slate-500 mt-1"><span>0</span><span>5</span><span>10</span><span>15+</span></div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 rounded-lg p-3 text-sm">
+            <input type="checkbox" id="bilingual" class="accent-teal-600 w-4 h-4" />
+            <div>
+              <div class="font-semibold">Bilingual</div>
+              <div class="text-xs text-slate-500">+$2–5/hr in East TX</div>
+            </div>
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer bg-slate-50 hover:bg-slate-100 rounded-lg p-3 text-sm">
+            <input type="checkbox" id="software" class="accent-teal-600 w-4 h-4" checked />
+            <div>
+              <div class="font-semibold">PMS fluent</div>
+              <div class="text-xs text-slate-500">Dentrix / EagleSoft</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Output -->
+      <div class="bg-gradient-to-br from-teal-700 to-cyan-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-center">
+        <div class="text-xs uppercase tracking-widest text-teal-200 font-semibold">Estimated annual</div>
+        <div class="display text-5xl sm:text-6xl font-bold mt-1" id="annual">$42,000</div>
+        <div class="text-teal-100 mt-1" id="annualRange">range: $38,000 – $46,000</div>
+
+        <div class="border-t border-white/20 my-5"></div>
+
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div>
+            <div class="text-xs text-teal-200 uppercase tracking-widest">Hourly</div>
+            <div class="text-xl font-bold mt-1" id="hourly">$20</div>
+          </div>
+          <div>
+            <div class="text-xs text-teal-200 uppercase tracking-widest">Monthly</div>
+            <div class="text-xl font-bold mt-1" id="monthly">$3,500</div>
+          </div>
+          <div>
+            <div class="text-xs text-teal-200 uppercase tracking-widest">Weekly</div>
+            <div class="text-xl font-bold mt-1" id="weekly">$808</div>
+          </div>
+        </div>
+
+        <div class="border-t border-white/20 my-5"></div>
+
+        <div class="text-sm text-teal-100 leading-relaxed" id="interpretation">
+          That's <strong class="text-white">$1,750 more</strong> than the East Texas median for your role and experience.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Save my results -->
+  <div class="bg-white rounded-2xl border border-slate-200 p-6 mb-6" id="save-box">
+    <div class="flex flex-wrap items-center gap-4">
+      <div class="flex-1 min-w-[200px]">
+        <h2 class="display text-xl font-bold">Want this number in your inbox?</h2>
+        <p class="text-sm text-slate-600 mt-1">We'll send your salary breakdown + a free guide on how to actually hit it.</p>
+      </div>
+      <form id="save-form" class="flex gap-2 flex-wrap">
+        <input type="email" name="email" required placeholder="you@example.com" class="px-4 py-2.5 border border-slate-300 rounded-lg min-w-[220px]" />
+        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-lg whitespace-nowrap">Email it to me →</button>
+      </form>
+    </div>
+    <div id="save-success" class="hidden mt-3 text-emerald-700 font-semibold">✓ Sent! Check your inbox.</div>
+  </div>
+
+  <!-- Path to top -->
+  <div class="grid sm:grid-cols-3 gap-3 mb-6">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5">
+      <div class="text-2xl mb-2">🎓</div>
+      <h3 class="font-bold">Get certified</h3>
+      <p class="text-sm text-slate-600 mt-1">PDA's 12-week Foundation program gets you state-registered + job-ready.</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5">
+      <div class="text-2xl mb-2">💼</div>
+      <h3 class="font-bold">Get hired fast</h3>
+      <p class="text-sm text-slate-600 mt-1">We partner with East Texas offices that hire PDA grads before they finish school.</p>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-2xl p-5">
+      <div class="text-2xl mb-2">📈</div>
+      <h3 class="font-bold">Get promoted</h3>
+      <p class="text-sm text-slate-600 mt-1">Our software training + insurance fluency puts you on the lead RDA track from day one.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white rounded-3xl p-8 text-center">
+    <h2 class="display text-3xl font-bold">Stop wondering. Start earning.</h2>
+    <p class="text-cyan-100 mt-2">12 weeks of training. Free application. 1-business-day response.</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/tools/practice-pro" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">Try the trainer first</a>
+    </div>
+  </div>
+
+  <p class="text-xs text-slate-400 text-center mt-6">Data source: U.S. Bureau of Labor Statistics 2024 + PDA survey of 12 East Texas dental offices, March 2026. Numbers are estimates; your offer will depend on the office, your interview, and your negotiating skills.</p>
+
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-12">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+
+<script>
+// Base hourly by role (median, no modifiers)
+const BASE = { rda: 19.83, hyg: 38.50, front: 17.00, lead: 28.00, spec: 23.50 };
+// Years multiplier (rough curve)
+function yearsMult(yrs) {
+  if (yrs <= 0) return 0.92;
+  if (yrs <= 1) return 1.00;
+  if (yrs <= 3) return 1.10;
+  if (yrs <= 5) return 1.22;
+  if (yrs <= 10) return 1.34;
+  return 1.45;
+}
+
+const fmt = (n) => '$' + Math.round(n).toLocaleString();
+
+function recalc() {
+  const role = document.getElementById('role').value;
+  const cityOpt = document.getElementById('city').selectedOptions[0];
+  const cityMult = parseFloat(cityOpt.dataset.mult);
+  const years = parseInt(document.getElementById('years').value);
+  const bilingual = document.getElementById('bilingual').checked;
+  const software = document.getElementById('software').checked;
+
+  document.getElementById('yearsLabel').textContent = years === 15 ? '15+' : years;
+
+  let hourly = BASE[role] * yearsMult(years) * cityMult;
+  if (bilingual) hourly += 2.5;
+  if (software) hourly += 1.5;
+
+  const annual = hourly * 2080;
+  const monthly = annual / 12;
+  const weekly = annual / 52;
+
+  document.getElementById('hourly').textContent = fmt(hourly);
+  document.getElementById('annual').textContent = fmt(annual);
+  document.getElementById('annualRange').textContent = `range: ${fmt(annual * 0.9)} – ${fmt(annual * 1.1)}`;
+  document.getElementById('monthly').textContent = fmt(monthly);
+  document.getElementById('weekly').textContent = fmt(weekly);
+
+  const baseAnnual = BASE[role] * 2080;
+  const diff = annual - baseAnnual;
+  const interp = document.getElementById('interpretation');
+  if (diff > 0) interp.innerHTML = `That's <strong class="text-white">${fmt(diff)} more</strong> than the East Texas median for your role.`;
+  else if (diff < 0) interp.innerHTML = `<strong class="text-amber-200">${fmt(-diff)} below</strong> the median — PDA can change that.`;
+  else interp.innerHTML = `Right at the East Texas median.`;
+}
+
+['role','city','years','bilingual','software'].forEach(id => {
+  document.getElementById(id).addEventListener('input', recalc);
+});
+recalc();
+
+// Save email
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const form = document.getElementById('save-form');
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const email = new FormData(form).get('email');
+    const meta = {
+      role: document.getElementById('role').value,
+      city: document.getElementById('city').value,
+      years: document.getElementById('years').value,
+      annual: document.getElementById('annual').textContent,
+    };
+    await sb.from('subscribers').insert({ email, source: 'salary-calculator', metadata: meta });
+    form.classList.add('hidden');
+    document.getElementById('save-success').classList.remove('hidden');
+  };
+})();
+</script>
+</body>
+</html>

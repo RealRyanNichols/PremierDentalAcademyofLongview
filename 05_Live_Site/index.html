@@ -174,8 +174,18 @@
 </head>
 <body class="bg-white antialiased">
 
+<!-- ───────────── Live cohort countdown ───────────── -->
+<div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-sm font-semibold text-center py-2 px-4">
+  <span class="inline-flex items-center gap-2 flex-wrap justify-center">
+    <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse"></span>
+    Next cohort starts <span class="underline">Aug 19, 2026</span> —
+    <span id="cohort-countdown" class="font-mono font-bold">— days left</span> ·
+    <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2.5 py-0.5 rounded ml-1">Reserve seat →</a>
+  </span>
+</div>
+
 <!-- ───────────── Navigation ───────────── -->
-<nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200">
+<nav class="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-slate-200" style="top:36px;">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
       <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
@@ -184,8 +194,8 @@
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
       <a href="#programs" class="hover:text-teal-700">Programs</a>
-      <a href="#features" class="hover:text-teal-700">Trainers</a>
-      <a href="#curriculum" class="hover:text-teal-700">Curriculum</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/salary" class="hover:text-teal-700">Salary</a>
       <a href="#pricing" class="hover:text-teal-700">Pricing</a>
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
@@ -746,6 +756,10 @@
           <li><a href="/tools/chairside" class="hover:text-white">PDA ChairSide</a></li>
           <li><a href="#features" class="hover:text-white">Features</a></li>
           <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+          <li><a href="/blog" class="hover:text-white">Blog</a></li>
+          <li><a href="/salary" class="hover:text-white">Salary calculator</a></li>
+          <li><a href="/guide" class="hover:text-white">Free guide</a></li>
+          <li><a href="/hiring-partners" class="hover:text-white">For dental offices</a></li>
         </ul>
       </div>
       <div>
@@ -783,6 +797,15 @@
     const { data: { session } } = await sb.auth.getSession();
     const navAcct = document.getElementById('nav-account');
     if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
+
+    // Live cohort countdown
+    const cohortStart = new Date('2026-08-19T00:00:00');
+    const tick = () => {
+      const days = Math.max(0, Math.ceil((cohortStart - new Date()) / 86400000));
+      const el = document.getElementById('cohort-countdown');
+      if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
+    };
+    tick(); setInterval(tick, 60000);
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
     const error = document.getElementById('subscribe-error');
