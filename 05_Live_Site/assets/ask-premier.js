@@ -27,7 +27,7 @@
   // Knowledge base — keyword matchers + canned responses
   const KB = [
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: 'Tuition is **$1,997** — same price whether you choose **In-Person** at our Longview campus or **Online** (live from home).\n\nPayment plans available, and we accept TWC vouchers, GI Bill, and WIOA funding.',
+      reply: 'Tuition is **$1,997 for In-Person** at our Longview campus or **$997 for Online** (live from home).\n\nPayment plans available, and we accept TWC vouchers, GI Bill, and WIOA funding.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
@@ -39,7 +39,7 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: 'Yes — payment plans are available for the **$1,997** tuition. We also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Apply and we\'ll walk through what fits you.',
+      reply: 'Yes — payment plans are available (**$1,997 In-Person** or **$997 Online**). We also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Apply and we\'ll walk through what fits you.',
       cta: { label: 'Apply →', href: '/apply' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,

@@ -21,7 +21,7 @@
     "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
-    "priceRange": "$1,997",
+    "priceRange": "$997 – $1,997",
     "image": "https://premierdentalacademyoflongview.com/og.svg",
     "logo": "https://premierdentalacademyoflongview.com/og.svg",
     "address": {
@@ -43,7 +43,7 @@
       "name": "RDA Training Programs",
       "itemListElement": [
         { "@type": "Offer", "name": "PDA RDA Program — In-Person",  "price": "1997", "priceCurrency": "USD" },
-        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "1997", "priceCurrency": "USD" }
+        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "997",  "priceCurrency": "USD" }
       ]
     }
   }
@@ -69,7 +69,7 @@
       "name": "PDA RDA Program — Online",
       "description": "Same Registered Dental Assistant curriculum delivered via live video. Attend from anywhere in Texas.",
       "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
-      "offers": { "@type": "Offer", "price": "1997", "priceCurrency": "USD", "category": "Tuition" },
+      "offers": { "@type": "Offer", "price": "997", "priceCurrency": "USD", "category": "Tuition" },
       "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "Online" },
       "educationalCredentialAwarded": "PDA Certificate of Completion",
       "occupationalCategory": "31-9091"
@@ -106,7 +106,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tuition is $1,997 and payment plans are available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tuition is $1,997 for In-Person and $997 for Online, with payment plans available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
       },
       {
         "@type": "Question",
@@ -145,7 +145,7 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .gradient-hero { background:
@@ -159,6 +159,21 @@
     details > summary::-webkit-details-marker { display: none; }
     details[open] .faq-icon { transform: rotate(45deg); }
     .faq-icon { transition: transform .15s; }
+
+    /* Readability: darken muted gray text on light backgrounds */
+    .text-slate-600 { color: #334155; }
+    .text-slate-500 { color: #475569; }
+    .text-slate-400 { color: #64748b; }
+    /* Restore original lighter grays inside dark sections so they stay legible on dark bg */
+    footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
+    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
+    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
+    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
+    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
+    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
+    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
+      color: #cbd5e1;
+    }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
@@ -179,7 +194,8 @@
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-3">
+      <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
       <a href="/enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -367,7 +383,7 @@
           <h3 class="text-2xl font-bold display">Online</h3>
         </div>
         <p class="text-slate-600 text-sm">Same curriculum, attended live from home. Flexible for working adults.</p>
-        <div class="display text-4xl font-bold text-slate-900 my-6">$1,997<span class="text-base font-normal text-slate-500"> tuition</span></div>
+        <div class="display text-4xl font-bold text-slate-900 my-6">$997<span class="text-base font-normal text-slate-500"> tuition</span></div>
         <ul class="space-y-2.5 text-sm text-slate-700">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Live instructor-led classes via video</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Full access to PDA Practice Pro + ChairSide trainers</li>
@@ -454,7 +470,7 @@
             <tr><td class="px-5 py-3 font-medium">Mobile-friendly training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-amber-500">limited</td><td class="text-center text-amber-500">limited</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Real ADA insurance workflow</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Built-in allergy / drug interaction safety</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
-            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$1,997</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
+            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$997 – $1,997</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
           </tbody>
         </table>
       </div>
@@ -642,7 +658,7 @@
         <span class="absolute -top-3 left-6 bg-cyan-700 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Online</span>
         <h3 class="font-bold text-lg mt-2">Online</h3>
         <p class="text-xs text-slate-500 mt-1">Live classes from anywhere.</p>
-        <div class="display text-3xl font-bold mt-4">$1,997<span class="text-sm text-slate-500 font-normal"> tuition</span></div>
+        <div class="display text-3xl font-bold mt-4">$997<span class="text-sm text-slate-500 font-normal"> tuition</span></div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
           <li>✓ Live video instruction</li>
           <li>✓ Same curriculum as in-person</li>
@@ -698,7 +714,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Tuition is $1,997 and payment plans are available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Tuition is $1,997 for In-Person and $997 for Online, with payment plans available. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">

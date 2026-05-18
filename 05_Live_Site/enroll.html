@@ -10,9 +10,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .text-slate-600 { color: #334155; }
+    .text-slate-500 { color: #475569; }
+    .text-slate-400 { color: #64748b; }
+    footer .text-slate-600, footer .text-slate-500, footer .text-slate-400,
+    .bg-slate-900 .text-slate-600, .bg-slate-900 .text-slate-500, .bg-slate-900 .text-slate-400,
+    .bg-slate-800 .text-slate-600, .bg-slate-800 .text-slate-500, .bg-slate-800 .text-slate-400,
+    [class*="from-slate-9"] .text-slate-600, [class*="from-slate-9"] .text-slate-500, [class*="from-slate-9"] .text-slate-400,
+    [class*="from-slate-8"] .text-slate-600, [class*="from-slate-8"] .text-slate-500, [class*="from-slate-8"] .text-slate-400,
+    [class*="from-cyan-8"] .text-slate-600, [class*="from-cyan-8"] .text-slate-500, [class*="from-cyan-8"] .text-slate-400,
+    [class*="from-cyan-9"] .text-slate-600, [class*="from-cyan-9"] .text-slate-500, [class*="from-cyan-9"] .text-slate-400 {
+      color: #cbd5e1;
+    }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -20,13 +32,23 @@
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
 
-<nav class="bg-white/90 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
-  <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
-      <span>Premier Dental Academy</span>
+      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
     </a>
-    <a href="/" class="text-sm text-teal-700 hover:text-teal-900">← Back to home</a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/salary" class="hover:text-teal-700">Salary</a>
+      <a href="/about" class="hover:text-teal-700">About</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
+      <a href="/enroll" class="bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+    </div>
   </div>
 </nav>
 
@@ -64,7 +86,7 @@
     <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
       <div class="flex items-center gap-2"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
       <p class="text-sm text-slate-500 mt-1">Live classes, attend from anywhere</p>
-      <div class="display text-4xl font-bold mt-5">$1,997</div>
+      <div class="display text-4xl font-bold mt-5">$997</div>
       <div class="text-xs text-slate-500 mt-0.5">tuition · payment plans available</div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live video instruction with our instructors</li>
@@ -74,7 +96,7 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
       </ul>
-      <button type="button" data-action="enroll" data-plan="online" data-price="1997"
+      <button type="button" data-action="enroll" data-plan="online" data-price="997"
         class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
         Enroll — Online →
       </button>
@@ -139,7 +161,7 @@
 <script>
 const PLANS = {
   'in-person': { name: 'PDA RDA Program — In-Person', amount: '$1,997.00' },
-  'online':    { name: 'PDA RDA Program — Online',    amount: '$1,997.00' },
+  'online':    { name: 'PDA RDA Program — Online',    amount: '$997.00' },
 };
 
 document.addEventListener('click', (ev) => {
