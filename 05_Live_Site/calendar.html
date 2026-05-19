@@ -36,6 +36,31 @@
 
     .scarcity-banner { background: linear-gradient(90deg, rgba(239,68,68,0.18), rgba(245,158,11,0.18)); border: 1px solid rgba(252,165,165,0.5); }
     .filter-btn[aria-pressed="true"] { background: #0f766e; color: white; }
+
+    /* BIG SEAT HERO — the focal element of every cohort card */
+    .seat-hero { margin: 12px 16px 16px; padding: 14px 16px; border-radius: 14px; }
+    .seat-hero--normal { background: #ecfeff; border: 1px solid #a5f3fc; }
+    .seat-hero--urgent { background: #fef2f2; border: 1.5px solid #fca5a5; animation: heroPulse 1.8s ease-in-out infinite; }
+    .seat-hero--full   { background: #fef2f2; border: 1.5px solid #b91c1c; }
+    @keyframes heroPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.55); } 50% { box-shadow: 0 0 0 6px rgba(239,68,68,0); } }
+    .seat-num-wrap { display: flex; align-items: center; gap: 12px; }
+    .seat-num { font-family: 'Fraunces', serif; font-size: 56px; font-weight: 800; line-height: 0.95; letter-spacing: -0.02em; }
+    .seat-hero--normal .seat-num { color: #155e75; }
+    .seat-hero--urgent .seat-num { color: #b91c1c; animation: numFlash 1.2s ease-in-out infinite; }
+    .seat-hero--full   .seat-num { color: #b91c1c; font-size: 36px; }
+    @keyframes numFlash { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+    .seat-num-suffix { font-size: 11px; font-weight: 800; letter-spacing: 0.08em; line-height: 1.05; }
+    .seat-hero--normal .seat-num-suffix { color: #0f766e; }
+    .seat-hero--urgent .seat-num-suffix { color: #b91c1c; }
+    .seat-sub { font-size: 12px; font-weight: 600; color: #475569; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .seat-hero--urgent .seat-sub { color: #991b1b; }
+    .seat-hero--full   .seat-sub { color: #991b1b; }
+    .seat-bar { height: 10px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; margin-top: 10px; }
+    .seat-bar-fill { height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #f59e0b, #ef4444); transition: width 400ms ease; }
+    .seat-hero--full .seat-bar-fill { background: #b91c1c; }
+    .seat-hero--normal .seat-bar-fill { background: linear-gradient(90deg, #14b8a6, #f59e0b); }
+    .seat-help { font-size: 12px; color: #475569; margin-top: 8px; font-weight: 500; }
+    .seat-hero--urgent .seat-help { color: #991b1b; font-weight: 600; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/seat-mask.js"></script>
@@ -154,16 +179,57 @@ function cardHTML(c) {
     : `<a href="/enroll?cohort=${c.id}" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-lg text-sm">Reserve seat →</a>`;
 
   const cardModifier = seats.full ? 'full' : seats.urgent ? 'urgent' : '';
+
+  // BIG SEAT BLOCK — the hero of the card
+  const totalCap = c.capacity || 8;
+  const shown    = seats.count;
+  const fillPct  = seats.full ? 100 : Math.round(((totalCap - shown) / totalCap) * 100);
+  let seatHero;
+  if (seats.full) {
+    seatHero = `
+      <div class="seat-hero seat-hero--full">
+        <div class="seat-num">FULL</div>
+        <div class="seat-sub">Class is at capacity</div>
+        <div class="seat-bar"><div class="seat-bar-fill" style="width:100%"></div></div>
+        <div class="seat-help">Join the waitlist — first call when a spot opens.</div>
+      </div>`;
+  } else if (shown === 1) {
+    seatHero = `
+      <div class="seat-hero seat-hero--urgent">
+        <div class="seat-num">LAST SEAT</div>
+        <div class="seat-sub">Don't wait — someone else is looking right now</div>
+        <div class="seat-bar"><div class="seat-bar-fill" style="width:${fillPct}%"></div></div>
+        <div class="seat-help">One person away from full.</div>
+      </div>`;
+  } else {
+    const cls = seats.urgent ? 'seat-hero--urgent' : 'seat-hero--normal';
+    const help = seats.urgent
+      ? `Filling fast — ${shown - 1} more sign-ups closes this class.`
+      : `Only ${totalCap} seats per class. Once they're gone, they're gone.`;
+    seatHero = `
+      <div class="seat-hero ${cls}">
+        <div class="seat-num-wrap">
+          <span class="seat-num">${shown}</span>
+          <span class="seat-num-suffix">SEATS<br/>LEFT</span>
+        </div>
+        <div class="seat-sub">out of ${totalCap}</div>
+        <div class="seat-bar"><div class="seat-bar-fill" style="width:${fillPct}%"></div></div>
+        <div class="seat-help">${help}</div>
+      </div>`;
+  }
+
   return `
-  <div class="cohort-card ${cardModifier} bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition">
+  <div class="cohort-card ${cardModifier} bg-white rounded-2xl shadow-sm hover:shadow-md transition">
     <div class="flex items-center justify-between px-5 pt-4">
       <span class="text-xs font-bold uppercase tracking-widest text-teal-700">${ICON[cls]} ${LABEL[cls]} · ${PRICE[cls]}</span>
-      <span class="seat-pill ${pill}"><span class="dot"></span>${seats.label}</span>
     </div>
-    <div class="px-5 pb-5 pt-3">
+    <div class="px-5 pt-3">
       <div class="display text-2xl font-bold text-slate-900">${fmtDate(c.start_date)}</div>
       <div class="text-xs text-slate-500 mt-0.5">${daysLabel} · runs through ${end}</div>
-      <div class="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+    </div>
+    ${seatHero}
+    <div class="px-5 pb-5">
+      <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
         ${c.schedule   ? `<div class="text-slate-500">Schedule</div><div class="text-slate-900 font-medium">${c.schedule}</div>` : ''}
         ${c.instructor ? `<div class="text-slate-500">Instructor</div><div class="text-slate-900 font-medium">${c.instructor}</div>` : ''}
         ${c.location && cls === 'in_person' ? `<div class="text-slate-500">Location</div><div class="text-slate-900 font-medium">${c.location}</div>` : ''}
@@ -215,7 +281,7 @@ function render() {
     section.className = 'mb-10';
     section.innerHTML = `
       <h2 class="display text-2xl font-bold text-white mb-4">${month} <span class="text-cyan-100/70 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
-      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-3">
         ${classes.map(cardHTML).join('')}
       </div>`;
     root.appendChild(section);
