@@ -919,8 +919,10 @@
       const placementRate = ov.placement_rate_pct || null;
 
       set('stat-grads',           totalGrads.toLocaleString());
-      set('stat-enrolled',        enrolledNow);
-      set('stat-in-session',      inSession.length);
+      // Use admin overrides when set — keeps the "currently enrolled" and
+      // "classes in session" tiles accurate when the cohorts table lags Square.
+      set('stat-enrolled',        ov.enrolled_now_override ?? enrolledNow);
+      set('stat-in-session',      ov.in_session_override   ?? inSession.length);
       set('stat-upcoming',        upcoming.length);
       set('stat-placement-rate',  placementRate ? `${placementRate}%+` : '—');
       // Source-of-truth for partner count is the hiring_partners table,
