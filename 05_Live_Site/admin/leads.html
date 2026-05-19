@@ -83,6 +83,24 @@
   </div>
 </main>
 
+<!-- SMS modal -->
+<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Send SMS via Quo</div>
+        <h3 id="sms-target" class="display text-lg font-bold">—</h3>
+      </div>
+      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
+    <div class="flex justify-between items-center mt-3">
+      <span id="sms-status" class="text-xs text-slate-500"></span>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-lg text-sm">Send →</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (async () => {
   const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
@@ -179,8 +197,10 @@
               <select data-id="${l.id}" class="status-sel bg-white border border-slate-300 rounded px-2 py-1 text-xs">
                 ${['new','contacted','enrolled','closed'].map(s => `<option value="${s}" ${(l.status||'new')===s?'selected':''}>${s}</option>`).join('')}
               </select>
-              <div>
-                <a href="mailto:${l.email}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="text-xs text-teal-700 hover:underline">Reply →</a>
+              <div class="flex flex-wrap gap-1 justify-end">
+                ${l.phone ? `<button data-action="sms" data-phone="${(l.phone||'').replace(/[^\\d+]/g,'')}" data-name="${(`${l.first_name||''} ${l.last_name||''}`.trim() || l.email || 'lead').replace(/"/g,'&quot;')}" data-id="${l.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-2 py-1 rounded">💬 SMS</button>` : ''}
+                ${l.phone ? `<a href="tel:${(l.phone||'').replace(/[^\\d+]/g,'')}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-2 py-1 rounded">📞</a>` : ''}
+                ${l.email ? `<a href="mailto:${l.email}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-2 py-1 rounded">✉️</a>` : ''}
               </div>
             </div>
           </div>
@@ -195,6 +215,10 @@
         if (target) target.status = e.target.value;
         render();
       };
+    });
+
+    list.querySelectorAll('[data-action="sms"]').forEach(btn => {
+      btn.onclick = () => openSms(btn.dataset.phone, btn.dataset.name, btn.dataset.id);
     });
 
     // Subscribers panel
@@ -255,6 +279,45 @@
     a.download = filename;
     a.click();
   }
+
+  // ── SMS modal
+  const modal    = document.getElementById('sms-modal');
+  const targetEl = document.getElementById('sms-target');
+  const bodyEl   = document.getElementById('sms-body');
+  const statusEl = document.getElementById('sms-status');
+  let smsTo = null, smsLeadId = null;
+  document.getElementById('sms-close').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+  function openSms(phone, name, leadId) {
+    smsTo = phone;
+    smsLeadId = leadId;
+    targetEl.textContent = `${name} · ${phone}`;
+    bodyEl.value = '';
+    statusEl.textContent = '';
+    modal.classList.remove('hidden');
+    setTimeout(() => bodyEl.focus(), 50);
+  }
+
+  document.getElementById('sms-send').onclick = async () => {
+    const body = bodyEl.value.trim();
+    if (!body || !smsTo) return;
+    statusEl.textContent = 'Sending…';
+    const resp = await sb.functions.invoke('quo-send-sms', { body: { to: smsTo, body, related_lead_id: smsLeadId } });
+    if (resp?.error || resp?.data?.error) {
+      statusEl.textContent = '✗ ' + (resp?.data?.error || resp?.error?.message || 'failed');
+    } else {
+      statusEl.textContent = '✓ Sent';
+      // Mark the lead as contacted
+      if (smsLeadId) {
+        await sb.from('leads').update({ status: 'contacted', last_contact_at: new Date().toISOString() }).eq('id', smsLeadId);
+        const target = allLeads.find(x => x.id === smsLeadId);
+        if (target) { target.status = 'contacted'; target.last_contact_at = new Date().toISOString(); }
+        render();
+      }
+      setTimeout(() => modal.classList.add('hidden'), 700);
+    }
+  };
 
   load();
 })();
