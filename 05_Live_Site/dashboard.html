@@ -454,9 +454,9 @@
     document.getElementById('avatar-dropdown').classList.toggle('hidden');
   };
   document.addEventListener('click', () => document.getElementById('avatar-dropdown').classList.add('hidden'));
-  document.getElementById('signout-btn').onclick = async () => {
-    await sb.auth.signOut();
-    location.href = '/';
+  document.getElementById('signout-btn').onclick = () => {
+    // Send through the canonical /logout page so storage gets fully cleared.
+    location.href = '/logout?then=home';
   };
 })();
 </script>

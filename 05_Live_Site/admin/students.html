@@ -94,7 +94,7 @@
   if (!profile?.is_admin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   document.getElementById('view').classList.remove('hidden');
-  document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.href = '/login'; };
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   let all = [];
 

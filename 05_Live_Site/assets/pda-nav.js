@@ -26,7 +26,8 @@
       <a href="/contact"   data-nav-link class="hover:text-teal-700">Contact</a>
     </div>
     <div class="flex items-center gap-3">
-      <a href="/login" data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
+      <a id="pda-nav-auth"  href="/login"  data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
+      <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-medium text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
       <a href="/enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="pda-nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="pda-nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -48,7 +49,8 @@
     <a href="/hiring-partners" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
     <a href="/blog"      data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Blog</a>
     <a href="/apply"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Workforce / Veterans</a>
-    <a href="/login"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Sign in</a>
+    <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Sign in</a>
+    <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-4 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
     <a href="/enroll"    class="mt-6 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-4 rounded-lg shadow">Enroll →</a>
     <a href="tel:+19039136444" class="mt-3 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
   </div>
@@ -106,6 +108,44 @@
     panel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setOpen(false)));
     window.addEventListener('resize', () => { if (window.innerWidth >= 768) setOpen(false); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false); });
+
+    // Auth-aware nav: flip "Sign in" → "Sign out" + show dashboard link when signed in.
+    // Uses the Supabase publishable key (safe in client). Runs async; no harm if the
+    // SDK hasn't loaded yet — re-checks once on the next "supabase-ready" event.
+    function wireAuth() {
+      if (!window.supabase?.createClient) return;
+      const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+      let sb;
+      try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) { return; }
+
+      sb.auth.getSession().then(({ data }) => {
+        const signedIn = !!data?.session;
+        const desktopAuth  = document.getElementById('pda-nav-auth');
+        const desktopDash  = document.getElementById('pda-nav-dash');
+        const mobileAuth   = document.getElementById('pda-mobile-auth');
+        const mobileDash   = document.getElementById('pda-mobile-dash');
+        if (!desktopAuth || !mobileAuth) return;
+
+        if (signedIn) {
+          desktopAuth.textContent = 'Sign out';
+          desktopAuth.href = '/logout';
+          desktopAuth.classList.remove('text-slate-700');
+          desktopAuth.classList.add('text-rose-700', 'hover:text-rose-900');
+          desktopDash?.classList.remove('hidden');
+
+          mobileAuth.textContent = 'Sign out';
+          mobileAuth.href = '/logout';
+          mobileAuth.classList.remove('text-slate-700');
+          mobileAuth.classList.add('text-rose-700', 'font-semibold');
+          mobileDash?.classList.remove('hidden');
+          mobileDash?.classList.add('block');
+        }
+      }).catch(() => {});
+    }
+    // Try now; if the supabase global isn't there yet, wait a tick.
+    if (window.supabase?.createClient) wireAuth();
+    else setTimeout(wireAuth, 400);
   }
 
   if (document.readyState === 'loading') {

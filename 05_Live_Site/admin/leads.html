@@ -132,7 +132,7 @@
 
   document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
   document.getElementById('leads-view').classList.remove('hidden');
-  document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.reload(); };
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   let allLeads = [];
   let allSubs = [];
