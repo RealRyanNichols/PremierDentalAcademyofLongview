@@ -42,6 +42,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script src="/assets/pda-social-proof.js" defer></script>
 </head>
 <body class="min-h-screen">
 
@@ -126,9 +127,14 @@ let cohorts = [];
 let filter = 'all';
 
 async function loadCohorts() {
+  // Show every In-Person cohort whose start date is today or later,
+  // regardless of status flag — covers 'current' (actively-enrolling),
+  // 'upcoming', and 'open' so the next class isn't accidentally hidden.
+  const today = new Date().toISOString().slice(0, 10);
   const { data } = await sb.from('cohorts')
     .select('id,name,delivery_mode,start_date,end_date,schedule,instructor,location,capacity,enrolled_count,status')
-    .eq('status', 'upcoming')
+    .gte('start_date', today)
+    .in('status', ['current', 'upcoming', 'open'])
     .neq('delivery_mode', 'online')
     .order('start_date', { ascending: true });
   cohorts = data || [];
