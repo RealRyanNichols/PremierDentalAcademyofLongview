@@ -297,9 +297,21 @@ function renderCohortOptions() {
   updateCohortMeta();
 }
 
-// If the user arrived with ?cohort=<id>, auto-pick the matching plan format.
+// If the user arrived with ?plan=in-person|online or ?cohort=<id>,
+// auto-pick the matching plan format so they land on the calculator
+// instead of the "pick a path" screen.
 function autoPickFromUrl() {
-  const id = new URLSearchParams(location.search).get('cohort');
+  const params = new URLSearchParams(location.search);
+  const planParam = (params.get('plan') || params.get('mode') || '').toLowerCase().trim();
+  if (planParam === 'in-person' || planParam === 'in_person' || planParam === 'inperson') {
+    pickPlan('in-person');
+    return;
+  }
+  if (planParam === 'online') {
+    pickPlan('online');
+    return;
+  }
+  const id = params.get('cohort');
   if (!id) return;
   const c = state.cohorts.find(x => x.id === id);
   if (!c) return;
