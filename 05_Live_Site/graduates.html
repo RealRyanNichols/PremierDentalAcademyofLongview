@@ -57,16 +57,16 @@
     <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold" data-aos="fade-up">Where our graduates are working</p>
     <h1 class="display text-4xl sm:text-5xl font-bold mt-2 leading-tight" data-aos="fade-up">Real names. Real careers. <span class="gradient-text">Real East Texas offices.</span></h1>
     <p class="text-slate-600 mt-4 text-lg" data-aos="fade-up">Every person below was a PDA student. Every job below was at a Longview-area dental office that called us asking for help.</p>
-    <p class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-1.5" data-aos="fade-up" data-aos-delay="100">⚡ 90%+ job placement — many receive offers during graduation week</p>
+    <p class="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-full px-4 py-1.5" data-aos="fade-up" data-aos-delay="100">⚡ 85%+ job placement — many receive offers during graduation week or within 30 days</p>
   </div>
 </section>
 
 <!-- Stats bar -->
 <section class="bg-slate-50 border-y border-slate-200">
   <div class="max-w-6xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-    <div data-aos="fade-up"><div class="display text-4xl font-bold gradient-text" id="stat-grads">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Graduates placed</div></div>
-    <div data-aos="fade-up" data-aos-delay="100"><div class="display text-4xl font-bold gradient-text" id="stat-offices">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">East Texas offices</div></div>
-    <div data-aos="fade-up" data-aos-delay="200"><div class="display text-4xl font-bold gradient-text" id="stat-rate">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Job placement rate</div></div>
+    <div data-aos="fade-up"><div class="display text-4xl font-bold gradient-text" id="stat-grads">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Total graduates</div></div>
+    <div data-aos="fade-up" data-aos-delay="100"><div class="display text-4xl font-bold gradient-text" id="stat-offices">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Partner offices</div></div>
+    <div data-aos="fade-up" data-aos-delay="200"><div class="display text-4xl font-bold gradient-text" id="stat-rate">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Placement rate</div></div>
     <div data-aos="fade-up" data-aos-delay="300"><div class="display text-4xl font-bold gradient-text" id="stat-cities">—</div><div class="text-xs text-slate-500 uppercase tracking-widest mt-1">Cities served</div></div>
   </div>
 </section>
@@ -121,19 +121,26 @@ AOS.init({ duration: 500, once: true });
   const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
   const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 
-  const { data: grads, error } = await sb.from('placements').select('*').eq('visible', true).order('hire_date', { ascending: false });
+  const [{ data: grads, error }, { data: partners }, { data: overrides }] = await Promise.all([
+    sb.from('placements').select('*').eq('visible', true).order('hire_date', { ascending: false }),
+    sb.from('hiring_partners').select('id, practice_name').eq('verified', true).neq('status', 'archived'),
+    sb.from('public_stats_overrides').select('key, value'),
+  ]);
   if (error) { console.warn(error); return; }
 
-  // Stats
-  document.getElementById('stat-grads').textContent = grads.length;
-  document.getElementById('stat-offices').textContent = new Set(grads.map(g => g.hired_at_office).filter(Boolean)).size;
+  const ov = Object.fromEntries((overrides || []).map(r => [r.key, r.value]));
+  const partnerCount = (partners || []).length;
+
+  // Stats — pull from admin overrides so this page matches the homepage stats
+  const totalGrads    = grads.length + (ov.graduates_extra || 0);
+  const placementRate = ov.placement_rate_pct || null;
+
+  document.getElementById('stat-grads').textContent   = totalGrads.toLocaleString();
+  document.getElementById('stat-offices').textContent = partnerCount
+    || new Set(grads.map(g => g.hired_at_office).filter(Boolean)).size;
+  document.getElementById('stat-rate').textContent    = placementRate ? `${placementRate}%+` : '—';
   const cities = new Set(grads.map(g => g.city).filter(Boolean));
-  document.getElementById('stat-cities').textContent = cities.size;
-  // PDA's lifetime job placement rate. The placements table only captures
-  // the subset we've documented online, so floor at 90%.
-  const placedFast = grads.filter(g => g.graduation_date && g.hire_date && daysBetween(g.graduation_date, g.hire_date) <= 30).length;
-  const computedRate = grads.length > 0 ? Math.round(placedFast / grads.length * 100) : 0;
-  document.getElementById('stat-rate').textContent = Math.max(90, computedRate) + '%';
+  document.getElementById('stat-cities').textContent  = cities.size || '—';
 
   // Filter chips by city
   const chipBox = document.getElementById('filter-chips');
