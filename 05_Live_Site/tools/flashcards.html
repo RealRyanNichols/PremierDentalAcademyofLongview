@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RDA Exam Flashcards — PDA Study Tools</title>
+  <meta name="description" content="Study for the Texas Registered Dental Assistant state board exam with Premier Dental Academy's flashcard deck — track your progress, master each topic." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+    .card-flip { perspective: 1200px; }
+    .card-inner {
+      position: relative; width: 100%; min-height: 260px;
+      transition: transform 0.5s cubic-bezier(.34,1.56,.64,1);
+      transform-style: preserve-3d; cursor: pointer;
+    }
+    .card-inner.flipped { transform: rotateY(180deg); }
+    .card-face {
+      position: absolute; inset: 0; backface-visibility: hidden;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 2rem; border-radius: 1.25rem;
+      background: white; border: 1px solid #e2e8f0;
+      box-shadow: 0 8px 32px -8px rgba(15, 23, 42, 0.12);
+    }
+    .card-face--back { transform: rotateY(180deg); background: linear-gradient(135deg, #ecfeff, #f0fdfa); border-color: #99f6e4; }
+    .topic-pill { display: inline-block; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.25rem 0.55rem; border-radius: 9999px; background: #ccfbf1; color: #0f766e; }
+    .status-new       { background: #f1f5f9; color: #475569; }
+    .status-learning  { background: #fef3c7; color: #92400e; }
+    .status-mastered  { background: #d1fae5; color: #065f46; }
+    .progress-ring { transform: rotate(-90deg); }
+    .progress-ring__circle { transition: stroke-dashoffset 400ms ease; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-cyan-50 min-h-screen flex flex-col">
+
+<main class="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+
+  <div class="text-center mb-8">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Study Tools</p>
+    <h1 class="display text-3xl sm:text-4xl font-extrabold mt-2">Texas RDA Exam <span class="gradient-text">Flashcards</span></h1>
+    <p class="text-slate-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">60 questions aligned to the Texas State Board RDA exam. Tap the card to flip. Mark "I got it" to master it — or "Need to study" to come back to it.</p>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="grid grid-cols-3 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-2xl sm:text-3xl font-bold display text-emerald-700" id="stat-mastered">0</div>
+      <div class="text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 font-semibold mt-1">Mastered</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-2xl sm:text-3xl font-bold display text-amber-700" id="stat-learning">0</div>
+      <div class="text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 font-semibold mt-1">Still learning</div>
+    </div>
+    <div class="bg-white rounded-xl border border-slate-200 p-3 sm:p-4 text-center">
+      <div class="text-2xl sm:text-3xl font-bold display text-slate-700" id="stat-remaining">—</div>
+      <div class="text-[10px] sm:text-xs uppercase tracking-widest text-slate-500 font-semibold mt-1">Remaining</div>
+    </div>
+  </div>
+
+  <!-- Topic filter + actions -->
+  <div class="flex flex-wrap items-center gap-2 mb-5">
+    <select id="topic-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium">
+      <option value="">All topics</option>
+    </select>
+    <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium">
+      <option value="">All cards</option>
+      <option value="new">Haven't seen yet</option>
+      <option value="learning">Still learning</option>
+      <option value="mastered">Mastered</option>
+    </select>
+    <span class="text-xs text-slate-500 ml-auto" id="position-label">—</span>
+  </div>
+
+  <!-- The card -->
+  <div class="card-flip mb-6">
+    <div id="card-inner" class="card-inner select-none" role="button" tabindex="0" aria-label="Flip card">
+      <div class="card-face">
+        <span class="topic-pill self-start" id="card-topic">—</span>
+        <div class="flex-1 grid place-items-center text-center px-2">
+          <div>
+            <div class="display text-xl sm:text-2xl font-bold leading-tight" id="card-question">Loading…</div>
+            <div class="text-xs text-slate-400 mt-4 font-medium uppercase tracking-widest">Tap to reveal answer</div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-xs text-slate-500">
+          <span><span id="card-status-chip" class="topic-pill status-new">New</span></span>
+          <span class="font-mono" id="card-id-label">—</span>
+        </div>
+      </div>
+      <div class="card-face card-face--back">
+        <span class="topic-pill self-start" id="card-topic-2">—</span>
+        <div class="flex-1 grid place-items-center text-center px-2">
+          <div>
+            <div class="text-[10px] uppercase tracking-widest text-teal-700 font-bold mb-2">Answer</div>
+            <div class="text-base sm:text-lg leading-relaxed text-slate-800" id="card-answer">—</div>
+          </div>
+        </div>
+        <div class="text-xs text-slate-500 text-center">Tap to flip back</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Action buttons -->
+  <div class="grid grid-cols-3 gap-2 mb-6">
+    <button id="btn-learning" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl shadow-sm transition flex flex-col items-center gap-0.5">
+      <span class="text-lg">📚</span>
+      <span class="text-xs uppercase tracking-wide">Need to study</span>
+    </button>
+    <button id="btn-skip" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold py-3 rounded-xl shadow-sm transition flex flex-col items-center gap-0.5">
+      <span class="text-lg">⏭️</span>
+      <span class="text-xs uppercase tracking-wide">Skip</span>
+    </button>
+    <button id="btn-mastered" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-sm transition flex flex-col items-center gap-0.5">
+      <span class="text-lg">✓</span>
+      <span class="text-xs uppercase tracking-wide">I got it</span>
+    </button>
+  </div>
+
+  <!-- Bottom row: nav + share -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-8">
+    <div class="flex gap-2">
+      <button id="btn-prev" class="bg-white border border-slate-300 hover:border-slate-500 text-slate-700 font-semibold px-3 py-2 rounded-lg text-sm">← Previous</button>
+      <button id="btn-shuffle" class="bg-white border border-slate-300 hover:border-teal-600 hover:text-teal-700 font-semibold px-3 py-2 rounded-lg text-sm">🔀 Shuffle</button>
+      <button id="btn-reset" class="bg-white border border-slate-300 hover:border-rose-500 hover:text-rose-700 font-semibold px-3 py-2 rounded-lg text-sm">↻ Reset deck</button>
+    </div>
+    <button id="btn-share" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2 rounded-lg text-sm">📲 Share progress</button>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state" class="hidden bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-8 text-center">
+    <div class="text-5xl mb-3">🏆</div>
+    <h2 class="display text-2xl font-bold text-emerald-900">Nothing left in this filter!</h2>
+    <p class="text-emerald-800 mt-2 text-sm">Switch filters above, shuffle the deck, or hit "Reset deck" to study everything again.</p>
+  </div>
+
+  <!-- How this helps -->
+  <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-sm">
+    <h3 class="font-bold text-slate-900">How to use these flashcards</h3>
+    <ul class="text-slate-700 mt-2 space-y-1 list-disc pl-5">
+      <li>Tap or click the card to flip and reveal the answer.</li>
+      <li>Hit <strong>"I got it"</strong> to mark mastered; the card goes to the back of the deck.</li>
+      <li>Hit <strong>"Need to study"</strong> to keep it cycling in front.</li>
+      <li>Your progress saves automatically to your account — study from any device.</li>
+      <li>Switch topics to focus on a weak area before exam day.</li>
+    </ul>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-6">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview · <a href="/dashboard" class="hover:text-white">Dashboard</a> · <a href="/contact" class="hover:text-white">Contact</a></div>
+</footer>
+
+<script>
+(async () => {
+  'use strict';
+
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ── Card deck (60 cards across the major Texas RDA exam topics) ──
+  const DECK = [
+    // Infection control
+    { id:'ic-01', topic:'Infection Control', q:"What's the most common route of disease transmission in a dental office?", a:"Direct contact with blood, saliva, and oral fluids — that's why standard precautions (gloves, mask, eyewear, gown) are non-negotiable on every patient." },
+    { id:'ic-02', topic:'Infection Control', q:"What temperature does a steam autoclave run at to sterilize instruments?", a:"121°C (250°F) for 30 minutes at 15 psi, or 132°C (270°F) for 4 minutes at 30 psi. Steam under pressure denatures proteins in microbes." },
+    { id:'ic-03', topic:'Infection Control', q:"What's the difference between sterilization and disinfection?", a:"Sterilization kills ALL microorganisms including spores. Disinfection kills most pathogens but not necessarily spores. Critical instruments (penetrate tissue) must be sterilized." },
+    { id:'ic-04', topic:'Infection Control', q:"How often should you change your gloves?", a:"Between every patient, when torn/contaminated, and any time you leave the operatory. Never wash and reuse gloves." },
+    { id:'ic-05', topic:'Infection Control', q:"What does PPE stand for and what are the four items?", a:"Personal Protective Equipment: gloves, mask, protective eyewear (with side shields), and a protective gown or lab coat." },
+    { id:'ic-06', topic:'Infection Control', q:"What's a spore test (biological indicator) and how often do you run one?", a:"It's a vial of resistant bacterial spores you put through your autoclave cycle then incubate. If spores die, sterilizer is working. Run weekly in Texas." },
+    { id:'ic-07', topic:'Infection Control', q:"What's the immediate first step after a needlestick injury?", a:"Wash the wound with soap and water immediately, report it to the doctor/OSHA officer, document the source patient, and follow the office's post-exposure protocol." },
+
+    // Radiology
+    { id:'rad-01', topic:'Radiology', q:"What's the unit used to measure radiation dose absorbed by tissue?", a:"The Gray (Gy) for absorbed dose, or the Sievert (Sv) for the biological effective dose (often expressed in millisieverts, mSv)." },
+    { id:'rad-02', topic:'Radiology', q:"Where should the operator stand when taking an x-ray and why?", a:"At least 6 feet away, behind a lead barrier, between 90° and 135° from the central x-ray beam — to avoid the primary beam and minimize scatter exposure." },
+    { id:'rad-03', topic:'Radiology', q:"What is ALARA?", a:"As Low As Reasonably Achievable — the principle that all radiation exposure (patient and operator) must be kept as low as possible while still getting diagnostic images." },
+    { id:'rad-04', topic:'Radiology', q:"Why do we use a lead apron and thyroid collar on patients?", a:"Lead apron protects the reproductive organs and trunk from scatter radiation. Thyroid collar protects the thyroid gland — the most radiosensitive tissue in the head and neck." },
+    { id:'rad-05', topic:'Radiology', q:"What's the cone-cut error and how do you fix it?", a:"A clear unexposed area on the film/sensor where the beam missed. Re-aim the position indicating device so the beam center is on the film center." },
+    { id:'rad-06', topic:'Radiology', q:"What's a bitewing x-ray used for?", a:"Diagnosing interproximal decay (caries between teeth), evaluating the height of the alveolar bone crest, and checking marginal integrity of restorations." },
+
+    // Dental anatomy
+    { id:'an-01', topic:'Anatomy', q:"How many teeth does an adult have, and how many in each quadrant?", a:"32 permanent teeth — 8 per quadrant: 2 incisors, 1 canine, 2 premolars, 3 molars (including the wisdom tooth)." },
+    { id:'an-02', topic:'Anatomy', q:"How many primary (baby) teeth does a child have?", a:"20 primary teeth — 5 per quadrant: 2 incisors, 1 canine, 2 molars. No premolars in the primary dentition." },
+    { id:'an-03', topic:'Anatomy', q:"Tooth #8 in the Universal numbering system is which tooth?", a:"The maxillary right central incisor — the upper front-and-center tooth on the patient's right." },
+    { id:'an-04', topic:'Anatomy', q:"What are the four tissues of a tooth?", a:"Enamel (outer crown), dentin (the bulk of the tooth), cementum (covers the root), and pulp (nerve and blood vessels in the center)." },
+    { id:'an-05', topic:'Anatomy', q:"Which is harder — enamel or dentin?", a:"Enamel — it's the hardest substance in the human body. Dentin is softer and more elastic, which is why decay can spread quickly once it breaches the enamel." },
+    { id:'an-06', topic:'Anatomy', q:"What's the difference between facial, lingual, mesial, and distal surfaces?", a:"Facial = toward the lips/cheek. Lingual = toward the tongue. Mesial = toward the midline. Distal = away from the midline." },
+    { id:'an-07', topic:'Anatomy', q:"What is the occlusal surface?", a:"The chewing surface of premolars and molars — the surface that meets the opposing tooth when you bite down. (On anteriors, the equivalent is called the incisal edge.)" },
+
+    // Chairside / clinical
+    { id:'cs-01', topic:'Chairside', q:"What does 'four-handed dentistry' mean?", a:"The dentist and assistant work as a coordinated team in a seated position with instruments passed between them — improves efficiency, reduces fatigue, and shortens chair time." },
+    { id:'cs-02', topic:'Chairside', q:"In a Class II amalgam prep, what's the assistant's main job during the procedure?", a:"Maintaining a clear, dry field with HVE suction, retracting tongue/cheek, and passing/receiving instruments — plus mixing and delivering the amalgam at the right moment." },
+    { id:'cs-03', topic:'Chairside', q:"What's the purpose of a rubber dam?", a:"Isolates the tooth from saliva and oral bacteria, keeps the field dry, protects the patient's airway from debris/instruments, and improves visibility for the operator." },
+    { id:'cs-04', topic:'Chairside', q:"What does 'HVE' stand for and what does the assistant use it for?", a:"High-Volume Evacuator. It's the larger suction tip used to keep the field dry, capture aerosol, and retract soft tissue during operative procedures." },
+    { id:'cs-05', topic:'Chairside', q:"What's an alginate impression used for?", a:"Quick, accurate impressions for study models, opposing models for crowns, bleaching trays, mouth guards, and orthodontic appliances. Sets in ~2 minutes." },
+    { id:'cs-06', topic:'Chairside', q:"What's the difference between a Class I, II, III, IV, and V cavity?", a:"I = pits and fissures (mostly occlusal). II = posterior interproximal. III = anterior interproximal. IV = anterior interproximal involving the incisal angle. V = gingival third (facial or lingual) of any tooth." },
+
+    // Dental materials
+    { id:'dm-01', topic:'Materials', q:"What's the main ingredient in dental amalgam?", a:"Mercury (about 50%), mixed with an alloy powder of silver, tin, and copper. Modern amalgam is bound — the mercury isn't free once it's set." },
+    { id:'dm-02', topic:'Materials', q:"Why are composite restorations 'cured' with a blue light?", a:"Composites contain photo-initiators (often camphorquinone) that polymerize when hit with blue light around 470 nm. The light triggers the chemical reaction that hardens the resin." },
+    { id:'dm-03', topic:'Materials', q:"What's the working time vs. setting time of a dental material?", a:"Working time = how long you have to manipulate it before it starts to set. Setting time = total time until the material is fully hardened. Both are temperature-dependent." },
+    { id:'dm-04', topic:'Materials', q:"What's gypsum used for in the dental lab?", a:"Pouring dental models from impressions. Plaster (Type II) is for study models, dental stone (Type III) for working models, and high-strength stone (Type IV/V) for dies and crown work." },
+
+    // Pharmacology / medications
+    { id:'ph-01', topic:'Pharmacology', q:"What is the most common local anesthetic used in dentistry?", a:"Lidocaine 2% with 1:100,000 epinephrine — the workhorse of dental anesthesia. Maximum dose is roughly 7 mg/kg, capped at 500 mg." },
+    { id:'ph-02', topic:'Pharmacology', q:"What does the 'epi' in lidocaine with epinephrine do?", a:"Epinephrine is a vasoconstrictor — it shrinks blood vessels at the injection site, slowing the body's absorption of lidocaine. That makes the anesthetic last longer and reduces bleeding." },
+    { id:'ph-03', topic:'Pharmacology', q:"What's nitrous oxide used for in the dental office?", a:"Inhalation conscious sedation — relaxes anxious patients while they remain awake and able to respond. Often called 'laughing gas.' Reversed by 100% oxygen at the end." },
+    { id:'ph-04', topic:'Pharmacology', q:"What antibiotic class do most dental antibiotic prescriptions come from?", a:"Penicillins (especially amoxicillin). For penicillin-allergic patients, clindamycin or azithromycin are common alternatives. Always check allergy status before prescribing." },
+
+    // Patient management / emergencies
+    { id:'pm-01', topic:'Patient Care', q:"A patient becomes pale, sweaty, and feels dizzy in the chair. What's likely happening and what do you do first?", a:"Likely syncope (fainting) — most common medical emergency in dentistry. Recline the chair to Trendelenburg (head below feet), loosen tight clothing, monitor vitals, give oxygen if needed." },
+    { id:'pm-02', topic:'Patient Care', q:"What's the normal adult resting heart rate range?", a:"60–100 beats per minute. Below 60 is bradycardia; above 100 is tachycardia. Always document on the patient's chart and tell the doctor if it's outside normal." },
+    { id:'pm-03', topic:'Patient Care', q:"What's normal adult blood pressure?", a:"Below 120/80 mmHg. Elevated: 120–129/<80. Stage 1 hypertension: 130–139/80–89. Stage 2: 140+/90+. Always defer elective treatment if BP is dangerously high." },
+    { id:'pm-04', topic:'Patient Care', q:"A diabetic patient becomes confused, shaky, and sweaty. What's likely and what do you do?", a:"Hypoglycemia (low blood sugar). Give a quick sugar source — orange juice, glucose tablets, cake icing — and notify the dentist. If they lose consciousness, call 911." },
+    { id:'pm-05', topic:'Patient Care', q:"What does the medical history tell you and why must it be updated every visit?", a:"It flags medications, allergies, conditions, and recent surgeries that affect treatment decisions and emergency response. Updated each visit because a patient's status can change between appointments." },
+
+    // OSHA / safety
+    { id:'osha-01', topic:'OSHA', q:"What is the Bloodborne Pathogen Standard?", a:"OSHA's regulation 29 CFR 1910.1030 — requires employers to protect workers from exposure to blood and OPIM through PPE, engineering controls, work practice controls, hep-B vaccination, and an exposure control plan." },
+    { id:'osha-02', topic:'OSHA', q:"What's an SDS and why do you need them?", a:"Safety Data Sheet — chemical-specific document with hazards, first aid, and handling. Every chemical in the office must have an accessible SDS. Required under OSHA's Hazard Communication Standard." },
+    { id:'osha-03', topic:'OSHA', q:"What color is the regulated medical waste container (and what goes in it)?", a:"Red biohazard bag, with the biohazard symbol. Used for items soaked or saturated with blood/OPIM — not for routine PPE. Sharps go in a rigid puncture-resistant container, also labeled biohazard." },
+
+    // Texas Dental Practice Act / Jurisprudence
+    { id:'tx-01', topic:'Texas Law', q:"Who regulates the practice of dental assisting in Texas?", a:"The Texas State Board of Dental Examiners (TSBDE), under the Texas Dental Practice Act." },
+    { id:'tx-02', topic:'Texas Law', q:"What's the renewal cycle for a Texas RDA registration?", a:"Annual renewal with continuing education hours required. Keep records of CE — the Board can audit." },
+    { id:'tx-03', topic:'Texas Law', q:"What's the difference between a Dental Assistant and a Registered Dental Assistant in Texas?", a:"All dental assistants must register with the Board after completing required courses (infection control, jurisprudence, radiology if taking x-rays). The 'Registered' status is what allows you to perform delegated duties." },
+    { id:'tx-04', topic:'Texas Law', q:"Can a Texas RDA take x-rays?", a:"Yes — only after completing a Board-approved radiology certification course and passing the exam. The course must include both didactic and clinical components." },
+    { id:'tx-05', topic:'Texas Law', q:"Can a Texas RDA place sealants?", a:"Yes, under the direct supervision of a licensed dentist — meaning the dentist must be in the office and authorize the procedure. The dentist examines and approves the sealant placement." },
+    { id:'tx-06', topic:'Texas Law', q:"What duties may an RDA NOT perform in Texas?", a:"Diagnose, treatment plan, cut hard or soft tissue, place final restorations independently, prescribe medications, or perform any procedure not delegable under the Dental Practice Act." },
+
+    // HIPAA / records
+    { id:'hipaa-01', topic:'HIPAA', q:"What does HIPAA protect?", a:"Patient health information — anything that identifies a patient combined with their health, treatment, or payment data. Includes paper charts, electronic records, conversations, and even appointment lists." },
+    { id:'hipaa-02', topic:'HIPAA', q:"Can you discuss a patient by name in the waiting room?", a:"No. Patient names + treatment details together are PHI. Even calling 'John Smith — root canal at 3?' across the office can be a violation. Use first name only or initials when needed." },
+    { id:'hipaa-03', topic:'HIPAA', q:"How long must dental records be kept in Texas?", a:"At least 5 years from the date of last treatment, or until the patient turns 21 (whichever is longer), per Texas law." },
+
+    // Charts / records
+    { id:'ch-01', topic:'Charting', q:"What does a 'caries' notation look like on a tooth chart?", a:"Outlined and filled in red on the surface(s) where decay is present. Existing restorations are charted in blue or black; planned treatment in red." },
+    { id:'ch-02', topic:'Charting', q:"On a perio chart, what does a probing depth of 4 mm or more usually indicate?", a:"Periodontitis (vs. healthy 1–3 mm). 4 mm with bleeding on probing = active disease. The deeper the pocket, the more advanced the bone loss is likely to be." },
+    { id:'ch-03', topic:'Charting', q:"What's a SOAP note?", a:"Subjective (what the patient says), Objective (what you observe/measure), Assessment (diagnosis), Plan (treatment) — standard format for clinical documentation." },
+
+    // Insurance / front office basics
+    { id:'ins-01', topic:'Insurance & Front Office', q:"What's an ADA code (CDT code)?", a:"A 5-character procedure code (D-prefix + 4 digits, like D2391) maintained by the ADA. Required for insurance billing. Each code represents a specific dental procedure." },
+    { id:'ins-02', topic:'Insurance & Front Office', q:"What's the difference between a deductible and a copay?", a:"Deductible = amount the patient pays out of pocket before insurance starts paying (often per calendar year). Copay = the fixed portion of each procedure the patient owes (e.g. 20% of the fee)." },
+    { id:'ins-03', topic:'Insurance & Front Office', q:"What's a pre-authorization (pre-auth)?", a:"A request submitted to the insurance company before treatment to confirm what they'll cover. Especially common for crowns, ortho, implants, and oral surgery. Reduces patient surprise bills." },
+  ];
+
+  // Build topic dropdown
+  const topics = Array.from(new Set(DECK.map(c => c.topic))).sort();
+  const topicSel = document.getElementById('topic-filter');
+  topics.forEach(t => {
+    const o = document.createElement('option');
+    o.value = t; o.textContent = t;
+    topicSel.appendChild(o);
+  });
+
+  // ── Persistence layer (Supabase if signed in, localStorage otherwise) ──
+  const LS_KEY = 'pda.studyCardProgress.v1';
+  let session = null;
+  try { ({ data: { session } } = await sb.auth.getSession()); } catch (e) {}
+
+  let progress = {}; // { card_id: { status, review_count } }
+
+  async function loadProgress() {
+    if (session) {
+      const { data } = await sb.from('study_card_progress')
+        .select('card_id, status, review_count')
+        .eq('deck', 'rda-state-exam')
+        .eq('student_id', session.user.id);
+      progress = {};
+      (data || []).forEach(r => { progress[r.card_id] = { status: r.status, review_count: r.review_count }; });
+    } else {
+      try { progress = JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { progress = {}; }
+    }
+  }
+
+  async function saveCard(card_id, status) {
+    const prev = progress[card_id] || { status: 'new', review_count: 0 };
+    const next = { status, review_count: (prev.review_count || 0) + 1 };
+    progress[card_id] = next;
+    if (session) {
+      await sb.from('study_card_progress').upsert({
+        student_id: session.user.id,
+        deck: 'rda-state-exam',
+        card_id, status,
+        review_count: next.review_count,
+        last_reviewed_at: new Date().toISOString(),
+      }, { onConflict: 'student_id,deck,card_id' });
+    } else {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(progress)); } catch (e) {}
+    }
+  }
+
+  async function resetDeck() {
+    progress = {};
+    if (session) await sb.from('study_card_progress')
+      .delete()
+      .eq('deck', 'rda-state-exam')
+      .eq('student_id', session.user.id);
+    else try { localStorage.removeItem(LS_KEY); } catch (e) {}
+  }
+
+  await loadProgress();
+
+  // ── Filtered deck + position ──
+  let workingDeck = [];
+  let pos = 0;
+  let flipped = false;
+
+  function rebuildWorking() {
+    const topic  = topicSel.value;
+    const status = document.getElementById('status-filter').value;
+    workingDeck = DECK.filter(c => {
+      if (topic  && c.topic !== topic) return false;
+      const s = (progress[c.id]?.status) || 'new';
+      if (status && status !== s) return false;
+      return true;
+    });
+    pos = Math.min(pos, Math.max(0, workingDeck.length - 1));
+  }
+
+  function statusOf(card) { return (progress[card.id]?.status) || 'new'; }
+
+  function render() {
+    const empty = document.getElementById('empty-state');
+    const cardWrap = document.querySelector('.card-flip');
+    if (workingDeck.length === 0) {
+      empty.classList.remove('hidden');
+      cardWrap.classList.add('hidden');
+    } else {
+      empty.classList.add('hidden');
+      cardWrap.classList.remove('hidden');
+      const c = workingDeck[pos];
+      const s = statusOf(c);
+      document.getElementById('card-topic').textContent   = c.topic;
+      document.getElementById('card-topic-2').textContent = c.topic;
+      document.getElementById('card-question').textContent = c.q;
+      document.getElementById('card-answer').textContent   = c.a;
+      document.getElementById('card-id-label').textContent = c.id;
+      const chip = document.getElementById('card-status-chip');
+      chip.className = 'topic-pill status-' + s;
+      chip.textContent = s === 'mastered' ? 'Mastered' : s === 'learning' ? 'Learning' : 'New';
+      flipped = false;
+      document.getElementById('card-inner').classList.remove('flipped');
+    }
+    document.getElementById('position-label').textContent = workingDeck.length
+      ? `${pos + 1} of ${workingDeck.length}` : '';
+
+    // Stats from the FULL deck (not filtered)
+    let mastered = 0, learning = 0;
+    DECK.forEach(c => {
+      const s = statusOf(c);
+      if (s === 'mastered') mastered++;
+      else if (s === 'learning') learning++;
+    });
+    document.getElementById('stat-mastered').textContent  = mastered;
+    document.getElementById('stat-learning').textContent  = learning;
+    document.getElementById('stat-remaining').textContent = DECK.length - mastered;
+  }
+
+  // Card flip
+  const cardInner = document.getElementById('card-inner');
+  function flipCard() {
+    flipped = !flipped;
+    cardInner.classList.toggle('flipped', flipped);
+  }
+  cardInner.addEventListener('click', flipCard);
+  cardInner.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(); }});
+
+  function advance() {
+    pos = (pos + 1) % Math.max(1, workingDeck.length);
+    render();
+  }
+  function back() {
+    pos = (pos - 1 + workingDeck.length) % Math.max(1, workingDeck.length);
+    render();
+  }
+
+  document.getElementById('btn-mastered').onclick = async () => {
+    const c = workingDeck[pos]; if (!c) return;
+    await saveCard(c.id, 'mastered');
+    rebuildWorking();
+    render();
+  };
+  document.getElementById('btn-learning').onclick = async () => {
+    const c = workingDeck[pos]; if (!c) return;
+    await saveCard(c.id, 'learning');
+    rebuildWorking();
+    advance();
+  };
+  document.getElementById('btn-skip').onclick   = advance;
+  document.getElementById('btn-prev').onclick   = back;
+  document.getElementById('btn-shuffle').onclick = () => {
+    for (let i = workingDeck.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [workingDeck[i], workingDeck[j]] = [workingDeck[j], workingDeck[i]];
+    }
+    pos = 0; render();
+  };
+  document.getElementById('btn-reset').onclick = async () => {
+    if (!confirm('Reset all card progress for this deck?')) return;
+    await resetDeck();
+    rebuildWorking();
+    render();
+  };
+  topicSel.onchange = () => { pos = 0; rebuildWorking(); render(); };
+  document.getElementById('status-filter').onchange = () => { pos = 0; rebuildWorking(); render(); };
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+    if (e.key === 'ArrowRight') advance();
+    else if (e.key === 'ArrowLeft') back();
+    else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); flipCard(); }
+    else if (e.key === '1') document.getElementById('btn-learning').click();
+    else if (e.key === '2') document.getElementById('btn-skip').click();
+    else if (e.key === '3') document.getElementById('btn-mastered').click();
+  });
+
+  // ── Share progress ──
+  document.getElementById('btn-share').onclick = async () => {
+    const mastered = Object.values(progress).filter(p => p.status === 'mastered').length;
+    const total = DECK.length;
+    const text = `I'm studying for my Texas RDA state exam with @PremierDentalAcademy — I've mastered ${mastered} of ${total} cards so far. 🦷✨ #DentalAssistant #PDALongview #RDA`;
+    const url  = location.origin + '/tools/flashcards';
+    if (navigator.share) {
+      try { await navigator.share({ title: 'PDA RDA Exam Flashcards', text, url }); return; } catch (e) {}
+    }
+    try {
+      await navigator.clipboard.writeText(text + '\n\n' + url);
+      const btn = document.getElementById('btn-share');
+      btn.textContent = '✓ Copied — paste anywhere';
+      setTimeout(() => { btn.textContent = '📲 Share progress'; }, 2200);
+    } catch (e) {}
+  };
+
+  // Boot
+  // Shuffle on first load so everyone doesn't see the same first card
+  for (let i = DECK.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [DECK[i], DECK[j]] = [DECK[j], DECK[i]];
+  }
+  rebuildWorking();
+  render();
+})();
+</script>
+</body>
+</html>
