@@ -178,6 +178,7 @@
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
 </head>
 <body class="bg-white antialiased">
 
@@ -922,7 +923,9 @@
       set('stat-in-session',      inSession.length);
       set('stat-upcoming',        upcoming.length);
       set('stat-placement-rate',  placementRate ? `${placementRate}%+` : '—');
-      set('stat-partners',        allOffices.size);
+      // Source-of-truth for partner count is the hiring_partners table,
+      // so this number always matches what's listed on /hiring-partners.
+      set('stat-partners',        officesFromPartners.size || allOffices.size);
     } catch (e) { console.warn('Stats load failed:', e); }
     const form = document.getElementById('subscribe-form');
     const success = document.getElementById('subscribe-success');
