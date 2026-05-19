@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Signing out — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-cyan-50/40 to-teal-50/40 min-h-screen flex items-center justify-center p-6">
+
+<main class="max-w-md w-full bg-white rounded-2xl border border-slate-200 shadow-2xl p-8 text-center">
+  <div class="text-5xl mb-3">👋</div>
+  <h1 class="display text-2xl font-bold" id="title">Signing you out…</h1>
+  <p class="text-slate-600 mt-2 text-sm" id="sub">Clearing your session and saying goodbye for now.</p>
+  <div class="mt-6 grid gap-2 hidden" id="done-actions">
+    <a href="/" class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-lg shadow-md">← Back to home</a>
+    <a href="/login" class="bg-white border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold py-3 rounded-lg">Sign back in</a>
+  </div>
+</main>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const PROJECT_REF  = 'lmbsuwslsycukynzpzik';
+  const AUTH_KEY     = `sb-${PROJECT_REF}-auth-token`;
+
+  try {
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    await sb.auth.signOut({ scope: 'local' }).catch(() => {});
+  } catch (e) {}
+
+  // Belt-and-suspenders: clear any lingering session keys from BOTH storages.
+  try { localStorage.removeItem(AUTH_KEY);   } catch (e) {}
+  try { sessionStorage.removeItem(AUTH_KEY); } catch (e) {}
+  try {
+    // Sweep any keys that look like Supabase auth tokens (catches dev/test refs too).
+    for (const storage of [localStorage, sessionStorage]) {
+      const toRemove = [];
+      for (let i = 0; i < storage.length; i++) {
+        const k = storage.key(i);
+        if (k && (k.startsWith('sb-') && k.endsWith('-auth-token'))) toRemove.push(k);
+      }
+      toRemove.forEach(k => storage.removeItem(k));
+    }
+  } catch (e) {}
+
+  document.getElementById('title').textContent = 'Signed out.';
+  document.getElementById('sub').textContent = 'You can close this tab or sign back in below.';
+  document.getElementById('done-actions').classList.remove('hidden');
+
+  // If this is the result of clicking "logout" in the dashboard, auto-bounce home after 1.2s.
+  // The "stay" buttons above let users override if they want to immediately sign back in.
+  if (new URLSearchParams(location.search).get('then') === 'home') {
+    setTimeout(() => { location.href = '/'; }, 1200);
+  }
+})();
+</script>
+</body>
+</html>

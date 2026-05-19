@@ -115,7 +115,7 @@
   document.getElementById('admin-name').textContent = profile.first_name || 'Amanda';
   document.getElementById('user-label').textContent = profile.email || '';
   document.getElementById('admin-view').classList.remove('hidden');
-  document.getElementById('signout').onclick = async () => { await sb.auth.signOut(); location.href = '/login'; };
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   const todayIso = new Date(); todayIso.setHours(0,0,0,0);
   const [{ data: students }, { data: leads }, { data: tasks }, { data: subs }, { data: comms }] = await Promise.all([
