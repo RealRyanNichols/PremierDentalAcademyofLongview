@@ -47,7 +47,7 @@
   <div class="text-center mb-8">
     <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Study Tools</p>
     <h1 class="display text-3xl sm:text-4xl font-extrabold mt-2">Texas RDA Exam <span class="gradient-text">Flashcards</span></h1>
-    <p class="text-slate-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">60 questions aligned to the Texas State Board RDA exam. Tap the card to flip. Mark "I got it" to master it — or "Need to study" to come back to it.</p>
+    <p class="text-slate-600 mt-2 max-w-xl mx-auto text-sm sm:text-base">Questions aligned to the Texas State Board RDA exam. Tap the card to flip. Mark "I got it" to master it — or "Need to study" to come back to it.</p>
   </div>
 
   <!-- Stats strip -->
@@ -167,7 +167,7 @@
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ── Card deck (60 cards across the major Texas RDA exam topics) ──
+  // ── Card deck (110+ cards across the major Texas RDA exam topics) ──
   const DECK = [
     // Infection control
     { id:'ic-01', topic:'Infection Control', q:"What's the most common route of disease transmission in a dental office?", a:"Direct contact with blood, saliva, and oral fluids — that's why standard precautions (gloves, mask, eyewear, gown) are non-negotiable on every patient." },
@@ -249,6 +249,83 @@
     { id:'ins-01', topic:'Insurance & Front Office', q:"What's an ADA code (CDT code)?", a:"A 5-character procedure code (D-prefix + 4 digits, like D2391) maintained by the ADA. Required for insurance billing. Each code represents a specific dental procedure." },
     { id:'ins-02', topic:'Insurance & Front Office', q:"What's the difference between a deductible and a copay?", a:"Deductible = amount the patient pays out of pocket before insurance starts paying (often per calendar year). Copay = the fixed portion of each procedure the patient owes (e.g. 20% of the fee)." },
     { id:'ins-03', topic:'Insurance & Front Office', q:"What's a pre-authorization (pre-auth)?", a:"A request submitted to the insurance company before treatment to confirm what they'll cover. Especially common for crowns, ortho, implants, and oral surgery. Reduces patient surprise bills." },
+
+    // ── Expansion deck (50 more cards) ──
+    // Infection control deeper
+    { id:'ic-08', topic:'Infection Control', q:"What's the difference between cleaning, disinfection, and sterilization?", a:"Cleaning removes visible debris. Disinfection kills most pathogens on surfaces (low/intermediate/high level). Sterilization kills ALL microbes including spores. Always clean BEFORE disinfecting or sterilizing." },
+    { id:'ic-09', topic:'Infection Control', q:"What's the rule for surface barriers on the dental chair?", a:"Use disposable barriers on high-touch surfaces (light handles, switches, headrest) that you can't easily disinfect. Change between every patient." },
+    { id:'ic-10', topic:'Infection Control', q:"What does 'splash zone' mean in dentistry?", a:"The area in front of the patient's mouth (about 18 inches) where aerosols, droplets, and spatter land. Full PPE is required when working in or near the splash zone." },
+    { id:'ic-11', topic:'Infection Control', q:"What's the proper handwashing technique before donning gloves?", a:"Wet hands → soap → scrub for 20 seconds (sing 'Happy Birthday' twice) → rinse → dry with paper towel → use towel to turn off faucet. Or use alcohol-based hand rub for 20 seconds if hands aren't visibly soiled." },
+    { id:'ic-12', topic:'Infection Control', q:"What's an ultrasonic cleaner used for?", a:"Pre-sterilization cleaning of instruments. Sound waves create micro-bubbles that scrub debris off instruments — safer than hand scrubbing (no scrub brushes near sharps)." },
+    { id:'ic-13', topic:'Infection Control', q:"What's the proper way to handle a contaminated needle for sterilization?", a:"Never recap by hand. Use a one-handed scoop technique OR a recapping device. Then drop into a rigid puncture-resistant sharps container — never throw in regular trash." },
+
+    // Radiology deeper
+    { id:'rad-07', topic:'Radiology', q:"What's the inverse square law in radiology?", a:"Doubling the distance from the radiation source quarters the exposure. That's why 6 feet of distance dramatically reduces operator dose vs. standing right next to the patient." },
+    { id:'rad-08', topic:'Radiology', q:"What's the PID (position-indicating device) and what does it do?", a:"The cone/tube that extends from the x-ray head. It limits the beam size (collimation) and guides aim. Rectangular PIDs reduce patient exposure ~60% vs. round." },
+    { id:'rad-09', topic:'Radiology', q:"What's a periapical (PA) x-ray vs. a panoramic?", a:"PA shows the entire tooth from crown to apex plus surrounding bone — for endo/diagnosis. Panoramic shows the entire jaw in one image — for ortho, wisdom tooth eval, TMJ, broad screening." },
+    { id:'rad-10', topic:'Radiology', q:"What's the difference between a digital sensor and traditional film?", a:"Digital: instant image, ~70-90% less radiation, computer storage, easy enhancement. Film: chemical processing, longer exposure, physical storage, can't enhance. Digital is the modern standard." },
+    { id:'rad-11', topic:'Radiology', q:"What does 'elongation' on a PA x-ray mean and how do you fix it?", a:"Teeth look stretched / too long. Caused by insufficient vertical angulation of the PID. Fix: increase the vertical angle (tilt the PID more downward for maxillary, upward for mandibular)." },
+    { id:'rad-12', topic:'Radiology', q:"What does 'foreshortening' mean and how do you fix it?", a:"Teeth look squished / too short. Caused by excessive vertical angulation. Fix: decrease the vertical angle of the PID." },
+
+    // Anatomy deeper
+    { id:'an-08', topic:'Anatomy', q:"What are the three salivary gland pairs and what do they secrete?", a:"Parotid (largest, secretes serous saliva via Stensen's duct near the upper second molar). Submandibular (mixed serous/mucous, via Wharton's duct under the tongue). Sublingual (mostly mucous, via small ducts under the tongue)." },
+    { id:'an-09', topic:'Anatomy', q:"What's the longest tooth in the mouth?", a:"The maxillary canine (cuspid) — also has the longest root. Built for tearing food and as a 'cornerstone' of the dental arch." },
+    { id:'an-10', topic:'Anatomy', q:"What's the periodontal ligament (PDL)?", a:"The fibrous tissue that anchors the tooth's root to the alveolar bone. Acts as a shock absorber and contains nerve receptors for pressure/proprioception." },
+    { id:'an-11', topic:'Anatomy', q:"What's the cementoenamel junction (CEJ)?", a:"The line where the enamel of the crown meets the cementum of the root. It's the anatomical boundary between crown and root and a key landmark in perio charting." },
+    { id:'an-12', topic:'Anatomy', q:"What's the difference between mandibular and maxillary teeth?", a:"Mandibular = lower jaw. Maxillary = upper jaw. Mandibular roots are usually shorter and more curved; maxillary molars typically have 3 roots (2 buccal, 1 palatal) while mandibular molars have 2 (mesial, distal)." },
+
+    // Chairside / clinical deeper
+    { id:'cs-07', topic:'Chairside', q:"What's the order of instrument transfer in four-handed dentistry?", a:"Pickup of the used instrument with the pinky and ring finger, rotate, deliver the new one with the thumb-index-middle. Always pass parallel to the floor, working end pointing the right direction for the operator's grasp." },
+    { id:'cs-08', topic:'Chairside', q:"What's the 'cotton roll' technique and when do you use it?", a:"Place a cotton roll in the vestibule (between teeth and cheek) to soak up saliva, retract tissue, and keep the field dry for small operative or sealant procedures. Quicker than a rubber dam but less isolation." },
+    { id:'cs-09', topic:'Chairside', q:"What is a high-speed handpiece used for vs. a low-speed?", a:"High-speed (~400,000 RPM, water spray) — cuts enamel and dentin for restorative prep. Low-speed (~5,000-40,000 RPM) — polishing, prophy, finishing, lab work. Different burs fit each." },
+    { id:'cs-10', topic:'Chairside', q:"What's a matrix band and why is it used in a Class II amalgam?", a:"A thin metal strip wrapped around the tooth to create a temporary 'fourth wall' that confines the amalgam and forms a proper contact with the neighboring tooth. Removed once the amalgam sets." },
+    { id:'cs-11', topic:'Chairside', q:"What's the role of an etchant in bonding a composite restoration?", a:"Phosphoric acid (usually 37%) etches the enamel and dentin to create micro-roughness, allowing the bonding agent to mechanically interlock with the tooth surface. Rinsed off after 15-20 seconds." },
+    { id:'cs-12', topic:'Chairside', q:"What's the typical layering technique for a composite restoration?", a:"Apply composite in thin increments (≤2mm), light-cure each layer ~20 seconds before adding the next. Prevents shrinkage stress and ensures complete polymerization." },
+
+    // Dental materials deeper
+    { id:'dm-05', topic:'Materials', q:"What's the difference between zinc oxide-eugenol (ZOE) and zinc phosphate cement?", a:"ZOE = sedative / temporary cement, soothes the pulp, lower strength. Zinc phosphate = high strength, permanent cementation of crowns/bridges, but irritating to the pulp (needs a base over deep dentin)." },
+    { id:'dm-06', topic:'Materials', q:"What's the difference between glass ionomer and resin cement?", a:"Glass ionomer releases fluoride, bonds chemically to tooth, lower esthetics. Resin = stronger, more esthetic, no fluoride release, requires bonding system. Resin cements are now the workhorse for most aesthetic crowns." },
+    { id:'dm-07', topic:'Materials', q:"What's gutta-percha and what's it used for?", a:"A rubber-like material used to fill the root canal space after endodontic treatment. Comes in cone shapes that match endodontic file sizes." },
+    { id:'dm-08', topic:'Materials', q:"What's an impression material vs. a model material?", a:"Impression captures the negative shape of the teeth/arch (alginate, PVS, polyether). Model material is poured INTO the impression to create a positive replica (plaster, dental stone, die stone)." },
+    { id:'dm-09', topic:'Materials', q:"What's the difference between polyvinyl siloxane (PVS) and alginate?", a:"PVS = highly accurate, dimensionally stable for days, used for crowns/bridges/dentures. Alginate = cheap, quick, less accurate, must pour within 15 minutes — used for study models, opposing arches, ortho." },
+
+    // Pharmacology deeper
+    { id:'ph-05', topic:'Pharmacology', q:"What's the maximum number of carpules of lidocaine 2% with 1:100k epi for a healthy 150-lb adult?", a:"~8 carpules (each 1.8 mL carpule = 36 mg lidocaine). Max dose is 7 mg/kg up to 500 mg. Reduce for elderly, cardiac, or pediatric patients." },
+    { id:'ph-06', topic:'Pharmacology', q:"Why must you ALWAYS aspirate before injecting a local anesthetic?", a:"To check if the needle tip is in a blood vessel. Injecting epinephrine intravascularly causes tachycardia, palpitations, anxiety, and in severe cases cardiac events. A positive aspiration = withdraw and reposition." },
+    { id:'ph-07', topic:'Pharmacology', q:"What's the difference between a topical and a local anesthetic?", a:"Topical (benzocaine gel) numbs the surface mucosa — used before injection to reduce needle-stick pain. Local (injectable lidocaine, articaine) numbs the deeper nerve and pulp for the procedure." },
+    { id:'ph-08', topic:'Pharmacology', q:"What's articaine and how is it different from lidocaine?", a:"Articaine 4% is a more potent amide anesthetic — better diffusion through bone, often used for infiltration where lidocaine would need a block. Slightly higher risk of paresthesia with mandibular blocks; many dentists prefer lidocaine for those." },
+
+    // Patient care / emergencies deeper
+    { id:'pm-06', topic:'Patient Care', q:"What's the proper response if a patient swallows a small instrument?", a:"Stay calm. Stop the procedure. Assess airway/breathing. If they're coughing — let them. If they show signs of airway obstruction (no air movement) — Heimlich. Send for chest x-ray to locate the instrument. Document." },
+    { id:'pm-07', topic:'Patient Care', q:"What are the signs of an anaphylactic reaction?", a:"Hives, swelling (lips/tongue/throat), trouble breathing, wheezing, rapid weak pulse, drop in BP, possibly loss of consciousness. Treatment: epinephrine auto-injector, call 911, monitor airway." },
+    { id:'pm-08', topic:'Patient Care', q:"What does it mean if a patient has a 'low-grade fever' and is on antibiotic prophylaxis?", a:"Some heart conditions (prosthetic valves, history of endocarditis) require prophylactic antibiotics before invasive dental work to prevent bacteremia. Fever can mean ongoing infection — defer treatment and consult with their physician." },
+    { id:'pm-09', topic:'Patient Care', q:"What's the AVPU scale used for?", a:"Quick consciousness assessment in emergencies: Alert (oriented), Verbal (responds to voice), Painful (responds only to pain), Unresponsive. Helps you tell the doctor or 911 dispatcher how severe the situation is." },
+    { id:'pm-10', topic:'Patient Care', q:"What's the proper position for a patient experiencing chest pain in the dental chair?", a:"Upright or semi-reclined (not flat). Administer oxygen. Have the patient take their own nitroglycerin if prescribed. Call 911 immediately. Have aspirin ready (chew 325mg) if no allergies and no contraindications." },
+
+    // OSHA deeper
+    { id:'osha-04', topic:'OSHA', q:"What does 'OPIM' stand for?", a:"Other Potentially Infectious Materials — saliva in dentistry, semen, vaginal secretions, CSF, etc. Treated with the same precautions as blood under the Bloodborne Pathogen Standard." },
+    { id:'osha-05', topic:'OSHA', q:"What's the OSHA-required training frequency for bloodborne pathogens?", a:"Annual training is required for all employees with occupational exposure. New hires get it within 10 days of starting. Training must be documented and records kept." },
+    { id:'osha-06', topic:'OSHA', q:"What's a hazardous waste vs. infectious waste?", a:"Hazardous waste = chemicals (developer, mercury, lead foil from x-rays). Infectious / regulated medical waste = blood-soaked items, extracted teeth, sharps. Different disposal streams, different containers." },
+
+    // Texas Dental Practice Act deeper
+    { id:'tx-07', topic:'Texas Law', q:"How many continuing education hours does a Texas RDA need annually?", a:"12 hours of continuing education per renewal year, including specific required courses (jurisprudence, infection control, basic life support / CPR). Check the TSBDE website for current rules." },
+    { id:'tx-08', topic:'Texas Law', q:"Can an RDA expose x-rays without a dentist on the premises?", a:"No — radiology procedures require the supervising dentist to be in the office. The dentist also reviews and signs off on the diagnostic images." },
+    { id:'tx-09', topic:'Texas Law', q:"What's the penalty for practicing as an RDA in Texas without registration?", a:"Class C misdemeanor + civil penalties. The TSBDE can also fine the dentist who allowed unregistered assisting. Don't practice or take x-rays before your registration is finalized." },
+    { id:'tx-10', topic:'Texas Law', q:"What must a Texas RDA report to the TSBDE within 30 days?", a:"Name change, address change, and any criminal convictions (especially controlled substance / DUI). Failure to report can result in disciplinary action against your registration." },
+    { id:'tx-11', topic:'Texas Law', q:"What's the Texas Dental Board's stance on cell phones during patient care?", a:"Generally prohibited during patient treatment — both for HIPAA reasons (cameras) and infection control (contaminated devices). Office policies typically lock phones in lockers or staff areas during clinical hours." },
+
+    // HIPAA deeper
+    { id:'hipaa-04', topic:'HIPAA', q:"What's a Notice of Privacy Practices and when must patients receive it?", a:"A document describing how the practice uses PHI. Given at the first appointment, and patients must sign acknowledgment of receipt. Updated and re-distributed if practices change significantly." },
+    { id:'hipaa-05', topic:'HIPAA', q:"Can you text a patient appointment reminders?", a:"Yes, but only with their documented consent and only the minimum necessary info (date, time, office name). No diagnosis or treatment details. Many offices use HIPAA-compliant texting platforms." },
+
+    // Charting deeper
+    { id:'ch-04', topic:'Charting', q:"What does 'MOD' mean on a dental chart?", a:"Mesial-Occlusal-Distal — a restoration or cavity involving three surfaces of a posterior tooth (the mesial side, the chewing surface, and the distal side)." },
+    { id:'ch-05', topic:'Charting', q:"What does 'BWX' or 'BW' stand for in dental notes?", a:"Bitewing X-ray. Often paired with a number indicating quantity (e.g. 'BW4' = four bitewings, the standard full posterior bitewing series)." },
+
+    // Practice management
+    { id:'pm-fdo-01', topic:'Insurance & Front Office', q:"What's the difference between PPO and HMO dental insurance?", a:"PPO (Preferred Provider Organization): patient can see any dentist, but pays less in-network. HMO (Health Maintenance Org): patient must use an assigned in-network dentist; usually lower premiums but less flexibility." },
+    { id:'pm-fdo-02', topic:'Insurance & Front Office', q:"What's a UCR fee?", a:"Usual, Customary, and Reasonable — the average fee insurance companies use to calculate reimbursement in a given geographic area. If your office's fee is above UCR, the patient covers the difference (if out-of-network)." },
+    { id:'pm-fdo-03', topic:'Insurance & Front Office', q:"What's the recare interval most insurances cover for prophy?", a:"Two cleanings per year (every 6 months). Periodontal maintenance is typically quarterly (every 3 months) and covered separately under D4910." },
   ];
 
   // Build topic dropdown
