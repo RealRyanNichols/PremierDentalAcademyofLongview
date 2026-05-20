@@ -50,6 +50,7 @@
       <a href="/dashboard" class="text-teal-700">Dashboard</a>
       <a href="/tools/practice-pro" class="hover:text-teal-700">Practice Pro</a>
       <a href="/tools/chairside" class="hover:text-teal-700">ChairSide</a>
+      <a href="/tools/flashcards" class="hover:text-teal-700">Flashcards</a>
       <a href="/contact" class="hover:text-teal-700">Support</a>
     </div>
     <div class="flex items-center gap-3 text-sm">
@@ -109,6 +110,34 @@
     <div class="mt-5 inline-flex items-start gap-2 text-sm bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-3 py-2">
       <span class="text-base">💻</span>
       <span><strong>Heads up:</strong> the practice trainers are built for desktop / laptop — that's how you'll use the real software in any dental office. Phone works for course videos and reading, but plan to do the trainers on a laptop. It'll feel right and work right.</span>
+    </div>
+  </section>
+
+  <!-- Quick start for brand-new students (hidden once they log any practice activity) -->
+  <section id="quickstart" class="hidden bg-gradient-to-br from-teal-50 via-cyan-50 to-amber-50 border border-teal-200 rounded-2xl p-5 sm:p-6 mb-6">
+    <div class="flex items-start gap-3 mb-4">
+      <span class="text-3xl">🚀</span>
+      <div>
+        <h2 class="display text-xl font-bold">First time here? Try these in this order.</h2>
+        <p class="text-sm text-slate-600 mt-1">Three quick clicks to get the lay of the land. The trainers feel like real dental software the moment you open them.</p>
+      </div>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-3">
+      <a href="/tools/practice-pro" class="block bg-white rounded-xl border border-slate-200 hover:border-teal-600 hover:shadow-md transition p-4">
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">Step 1</div>
+        <div class="font-bold mt-1">Open Practice Pro</div>
+        <div class="text-xs text-slate-600 mt-1">Schedule a patient, chart a cavity, post a payment. 5 minutes.</div>
+      </a>
+      <a href="/tools/chairside" class="block bg-white rounded-xl border border-slate-200 hover:border-cyan-600 hover:shadow-md transition p-4">
+        <div class="text-xs uppercase tracking-widest text-cyan-700 font-bold">Step 2</div>
+        <div class="font-bold mt-1">Try ChairSide</div>
+        <div class="text-xs text-slate-600 mt-1">SmartDoc clinical notes, perio chart, and the live Power Bar stats.</div>
+      </a>
+      <a href="/tools/flashcards" class="block bg-white rounded-xl border border-slate-200 hover:border-amber-600 hover:shadow-md transition p-4">
+        <div class="text-xs uppercase tracking-widest text-amber-700 font-bold">Step 3</div>
+        <div class="font-bold mt-1">Start flashcards</div>
+        <div class="text-xs text-slate-600 mt-1">110+ cards for the Texas RDA exam. Master a few before bed.</div>
+      </a>
     </div>
   </section>
 
@@ -326,6 +355,12 @@
 
   const all = logs || [];
   document.getElementById('stat-actions').textContent = all.length;
+  // Show the "first time here?" quick-start card only for brand-new students
+  // who haven't logged any practice activity yet.
+  if (all.length === 0) {
+    const qs = document.getElementById('quickstart');
+    if (qs) qs.classList.remove('hidden');
+  }
 
   // Patients touched — count distinct patient ids from metadata.id
   const patientIds = new Set();
