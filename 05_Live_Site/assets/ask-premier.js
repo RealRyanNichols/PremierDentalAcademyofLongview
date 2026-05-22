@@ -27,7 +27,7 @@
   // Knowledge base — keyword matchers + canned responses
   const KB = [
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: 'Tuition is **$1,997 for In-Person** at our Longview campus or **$997 for Online** (live from home).\n\nPayment plans available, and we accept TWC vouchers, GI Bill, and WIOA funding.',
+      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$1,997** with payment plans available.\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
@@ -39,7 +39,7 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: 'Yes — payment plans are available (**$1,997 In-Person** or **$997 Online**). We also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Apply and we\'ll walk through what fits you.',
+      reply: '**In-Person ($1,997)** has flexible payment plans — $200 down, then daily/weekly/monthly until paid off.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**.',
       cta: { label: 'Apply →', href: '/apply' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
@@ -75,7 +75,7 @@
       cta: { label: 'Send a message →', href: '/contact' } },
 
     { match: /\b(refund|money back|guarantee|cancel)\b/i,
-      reply: '**14-day full money-back guarantee.** If within the first two weeks you decide it\'s not for you, we refund 100%. No questions. After that, pro-rated by completion percentage.',
+      reply: '**In-Person ($1,997):** if you withdraw, we refund pro-rata based on the curriculum weeks attended — per Texas state guidelines.\n\n**Online ($397 sale):** non-refundable at this price, BUT if Online isn\'t right for you we\'ll transfer the full $397 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See full policy →', href: '/terms' } },
 
     { match: /\b(certification|certificate|license|state board|rda|register|registration|texas)\b/i,
