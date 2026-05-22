@@ -75,7 +75,7 @@
       cta: { label: 'Send a message →', href: '/contact' } },
 
     { match: /\b(refund|money back|guarantee|cancel)\b/i,
-      reply: '**In-Person ($1,997):** if you withdraw, we refund pro-rata based on the curriculum weeks attended — per Texas state guidelines.\n\n**Online ($397 sale):** non-refundable at this price, BUT if Online isn\'t right for you we\'ll transfer the full $397 as credit toward the In-Person program — your money is never lost.',
+      reply: '**Online ($397 sale):** non-refundable at the sale price — but if Online isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program. Your money is never lost.\n\n**In-Person ($1,997):** pro-rated refund per Texas state proprietary-school guidelines.',
       cta: { label: 'See full policy →', href: '/terms' } },
 
     { match: /\b(certification|certificate|license|state board|rda|register|registration|texas)\b/i,

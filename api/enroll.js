@@ -13,7 +13,7 @@ const MAX_INSTALLMENTS = 13; // Square invoice payment_requests cap
 
 const PLANS = {
   'in-person': { name: 'PDA RDA Program — In-Person', totalCents: 199700 },
-  'online':    { name: 'PDA RDA Program — Online',    totalCents:  99700 },
+  'online':    { name: 'PDA RDA Program — Online (Limited Time Sale)', totalCents: 39700 },
 };
 
 async function sq(path, method, body, idempotency) {
