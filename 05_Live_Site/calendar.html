@@ -114,10 +114,11 @@
   </div>
 
   <!-- Online = start any time. Slim secondary banner. -->
-  <a href="/enroll?plan=online" class="mb-8 sm:mb-10 flex items-center gap-3 bg-cyan-700/90 hover:bg-cyan-700 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-sm transition">
+  <a href="/enroll?plan=online" class="mb-8 sm:mb-10 flex items-center gap-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-md transition relative">
+    <span class="absolute -top-2 left-3 bg-amber-400 text-rose-900 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full animate-pulse">🔥 Limited time</span>
     <span class="text-xl shrink-0">💻</span>
-    <span class="flex-1 min-w-0"><strong>Prefer Online?</strong> Start any day for <strong>$997</strong> — no cohort to wait for.</span>
-    <span class="text-xs font-bold uppercase tracking-wider whitespace-nowrap text-cyan-100">Enroll →</span>
+    <span class="flex-1 min-w-0"><strong>Online program — $397 one-time</strong> <span class="line-through opacity-70 text-sm">$997</span> · Start any day. No class schedule.</span>
+    <span class="text-xs font-bold uppercase tracking-wider whitespace-nowrap text-white">Enroll →</span>
   </a>
 
   <!-- Grid of class cards, grouped by month -->
@@ -144,7 +145,7 @@ const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.c
 const fmtMonth = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 const fmtDate  = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtShort = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-const PRICE = { in_person: '$1,997', online: '$997' };
+const PRICE = { in_person: '$1,997', online: '$397' };
 const ICON  = { in_person: '🏫', online: '💻' };
 const LABEL = { in_person: 'In-Person',  online: 'Online' };
 
