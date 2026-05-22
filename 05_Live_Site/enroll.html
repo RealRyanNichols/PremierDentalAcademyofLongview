@@ -480,26 +480,60 @@ async function pickPlan(plan) {
   renderSummary();
 }
 
+// Module-level lock so the same form session can NEVER submit twice — even
+// if the user double-clicks, the button briefly re-enables, or the network
+// hiccups. This is the line that stopped the triple-charge bug.
+let __PDA_SUBMIT_LOCKED = false;
+
 async function submit() {
+  if (__PDA_SUBMIT_LOCKED) return;
+  __PDA_SUBMIT_LOCKED = true;
+
   const btn = document.getElementById('pay-btn');
   const err = document.getElementById('err');
   err.hidden = true;
 
   const s = computeSchedule();
-  if (!s.valid) { err.textContent = s.warning || 'Please fix the plan first.'; err.hidden = false; return; }
+  if (!s.valid) {
+    __PDA_SUBMIT_LOCKED = false; // safe to retry — nothing went to Square
+    err.textContent = s.warning || 'Please fix the plan first.'; err.hidden = false; return;
+  }
 
   const name  = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
-  if (!name || !email) { err.textContent = 'Name and email are required.'; err.hidden = false; return; }
+  if (!name || !email) {
+    __PDA_SUBMIT_LOCKED = false;
+    err.textContent = 'Name and email are required.'; err.hidden = false; return;
+  }
 
   btn.disabled = true;
-  btn.textContent = 'Processing…';
+  btn.textContent = 'Processing… DO NOT close this tab.';
+
+  let tokenRes;
   try {
-    const tokenRes = await state.card.tokenize();
+    tokenRes = await state.card.tokenize();
     if (tokenRes.status !== 'OK') {
-      throw new Error(tokenRes.errors?.[0]?.message || 'Card was rejected. Try another card.');
+      // Tokenization failed — card was NEVER charged, safe to allow retry.
+      __PDA_SUBMIT_LOCKED = false;
+      btn.disabled = false;
+      btn.textContent = 'Reserve seat & pay today';
+      err.textContent = tokenRes.errors?.[0]?.message || 'Card was rejected. Try another card.';
+      err.hidden = false;
+      return;
     }
+  } catch (e) {
+    __PDA_SUBMIT_LOCKED = false;
+    btn.disabled = false;
+    btn.textContent = 'Reserve seat & pay today';
+    err.textContent = e.message || 'Card tokenization failed.';
+    err.hidden = false;
+    return;
+  }
+
+  // From here on, we may have sent a charge to Square. NEVER re-enable
+  // the button. NEVER show "Payment failed" if the server returns ok=true.
+  try {
     const body = {
       plan: state.plan, downCents: s.down, cadence: s.cadence,
       firstPaymentDate: s.firstDate, classEndDate: s.end,
@@ -511,28 +545,48 @@ async function submit() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    const out = await resp.json();
-    if (!resp.ok || !out.ok) throw new Error(out.error || 'Payment failed.');
+    const out = await resp.json().catch(() => ({}));
 
-    const params = new URLSearchParams({
-      plan: out.plan,
-      total: out.totalCents,
-      down: out.downCents,
-      remaining: out.remainingCents,
-      receipt: out.receiptUrl || '',
-      cadence: out.schedule?.cadence || '',
-      count: String(out.schedule?.count || 0),
-      per: String(out.schedule?.perCents || 0),
-      last: String(out.schedule?.lastAmountCents || 0),
-      finalDate: out.schedule?.dates?.[out.schedule.dates.length - 1] || '',
-      cohort: state.cohort?.name || '',
-    });
-    window.location.href = '/enroll-success?' + params.toString();
-  } catch (e) {
-    err.textContent = e.message;
+    if (resp.ok && out.ok) {
+      // Success path. Note: out.warning may be set if the down-payment
+      // succeeded but the recurring-invoice creation failed — the success
+      // page surfaces the warning so the student isn't confused.
+      const params = new URLSearchParams({
+        plan: out.plan,
+        total: out.totalCents,
+        down: out.downCents,
+        remaining: out.remainingCents,
+        receipt: out.receiptUrl || '',
+        cadence: out.schedule?.cadence || '',
+        count: String(out.schedule?.count || 0),
+        per: String(out.schedule?.perCents || 0),
+        last: String(out.schedule?.lastAmountCents || 0),
+        finalDate: out.schedule?.dates?.[out.schedule.dates.length - 1] || '',
+        cohort: state.cohort?.name || '',
+        warning: out.warning || '',
+      });
+      window.location.href = '/enroll-success?' + params.toString();
+      return;
+    }
+
+    // Server returned non-ok. We don't know if Square took the card or not.
+    // Tell the student to CALL US instead of allowing a re-submit.
+    btn.textContent = '⛔ Stopped — call (903) 913-6444';
+    btn.classList.add('bg-rose-700');
+    err.innerHTML = `
+      <strong>Hold on — don't try again.</strong> ${(out.error || 'Something went wrong with checkout.').replace(/</g,'&lt;')}<br><br>
+      We may or may not have captured your card. To avoid any double-charge, <strong>call Amanda at (903) 913-6444</strong> right now — she'll confirm in Square in 30 seconds. If we charged you and the page errored, she refunds it on the spot.
+    `;
     err.hidden = false;
-    btn.disabled = false;
-    btn.textContent = 'Reserve seat & pay today';
+  } catch (e) {
+    // Network error / unparseable response. Same rule: do NOT allow retry.
+    btn.textContent = '⛔ Stopped — call (903) 913-6444';
+    btn.classList.add('bg-rose-700');
+    err.innerHTML = `
+      <strong>Connection problem.</strong> The page couldn't confirm whether your card was charged.<br><br>
+      <strong>Call Amanda at (903) 913-6444 right now</strong> — she'll check Square in 30 seconds. Don't click pay again from this page.
+    `;
+    err.hidden = false;
   }
 }
 
