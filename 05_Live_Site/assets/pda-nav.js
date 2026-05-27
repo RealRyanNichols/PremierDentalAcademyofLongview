@@ -13,22 +13,27 @@
 (function () {
   const NAV_HTML = `
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 min-h-16 py-2 flex items-center justify-between gap-3">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900 shrink-0">
       <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
-      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+      <span class="text-base sm:text-lg hidden sm:inline">Premier Dental Academy</span>
     </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
-      <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
-      <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
-      <a href="/salary"    data-nav-link class="hover:text-teal-700">Salary</a>
-      <a href="/about"     data-nav-link class="hover:text-teal-700">About</a>
-      <a href="/contact"   data-nav-link class="hover:text-teal-700">Contact</a>
-      <a href="/teach"     data-nav-link class="text-amber-600 hover:text-amber-700 font-semibold">Teach</a>
+    <div class="hidden md:flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm font-medium text-slate-700">
+      <a href="/#programs"           data-nav-link class="hover:text-teal-700">Programs</a>
+      <a href="/calendar"            data-nav-link class="hover:text-teal-700">Calendar</a>
+      <a href="/feed"                data-nav-link class="hover:text-teal-700">Feed</a>
+      <a href="/salary"              data-nav-link class="hover:text-teal-700">Salary</a>
+      <a href="/graduates"           data-nav-link class="hover:text-teal-700">Graduates</a>
+      <a href="/hiring-partners"     data-nav-link class="hover:text-teal-700">For Offices</a>
+      <a href="/tools/practice-exam" data-nav-link class="hover:text-teal-700">Free Exam</a>
+      <a href="/about"               data-nav-link class="hover:text-teal-700">About</a>
+      <a href="/contact"             data-nav-link class="hover:text-teal-700">Contact</a>
+      <a href="/apply"               data-nav-link class="hover:text-teal-700">Funding</a>
+      <a href="/teach"               data-nav-link class="text-amber-600 hover:text-amber-700 font-semibold">Teach</a>
+      <a id="pda-nav-auth"  href="/login"     data-nav-link class="text-slate-700 hover:text-teal-700">Sign in</a>
+      <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-teal-700 hover:text-teal-900 font-semibold">Dashboard</a>
     </div>
-    <div class="flex items-center gap-3">
-      <a id="pda-nav-auth"  href="/login"  data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
-      <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-medium text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
+    <div class="flex items-center gap-3 shrink-0">
       <a href="/enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="pda-nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="pda-nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -40,22 +45,31 @@
 
   const MENU_HTML = `
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
-  <div class="px-6 py-6 flex flex-col">
-    <a href="/#programs" data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Programs</a>
-    <a href="/calendar"  data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Calendar</a>
-    <a href="/salary"    data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Salary</a>
-    <a href="/about"     data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">About</a>
-    <a href="/contact"   data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
-    <a href="/tools/practice-exam" data-nav-link class="block py-4 border-b border-slate-100 text-base font-semibold text-teal-700">Free RDA practice exam →</a>
-    <a href="/graduates" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
-    <a href="/hiring-partners" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
-    <a href="/teach"     data-nav-link class="block py-4 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
-    <a href="/blog"      data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Blog</a>
-    <a href="/apply"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Workforce / Veterans</a>
-    <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Sign in</a>
-    <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-4 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
+  <div class="px-5 py-5 flex flex-col">
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1">Explore</p>
+    <a href="/#programs" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Programs</a>
+    <a href="/calendar"  data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Calendar</a>
+    <a href="/feed"      data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Feed</a>
+    <a href="/salary"    data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Salary calculator</a>
+
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-5">Free study tools</p>
+    <a href="/tools/practice-exam" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-teal-700">📝 Free RDA practice exam</a>
+    <a href="/tools/flashcards"    data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
+
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-5">About us</p>
+    <a href="/graduates" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
+    <a href="/hiring-partners" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
+    <a href="/about"     data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">About</a>
+    <a href="/contact"   data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">Contact</a>
+
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-5">Join us</p>
+    <a href="/teach"     data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
+    <a href="/apply"     data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">Workforce / Veterans funding</a>
+    <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">Sign in</a>
+    <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-3 px-1 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
+
     <a href="/enroll"    class="mt-6 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-4 rounded-lg shadow">Enroll →</a>
-    <a href="tel:+19039136444" class="mt-3 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
+    <a href="tel:+19039136444" class="mt-3 mb-2 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
   </div>
 </div>`;
 
