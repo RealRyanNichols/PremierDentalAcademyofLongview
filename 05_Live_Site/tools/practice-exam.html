@@ -240,8 +240,20 @@
   $('modal-count').textContent = BANK.length;
   $('topic-count').textContent = topics.length;
 
-  let quiz = [], idx = 0, answers = [], answered = false;
+  let quiz = [], idx = 0, answers = [], answered = false, currentMode = 'quick';
   const LS_UNLOCK = 'pda.examUnlocked';
+
+  async function saveAttempt(mode, pct, correct, total, byTopic) {
+    if (!sb) return;
+    try {
+      const { data } = await sb.auth.getSession();
+      const uid = data?.session?.user?.id;
+      if (!uid) return;
+      await sb.from('practice_exam_attempts').insert({
+        student_id: uid, mode, score_pct: pct, correct, total, topic_breakdown: byTopic,
+      });
+    } catch (e) { /* never block results on a save failure */ }
+  }
 
   function shuffle(arr) { const a = arr.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
   function show(screen) { ['start','quiz','results'].forEach(s => $('screen-'+s).classList.toggle('hidden', s !== screen)); window.scrollTo({top:0,behavior:'smooth'}); }
@@ -308,6 +320,7 @@
       byTopic[item.t].n++; if (ok) byTopic[item.t].c++;
     });
     const pct = Math.round(correct / quiz.length * 100);
+    saveAttempt(currentMode, pct, correct, quiz.length, byTopic);
     $('score-pct').textContent = pct + '%';
     $('score-correct').textContent = correct;
     $('score-total').textContent = quiz.length;
@@ -376,7 +389,7 @@
   $('retake-btn').onclick = () => show('start');
 
   // ---- Start buttons ----
-  $('start-quick').onclick = () => begin(shuffle(BANK).slice(0, 10));
+  $('start-quick').onclick = () => { currentMode = 'quick'; begin(shuffle(BANK).slice(0, 10)); };
 
   async function fullUnlocked() {
     if (localStorage.getItem(LS_UNLOCK) === '1') return true;
@@ -384,6 +397,7 @@
     return false;
   }
   $('start-full').onclick = async () => {
+    currentMode = 'full';
     if (await fullUnlocked()) begin(shuffle(BANK));
     else $('unlock-modal').classList.remove('hidden');
   };
