@@ -24,6 +24,7 @@
       <a href="/admin" class="text-teal-300">Home</a>
       <a href="/admin/students" class="text-slate-300 hover:text-white">Students</a>
       <a href="/admin/leads" class="text-slate-300 hover:text-white">Inbox</a>
+      <a href="/admin/instructors" class="text-slate-300 hover:text-white">Instructors</a>
       <span id="user-label" class="text-slate-400 hidden sm:inline"></span>
       <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
     </div>
@@ -64,6 +65,10 @@
         <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Newsletter subs</div>
         <div id="c-subs" class="text-2xl font-bold mono mt-1 text-cyan-700">—</div>
       </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">New instructor apps</div>
+        <div id="c-instructors" class="text-2xl font-bold mono mt-1 text-amber-700">—</div>
+      </div>
     </div>
 
     <!-- Quick links -->
@@ -77,6 +82,11 @@
         <div class="text-3xl mb-2">📥</div>
         <h3 class="display text-xl font-bold">Inbox</h3>
         <p class="text-sm text-slate-600 mt-1">Every application, tour request, SMS, and contact-form submission. Reply by text or email right from the inbox.</p>
+      </a>
+      <a href="/admin/instructors" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">🧑‍🏫</div>
+        <h3 class="display text-xl font-bold">Instructor applications</h3>
+        <p class="text-sm text-slate-600 mt-1">Review RDAs who applied to teach. Move them through review → interview → approved → hired, and text or email them directly.</p>
       </a>
       <a href="https://supabase.com/dashboard/project/lmbsuwslsycukynzpzik/editor" target="_blank" rel="noopener" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
         <div class="text-3xl mb-2">🗄</div>
@@ -118,12 +128,13 @@
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   const todayIso = new Date(); todayIso.setHours(0,0,0,0);
-  const [{ data: students }, { data: leads }, { data: tasks }, { data: subs }, { data: comms }] = await Promise.all([
+  const [{ data: students }, { data: leads }, { data: tasks }, { data: subs }, { data: comms }, { data: instructors }] = await Promise.all([
     sb.from('profiles').select('id', { count: 'exact', head: false }).neq('is_admin', true),
     sb.from('leads').select('id, created_at, first_name, last_name, source, status').order('created_at', { ascending: false }).limit(50),
     sb.from('admin_tasks').select('id, title, priority, status, created_at').eq('status', 'open').order('priority', { ascending: true }).order('created_at', { ascending: false }).limit(20),
     sb.from('subscribers').select('id', { count: 'exact', head: false }).eq('status', 'subscribed'),
     sb.from('communications').select('id, occurred_at, channel, direction, contact_name, contact_phone, contact_email, body, source').order('occurred_at', { ascending: false }).limit(10),
+    sb.from('instructor_applications').select('id, status').eq('status', 'new'),
   ]);
 
   const newToday = (leads || []).filter(l => new Date(l.created_at) >= todayIso).length;
@@ -132,6 +143,7 @@
   document.getElementById('c-new-leads').textContent = newToday;
   document.getElementById('c-tasks').textContent     = (tasks || []).length;
   document.getElementById('c-subs').textContent      = (subs || []).length;
+  document.getElementById('c-instructors').textContent = (instructors || []).length;
 
   const commsEl = document.getElementById('latest-comms');
   if (!comms || comms.length === 0) {

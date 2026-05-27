@@ -188,6 +188,8 @@
                 ${meta.city ? '· ' + meta.city : ''}
                 ${meta.age ? '· age ' + meta.age : ''}
               </div>
+              ${l.interest_path ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Interest:</strong> ${l.interest_path}</div>` : ''}
+              ${l.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${l.message}</div>` : ''}
               ${meta.program ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Program:</strong> ${meta.program}</div>` : ''}
               ${meta.reason ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Reason:</strong> ${meta.reason}</div>` : ''}
               ${meta.source ? `<div class="text-sm text-slate-700 mt-1.5"><strong>How they heard:</strong> ${meta.source}</div>` : ''}
@@ -257,10 +259,9 @@
 
   // CSV: leads (full info)
   document.getElementById('export').onclick = () => {
-    const rows = [['Created','First','Last','Email','Phone','Source','Program','City','Reason','Notes','Status']];
+    const rows = [['Created','First','Last','Email','Phone','Source','Interest','Message','Status']];
     allLeads.forEach(l => {
-      const m = l.metadata || {};
-      rows.push([new Date(l.created_at).toISOString(), l.first_name || '', l.last_name || '', l.email, l.phone, l.source, m.program || '', m.city || '', m.reason || '', m.notes || m.message || '', l.status || 'new']);
+      rows.push([new Date(l.created_at).toISOString(), l.first_name || '', l.last_name || '', l.email, l.phone, l.source, l.interest_path || '', l.message || '', l.status || 'new']);
     });
     downloadCSV(rows, `leads-${new Date().toISOString().slice(0,10)}.csv`);
   };

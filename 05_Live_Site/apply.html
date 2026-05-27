@@ -184,40 +184,41 @@
     btn.disabled = true;
     btn.textContent = 'Submitting…';
     const fd = new FormData(form);
+    const details = [
+      fd.get('city')       ? `City: ${fd.get('city')}` : '',
+      fd.get('age')        ? `Age: ${fd.get('age')}` : '',
+      fd.get('source')     ? `Heard via: ${fd.get('source')}` : '',
+      fd.get('start_when') ? `Start: ${fd.get('start_when')}` : '',
+      fd.get('notes')      ? `Notes: ${fd.get('notes')}` : '',
+    ].filter(Boolean).join(' · ');
     const lead = {
       first_name: fd.get('first_name'),
       last_name: fd.get('last_name'),
       email: fd.get('email'),
       phone: fd.get('phone'),
-      metadata: {
-        city: fd.get('city'),
-        age: fd.get('age'),
-        program: fd.get('program'),
-        source: fd.get('source'),
-        start_when: fd.get('start_when'),
-        notes: fd.get('notes'),
-      },
+      interest_path: fd.get('program') || null,
+      message: details || null,
       source: 'apply.html',
-      created_at: new Date().toISOString(),
     };
 
     let saved = false;
     if (sb) {
-      const { error } = await sb.from('leads').insert(lead);
-      saved = !error;
+      try {
+        const { error } = await sb.from('leads').insert(lead);
+        saved = !error;
+        if (error) console.error('[apply] insert error:', error.message);
+      } catch (err) { console.error('[apply] insert threw:', err); }
     }
-    // Redirect to dedicated thank-you page
-    location.href = '/thank-you';
-    return;
-
     if (!saved) {
-      // Stash locally as a backup so nothing is lost
+      // Stash locally as a backup so nothing is lost.
       try {
         const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        existing.push(lead);
+        existing.push({ ...lead, created_at: new Date().toISOString() });
         localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
       } catch(e){}
     }
+    // Redirect to the thank-you page (a backup is stashed locally if the save failed).
+    location.href = '/thank-you';
   };
 })();
 </script>
