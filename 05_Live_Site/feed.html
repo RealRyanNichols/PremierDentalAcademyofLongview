@@ -49,14 +49,32 @@
   <div id="composer" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-5">
     <div class="flex gap-3">
       <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-700 grid place-items-center text-white font-bold shrink-0">P</div>
-      <div class="flex-1">
+      <div class="flex-1 min-w-0">
+        <div id="composer-editing" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">✏️ Editing a post</div>
         <textarea id="post-body" rows="3" maxlength="2000" placeholder="What's on your mind today?" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-teal-600 resize-none text-[15px]"></textarea>
-        <input id="post-image" type="url" placeholder="Optional image URL (https://…)" class="mt-2 w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 text-sm" />
-        <div class="flex items-center justify-between mt-2">
-          <label class="flex items-center gap-1.5 text-xs text-slate-500"><input id="post-pin" type="checkbox" class="accent-teal-600" /> Pin to top</label>
-          <div class="flex items-center gap-3">
+
+        <!-- Media preview -->
+        <div id="media-preview" class="hidden mt-2 relative">
+          <button id="media-remove" type="button" title="Remove media" class="absolute top-2 right-2 z-10 bg-slate-900/70 hover:bg-slate-900 text-white rounded-full w-7 h-7 grid place-items-center text-sm">✕</button>
+          <div id="media-preview-inner" class="rounded-xl overflow-hidden border border-slate-200"></div>
+        </div>
+
+        <!-- Link input (toggled) -->
+        <input id="post-link" type="url" placeholder="Paste a link (https://…)" class="hidden mt-2 w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 text-sm" />
+
+        <div id="upload-bar" class="hidden mt-2 text-xs text-teal-600"></div>
+
+        <div class="flex items-center flex-wrap gap-2 mt-3">
+          <button id="btn-photo" type="button" class="text-sm text-slate-600 hover:text-teal-700 hover:bg-slate-50 rounded-lg px-2.5 py-1.5 border border-slate-200">📷 Photo</button>
+          <button id="btn-video" type="button" class="text-sm text-slate-600 hover:text-teal-700 hover:bg-slate-50 rounded-lg px-2.5 py-1.5 border border-slate-200">🎬 Video</button>
+          <button id="btn-link"  type="button" class="text-sm text-slate-600 hover:text-teal-700 hover:bg-slate-50 rounded-lg px-2.5 py-1.5 border border-slate-200">🔗 Link</button>
+          <input id="file-photo" type="file" accept="image/*" class="hidden" />
+          <input id="file-video" type="file" accept="video/*" class="hidden" />
+          <label class="flex items-center gap-1.5 text-xs text-slate-500 ml-1"><input id="post-pin" type="checkbox" class="accent-teal-600" /> Pin to top</label>
+          <div class="ml-auto flex items-center gap-2">
             <span id="post-status" class="text-xs text-slate-400"></span>
-            <button id="post-btn" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Post</button>
+            <button id="post-cancel" type="button" class="hidden text-slate-500 hover:text-slate-800 text-sm px-3 py-2">Cancel</button>
+            <button id="post-btn" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm disabled:opacity-50">Post</button>
           </div>
         </div>
       </div>
@@ -98,6 +116,23 @@
     return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
   }
 
+  // Render a post's media (image / video / link). Video supports uploaded
+  // files (HTML5 player) plus YouTube and Vimeo links (embedded).
+  function mediaHtml(post) {
+    let h = '';
+    if (post.image_url) h += `<img src="${esc(post.image_url)}" alt="" class="mt-3 rounded-xl border border-slate-200 max-h-[480px] w-full object-cover" loading="lazy" />`;
+    if (post.video_url) {
+      const v = post.video_url;
+      const yt = v.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([\w-]{11})/);
+      const vimeo = v.match(/vimeo\.com\/(\d+)/);
+      if (yt) h += `<div class="mt-3 aspect-video"><iframe class="w-full h-full rounded-xl border border-slate-200" src="https://www.youtube.com/embed/${yt[1]}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+      else if (vimeo) h += `<div class="mt-3 aspect-video"><iframe class="w-full h-full rounded-xl border border-slate-200" src="https://player.vimeo.com/video/${vimeo[1]}" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+      else h += `<video controls preload="metadata" class="mt-3 rounded-xl border border-slate-200 w-full max-h-[480px] bg-black" src="${esc(v)}"></video>`;
+    }
+    if (post.link_url) h += `<a href="${esc(post.link_url)}" target="_blank" rel="noopener" class="mt-2 flex items-center gap-2 text-sm text-teal-700 border border-slate-200 rounded-xl px-3 py-2 hover:bg-slate-50"><span>🔗</span><span class="truncate">${esc(post.link_url)}</span></a>`;
+    return h;
+  }
+
   let isAdmin = false;
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -110,13 +145,14 @@
   if (isAdmin) document.getElementById('composer').classList.remove('hidden');
 
   const feedEl = document.getElementById('feed');
+  let posts = [];
 
   async function load() {
     const { data, error } = await sb.from('feed_posts').select('*')
       .order('pinned', { ascending: false }).order('created_at', { ascending: false });
     document.getElementById('feed-loading').classList.add('hidden');
     if (error) { feedEl.innerHTML = '<div class="text-center text-rose-600 text-sm py-6">Could not load the feed.</div>'; return; }
-    const posts = data || [];
+    posts = data || [];
     document.getElementById('feed-empty').classList.toggle('hidden', posts.length > 0);
     feedEl.innerHTML = posts.map(post => `
       <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
@@ -127,11 +163,10 @@
               <span class="font-bold text-slate-900">${esc(post.author_name || 'Premier Dental Academy')}</span>
               <span class="text-slate-400">@PremierDentalAcademy · ${ago(post.created_at)}</span>
               ${post.pinned ? '<span class="text-[10px] bg-teal-50 text-teal-700 font-semibold px-1.5 py-0.5 rounded-full">📌 Pinned</span>' : ''}
-              ${isAdmin ? `<button data-del="${post.id}" class="ml-auto text-slate-300 hover:text-rose-600 text-xs" title="Delete">✕</button>` : ''}
+              ${isAdmin ? `<div class="ml-auto flex items-center gap-2"><button data-edit="${post.id}" class="text-slate-400 hover:text-teal-700 text-xs">Edit</button><button data-del="${post.id}" class="text-slate-300 hover:text-rose-600 text-xs" title="Delete">✕</button></div>` : ''}
             </div>
             <div class="post-body text-[15px] text-slate-800 mt-1 leading-relaxed">${renderBody(post.body)}</div>
-            ${post.image_url ? `<img src="${esc(post.image_url)}" alt="" class="mt-3 rounded-xl border border-slate-200 max-h-96 w-full object-cover" loading="lazy" />` : ''}
-            ${post.link_url ? `<a href="${esc(post.link_url)}" target="_blank" rel="noopener" class="mt-2 inline-block text-sm text-teal-700 hover:underline">${esc(post.link_url)}</a>` : ''}
+            ${mediaHtml(post)}
           </div>
         </div>
       </article>
@@ -146,26 +181,116 @@
           load();
         };
       });
+      feedEl.querySelectorAll('[data-edit]').forEach(b => {
+        b.onclick = () => startEdit(b.dataset.edit);
+      });
     }
   }
 
   if (isAdmin) {
+    const composer = document.getElementById('composer');
     const btn = document.getElementById('post-btn');
+    const cancelBtn = document.getElementById('post-cancel');
     const bodyEl = document.getElementById('post-body');
-    const imgEl = document.getElementById('post-image');
+    const linkEl = document.getElementById('post-link');
     const pinEl = document.getElementById('post-pin');
     const statusEl = document.getElementById('post-status');
+    const uploadBar = document.getElementById('upload-bar');
+    const preview = document.getElementById('media-preview');
+    const previewInner = document.getElementById('media-preview-inner');
+    const editingBanner = document.getElementById('composer-editing');
+    const filePhoto = document.getElementById('file-photo');
+    const fileVideo = document.getElementById('file-video');
+
+    let editingId = null;
+    let pendingImage = null;   // image URL (uploaded or existing)
+    let pendingVideo = null;   // video URL (uploaded or existing)
+
+    function showPreview() {
+      if (!pendingImage && !pendingVideo) { preview.classList.add('hidden'); previewInner.innerHTML = ''; return; }
+      preview.classList.remove('hidden');
+      previewInner.innerHTML = mediaHtml({ image_url: pendingImage, video_url: pendingVideo });
+    }
+    document.getElementById('media-remove').onclick = () => { pendingImage = null; pendingVideo = null; showPreview(); };
+
+    document.getElementById('btn-photo').onclick = () => filePhoto.click();
+    document.getElementById('btn-video').onclick = () => fileVideo.click();
+    document.getElementById('btn-link').onclick = () => { linkEl.classList.toggle('hidden'); if (!linkEl.classList.contains('hidden')) linkEl.focus(); };
+
+    async function uploadFile(file, kind) {
+      const ext = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const rand = (globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+      const path = `${kind}/${rand}.${ext}`;
+      uploadBar.classList.remove('hidden'); uploadBar.textContent = `Uploading ${kind}…`;
+      btn.disabled = true;
+      const { error } = await sb.storage.from('feed-media').upload(path, file, { contentType: file.type, upsert: false });
+      btn.disabled = false;
+      if (error) { uploadBar.textContent = '✗ Upload failed: ' + error.message; return null; }
+      uploadBar.classList.add('hidden');
+      return sb.storage.from('feed-media').getPublicUrl(path).data.publicUrl;
+    }
+
+    filePhoto.onchange = async () => {
+      const f = filePhoto.files[0]; filePhoto.value = '';
+      if (!f) return;
+      if (f.size > 15 * 1024 * 1024) { uploadBar.classList.remove('hidden'); uploadBar.textContent = '✗ Image too large (max 15 MB).'; return; }
+      const url = await uploadFile(f, 'image');
+      if (url) { pendingImage = url; showPreview(); }
+    };
+    fileVideo.onchange = async () => {
+      const f = fileVideo.files[0]; fileVideo.value = '';
+      if (!f) return;
+      if (f.size > 100 * 1024 * 1024) { uploadBar.classList.remove('hidden'); uploadBar.textContent = '✗ Video too large (max 100 MB). Tip: paste a YouTube link instead.'; return; }
+      const url = await uploadFile(f, 'video');
+      if (url) { pendingVideo = url; showPreview(); }
+    };
+
+    function resetComposer() {
+      editingId = null; pendingImage = null; pendingVideo = null;
+      bodyEl.value = ''; linkEl.value = ''; linkEl.classList.add('hidden');
+      pinEl.checked = false; showPreview();
+      editingBanner.classList.add('hidden');
+      cancelBtn.classList.add('hidden');
+      btn.textContent = 'Post';
+    }
+    cancelBtn.onclick = resetComposer;
+
+    function startEdit(id) {
+      const post = posts.find(x => x.id === id);
+      if (!post) return;
+      editingId = id;
+      bodyEl.value = post.body || '';
+      pendingImage = post.image_url || null;
+      pendingVideo = post.video_url || null;
+      linkEl.value = post.link_url || '';
+      linkEl.classList.toggle('hidden', !post.link_url);
+      pinEl.checked = !!post.pinned;
+      showPreview();
+      editingBanner.classList.remove('hidden');
+      cancelBtn.classList.remove('hidden');
+      btn.textContent = 'Update';
+      composer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      bodyEl.focus();
+    }
+
     btn.onclick = async () => {
       const body = bodyEl.value.trim();
-      if (!body) { bodyEl.focus(); return; }
-      btn.disabled = true; statusEl.textContent = 'Posting…';
-      const row = { body, pinned: pinEl.checked };
-      const img = imgEl.value.trim();
-      if (img) row.image_url = img;
-      const { error } = await sb.from('feed_posts').insert(row);
+      if (!body && !pendingImage && !pendingVideo) { bodyEl.focus(); return; }
+      btn.disabled = true; statusEl.textContent = editingId ? 'Saving…' : 'Posting…';
+      const row = {
+        body,
+        pinned: pinEl.checked,
+        image_url: pendingImage || null,
+        video_url: pendingVideo || null,
+        link_url: linkEl.value.trim() || null,
+      };
+      let error;
+      if (editingId) ({ error } = await sb.from('feed_posts').update(row).eq('id', editingId));
+      else ({ error } = await sb.from('feed_posts').insert(row));
       btn.disabled = false;
       if (error) { statusEl.textContent = '✗ ' + error.message; return; }
-      bodyEl.value = ''; imgEl.value = ''; pinEl.checked = false; statusEl.textContent = '✓ Posted';
+      statusEl.textContent = editingId ? '✓ Updated' : '✓ Posted';
+      resetComposer();
       setTimeout(() => statusEl.textContent = '', 1500);
       load();
     };
