@@ -24,6 +24,7 @@
     .opt:not(:disabled):hover { border-color:#0d9488; background:#f0fdfa; }
     .opt-correct { border-color:#059669 !important; background:#ecfdf5 !important; }
     .opt-wrong { border-color:#e11d48 !important; background:#fff1f2 !important; }
+    .opt-sel { border-color:#0d9488 !important; background:#f0fdfa !important; }
     .bar { transition: width .5s cubic-bezier(.34,1.4,.64,1); }
     @keyframes pop { from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
     .pop { animation: pop .25s ease both; }
@@ -50,7 +51,7 @@
       <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="display text-2xl font-black text-teal-700">100%</div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mt-1">Free</div></div>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-4">
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <button id="start-quick" class="text-left bg-white border-2 border-teal-600 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition">
         <div class="text-3xl mb-2">⚡</div>
         <h2 class="display text-xl font-bold">Quick Quiz</h2>
@@ -63,6 +64,13 @@
         <p class="text-sm text-slate-600 mt-1">All <span id="full-count">48</span> questions across every topic, scored like the real thing.</p>
         <span id="full-cta" class="inline-block mt-3 text-amber-600 font-semibold text-sm">Unlock free with your email →</span>
       </button>
+      <button id="start-timed" class="text-left bg-gradient-to-br from-slate-900 to-slate-800 text-white border-2 border-slate-900 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition relative">
+        <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">Pro</span>
+        <div class="text-3xl mb-2">⏱️</div>
+        <h2 class="display text-xl font-bold">Timed Mock Exam</h2>
+        <p class="text-sm text-slate-200 mt-1">A full, timed exam from our expanded <span id="timed-count">75+</span>-question bank — real test conditions.</p>
+        <span id="timed-cta" class="inline-block mt-3 text-amber-300 font-semibold text-sm">🔒 Unlock with Exam Pro →</span>
+      </button>
     </div>
 
     <p class="text-center text-xs text-slate-500 mt-6">Built by Premier Dental Academy of Longview · 406+ graduates · 85%+ job placement</p>
@@ -72,7 +80,10 @@
   <section id="screen-quiz" class="hidden">
     <div class="flex items-center justify-between mb-2 text-sm">
       <span class="font-semibold text-slate-700">Question <span id="q-num">1</span> of <span id="q-total">10</span></span>
-      <button id="quit-btn" class="text-slate-400 hover:text-rose-600 text-xs">Quit</button>
+      <div class="flex items-center gap-3">
+        <span id="q-timer" class="hidden font-mono font-semibold text-slate-700 bg-slate-100 rounded px-2 py-0.5">--:--</span>
+        <button id="quit-btn" class="text-slate-400 hover:text-rose-600 text-xs">Quit</button>
+      </div>
     </div>
     <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-6">
       <div id="progress-bar" class="bar h-full bg-gradient-to-r from-teal-500 to-cyan-600" style="width:0%"></div>
@@ -241,7 +252,33 @@
   $('topic-count').textContent = topics.length;
 
   let quiz = [], idx = 0, answers = [], answered = false, currentMode = 'quick';
+  let examMode = false, timerId = null, timeLeft = 0, isPro = false;
   const LS_UNLOCK = 'pda.examUnlocked';
+
+  function updateTimer() {
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    const el = $('q-timer');
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    el.classList.toggle('text-rose-600', timeLeft <= 60);
+  }
+  function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; $('q-timer').classList.add('hidden'); }
+
+  async function checkPro() {
+    if (!sb) return false;
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return false;
+      const { data: p } = await sb.from('profiles').select('exam_pro, program, is_admin').eq('id', session.user.id).maybeSingle();
+      isPro = !!(p && (p.exam_pro || p.is_admin || (p.program && p.program !== 'preview')));
+      return isPro;
+    } catch (e) { return false; }
+  }
+  async function fetchProQuestions() {
+    try {
+      const { data } = await sb.from('exam_questions_pro').select('topic,question,options,answer,explanation');
+      return (data || []).map(r => ({ t: r.topic, q: r.question, o: r.options, a: r.answer, e: r.explanation }));
+    } catch (e) { return []; }
+  }
 
   async function saveAttempt(mode, pct, correct, total, byTopic) {
     if (!sb) return;
@@ -258,9 +295,21 @@
   function shuffle(arr) { const a = arr.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
   function show(screen) { ['start','quiz','results'].forEach(s => $('screen-'+s).classList.toggle('hidden', s !== screen)); window.scrollTo({top:0,behavior:'smooth'}); }
 
-  function begin(list) {
+  function begin(list, opts) {
+    opts = opts || {};
+    examMode = !!opts.timed;
     quiz = list; idx = 0; answers = new Array(list.length).fill(null);
     $('q-total').textContent = list.length;
+    stopTimer();
+    if (examMode && opts.seconds) {
+      timeLeft = opts.seconds;
+      $('q-timer').classList.remove('hidden');
+      updateTimer();
+      timerId = setInterval(() => {
+        timeLeft--; updateTimer();
+        if (timeLeft <= 0) { stopTimer(); finish(); }
+      }, 1000);
+    }
     show('quiz'); renderQ();
   }
 
@@ -291,6 +340,17 @@
     const item = quiz[idx];
     answers[idx] = i;
     const opts = $('q-options').querySelectorAll('button');
+
+    // Timed exam mode: lock the choice but DON'T reveal the answer until the end.
+    if (examMode) {
+      opts.forEach(b => b.disabled = true);
+      btn.classList.add('opt-sel');
+      $('q-feedback').textContent = '';
+      $('next-btn').classList.remove('hidden');
+      $('next-btn').textContent = (idx === quiz.length - 1) ? 'Finish exam →' : 'Next →';
+      return;
+    }
+
     opts.forEach((b, j) => {
       b.disabled = true;
       if (j === item.a) b.classList.add('opt-correct');
@@ -308,9 +368,10 @@
   }
 
   $('next-btn').onclick = () => { if (idx < quiz.length - 1) { idx++; renderQ(); } else finish(); };
-  $('quit-btn').onclick = () => { if (confirm('Quit this quiz? Your progress will be lost.')) show('start'); };
+  $('quit-btn').onclick = () => { if (confirm('Quit this quiz? Your progress will be lost.')) { stopTimer(); show('start'); } };
 
   function finish() {
+    stopTimer();
     let correct = 0;
     const byTopic = {};
     quiz.forEach((item, i) => {
@@ -401,6 +462,41 @@
     if (await fullUnlocked()) begin(shuffle(BANK));
     else $('unlock-modal').classList.remove('hidden');
   };
+
+  function showProUpsell() {
+    const wrap = document.createElement('div');
+    wrap.className = 'fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4';
+    wrap.innerHTML = `<div class="bg-white rounded-2xl max-w-md w-full p-6 text-center pop">
+      <div class="text-4xl mb-2">🔒</div>
+      <h3 class="display text-2xl font-bold">Unlock Exam Pro</h3>
+      <p class="text-slate-600 text-sm mt-2">The Timed Mock Exam and our expanded question bank are part of <strong>Exam Pro</strong> — included <strong>free</strong> when you enroll. Already a student? Just sign in.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-5">
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-lg">Enroll →</a>
+        <a href="/login" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">I'm a student — sign in</a>
+      </div>
+      <button class="pro-close mt-4 text-slate-400 hover:text-slate-700 text-sm">Maybe later</button>
+    </div>`;
+    wrap.addEventListener('click', (e) => { if (e.target === wrap || e.target.classList.contains('pro-close')) wrap.remove(); });
+    document.body.appendChild(wrap);
+  }
+
+  $('start-timed').onclick = async () => {
+    const pro = await checkPro();
+    if (!pro) { showProUpsell(); return; }
+    currentMode = 'timed';
+    const pq = await fetchProQuestions();
+    const pool = shuffle(BANK.concat(pq));
+    const n = Math.min(50, pool.length);
+    begin(pool.slice(0, n), { timed: true, seconds: n * 60 });
+  };
+
+  // Pro-aware labels on load.
+  checkPro().then(async (pro) => {
+    if (!pro) return;
+    const pq = await fetchProQuestions();
+    $('timed-count').textContent = (BANK.length + pq.length);
+    $('timed-cta').textContent = 'Start the timed mock exam →';
+  });
 
   // ---- Unlock modal ----
   const modal = $('unlock-modal');
