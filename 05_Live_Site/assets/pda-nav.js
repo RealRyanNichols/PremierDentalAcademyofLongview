@@ -24,6 +24,7 @@
       <a href="/salary"    data-nav-link class="hover:text-teal-700">Salary</a>
       <a href="/about"     data-nav-link class="hover:text-teal-700">About</a>
       <a href="/contact"   data-nav-link class="hover:text-teal-700">Contact</a>
+      <a href="/teach"     data-nav-link class="text-amber-600 hover:text-amber-700 font-semibold">Teach</a>
     </div>
     <div class="flex items-center gap-3">
       <a id="pda-nav-auth"  href="/login"  data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
@@ -47,6 +48,7 @@
     <a href="/contact"   data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
     <a href="/graduates" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
     <a href="/hiring-partners" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
+    <a href="/teach"     data-nav-link class="block py-4 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
     <a href="/blog"      data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Blog</a>
     <a href="/apply"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Workforce / Veterans</a>
     <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Sign in</a>
