@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Feed — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Daily thoughts, study tips, and student wins from Premier Dental Academy of Longview. Follow along on our journey training the best RDAs in East Texas." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/feed" />
+  <meta property="og:title" content="The Premier Dental Academy Feed" />
+  <meta property="og:description" content="Daily thoughts, study tips, and student wins from Premier Dental Academy of Longview." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .post-body a { color: #0d9488; text-decoration: underline; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+<main class="flex-1 max-w-2xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10">
+
+  <!-- Profile header -->
+  <header class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden mb-5">
+    <div class="h-24 bg-gradient-to-r from-teal-600 to-cyan-700"></div>
+    <div class="px-5 pb-5">
+      <div class="flex items-end justify-between -mt-10">
+        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-700 border-4 border-white grid place-items-center text-white font-black text-3xl display">P</div>
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-sm mb-1">Enroll →</a>
+      </div>
+      <h1 class="display text-2xl font-bold mt-3">Premier Dental Academy</h1>
+      <p class="text-slate-500 text-sm">@PremierDentalAcademy · Longview, TX</p>
+      <p class="text-slate-700 mt-2 text-sm">Training the best Registered Dental Assistants in East Texas. 406+ graduates · 85%+ job placement. Daily thoughts, study tips & student wins. 🦷</p>
+      <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm text-slate-500 mt-2">
+        <a href="/" class="hover:text-teal-700">premierdentalacademyoflongview.com</a>
+        <a href="/tools/practice-exam" class="hover:text-teal-700">📝 Free practice exam</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Composer (admins only) -->
+  <div id="composer" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-5">
+    <div class="flex gap-3">
+      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-700 grid place-items-center text-white font-bold shrink-0">P</div>
+      <div class="flex-1">
+        <textarea id="post-body" rows="3" maxlength="2000" placeholder="What's on your mind today?" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-teal-600 resize-none text-[15px]"></textarea>
+        <input id="post-image" type="url" placeholder="Optional image URL (https://…)" class="mt-2 w-full px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 text-sm" />
+        <div class="flex items-center justify-between mt-2">
+          <label class="flex items-center gap-1.5 text-xs text-slate-500"><input id="post-pin" type="checkbox" class="accent-teal-600" /> Pin to top</label>
+          <div class="flex items-center gap-3">
+            <span id="post-status" class="text-xs text-slate-400"></span>
+            <button id="post-btn" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Post</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed -->
+  <div id="feed" class="space-y-4"></div>
+  <div id="feed-loading" class="text-center text-slate-400 py-10 text-sm">Loading the feed…</div>
+  <div id="feed-empty" class="hidden text-center text-slate-500 py-10">No posts yet.</div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-6">
+  <div class="max-w-2xl mx-auto px-6 text-xs text-center">
+    <p>© 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/enroll" class="hover:text-white">Enroll</a> · <a href="/contact" class="hover:text-white">Contact</a></p>
+  </div>
+</footer>
+
+<script>
+(async () => {
+  'use strict';
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  // body: escape, then linkify URLs, then turn newlines into <br>
+  function renderBody(text) {
+    let h = esc(text);
+    h = h.replace(/(https?:\/\/[^\s]+)/g, (u) => `<a href="${u}" target="_blank" rel="noopener">${u}</a>`);
+    return h.replace(/\n/g, '<br>');
+  }
+  function ago(iso) {
+    const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s/60) + 'm';
+    if (s < 86400) return Math.floor(s/3600) + 'h';
+    if (s < 604800) return Math.floor(s/86400) + 'd';
+    return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  }
+
+  let isAdmin = false;
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) {
+      const { data: p } = await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+      isAdmin = !!(p && p.is_admin);
+    }
+  } catch (e) {}
+
+  if (isAdmin) document.getElementById('composer').classList.remove('hidden');
+
+  const feedEl = document.getElementById('feed');
+
+  async function load() {
+    const { data, error } = await sb.from('feed_posts').select('*')
+      .order('pinned', { ascending: false }).order('created_at', { ascending: false });
+    document.getElementById('feed-loading').classList.add('hidden');
+    if (error) { feedEl.innerHTML = '<div class="text-center text-rose-600 text-sm py-6">Could not load the feed.</div>'; return; }
+    const posts = data || [];
+    document.getElementById('feed-empty').classList.toggle('hidden', posts.length > 0);
+    feedEl.innerHTML = posts.map(post => `
+      <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
+        <div class="flex gap-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-700 grid place-items-center text-white font-bold shrink-0">P</div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-1.5 text-sm flex-wrap">
+              <span class="font-bold text-slate-900">${esc(post.author_name || 'Premier Dental Academy')}</span>
+              <span class="text-slate-400">@PremierDentalAcademy · ${ago(post.created_at)}</span>
+              ${post.pinned ? '<span class="text-[10px] bg-teal-50 text-teal-700 font-semibold px-1.5 py-0.5 rounded-full">📌 Pinned</span>' : ''}
+              ${isAdmin ? `<button data-del="${post.id}" class="ml-auto text-slate-300 hover:text-rose-600 text-xs" title="Delete">✕</button>` : ''}
+            </div>
+            <div class="post-body text-[15px] text-slate-800 mt-1 leading-relaxed">${renderBody(post.body)}</div>
+            ${post.image_url ? `<img src="${esc(post.image_url)}" alt="" class="mt-3 rounded-xl border border-slate-200 max-h-96 w-full object-cover" loading="lazy" />` : ''}
+            ${post.link_url ? `<a href="${esc(post.link_url)}" target="_blank" rel="noopener" class="mt-2 inline-block text-sm text-teal-700 hover:underline">${esc(post.link_url)}</a>` : ''}
+          </div>
+        </div>
+      </article>
+    `).join('');
+
+    if (isAdmin) {
+      feedEl.querySelectorAll('[data-del]').forEach(b => {
+        b.onclick = async () => {
+          if (!confirm('Delete this post?')) return;
+          const { error } = await sb.from('feed_posts').delete().eq('id', b.dataset.del);
+          if (error) { alert('Could not delete: ' + error.message); return; }
+          load();
+        };
+      });
+    }
+  }
+
+  if (isAdmin) {
+    const btn = document.getElementById('post-btn');
+    const bodyEl = document.getElementById('post-body');
+    const imgEl = document.getElementById('post-image');
+    const pinEl = document.getElementById('post-pin');
+    const statusEl = document.getElementById('post-status');
+    btn.onclick = async () => {
+      const body = bodyEl.value.trim();
+      if (!body) { bodyEl.focus(); return; }
+      btn.disabled = true; statusEl.textContent = 'Posting…';
+      const row = { body, pinned: pinEl.checked };
+      const img = imgEl.value.trim();
+      if (img) row.image_url = img;
+      const { error } = await sb.from('feed_posts').insert(row);
+      btn.disabled = false;
+      if (error) { statusEl.textContent = '✗ ' + error.message; return; }
+      bodyEl.value = ''; imgEl.value = ''; pinEl.checked = false; statusEl.textContent = '✓ Posted';
+      setTimeout(() => statusEl.textContent = '', 1500);
+      load();
+    };
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
