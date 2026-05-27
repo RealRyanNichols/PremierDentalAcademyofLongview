@@ -55,6 +55,7 @@
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-5">Free study tools</p>
     <a href="/tools/practice-exam" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base font-semibold text-teal-700">📝 Free RDA practice exam</a>
     <a href="/tools/flashcards"    data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
+    <a href="/tools/how-to-chart"  data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">How to chart (tutorial)</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-5">About us</p>
     <a href="/graduates" data-nav-link class="block py-3 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
