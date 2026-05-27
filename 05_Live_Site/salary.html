@@ -268,13 +268,15 @@ recalc();
   form.onsubmit = async (e) => {
     e.preventDefault();
     const email = new FormData(form).get('email');
-    const meta = {
-      role: document.getElementById('role').value,
-      city: document.getElementById('city').value,
-      years: document.getElementById('years').value,
-      annual: document.getElementById('annual').textContent,
-    };
-    await sb.from('subscribers').insert({ email, source: 'salary-calculator', metadata: meta });
+    const role = document.getElementById('role').value;
+    const city = document.getElementById('city').value;
+    try {
+      const { error } = await sb.from('subscribers').insert({
+        email, source: 'salary-calculator',
+        tags: ['salary-calculator', role, city].filter(Boolean),
+      });
+      if (error) console.error('[salary] subscribe error:', error.message);
+    } catch (e) { console.error('[salary] subscribe threw:', e); }
     form.classList.add('hidden');
     document.getElementById('save-success').classList.remove('hidden');
   };
