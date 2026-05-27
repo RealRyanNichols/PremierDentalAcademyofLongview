@@ -31,10 +31,10 @@
           <a href="/tools/flashcards"    class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
           <a href="/tools/how-to-chart"  class="block px-4 py-2 hover:bg-slate-50">How to chart (tutorial)</a>
           <div class="border-t border-slate-100 my-1"></div>
+          <a href="/apply"           class="block px-4 py-2 hover:bg-slate-50 font-semibold">📅 Book a campus tour</a>
           <a href="/contact"         class="block px-4 py-2 hover:bg-slate-50">Contact</a>
           <a href="/graduates"       class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
           <a href="/hiring-partners" class="block px-4 py-2 hover:bg-slate-50">For dental offices</a>
-          <a href="/apply"           class="block px-4 py-2 hover:bg-slate-50">Workforce / Veterans</a>
         </div>
       </div>
       <a href="/teach" data-nav-link class="text-amber-600 hover:text-amber-700 font-semibold">Teach</a>
@@ -67,9 +67,9 @@
     <a href="/tools/how-to-chart"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-4">More</p>
+    <a href="/apply"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">📅 Book a campus tour</a>
     <a href="/graduates" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
     <a href="/hiring-partners" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
-    <a href="/apply"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Workforce / Veterans</a>
     <a href="/teach"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
     <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Sign in</a>
     <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-2.5 px-1 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
