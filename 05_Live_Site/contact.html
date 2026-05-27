@@ -176,16 +176,20 @@
       message: fd.get('message') || null,
       source: 'contact.html',
     };
+    let saved = false;
     if (sb) {
       try {
         const { error } = await sb.from('leads').insert(lead);
-        if (error) {
-          console.error('[contact] insert error:', error.message);
-          const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-          existing.push({ ...lead, created_at: new Date().toISOString() });
-          localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
-        }
+        saved = !error;
+        if (error) console.error('[contact] insert error:', error.message);
       } catch (err) { console.error('[contact] insert threw:', err); }
+    }
+    if (!saved) {
+      try {
+        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        existing.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
+      } catch (e2) {}
     }
     form.classList.add('hidden');
     success.classList.remove('hidden');

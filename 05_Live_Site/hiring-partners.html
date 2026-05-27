@@ -214,15 +214,19 @@ AOS.init({ duration: 600, once: true });
       interest_path: 'hiring-partner',
       message: detail || null,
     };
+    let saved = false;
     try {
       const { error } = await sb.from('leads').insert(lead);
-      if (error) {
-        console.error('[hiring-partners] insert error:', error.message);
+      saved = !error;
+      if (error) console.error('[hiring-partners] insert error:', error.message);
+    } catch (e) { console.error('[hiring-partners] insert threw:', e); }
+    if (!saved) {
+      try {
         const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
         p.push({ ...lead, created_at: new Date().toISOString() });
         localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
-      }
-    } catch (e) { console.error('[hiring-partners] insert threw:', e); }
+      } catch (e2) {}
+    }
     form.classList.add('hidden');
     document.getElementById('partner-success').classList.remove('hidden');
   };
