@@ -46,6 +46,7 @@
     <a href="/salary"    data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Salary</a>
     <a href="/about"     data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">About</a>
     <a href="/contact"   data-nav-link class="block py-4 border-b border-slate-100 text-lg font-semibold text-slate-900">Contact</a>
+    <a href="/tools/practice-exam" data-nav-link class="block py-4 border-b border-slate-100 text-base font-semibold text-teal-700">Free RDA practice exam →</a>
     <a href="/graduates" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
     <a href="/hiring-partners" data-nav-link class="block py-4 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
     <a href="/teach"     data-nav-link class="block py-4 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
