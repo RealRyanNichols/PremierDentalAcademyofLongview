@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Chatbot questions — PDA Admin</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/admin" class="flex items-center gap-2 font-bold">
+        <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+        <span>PDA Admin</span>
+      </a>
+      <span class="text-slate-400 text-sm">/ Chatbot questions</span>
+    </div>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white">Home</a>
+      <a href="/admin/leads" class="text-slate-300 hover:text-white">Inbox</a>
+      <a href="/admin/instructors" class="text-slate-300 hover:text-white">Instructors</a>
+      <span id="user-label" class="text-slate-400 hidden sm:inline"></span>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-5xl mx-auto px-6 py-8" id="main">
+
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Staff access only</h1>
+    <p class="text-slate-600 mt-2">Sign in with your PDA admin account to read chatbot conversations.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+  </div>
+
+  <div id="view" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Ask Premier</p>
+        <h1 class="display text-3xl font-bold mt-1">What visitors are asking</h1>
+        <p class="text-slate-600 text-sm mt-1">Every conversation with the website chatbot. Great for spotting common questions and warm leads.</p>
+      </div>
+      <div class="flex gap-2">
+        <input id="search" placeholder="Search questions…" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm w-44" />
+        <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-6" id="stats"></div>
+
+    <div id="list" class="space-y-4"></div>
+    <div id="empty" class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500 hidden">No chatbot conversations yet.</div>
+  </div>
+</main>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+
+  const { data: profile } = await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle();
+  if (!profile || !profile.is_admin) {
+    const wall = document.getElementById('auth-wall');
+    wall.classList.remove('hidden');
+    wall.innerHTML = `
+      <div class="text-5xl mb-3">🚫</div>
+      <h1 class="display text-2xl font-bold">Staff access only</h1>
+      <p class="text-slate-600 mt-2">Your account isn't authorized. Ask Amanda to grant admin status.</p>
+      <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>`;
+    return;
+  }
+
+  document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  let messages = [];     // raw rows
+  let sessions = [];      // grouped conversations
+
+  async function load() {
+    const { data, error } = await sb.from('chat_messages').select('*').order('created_at', { ascending: true });
+    if (error) { alert('Failed to load chat messages: ' + error.message); return; }
+    messages = data || [];
+
+    // Group into conversations by session_id.
+    const map = new Map();
+    messages.forEach(m => {
+      const key = m.session_id || m.id;
+      if (!map.has(key)) map.set(key, { session_id: key, page: m.page, started: m.created_at, last: m.created_at, msgs: [] });
+      const c = map.get(key);
+      c.msgs.push(m);
+      c.last = m.created_at;
+      if (!c.page && m.page) c.page = m.page;
+    });
+    sessions = Array.from(map.values()).sort((a, b) => new Date(b.last) - new Date(a.last));
+    render();
+  }
+
+  function render() {
+    const q = (document.getElementById('search').value || '').trim().toLowerCase();
+    const todayIso = new Date(); todayIso.setHours(0,0,0,0);
+
+    const totalQuestions = messages.filter(m => m.role === 'user').length;
+    const questionsToday = messages.filter(m => m.role === 'user' && new Date(m.created_at) >= todayIso).length;
+    document.getElementById('stats').innerHTML = `
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Visitor questions</div><div class="text-2xl font-bold mono text-teal-700">${totalQuestions}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Conversations</div><div class="text-2xl font-bold mono text-slate-700">${sessions.length}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Questions today</div><div class="text-2xl font-bold mono text-amber-700">${questionsToday}</div></div>`;
+
+    const visible = q
+      ? sessions.filter(c => c.msgs.some(m => (m.content || '').toLowerCase().includes(q)))
+      : sessions;
+
+    document.getElementById('empty').classList.toggle('hidden', visible.length > 0);
+    document.getElementById('list').innerHTML = visible.map(c => `
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-2.5 bg-slate-50 border-b border-slate-100 text-xs text-slate-500">
+          <span>🗨️ ${c.msgs.length} message${c.msgs.length===1?'':'s'} · from <span class="mono">${esc(c.page || '/')}</span></span>
+          <span class="mono">${new Date(c.last).toLocaleString()}</span>
+        </div>
+        <div class="p-4 space-y-2">
+          ${c.msgs.map(m => m.role === 'user' ? `
+            <div class="flex justify-end">
+              <div class="bg-teal-600 text-white rounded-2xl rounded-br-sm px-3 py-2 text-sm max-w-[80%]">${esc(m.content)}</div>
+            </div>` : `
+            <div class="flex justify-start">
+              <div class="bg-slate-100 text-slate-800 rounded-2xl rounded-bl-sm px-3 py-2 text-sm max-w-[80%]">${esc(m.content)}</div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  document.getElementById('search').oninput = render;
+  document.getElementById('refresh').onclick = load;
+  document.getElementById('export').onclick = () => {
+    const rows = [['Time','Session','Page','Role','Message']];
+    messages.forEach(m => rows.push([new Date(m.created_at).toISOString(), m.session_id || '', m.page || '', m.role || '', m.content || '']));
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `chatbot-questions-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>
