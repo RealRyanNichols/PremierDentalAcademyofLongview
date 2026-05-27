@@ -252,17 +252,29 @@ AOS.init({ duration: 500, once: true });
   form.onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    await sb.from('leads').insert({
+    const detail = [
+      currentCohort?.name ? `Cohort: ${currentCohort.name}` : '',
+      currentCohort?.meta || '',
+      fd.get('notes') ? `Notes: ${fd.get('notes')}` : '',
+    ].filter(Boolean).join(' · ');
+    const lead = {
       first_name: fd.get('first_name'),
       last_name: fd.get('last_name'),
       email: fd.get('email'),
       phone: fd.get('phone'),
       source: 'classes-reservation',
-      metadata: {
-        cohort_id: currentCohort.id, cohort_name: currentCohort.name, meta: currentCohort.meta,
-        notes: fd.get('notes'),
-      },
-    });
+      interest_path: currentCohort?.name ? `Seat reservation — ${currentCohort.name}` : 'Seat reservation',
+      message: detail || null,
+    };
+    try {
+      const { error } = await sb.from('leads').insert(lead);
+      if (error) {
+        console.error('[classes] insert error:', error.message);
+        const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        p.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
+      }
+    } catch (e) { console.error('[classes] insert threw:', e); }
     form.classList.add('hidden'); success.classList.remove('hidden');
   };
 })();

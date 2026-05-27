@@ -200,16 +200,29 @@ AOS.init({ duration: 600, once: true });
     e.preventDefault();
     const fd = new FormData(form);
     const [first, ...rest] = (fd.get('name') || '').split(' ');
-    await sb.from('leads').insert({
+    const detail = [
+      fd.get('office') ? `Office: ${fd.get('office')}` : '',
+      fd.get('city')   ? `City: ${fd.get('city')}` : '',
+      fd.get('role')   ? `Hiring for: ${fd.get('role')}` : '',
+      fd.get('when')   ? `Timeline: ${fd.get('when')}` : '',
+      fd.get('notes')  ? `Notes: ${fd.get('notes')}` : '',
+    ].filter(Boolean).join(' · ');
+    const lead = {
       first_name: first, last_name: rest.join(' '),
       email: fd.get('email'), phone: fd.get('phone'),
       source: 'hiring-partners',
-      metadata: {
-        office: fd.get('office'), city: fd.get('city'),
-        role: fd.get('role'), when: fd.get('when'), notes: fd.get('notes'),
-        kind: 'hiring-partner'
-      },
-    });
+      interest_path: 'hiring-partner',
+      message: detail || null,
+    };
+    try {
+      const { error } = await sb.from('leads').insert(lead);
+      if (error) {
+        console.error('[hiring-partners] insert error:', error.message);
+        const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        p.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
+      }
+    } catch (e) { console.error('[hiring-partners] insert threw:', e); }
     form.classList.add('hidden');
     document.getElementById('partner-success').classList.remove('hidden');
   };
