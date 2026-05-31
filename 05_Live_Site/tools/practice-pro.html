@@ -2396,8 +2396,31 @@
     const activeMarker = state.ui.chartMarker || 'caries';
     const ctx = state.ui.toothContext;
 
+    // Free-preview teaser banner — dangles the carrot right on the fun part.
+    let previewBanner = '';
+    if (state.access !== 'student') {
+      const left = Math.max(0, PREVIEW_CHART_LIMIT - previewMarksUsed());
+      previewBanner = left > 0
+        ? `<div class="rounded-lg border border-amber-300 bg-gradient-to-r from-amber-50 to-teal-50 p-3 flex items-center gap-3">
+             <div class="text-2xl select-none">🦷</div>
+             <div class="flex-1 min-w-0 text-[12px]">
+               <div class="font-bold text-slate-900">This is the fun part — try it free!</div>
+               <div class="text-slate-600">Pick a marker, click a tooth surface. You've got <strong class="text-amber-700">${left} free practice mark${left === 1 ? '' : 's'}</strong> left.</div>
+             </div>
+             <a href="${SIGNUP_URL}" class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-bold text-[12px] px-3 py-1.5 rounded">Enroll →</a>
+           </div>`
+        : `<div class="rounded-lg border border-rose-300 bg-rose-50 p-3 flex items-center gap-3">
+             <div class="text-2xl select-none">🔒</div>
+             <div class="flex-1 min-w-0 text-[12px]">
+               <div class="font-bold text-slate-900">You're hooked, aren't you?</div>
+               <div class="text-slate-600">Your free charting is used up. Enroll to chart every patient — unlimited.</div>
+             </div>
+             <a href="${SIGNUP_URL}" class="shrink-0 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[12px] px-3 py-1.5 rounded">Enroll →</a>
+           </div>`;
+    }
     return `
       <div class="space-y-3">
+        ${previewBanner}
         <!-- Toolbar -->
         <div class="bg-white rounded border border-slate-200 p-3">
           <div class="flex flex-wrap items-center gap-2">
@@ -2505,8 +2528,7 @@
     return `
       <div class="fixed inset-0 z-30" data-action="close-tooth-menu" style="background:transparent">
         <div class="absolute bg-white border border-slate-200 rounded shadow-lg py-1 text-[12px]"
-             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px"
-             onclick="event.stopPropagation()">
+             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px">
           <div class="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-100">Tooth #${ctx.tooth}</div>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-plan" data-tooth="${ctx.tooth}">＋ Plan procedure</button>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-mark-missing" data-tooth="${ctx.tooth}">Mark missing</button>
@@ -3315,7 +3337,7 @@
     if (!content) return '';
     return `
       <div class="modal-back" data-action="close-modal">
-        <div class="modal ${m.lg ? 'modal-lg' : ''}" onclick="event.stopPropagation()">
+        <div class="modal ${m.lg ? 'modal-lg' : ''}">
           ${content(m.props || {})}
         </div>
       </div>
@@ -4058,24 +4080,34 @@
   }
 
   function modalPaywall(props) {
+    const charting = props.feature === 'charting';
+    const title = charting ? "🦷 You're a natural at this!" : '🔒 Enroll to unlock this';
+    const sub = charting
+      ? "That felt good, right? You just charted like a real dental assistant. Enroll to keep charting every patient — and unlock the rest of the trainer."
+      : `${escapeHtml(props.feature || 'This module')} is part of the full Practice Pro trainer.`;
     return `
-      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
-        <h2 class="text-lg font-semibold text-slate-900">🔒 Enroll to unlock this feature</h2>
-        <p class="text-[12px] text-slate-600 mt-1">${escapeHtml(props.feature || 'This module')} is part of the full Practice Pro trainer.</p>
+      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-teal-50 via-amber-50 to-orange-50">
+        <h2 class="text-lg font-bold text-slate-900">${title}</h2>
+        <p class="text-[12px] text-slate-600 mt-1">${sub}</p>
       </div>
       <div class="p-5 space-y-3 text-[13px]">
-        <p class="text-slate-700">Premier Dental Academy of Longview's full curriculum includes:</p>
+        <div class="text-[11px] font-bold uppercase tracking-wide text-teal-800">Enroll &amp; unlock the full trainer</div>
         <ul class="space-y-1.5 text-slate-700 text-[12px]">
-          <li>✓ 16 hands-on practice management modules</li>
-          <li>✓ Real workflows for charting, perio, claims, prescriptions, treatment planning</li>
-          <li>✓ SmartDoc clinical notes with legal compliance pattern</li>
-          <li>✓ Certificate of completion</li>
-          <li>✓ Live instructor support + in-house training</li>
-          <li>✓ Job placement assistance with East Texas dental offices</li>
+          <li>✅ <strong>Unlimited charting</strong> on all 25 patients</li>
+          <li>✅ Perio charting, X-rays &amp; imaging</li>
+          <li>✅ Treatment plans, insurance claims &amp; prescriptions</li>
+          <li>✅ SmartDoc clinical notes + legal compliance</li>
+          <li>✅ Your <strong>Certificate of Completion</strong></li>
+          <li>✅ Job placement help with East Texas dental offices</li>
         </ul>
-        <div class="flex gap-2 justify-end pt-3 border-t border-slate-200">
-          <button data-action="close-modal" class="btn btn-ghost">Maybe later</button>
-          <a href="${SIGNUP_URL}" class="btn btn-primary !bg-amber-500 hover:!bg-amber-600">Enroll now →</a>
+        <div class="bg-rose-50 border border-rose-200 rounded-lg p-3 text-center">
+          <div class="text-[10px] uppercase tracking-wider text-rose-700 font-bold">Limited-time</div>
+          <div class="text-slate-900 font-bold mt-0.5">Online program — just <span class="text-rose-700">$397</span></div>
+        </div>
+        <div class="grid gap-2 pt-3 border-t border-slate-200">
+          <a href="${SIGNUP_URL}" class="btn btn-primary !bg-amber-500 hover:!bg-amber-600 !w-full justify-center font-bold">Enroll now &amp; chart unlimited →</a>
+          <a href="/login" class="btn btn-soft !w-full justify-center">Already enrolled? Sign in →</a>
+          <button data-action="close-modal" class="text-[11px] text-slate-400 hover:text-slate-600 mt-0.5">Keep looking around</button>
         </div>
       </div>
     `;
@@ -4110,7 +4142,7 @@
     if (!state.ui.paletteOpen) return '';
     return `
       <div class="modal-back" data-action="close-palette">
-        <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+        <div class="modal" style="max-width:560px">
           <div class="p-2 border-b border-slate-200">
             <input id="palette-input" data-action="palette-input" autofocus
               placeholder="Find patient, ADA code, or action..."
@@ -4199,8 +4231,38 @@
   }
 
   // ── Actions ─────────────────────────────────────────────────────
+  // ── Free-preview charting teaser ────────────────────────────────
+  // Charting is the most fun part of the trainer, so unpaid visitors get a
+  // real taste — a handful of free marks — then a carrot-dangling paywall.
+  // Enrolled/paid students (state.access === 'student') are never gated.
+  const PREVIEW_CHART_LIMIT = 5;
+  function previewMarksUsed() {
+    try { return parseInt(localStorage.getItem('pda.pp.previewMarks') || '0', 10) || 0; } catch (e) { return 0; }
+  }
+  // Returns true if a chart mark is allowed (and counts it); false if the
+  // visitor has hit the free limit (and pops the enroll wall).
+  function chartGate() {
+    if (state.access === 'student') return true;
+    let used = previewMarksUsed();
+    if (used >= PREVIEW_CHART_LIMIT) {
+      logAction('preview_chart_wall', {});
+      openModal('paywall', { feature: 'charting' });
+      return false;
+    }
+    used++;
+    try { localStorage.setItem('pda.pp.previewMarks', String(used)); } catch (e) {}
+    const left = PREVIEW_CHART_LIMIT - used;
+    if (left > 0) {
+      toast(`🦷 Nice! ${left} free practice ${left === 1 ? 'mark' : 'marks'} left — feels good, right?`, { tone: 'success', ms: 1700 });
+    } else {
+      toast(`🔥 That was your last free mark. Enroll to chart every patient →`, { tone: 'warn', ms: 2400 });
+    }
+    return true;
+  }
+
   function markSurface(tooth, surf, val) {
     const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
     p.chart = p.chart || {};
     const key = `T-${tooth}`;
     p.chart[key] = p.chart[key] || {};
@@ -4212,6 +4274,7 @@
   }
   function markWholeTooth(tooth, val) {
     const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
     p.chart = p.chart || {};
     p.chart[`T-${tooth}`] = { whole: val };
     saveSoon();
@@ -4277,7 +4340,7 @@
         case 'go-signup':   location.href = SIGNUP_URL; break;
         case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'open-palette': openPalette(); break;
-        case 'close-palette': closePalette(); break;
+        case 'close-palette': if (ev.target === t) closePalette(); break;
         case 'audit-toggle': openModal('audit'); break;
         case 'set-module': setModule(t.dataset.module); break;
         case 'select-patient': selectPatient(t.dataset.id); break;
@@ -4713,6 +4776,22 @@
     root.oninput = (ev) => {
       const t = ev.target.closest('[data-action]');
       if (!t) return;
+      // Native <select> menus emit `change`/`input`, not a reliable `click`,
+      // so the ribbon dropdowns are wired here as well as in the click switch.
+      if (t.dataset.action === 'skill-level') {
+        state.ui.skillLevel = t.value;
+        try { localStorage.setItem('pda.pp.skillLevel', state.ui.skillLevel); } catch (e) {}
+        rerender();
+        return;
+      }
+      if (t.dataset.action === 'switch-staff') {
+        state.activeStaffId = t.value;
+        const s = activeStaff();
+        logAction('switch_staff', { id: s.id, role: s.role });
+        toast(`Now signed in as ${s.name} (${s.role})`, { tone: 'info' });
+        rerender();
+        return;
+      }
       if (t.dataset.action === 'patient-filter') {
         state.ui.patientFilter = t.value;
         // Cheap re-render of just the list section
@@ -5602,12 +5681,15 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
-    // Check auth session — paid students get full access, anyone else gets preview
+    // Check auth session — only ENROLLED/paid students get the full trainer.
+    // A free signup (program 'preview') or no login at all gets the teaser.
     try {
       const session = await window.PDA?.getSession?.();
       if (session) {
         state.user = await window.PDA.getProfile();
-        state.access = 'student';
+        const u = state.user || {};
+        const paid = !!(u.is_admin || (u.program && u.program !== 'preview'));
+        state.access = paid ? 'student' : 'preview';
       } else {
         state.user = null;
         state.access = 'preview';
