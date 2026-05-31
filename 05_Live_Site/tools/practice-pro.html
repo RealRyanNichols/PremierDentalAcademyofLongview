@@ -2505,8 +2505,7 @@
     return `
       <div class="fixed inset-0 z-30" data-action="close-tooth-menu" style="background:transparent">
         <div class="absolute bg-white border border-slate-200 rounded shadow-lg py-1 text-[12px]"
-             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px"
-             onclick="event.stopPropagation()">
+             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px">
           <div class="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-100">Tooth #${ctx.tooth}</div>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-plan" data-tooth="${ctx.tooth}">＋ Plan procedure</button>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-mark-missing" data-tooth="${ctx.tooth}">Mark missing</button>
@@ -3315,7 +3314,7 @@
     if (!content) return '';
     return `
       <div class="modal-back" data-action="close-modal">
-        <div class="modal ${m.lg ? 'modal-lg' : ''}" onclick="event.stopPropagation()">
+        <div class="modal ${m.lg ? 'modal-lg' : ''}">
           ${content(m.props || {})}
         </div>
       </div>
@@ -4110,7 +4109,7 @@
     if (!state.ui.paletteOpen) return '';
     return `
       <div class="modal-back" data-action="close-palette">
-        <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+        <div class="modal" style="max-width:560px">
           <div class="p-2 border-b border-slate-200">
             <input id="palette-input" data-action="palette-input" autofocus
               placeholder="Find patient, ADA code, or action..."
@@ -4277,7 +4276,7 @@
         case 'go-signup':   location.href = SIGNUP_URL; break;
         case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'open-palette': openPalette(); break;
-        case 'close-palette': closePalette(); break;
+        case 'close-palette': if (ev.target === t) closePalette(); break;
         case 'audit-toggle': openModal('audit'); break;
         case 'set-module': setModule(t.dataset.module); break;
         case 'select-patient': selectPatient(t.dataset.id); break;
@@ -4713,6 +4712,22 @@
     root.oninput = (ev) => {
       const t = ev.target.closest('[data-action]');
       if (!t) return;
+      // Native <select> menus emit `change`/`input`, not a reliable `click`,
+      // so the ribbon dropdowns are wired here as well as in the click switch.
+      if (t.dataset.action === 'skill-level') {
+        state.ui.skillLevel = t.value;
+        try { localStorage.setItem('pda.pp.skillLevel', state.ui.skillLevel); } catch (e) {}
+        rerender();
+        return;
+      }
+      if (t.dataset.action === 'switch-staff') {
+        state.activeStaffId = t.value;
+        const s = activeStaff();
+        logAction('switch_staff', { id: s.id, role: s.role });
+        toast(`Now signed in as ${s.name} (${s.role})`, { tone: 'info' });
+        rerender();
+        return;
+      }
       if (t.dataset.action === 'patient-filter') {
         state.ui.patientFilter = t.value;
         // Cheap re-render of just the list section

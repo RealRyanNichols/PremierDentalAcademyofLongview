@@ -754,7 +754,7 @@
     if (!m) return '';
     const content = ({ 'new-patient': modalNewPatient, 'audit': modalAudit, 'welcome': modalWelcome })[m.type];
     if (!content) return '';
-    return `<div class="modal-back" data-action="close-modal"><div class="modal" onclick="event.stopPropagation()">${content(m.props || {})}</div></div>`;
+    return `<div class="modal-back" data-action="close-modal"><div class="modal">${content(m.props || {})}</div></div>`;
   }
 
   function modalWelcome() {
