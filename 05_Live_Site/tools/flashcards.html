@@ -391,6 +391,36 @@
 
   await loadProgress();
 
+  // ── Free-preview gate — only enrolled/paid students see the whole deck ──
+  // Everyone else gets a generous sample so they can "see what it looks like."
+  const FREE_CARD_LIMIT = 12;
+  let paid = false;
+  if (session) {
+    try {
+      const { data: prof } = await sb.from('profiles')
+        .select('program, is_admin, exam_pro').eq('id', session.user.id).maybeSingle();
+      paid = !!(prof && (prof.is_admin || prof.exam_pro || (prof.program && prof.program !== 'preview')));
+    } catch (e) {}
+  }
+  // Captured before any shuffle, so the free sample is stable across reloads.
+  const POOL = paid ? DECK : DECK.slice(0, FREE_CARD_LIMIT);
+
+  if (!paid) {
+    const cardWrap = document.querySelector('.card-flip');
+    if (cardWrap && cardWrap.parentNode) {
+      const banner = document.createElement('div');
+      banner.className = 'mb-5 rounded-2xl border-2 border-amber-300 bg-gradient-to-r from-amber-50 to-teal-50 p-4 flex items-center gap-3';
+      banner.innerHTML =
+        '<div class="text-3xl select-none">🔒</div>' +
+        '<div class="flex-1 min-w-0">' +
+          '<div class="font-bold text-slate-900">Free preview — ' + FREE_CARD_LIMIT + ' of ' + DECK.length + ' cards</div>' +
+          '<div class="text-sm text-slate-600">Enroll to unlock all ' + DECK.length + '+ Texas RDA exam flashcards and save your progress on every device.</div>' +
+        '</div>' +
+        '<a href="/enroll" class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded-lg text-sm whitespace-nowrap">Unlock all →</a>';
+      cardWrap.parentNode.insertBefore(banner, cardWrap);
+    }
+  }
+
   // ── Filtered deck + position ──
   let workingDeck = [];
   let pos = 0;
@@ -399,7 +429,7 @@
   function rebuildWorking() {
     const topic  = topicSel.value;
     const status = document.getElementById('status-filter').value;
-    workingDeck = DECK.filter(c => {
+    workingDeck = POOL.filter(c => {
       if (topic  && c.topic !== topic) return false;
       const s = (progress[c.id]?.status) || 'new';
       if (status && status !== s) return false;
@@ -435,16 +465,16 @@
     document.getElementById('position-label').textContent = workingDeck.length
       ? `${pos + 1} of ${workingDeck.length}` : '';
 
-    // Stats from the FULL deck (not filtered)
+    // Stats from the available pool (full deck for paid, sample otherwise)
     let mastered = 0, learning = 0;
-    DECK.forEach(c => {
+    POOL.forEach(c => {
       const s = statusOf(c);
       if (s === 'mastered') mastered++;
       else if (s === 'learning') learning++;
     });
     document.getElementById('stat-mastered').textContent  = mastered;
     document.getElementById('stat-learning').textContent  = learning;
-    document.getElementById('stat-remaining').textContent = DECK.length - mastered;
+    document.getElementById('stat-remaining').textContent = POOL.length - mastered;
   }
 
   // Card flip

@@ -1006,7 +1006,11 @@
       const session = await window.PDA?.getSession?.();
       if (session) {
         state.user = await window.PDA.getProfile();
-        state.access = 'student';
+        // Only an enrolled/paid account unlocks the full tool — a free
+        // signup (program 'preview') still gets the preview.
+        const u = state.user || {};
+        const paid = !!(u.is_admin || (u.program && u.program !== 'preview'));
+        state.access = paid ? 'student' : 'preview';
       } else {
         state.access = 'preview';
       }
