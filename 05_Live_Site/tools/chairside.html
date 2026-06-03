@@ -1010,6 +1010,7 @@
   }
 
   async function boot() {
+<<<<<<< Updated upstream
     try {
       const session = await window.PDA?.getSession?.();
       if (session) {
@@ -1023,6 +1024,24 @@
         state.access = 'preview';
       }
     } catch (e) { state.user = null; state.access = 'preview'; }
+=======
+    // Session detection and profile fetch are deliberately separated: a
+    // missing profile row, an RLS hiccup, or a transient network blip on
+    // getProfile() must NOT downgrade a signed-in student back to preview.
+    // (Original code had both calls in the same try/catch, so any profile
+    // fetch error silently flipped state.access to 'preview'.)
+    let session = null;
+    try { session = await window.PDA?.getSession?.(); }
+    catch (e) { console.warn('[chairside] session detect failed:', e); }
+
+    if (session) {
+      state.access = 'student';
+      try { state.user = await window.PDA?.getProfile?.(); }
+      catch (e) { console.warn('[chairside] profile fetch failed (still student):', e); }
+    } else {
+      state.access = 'preview';
+    }
+>>>>>>> Stashed changes
 
     if (state.access === 'preview') {
       state.patients = JSON.parse(JSON.stringify(SEED.patients));

@@ -5754,6 +5754,7 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
+<<<<<<< Updated upstream
     // Check auth session — only ENROLLED/paid students get the full trainer.
     // A free signup (program 'preview') or no login at all gets the teaser.
     try {
@@ -5768,6 +5769,22 @@
         state.access = 'preview';
       }
     } catch (e) {
+=======
+    // Session detection and profile fetch are deliberately separated: a
+    // missing profile row, an RLS hiccup, or a transient network blip on
+    // getProfile() must NOT downgrade a signed-in student back to preview.
+    // (Original code had both calls in the same try/catch, so any profile
+    // fetch error silently flipped state.access to 'preview'.)
+    let session = null;
+    try { session = await window.PDA?.getSession?.(); }
+    catch (e) { console.warn('[practice-pro] session detect failed:', e); }
+
+    if (session) {
+      state.access = 'student';
+      try { state.user = await window.PDA?.getProfile?.(); }
+      catch (e) { console.warn('[practice-pro] profile fetch failed (still student):', e); }
+    } else {
+>>>>>>> Stashed changes
       state.user = null;
       state.access = 'preview';
     }
