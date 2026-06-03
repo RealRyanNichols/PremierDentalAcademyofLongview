@@ -5767,26 +5767,36 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
-    // Session detection and profile fetch are deliberately separated: a
-    // missing profile row, an RLS hiccup, or a transient network blip on
-    // getProfile() must NOT downgrade a signed-in student back to preview.
-    //
-    // ANY signed-in user gets the full tool. The previous stricter check
-    // (is_admin OR program !== 'preview') locked out real enrolled students
-    // because the enrollment flow doesn't set profiles.program — paid
-    // students stayed flagged as 'preview' and were treated as guests.
+    // Direct Supabase session detection — bypasses window.PDA so a race or
+    // a null sb in auth.js can't keep a signed-in student stuck in preview.
+    // ANY signed-in user is a 'student' with unlimited access; profile
+    // fetch is best-effort and never demotes them.
     let session = null;
-    try { session = await window.PDA?.getSession?.(); }
-    catch (e) { console.warn('[practice-pro] session detect failed:', e); }
-
-    if (session) {
-      state.access = 'student';
-      try { state.user = await window.PDA?.getProfile?.(); }
-      catch (e) { console.warn('[practice-pro] profile fetch failed (still student):', e); }
-    } else {
-      state.user = null;
-      state.access = 'preview';
+    try {
+      if (window.supabase?.createClient) {
+        const sb = window.supabase.createClient(
+          'https://lmbsuwslsycukynzpzik.supabase.co',
+          'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+          { auth: { persistSession: true, autoRefreshToken: true } }
+        );
+        const { data } = await sb.auth.getSession();
+        session = data?.session || null;
+        if (session) {
+          try {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            state.user = prof || { id: session.user.id, email: session.user.email };
+          } catch (e) {
+            state.user = { id: session.user.id, email: session.user.email };
+          }
+        }
+      }
+    } catch (e) { console.warn('[practice-pro] direct session check failed:', e); }
+    if (!session && window.PDA?.getSession) {
+      try { session = await window.PDA.getSession(); } catch (e) {}
     }
+    if (!session) state.user = null;
+    state.access = session ? 'student' : 'preview';
+    console.info('[practice-pro] access=' + state.access + (session ? ' (' + (session.user?.email || session.user?.id) + ')' : ' (no session)'));
 
     // In preview mode, lock the skill level to 'new' and disable persistence
     if (state.access === 'preview') {

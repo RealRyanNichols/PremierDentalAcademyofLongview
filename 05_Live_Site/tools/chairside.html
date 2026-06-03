@@ -1023,25 +1023,41 @@
   }
 
   async function boot() {
-    // Session detection and profile fetch are deliberately separated: a
-    // missing profile row, an RLS hiccup, or a transient network blip on
-    // getProfile() must NOT downgrade a signed-in student back to preview.
-    //
-    // ANY signed-in user gets the full tool. The previous stricter check
-    // (is_admin OR program !== 'preview') locked out real enrolled students
-    // because the enrollment flow doesn't set profiles.program — paid
-    // students stayed flagged as 'preview' and were treated as guests.
+    // Direct Supabase session detection. Two prior attempts (PRs #49, #53)
+    // tried to rely on window.PDA from auth.js, but enrolled signed-in
+    // students still kept seeing preview. The most likely cause is that
+    // window.PDA wasn't fully initialized when boot ran (auth.js race) or
+    // its internal sb was null. So we ALSO build a fresh client right here
+    // — guaranteed to find the session if it's in localStorage. ANY signed-
+    // in user is a 'student' with unlimited access; profile fetch is
+    // best-effort and never demotes them.
     let session = null;
-    try { session = await window.PDA?.getSession?.(); }
-    catch (e) { console.warn('[chairside] session detect failed:', e); }
-
-    if (session) {
-      state.access = 'student';
-      try { state.user = await window.PDA?.getProfile?.(); }
-      catch (e) { console.warn('[chairside] profile fetch failed (still student):', e); }
-    } else {
-      state.access = 'preview';
+    try {
+      if (window.supabase?.createClient) {
+        const sb = window.supabase.createClient(
+          'https://lmbsuwslsycukynzpzik.supabase.co',
+          'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+          { auth: { persistSession: true, autoRefreshToken: true } }
+        );
+        const { data } = await sb.auth.getSession();
+        session = data?.session || null;
+        if (session) {
+          try {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            state.user = prof || { id: session.user.id, email: session.user.email };
+          } catch (e) {
+            state.user = { id: session.user.id, email: session.user.email };
+          }
+        }
+      }
+    } catch (e) { console.warn('[chairside] direct session check failed:', e); }
+    // Fallback to window.PDA — only if direct check didn't find a session.
+    if (!session && window.PDA?.getSession) {
+      try { session = await window.PDA.getSession(); } catch (e) {}
     }
+
+    state.access = session ? 'student' : 'preview';
+    console.info('[chairside] access=' + state.access + (session ? ' (' + (session.user?.email || session.user?.id) + ')' : ' (no session)'));
 
     if (state.access === 'preview') {
       state.patients = JSON.parse(JSON.stringify(SEED.patients));
