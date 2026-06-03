@@ -57,6 +57,27 @@
 
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
+  <!-- Special offer reminder bar (auto-hides at deadline) -->
+  <a id="enroll-special-bar" href="/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026"
+     class="block mb-6 px-4 py-3 sm:px-6 rounded-xl text-white text-center font-semibold shadow-lg" style="background:#001a3d">
+    🔥 SPECIAL — <span class="text-amber-300 font-bold">$1,500 pay-in-full</span> for June 22 or July 7 in-person class · <span id="enroll-cd" class="text-amber-300">ends June 3, 5pm CT</span> →
+  </a>
+  <script>
+    (function(){
+      var D = Date.parse('2026-06-03T17:00:00-05:00');
+      var bar = document.getElementById('enroll-special-bar');
+      var cd  = document.getElementById('enroll-cd');
+      if (!bar || !cd) return;
+      function t(){
+        var ms = D - Date.now();
+        if (ms <= 0) { bar.style.display = 'none'; return; }
+        var h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
+        cd.textContent = (h > 24 ? Math.floor(h/24)+'d '+(h%24)+'h' : h+'h '+m+'m') + ' left';
+      }
+      t(); setInterval(t, 30000);
+    })();
+  </script>
+
   <div class="text-center mb-10 text-white">
     <p class="text-xs uppercase tracking-widest text-cyan-200 font-semibold">Enroll</p>
     <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">format.</span></h1>
@@ -307,7 +328,16 @@ const sb = window.supabase.createClient(
   'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'
 );
 
-const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayments: null };
+const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayments: null, specialActive: false };
+
+// June 2026 special — kept here so the same constants drive both the UI
+// override and the body sent to /api/enroll, which re-validates server-side.
+const SPECIAL_COHORTS = new Set([
+  '695198a9-a2e1-4274-815c-a776fa7f582d', // June 22, 2026 — In-Person
+  '93339313-29c4-4204-a346-c02dcfb8195f', // July 7, 2026 — In-Person
+]);
+const SPECIAL_DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00'); // 5pm CT
+const SPECIAL_TOTAL_CENTS = 150000;
 
 const fmt = (cents) => '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
 const isoToday = () => new Date().toISOString().slice(0, 10);
@@ -371,6 +401,23 @@ function autoPickFromUrl() {
 function updateCohortMeta() {
   const sel = document.getElementById('cohort');
   state.cohort = state.cohorts.find(c => c.id === sel.value) || null;
+
+  // Re-evaluate the June 2026 special on every cohort change. Active only
+  // when ?special=summer2026, an eligible in-person cohort is picked, and
+  // we're before the 5pm CT June 3 deadline. When active, snap the down
+  // payment to $1,500 so the user is paying-in-full at the discounted total.
+  const params = new URLSearchParams(location.search);
+  state.specialActive = (
+    params.get('special') === 'summer2026' &&
+    state.plan === 'in-person' &&
+    state.cohort && SPECIAL_COHORTS.has(state.cohort.id) &&
+    Date.now() < SPECIAL_DEADLINE_MS
+  );
+  if (state.specialActive) {
+    const downEl = document.getElementById('down');
+    if (downEl) { downEl.max = String(SPECIAL_TOTAL_CENTS / 100); downEl.value = String(SPECIAL_TOTAL_CENTS / 100); }
+  }
+
   const el = document.getElementById('cohort-meta');
   if (!state.cohort) { el.textContent = '—'; return; }
   const c = state.cohort;
@@ -391,7 +438,10 @@ function updateCohortMeta() {
 
 function computeSchedule() {
   const plan = PLAN_DEFS[state.plan];
-  const total = plan.total;
+  // June 2026 special drops the in-person total to $1,500 pay-in-full when
+  // the special-active gate (see updateCohortMeta) is satisfied. The server
+  // re-validates eligibility before charging.
+  const total = state.specialActive ? SPECIAL_TOTAL_CENTS : plan.total;
   // ── Online ($397) is a one-time, non-refundable payment with no
   //    cohort / cadence / start-date. Short-circuit the validations.
   if (state.plan === 'online') {
@@ -557,6 +607,8 @@ async function submit() {
       firstPaymentDate: s.firstDate, classEndDate: s.end,
       sourceId: tokenRes.token, email, name, phone,
       cohortName: state.cohort?.name || null,
+      cohortId: state.cohort?.id || null,
+      special: state.specialActive ? 'summer2026' : null,
     };
     const resp = await fetch('/api/enroll', {
       method: 'POST',
