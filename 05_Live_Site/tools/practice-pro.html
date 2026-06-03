@@ -171,6 +171,7 @@
       chartMarker: 'caries',
       chartStatus: 'existing', // 'existing' (blue) | 'needed' (red)
       bridgeStart: null,       // tooth # picked as the start of a bridge in progress
+      diastemaStart: null,     // tooth # picked as the start of a diastema in progress
       toothContext: null,
       paletteOpen: false,
       modal: null,
@@ -2128,6 +2129,9 @@
     // Bridge — special: click two teeth to define start and end. Stored at
     // the chart level (p.chart.bridges) rather than on an individual tooth.
     { id: 'bridge',    label: 'Bridge',     color: '#0f766e', bridge: true },
+    // Diastema — two parallel lines drawn BETWEEN two adjacent teeth.
+    // Same two-click flow as Bridge; stored on p.chart.diastemas.
+    { id: 'diastema',  label: 'Diastema',   color: '#0f766e', diastema: true },
   ];
 
   // STATUS: every marker is either an EXISTING finding/restoration (blue) or
@@ -2328,7 +2332,10 @@
       const v = m[k]; if (!v) return '';
       const { type, status } = parseMarker(v);
       if (!SURFACE_TYPES.includes(type)) return '';
-      const color = statusColor(status);
+      // Watch is always YELLOW per Amanda — it's a "keep an eye on it"
+      // note, not a needed/existing distinction. Everything else honors
+      // the status color.
+      const color = (type === 'watch') ? '#facc15' : statusColor(status);
       if (type === 'composite') {
         return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" pointer-events="none"/>`;
       }
@@ -2611,6 +2618,28 @@
   }
 
   function renderArch(chart, isUpper, teethRange) {
+    // Diastemas in this arch — two parallel vertical lines BETWEEN two
+    // adjacent teeth, overlaid on the tooth row so the lines visually sit
+    // in the gap between the teeth.
+    const diastemas = ((chart.diastemas) || []).filter(d => (d.a <= 16) === isUpper);
+    const diastemasOverlay = diastemas.length ? `
+      <div class="absolute inset-0 grid gap-1 pointer-events-none" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+        ${diastemas.map(d => {
+          const ca = isUpper ? d.a : (33 - d.a);
+          const cb = isUpper ? d.b : (33 - d.b);
+          const cMin = Math.min(ca, cb);
+          const cMax = Math.max(ca, cb);
+          if (cMax - cMin !== 1) return '';
+          const color = statusColor(d.status || 'existing');
+          return `<div style="grid-column: ${cMin} / ${cMax + 1};">
+            <svg viewBox="0 0 100 106" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true">
+              <line x1="46" y1="2" x2="46" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="54" y1="2" x2="54" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </div>`;
+        }).join('')}
+      </div>` : '';
+
     // Bridges in this arch only. The bracket sits over the number row.
     const bridges = ((chart.bridges) || []).filter(b => (b.start <= 16) === isUpper);
     const bridgesRow = bridges.length ? `
@@ -2636,12 +2665,13 @@
         </div>
       </div>` : '';
     return `
-      <div class="grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+      <div class="relative grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
         ${teethRange.map(n => renderTooth(n, chart[`T-${n}`] || {}, isUpper)).join('')}
+        ${diastemasOverlay}
       </div>
       ${bridgesRow}
       <div class="grid grid-cols-16 gap-1 mt-0.5" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500 ${state.ui.bridgeStart === n ? 'ring-2 ring-teal-600 rounded' : ''}">${n}</div>`).join('')}
+        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500 ${(state.ui.bridgeStart === n || state.ui.diastemaStart === n) ? 'ring-2 ring-teal-600 rounded' : ''}">${n}</div>`).join('')}
       </div>
     `;
   }
@@ -4441,6 +4471,37 @@
     logAction('chart_bridge_add', { start: Math.min(a,b), end: Math.max(a,b) });
   }
 
+  // Add a diastema between two adjacent teeth in the same arch. Stored at
+  // the chart level so it renders as two parallel vertical lines between
+  // the teeth in the chart row.
+  function addDiastema(toothA, toothB) {
+    const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
+    const a = +toothA, b = +toothB;
+    if (!a || !b || a === b) return;
+    const isUpperA = a <= 16, isUpperB = b <= 16;
+    if (isUpperA !== isUpperB) {
+      toast('Diastema teeth must be in the same arch.', { tone: 'warn' });
+      return;
+    }
+    // Adjacency: difference of 1 in tooth number works for everything except
+    // the midline. Within an arch, adjacent universal numbers are physically
+    // adjacent teeth.
+    if (Math.abs(a - b) !== 1) {
+      toast('Diastema needs two adjacent teeth.', { tone: 'warn' });
+      return;
+    }
+    p.chart = p.chart || {};
+    p.chart.diastemas = p.chart.diastemas || [];
+    p.chart.diastemas.push({
+      a: Math.min(a, b),
+      b: Math.max(a, b),
+      status: state.ui.chartStatus || 'existing',
+    });
+    saveSoon();
+    logAction('chart_diastema_add', { a: Math.min(a,b), b: Math.max(a,b) });
+  }
+
   function markWholeTooth(tooth, val) {
     const p = currentPatient(); if (!p) return;
     if (!chartGate()) return;
@@ -4912,9 +4973,10 @@
           break;
         }
         case 'set-marker':
-          // Leaving bridge mode mid-selection? Drop the pending start so it
-          // doesn't quietly hijack the next click.
-          if (state.ui.bridgeStart != null && t.dataset.marker !== 'bridge') state.ui.bridgeStart = null;
+          // Leaving bridge/diastema mode mid-selection? Drop the pending
+          // start so it doesn't quietly hijack the next click.
+          if (state.ui.bridgeStart   != null && t.dataset.marker !== 'bridge')   state.ui.bridgeStart   = null;
+          if (state.ui.diastemaStart != null && t.dataset.marker !== 'diastema') state.ui.diastemaStart = null;
           state.ui.chartMarker = t.dataset.marker;
           rerender();
           break;
@@ -5056,6 +5118,18 @@
         } else {
           addBridge(state.ui.bridgeStart, +tooth);
           state.ui.bridgeStart = null;
+        }
+        rerender();
+        return;
+      }
+      // Diastema: same two-click flow as bridge, but two ADJACENT teeth only.
+      if (def?.diastema) {
+        if (state.ui.diastemaStart == null) {
+          state.ui.diastemaStart = +tooth;
+          toast(`Diastema starts at #${tooth}. Click the adjacent tooth.`, { ms: 2400 });
+        } else {
+          addDiastema(state.ui.diastemaStart, +tooth);
+          state.ui.diastemaStart = null;
         }
         rerender();
         return;
