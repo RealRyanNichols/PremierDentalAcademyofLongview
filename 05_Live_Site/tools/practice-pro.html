@@ -2174,27 +2174,34 @@
     let roots;
     if (cls === 'molar') {
       roots = [
-        'M 18 50 Q 14 28 12 8 Q 12 4 14 4 Q 17 4 18 8 Q 22 28 22 50 Z', // mesial root
-        'M 34 50 Q 38 28 40 8 Q 40 4 42 4 Q 39 4 38 8 Q 34 28 34 50 Z', // distal root
-        'M 22 50 Q 24 32 26 24 Q 28 32 30 50 Z',                          // central palatal hint
+        // Mesial root — smooth taper from wide cervical base to narrow rounded
+        // apex, with a subtle inward lean. Cubic Béziers for organic curvature.
+        'M 14 50 C 12 36 10 20 14 7 C 15 4 18 4 19 6 C 22 20 22 36 24 50 Z',
+        // Distal root — mirror of mesial, leaning toward the distal side.
+        'M 32 50 C 34 36 34 20 37 6 C 38 4 41 4 42 7 C 46 20 44 36 42 50 Z',
+        // Central palatal hint — smaller third root nestled between the buccal
+        // pair (visible behind in buccal-view diagrams).
+        'M 25 50 C 25 38 25 24 27 14 C 28 13 30 13 31 14 C 33 24 33 38 33 50 Z',
       ];
     } else if (cls === 'premolar') {
       roots = [
-        // Single root with a hint of bifurcation toward the apex.
-        'M 18 50 Q 14 30 18 8 Q 22 4 25 4 Q 28 4 32 8 Q 36 30 32 50 L 28 50 Q 30 30 28 16 Q 26 30 26 50 Q 26 30 22 16 Q 20 30 22 50 Z',
+        // Single root, symmetric organic taper from wide cervix to rounded apex.
+        'M 18 50 C 16 35 15 18 19 6 C 20 4 23 4 27 4 C 31 4 34 4 35 6 C 39 18 38 35 36 50 Z',
       ];
     } else if (cls === 'canine') {
       roots = [
-        // Single very long root — the longest in the human mouth.
-        'M 22 50 Q 20 24 24 4 Q 25 2 26 2 Q 28 2 29 4 Q 32 24 30 50 Z',
+        // The longest root in the human mouth — exaggerated length, pointed apex
+        // sitting near the top of the root area.
+        'M 22 50 C 19 34 17 17 23 4 C 24 2 26 2 27 2 C 28 2 30 2 31 4 C 35 17 33 34 30 50 Z',
       ];
     } else if (cls === 'central') {
       roots = [
-        'M 22 50 Q 20 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 32 26 30 50 Z',
+        // Medium single root, wider near the cervix, rounded apex.
+        'M 22 50 C 20 36 19 22 23 8 C 24 6 25 5 27 5 C 29 5 30 6 31 8 C 33 22 32 36 30 50 Z',
       ];
-    } else { // lateral incisor — narrower
+    } else { // lateral incisor — narrower single root
       roots = [
-        'M 22 50 Q 21 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 31 26 30 50 Z',
+        'M 23 50 C 22 36 21 22 24 8 C 25 7 26 6 27 6 C 28 6 29 7 30 8 C 31 22 30 36 29 50 Z',
       ];
     }
     return { crown, zones, roots, cusps: [] };
