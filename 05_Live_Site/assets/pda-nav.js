@@ -207,6 +207,70 @@
     // Try now; if the supabase global isn't there yet, wait a tick.
     if (window.supabase?.createClient) wireAuth();
     else setTimeout(wireAuth, 400);
+
+    injectSpecialOfferBar();
+  }
+
+  // ───────────── Site-wide $1,500 special bar ─────────────
+  // Sticky bottom strip with a live countdown that follows visitors on every
+  // page (except the offer/checkout/admin pages where it would duplicate).
+  // Auto-hides at the June 3 2026 5pm CT deadline and respects a dismiss.
+  function injectSpecialOfferBar() {
+    const DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
+    if (!isFinite(DEADLINE_MS) || Date.now() >= DEADLINE_MS) return;
+    const path = location.pathname.toLowerCase().replace(/\/$/, '');
+    // Don't show on pages that already lead with the offer or where a sticky
+    // bar would be in the way.
+    if (/^\/(admin|login|logout|enroll-success|special-offer|enroll)/.test(path)) return;
+    try { if (localStorage.getItem('pda.offer.dismissed.v1') === '1') return; } catch (e) {}
+
+    const HREF = '/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026';
+    const bar = document.createElement('div');
+    bar.id = 'pda-offer-bar';
+    bar.setAttribute('role', 'region');
+    bar.setAttribute('aria-label', 'Limited-time enrollment offer');
+    bar.style.cssText = [
+      'position:fixed', 'left:0', 'right:0', 'bottom:0', 'z-index:9998',
+      'background:#001a3d', 'color:#fff',
+      'box-shadow:0 -8px 24px -4px rgba(0,26,61,0.35)',
+      'padding:10px 14px', 'font:600 13px/1.3 Inter,system-ui,sans-serif',
+    ].join(';');
+    bar.innerHTML =
+      '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;text-align:center">' +
+      '<span style="color:#fbbf24">🔥 SPECIAL</span>' +
+      '<span><b style="color:#fbbf24">$1,500</b> pay-in-full · June 22 or July 7 in-person</span>' +
+      '<span style="color:#fbbf24">·</span>' +
+      '<span>ends in <b class="pda-offer-cd" style="color:#fbbf24">—</b></span>' +
+      '<a href="' + HREF + '" style="background:#fbbf24;color:#001a3d;padding:6px 14px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Claim →</a>' +
+      '<button type="button" aria-label="Dismiss" class="pda-offer-x" style="background:transparent;color:#94a3b8;border:0;padding:4px 8px;font-size:18px;cursor:pointer;line-height:1">×</button>' +
+      '</div>';
+    document.body.appendChild(bar);
+
+    // Don't let the bar hide page content — push the body up by the bar's height.
+    function pad() { document.body.style.paddingBottom = (bar.offsetHeight + 4) + 'px'; }
+    pad();
+    window.addEventListener('resize', pad);
+
+    function tick() {
+      const ms = DEADLINE_MS - Date.now();
+      if (ms <= 0) { bar.remove(); document.body.style.paddingBottom = ''; return; }
+      const h = Math.floor(ms / 3600000);
+      const m = Math.floor((ms % 3600000) / 60000);
+      const s = Math.floor((ms % 60000) / 1000);
+      const el = bar.querySelector('.pda-offer-cd');
+      if (el) el.textContent = h > 24
+        ? Math.floor(h / 24) + 'd ' + (h % 24) + 'h ' + m + 'm'
+        : (h > 0 ? h + 'h ' : '') + m + 'm ' + s + 's';
+    }
+    tick();
+    const id = setInterval(tick, 1000);
+
+    bar.querySelector('.pda-offer-x').addEventListener('click', () => {
+      bar.remove();
+      document.body.style.paddingBottom = '';
+      clearInterval(id);
+      try { localStorage.setItem('pda.offer.dismissed.v1', '1'); } catch (e) {}
+    });
   }
 
   if (document.readyState === 'loading') {
