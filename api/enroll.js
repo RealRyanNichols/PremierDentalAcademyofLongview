@@ -25,6 +25,18 @@ const PLANS = {
   'online':    { name: 'PDA RDA Program — Online (Limited Time Sale)', totalCents: 39700 },
 };
 
+// June 2026 special — $1,500 pay-in-full for the June 22 or July 7 in-person
+// cohorts, when redeemed before Tue Jun 3 2026 5:00 PM Central. The client
+// proposes it via {special, cohortId} in the request body; this server
+// re-validates eligibility here before any charge happens, so a tampered
+// client can't slip the discount for the wrong cohort or past the deadline.
+const SPECIAL_COHORTS = new Set([
+  '695198a9-a2e1-4274-815c-a776fa7f582d', // June 22, 2026 — In-Person
+  '93339313-29c4-4204-a346-c02dcfb8195f', // July 7, 2026 — In-Person
+]);
+const SPECIAL_DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
+const SPECIAL_TOTAL_CENTS = 150000;
+
 async function sq(path, method, body, idempotency) {
   const res = await fetch(`${SQUARE_BASE}${path}`, {
     method,
@@ -132,10 +144,23 @@ export default async function handler(req, res) {
   const {
     plan, downCents, cadence, firstPaymentDate, classEndDate,
     sourceId, email, name, phone, cohortName,
+    cohortId, special,
   } = body;
 
-  const planDef = PLANS[plan];
-  if (!planDef) return res.status(400).json({ error: 'Invalid plan.' });
+  const basePlan = PLANS[plan];
+  if (!basePlan) return res.status(400).json({ error: 'Invalid plan.' });
+  // Shallow-copy so the June 2026 special can override totalCents on this
+  // request without mutating the shared PLANS object across other requests.
+  const planDef = { ...basePlan };
+  const specialApplied = (
+    special === 'summer2026' &&
+    plan === 'in-person' &&
+    cohortId && SPECIAL_COHORTS.has(cohortId) &&
+    Date.now() < SPECIAL_DEADLINE_MS
+  );
+  if (specialApplied) {
+    planDef.totalCents = SPECIAL_TOTAL_CENTS;
+  }
   if (!sourceId) return res.status(400).json({ error: 'Missing card details.' });
   if (!email || !name) return res.status(400).json({ error: 'Name and email are required.' });
 

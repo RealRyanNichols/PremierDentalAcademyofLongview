@@ -59,7 +59,7 @@
       cta: { label: 'Apply now →', href: '/apply' } },
 
     { match: /\b(amanda|williams|founder|owner|who runs)\b/i,
-      reply: 'Premier Dental Academy was founded by **Amanda Williams** — a 20-year veteran of East Texas dental offices. She started PDA so new RDAs would walk in already fluent in the software, not learning it the hard way.',
+      reply: 'Premier Dental Academy was founded by **Amanda Williams**, with 7+ years in East Texas dental practices. She started PDA so new RDAs would walk in already fluent in the software, not learning it the hard way.',
       cta: { label: 'Read Amanda\'s story →', href: '/about' } },
 
     { match: /\b(location|address|where|campus|directions|map)\b/i,

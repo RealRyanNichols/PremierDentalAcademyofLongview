@@ -786,8 +786,9 @@
         ` : `
           <div class="bg-emerald-50 border border-emerald-200 rounded p-3 text-[12px]"><strong>You're enrolled.</strong> Notes save to your account.</div>
         `}
-        <div class="flex justify-end pt-2 border-t border-cyan-100">
-          <button data-action="close-modal" class="btn btn-primary">Got it</button>
+        <div class="flex justify-end gap-2 pt-2 border-t border-cyan-100">
+          <button data-action="close-modal" class="btn btn-soft">Just close this</button>
+          <button data-action="welcome-launch" class="btn btn-primary">Got it — let's go →</button>
         </div>
       </div>
     `;
@@ -865,6 +866,13 @@
         case 'select-patient': selectPatient(t.dataset.id); break;
         case 'open-modal': openModal(t.dataset.modal); break;
         case 'close-modal': if (ev.target === t) closeModal(); break;
+        case 'welcome-launch': {
+          // Closes the intro modal and points the user at a real next step
+          // (instead of just dismissing into a blank canvas).
+          closeModal();
+          toast('You’re in! Pick a patient on the left to start charting, or add a new one with ＋ New.', { tone: 'success', ms: 4500 });
+          break;
+        }
         case 'clinical-tab': state.ui.clinicalTab = t.dataset.t; rerender(); break;
         case 'smartdoc-pick': {
           state.ui.smartDocSelected = t.dataset.t;

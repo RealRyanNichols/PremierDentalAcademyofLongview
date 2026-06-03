@@ -239,6 +239,91 @@
 
 <main>
 
+<!-- ═══════════ SPECIAL OFFER (June 2026) — auto-hides at deadline ═══════════ -->
+<section id="special-offer" class="bg-slate-50 border-b-4 border-blue-700">
+  <div class="max-w-5xl mx-auto px-4 py-6 sm:py-10">
+    <div class="rounded-2xl overflow-hidden shadow-2xl border border-blue-200 bg-white">
+      <!-- Navy header band -->
+      <div class="text-white text-center py-6 sm:py-7 px-4" style="background:#001a3d">
+        <div class="display text-3xl sm:text-5xl font-extrabold tracking-[0.18em]">PREMIER</div>
+        <div class="display text-sm sm:text-lg font-bold tracking-[0.32em] mt-1">DENTAL ACADEMY</div>
+        <div class="flex items-center justify-center gap-3 mt-3 opacity-70">
+          <span class="h-px w-12 sm:w-16 bg-white/50"></span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 4c-2 0-3 1.5-3 3.5C5 12 6.5 20 9 20c1 0 1.2-2 3-2s2 2 3 2c2.5 0 4-8 4-12.5C19 5.5 18 4 16 4c-1.5 0-2.5 1-4 1S9.5 4 8 4Z"/></svg>
+          <span class="h-px w-12 sm:w-16 bg-white/50"></span>
+        </div>
+      </div>
+      <!-- SPECIAL OFFER headline -->
+      <div class="text-center py-7 sm:py-9 px-4 bg-[#f1f4f9]">
+        <div class="display text-5xl sm:text-7xl font-black tracking-tight leading-none" style="color:#001a3d">SPECIAL OFFER</div>
+        <div class="flex items-center justify-center gap-3 mt-3">
+          <span class="h-0.5 w-10 sm:w-14 bg-blue-700"></span>
+          <div class="display text-xl sm:text-2xl font-extrabold tracking-wide text-blue-700">ENDS TOMORROW!</div>
+          <span class="h-0.5 w-10 sm:w-14 bg-blue-700"></span>
+        </div>
+        <div class="text-base sm:text-lg font-semibold text-slate-700 mt-1 tracking-wide">JUNE 3RD AT 5:00 PM</div>
+        <div id="special-offer-countdown" class="mt-2 text-sm font-bold text-blue-700"></div>
+      </div>
+      <!-- Details: dates + price -->
+      <div class="grid sm:grid-cols-2 gap-0 px-4 sm:px-10 py-7 border-t border-slate-200">
+        <div class="flex items-center gap-4 sm:border-r sm:border-slate-200 sm:pr-6">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center flex-shrink-0 text-white" style="background:#001a3d">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>
+          </div>
+          <div>
+            <div class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-600">Sign up for the</div>
+            <div class="display text-xl sm:text-2xl font-extrabold text-blue-700 mt-1 leading-tight">JUNE 22ND</div>
+            <div class="text-xs font-bold text-slate-500 tracking-widest my-0.5">— OR —</div>
+            <div class="display text-xl sm:text-2xl font-extrabold text-blue-700 leading-tight">JULY 7TH CLASS</div>
+          </div>
+        </div>
+        <div class="text-center sm:text-left sm:pl-6 mt-6 sm:mt-0">
+          <div class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-slate-600">Receive the special price of</div>
+          <div class="display text-6xl sm:text-7xl font-black text-blue-700 mt-1 leading-none">$1,500</div>
+          <div class="text-xs text-slate-500 line-through mt-1">Regular $1,997</div>
+          <span class="inline-block mt-2 px-3 py-1 text-white text-[10px] sm:text-xs font-bold tracking-widest rounded" style="background:#001a3d">PAY IN FULL OFFER ONLY</span>
+        </div>
+      </div>
+      <!-- CTA bar (two cohort choices) -->
+      <div class="grid sm:grid-cols-2 gap-px bg-blue-200">
+        <a href="/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026"
+           class="block bg-blue-700 hover:bg-blue-800 text-white text-center py-4 sm:py-5 px-4 transition font-bold tracking-wide">
+          Claim June 22 seat — $1,500 →
+        </a>
+        <a href="/enroll?plan=in-person&cohort=93339313-29c4-4204-a346-c02dcfb8195f&special=summer2026"
+           class="block bg-blue-700 hover:bg-blue-800 text-white text-center py-4 sm:py-5 px-4 transition font-bold tracking-wide">
+          Claim July 7 seat — $1,500 →
+        </a>
+      </div>
+      <div class="text-center text-xs text-slate-500 py-3 px-4 bg-white border-t border-slate-200">
+        ⏰ Don't miss out — offer ends Tuesday, June 3rd at 5:00 PM Central. Pay-in-full enrollments only.
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+  // Auto-hide the special-offer section after the June 3, 2026 5:00 PM CDT
+  // deadline, and tick a live countdown so the urgency stays real.
+  (function () {
+    var DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
+    var section = document.getElementById('special-offer');
+    var cd = document.getElementById('special-offer-countdown');
+    if (!section || !cd) return;
+    function tick() {
+      var ms = DEADLINE_MS - Date.now();
+      if (ms <= 0) { section.style.display = 'none'; return; }
+      var h = Math.floor(ms / 3600000);
+      var m = Math.floor((ms % 3600000) / 60000);
+      cd.textContent = h > 24
+        ? '⏳ ' + Math.floor(h / 24) + 'd ' + (h % 24) + 'h left'
+        : '⏳ Only ' + h + 'h ' + m + 'm left';
+    }
+    tick();
+    setInterval(tick, 30000);
+  })();
+</script>
+<!-- ═════════════════════════ end SPECIAL OFFER ═════════════════════════ -->
+
 <!-- ───────────── Hero ───────────── -->
 <section class="gradient-hero">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">

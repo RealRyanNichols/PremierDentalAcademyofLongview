@@ -4129,8 +4129,9 @@
             <strong>You're enrolled.</strong> Full trainer unlocked. Your work auto-saves to your account.
           </div>
         `}
-        <div class="flex justify-end pt-2 border-t border-slate-200">
-          <button data-action="close-modal" class="btn btn-primary">Got it — let's go</button>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+          <button data-action="close-modal" class="btn btn-soft">Just close this</button>
+          <button data-action="welcome-launch" class="btn btn-primary">Got it — let's go →</button>
         </div>
       </div>
     `;
@@ -4405,6 +4406,21 @@
         case 'open-modal': openModal(t.dataset.modal); break;
         case 'close-modal':
           if (ev.target === t) closeModal(); break;
+        case 'welcome-launch': {
+          // Closes the intro modal AND launches the user into something useful
+          // so they're not staring at a blank canvas. Tries the command palette
+          // (best — instant search of patients/actions/codes); falls back to a
+          // toast hint if the palette button isn't on screen.
+          closeModal();
+          const palette = document.querySelector('[data-action="open-palette"]');
+          if (palette) {
+            setTimeout(() => palette.click(), 60);
+            toast('Type to search any patient, ADA code, or action. Press ⌘K or Ctrl+K anytime.', { ms: 4500 });
+          } else {
+            toast('You’re in! Pick a patient on the left, or press ⌘K to search.', { ms: 4500 });
+          }
+          break;
+        }
         case 'walkout-print': window.print(); break;
         case 'walkout-pdf': downloadWalkout(); break;
         case 'toggle-premed': {
