@@ -5754,20 +5754,23 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
-    // Check auth session — only ENROLLED/paid students get the full trainer.
-    // A free signup (program 'preview') or no login at all gets the teaser.
-    try {
-      const session = await window.PDA?.getSession?.();
-      if (session) {
-        state.user = await window.PDA.getProfile();
-        const u = state.user || {};
-        const paid = !!(u.is_admin || (u.program && u.program !== 'preview'));
-        state.access = paid ? 'student' : 'preview';
-      } else {
-        state.user = null;
-        state.access = 'preview';
-      }
-    } catch (e) {
+    // Session detection and profile fetch are deliberately separated: a
+    // missing profile row, an RLS hiccup, or a transient network blip on
+    // getProfile() must NOT downgrade a signed-in student back to preview.
+    //
+    // ANY signed-in user gets the full tool. The previous stricter check
+    // (is_admin OR program !== 'preview') locked out real enrolled students
+    // because the enrollment flow doesn't set profiles.program — paid
+    // students stayed flagged as 'preview' and were treated as guests.
+    let session = null;
+    try { session = await window.PDA?.getSession?.(); }
+    catch (e) { console.warn('[practice-pro] session detect failed:', e); }
+
+    if (session) {
+      state.access = 'student';
+      try { state.user = await window.PDA?.getProfile?.(); }
+      catch (e) { console.warn('[practice-pro] profile fetch failed (still student):', e); }
+    } else {
       state.user = null;
       state.access = 'preview';
     }
