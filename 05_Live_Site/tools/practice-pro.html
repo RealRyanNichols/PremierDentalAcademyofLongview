@@ -169,6 +169,7 @@
       sidebarOpen: window.matchMedia('(min-width: 769px)').matches,
       isMobile: window.matchMedia('(max-width: 768px)').matches,
       chartMarker: 'caries',
+      chartStatus: 'existing', // 'existing' (blue) | 'needed' (red)
       toothContext: null,
       paletteOpen: false,
       modal: null,
@@ -2104,17 +2105,40 @@
   // ── Chart module: odontogram with surface marking ──────────────
   const MARKERS = [
     { id: '',          label: 'Erase',      color: '#ffffff', text: 'Clear' },
+    // Surface-level conditions / restorations
     { id: 'caries',    label: 'Caries',     color: '#ef4444' },
     { id: 'composite', label: 'Composite',  color: '#0d9488' },
     { id: 'amalgam',   label: 'Amalgam',    color: '#475569' },
     { id: 'sealant',   label: 'Sealant',    color: '#a3e635' },
-    { id: 'crown',     label: 'Crown',      color: '#fbbf24', whole: true },
-    { id: 'rct',       label: 'RCT',        color: '#9333ea', whole: true },
-    { id: 'missing',   label: 'Missing',    color: '#1e293b', whole: true },
-    { id: 'implant',   label: 'Implant',    color: '#0ea5e9', whole: true },
-    { id: 'watch',     label: 'Watch',      color: '#f97316' },
     { id: 'fracture',  label: 'Fracture',   color: '#be185d' },
+    { id: 'watch',     label: 'Watch',      color: '#f97316' },
+    // Whole-tooth markers
+    { id: 'crown',     label: 'Crown',      color: '#fbbf24', whole: true },
+    { id: 'pfm',       label: 'PFM crown',  color: '#7c3aed', whole: true },
+    { id: 'fgc',       label: 'FGC (gold)', color: '#d97706', whole: true },
+    { id: 'ssc',       label: 'SSC',        color: '#64748b', whole: true },
+    { id: 'rct',       label: 'RCT',        color: '#9333ea', whole: true },
+    { id: 'implant',   label: 'Implant',    color: '#0ea5e9', whole: true },
+    { id: 'missing',   label: 'Missing',    color: '#1e293b', whole: true },
+    { id: 'extract',   label: 'Extract',    color: '#dc2626', whole: true },
+    { id: 'impacted',  label: 'Impacted',   color: '#9333ea', whole: true },
+    { id: 'abscess',   label: 'Abscess',    color: '#be185d', whole: true },
+    { id: 'drift_m',   label: 'Drift M →',  color: '#64748b', whole: true },
+    { id: 'drift_d',   label: '← Drift D',  color: '#64748b', whole: true },
   ];
+
+  // STATUS: every marker is either an EXISTING finding/restoration (blue) or
+  // a NEEDED / proposed treatment (red). Stored alongside the marker type as
+  // "type:status" (e.g., "caries:needed"). Legacy values without ':' default
+  // to existing for back-compat.
+  const STATUS_COLORS = { existing: '#2563eb', needed: '#dc2626' };
+  function parseMarker(val) {
+    if (!val) return { type: '', status: '' };
+    const i = String(val).indexOf(':');
+    if (i < 0) return { type: String(val), status: 'existing' };
+    return { type: String(val).slice(0, i), status: String(val).slice(i + 1) || 'existing' };
+  }
+  function statusColor(status) { return STATUS_COLORS[status] || STATUS_COLORS.existing; }
 
   // Center coordinates of the crown box (y=50–106). Sealant "S" sits at the
   // occlusal center, drawn outside the maxillary/mandibular flip so it stays
@@ -2227,57 +2251,66 @@
   }
 
   function renderTooth(num, marks, isUpper) {
-    // viewBox is 56×106: root area y=2–48, crown box y=50–106. Maxillary
-    // teeth render as-is (root on top); mandibular teeth flip the entire
-    // group vertically so the root ends up on the bottom and the box on
-    // top — same five-surface labeled box, just mirrored to match the arch.
+    // viewBox 56×106: root area y=2–48, crown box y=50–106. Maxillary renders
+    // as-is, mandibular flips vertically. Every marker value is parsed as
+    // "type:status" so the renderer can color it (existing=blue, needed=red).
     const cls = toothClass(num);
     const shape = toothShapes(cls, num);
     const m = marks || {};
-    const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
-    const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
-    const isMissing = wholeVal === 'missing';
-    const isCrown   = wholeVal === 'crown';
-    const isRct     = wholeVal === 'rct';
-    const isImplant = wholeVal === 'implant';
-    const hasWhole  = !!wholeVal;
 
-    // Mesial faces the midline → mirror M↔D on the patient's right side
+    const WHOLE_TYPES = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
+    const SURFACE_TYPES = ['caries','composite','amalgam','watch'];
+
+    // Pick the whole-tooth marker (m.whole takes precedence, else any value
+    // whose parsed type is a whole-tooth type).
+    const wholeRaw = m.whole || Object.values(m).find(v => WHOLE_TYPES.includes(parseMarker(v).type));
+    const { type: wholeType, status: wholeStatus } = parseMarker(wholeRaw);
+    const isMissing  = wholeType === 'missing';
+    const isCrown    = wholeType === 'crown';
+    const isPfm      = wholeType === 'pfm';
+    const isFgc      = wholeType === 'fgc';
+    const isSsc      = wholeType === 'ssc';
+    const isRct      = wholeType === 'rct';
+    const isImplant  = wholeType === 'implant';
+    const isExtract  = wholeType === 'extract';
+    const isImpacted = wholeType === 'impacted';
+    const isDriftM   = wholeType === 'drift_m';
+    const isDriftD   = wholeType === 'drift_d';
+    const hasWhole   = !!wholeType;
+    const wholeCol   = hasWhole ? statusColor(wholeStatus) : '#475569';
+
+    // Mesial faces midline → mirror M↔D on the patient's right side
     // (teeth 1–8 maxillary right, 25–32 mandibular right).
     const swapMD = (num <= 8) || (num >= 25 && num <= 32);
     let zones = shape.zones;
     if (swapMD && zones.M && zones.D) zones = { ...zones, M: shape.zones.D, D: shape.zones.M };
 
-    const colorOf = (id, fb) => (MARKERS.find(x => x.id === id)?.color || fb);
-    const crownColor = colorOf('crown', '#fbbf24');
-    const rctColor   = colorOf('rct', '#9333ea');
-    const implColor  = colorOf('implant', '#0ea5e9');
-    const fracColor  = colorOf('fracture', '#be185d');
-    const sealColor  = colorOf('sealant', '#65a30d');
+    // Surface fills only when no whole-tooth marker is set.
+    function surfaceFillColor(key) {
+      const v = m[key]; if (!v) return null;
+      const { type, status } = parseMarker(v);
+      if (!SURFACE_TYPES.includes(type)) return null;
+      return statusColor(status);
+    }
 
-    const OVERLAY_VALS = ['sealant', 'fracture'];
-    const surfaceColor = (key) => {
-      const v = m[key]; if (!v || WHOLE_VALS.includes(v) || OVERLAY_VALS.includes(v)) return null;
-      return (MARKERS.find(x => x.id === v) || {}).color || null;
-    };
-    const vals = Object.values(m);
-    const hasSealant  = vals.includes('sealant');
-    const hasFracture = vals.includes('fracture');
+    // Overlay markers (sealant, fracture, abscess) can live on top of a tooth
+    // alongside other markers — scan all values for them.
+    const parsedAll = Object.entries(m).map(([k, v]) => ({ k, ...parseMarker(v) }));
+    const sealantEntry  = parsedAll.find(p => p.type === 'sealant');
+    const fractureEntry = parsedAll.find(p => p.type === 'fracture');
+    const abscessEntry  = parsedAll.find(p => p.type === 'abscess');
 
     const showSurfaces = !hasWhole;
-    const gradId = `tg-${num}`;
+    const gradId   = `tg-${num}`;
     const rootGrad = `tr-${num}`;
 
-    // Mandibular: flip whole SVG so root sits below the box.
     const transform = isUpper ? '' : 'scale(1,-1) translate(0,-106)';
 
     const surfaceFills = showSurfaces ? Object.entries(zones).map(([k, d]) => {
-      const fill = surfaceColor(k); if (!fill) return '';
+      const fill = surfaceFillColor(k); if (!fill) return '';
       return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.82"/>`;
     }).join('') : '';
 
-    // Always-on division strokes around each surface so empty teeth still
-    // display the M/D/B/L/O grid (Amanda's "division lines" requirement).
     const gridLines = showSurfaces ? Object.values(zones).map(d =>
       `<path d="${d}" fill="none" stroke="#94a3b8" stroke-width="0.6" pointer-events="none"/>`
     ).join('') : '';
@@ -2286,29 +2319,66 @@
       `<path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />`
     ).join('') : '';
 
-    // Implant: threaded screw replaces the natural root. Otherwise draw roots.
+    // Implant: threaded screw down the root area (resembling a screw).
     const rootPaths = isImplant
-      ? `<rect x="21" y="6" width="14" height="44" rx="2.5" fill="${implColor}" pointer-events="none"/>` +
-        [12, 18, 24, 30, 36, 42, 47].map(y =>
-          `<line x1="21" y1="${y}" x2="35" y2="${y}" stroke="#ffffff" stroke-width="1.3" pointer-events="none"/>`).join('')
+      ? `<rect x="20" y="6" width="16" height="44" rx="3" fill="${wholeCol}" pointer-events="none"/>` +
+        [10, 16, 22, 28, 34, 40, 46].map(y =>
+          `<line x1="20" y1="${y}" x2="36" y2="${y + 3}" stroke="#ffffff" stroke-width="1.4" pointer-events="none"/>`).join('')
       : shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" pointer-events="none"/>`).join('');
 
-    // RCT: colored line down each canal.
     const rctLines = isRct ? (ROOT_LINES[cls] || []).map(([x1, y1, x2, y2]) =>
-      `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${rctColor}" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`).join('') : '';
+      `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${wholeCol}" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`).join('') : '';
+
+    // PFM crown: rounded-rect outline around the crown box.
+    const pfmMark = isPfm
+      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>`
+      : '';
+
+    // FGC: same outline + diagonal hatching to indicate gold.
+    const fgcMark = isFgc
+      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>` +
+        [60, 72, 84, 96].map(y => `<line x1="6" y1="${y}" x2="50" y2="${y + 6}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('')
+      : '';
+
+    // Drift arrows (mesial = M direction, distal = D direction).
+    const driftMark = isDriftM
+      ? `<path d="M 26 78 L 6 78 M 12 72 L 6 78 L 12 84" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      : isDriftD
+      ? `<path d="M 30 78 L 50 78 M 44 72 L 50 78 L 44 84" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      : '';
+
+    // Extract: bold X across the whole tooth (crown + root).
+    const extractMark = isExtract ? `
+      <line x1="6" y1="6" x2="50" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
+      <line x1="50" y1="6" x2="6" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
+    ` : '';
+
+    // Impacted: dashed ellipse encircling the entire tooth.
+    const impactedMark = isImpacted
+      ? `<ellipse cx="28" cy="53" rx="27" ry="51" fill="none" stroke="${wholeCol}" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>`
+      : '';
+
+    // Abscess: filled dot at the very apex of the root.
+    const abscessMark = abscessEntry
+      ? `<circle cx="28" cy="3" r="3.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.7" pointer-events="none"/>`
+      : '';
 
     // Fracture lightning bolt across the crown box.
-    const bolt = hasFracture
-      ? `<path d="M 31 55 L 23 80 L 29 80 L 21 105 L 37 76 L 30 76 Z" fill="${fracColor}" stroke="#ffffff" stroke-width="0.7" stroke-linejoin="round" pointer-events="none"/>`
+    const bolt = fractureEntry
+      ? `<path d="M 31 55 L 23 80 L 29 80 L 21 105 L 37 76 L 30 76 Z" fill="${statusColor(fractureEntry.status)}" stroke="#ffffff" stroke-width="0.7" stroke-linejoin="round" pointer-events="none"/>`
       : '';
 
-    // Sealant "S" drawn OUTSIDE the flip so it stays upright on either arch.
+    // Sealant "S" / SSC text drawn OUTSIDE the flip so they stay upright.
     const [ox, oy] = OCC_CENTER[cls] || [28, 82];
-    const sealS = hasSealant
-      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="${sealColor}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>`
+    const sealS = sealantEntry
+      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="${statusColor(sealantEntry.status)}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>`
+      : '';
+    const sscMark = isSsc
+      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="800" fill="${wholeCol}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>`
       : '';
 
-    const crownFill = isCrown ? crownColor : `url(#${gradId})`;
+    // Crown fill: if `crown` marker, paint the box in the status color.
+    const crownFill = isCrown ? wholeCol : `url(#${gradId})`;
 
     return `
       <div class="tooth flex flex-col items-center" data-tooth="${num}" title="#${num} — ${escapeHtml(toothLabel(num))}">
@@ -2327,8 +2397,8 @@
           <g transform="${transform}">
             ${ isMissing ? `
               <path d="${shape.crown}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2" pointer-events="none"/>
-              <line x1="8" y1="56" x2="48" y2="100" stroke="#94a3b8" stroke-width="2"/>
-              <line x1="48" y1="56" x2="8" y2="100" stroke="#94a3b8" stroke-width="2"/>
+              <line x1="8" y1="56" x2="48" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
+              <line x1="48" y1="56" x2="8" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
             ` : `
               ${rootPaths}
               <path d="M 4 50 Q 28 47 52 50" stroke="#fbcfe8" stroke-width="1.2" fill="none" pointer-events="none" opacity="0.7"/>
@@ -2337,10 +2407,17 @@
               ${gridLines}
               ${hitZones}
               ${rctLines}
+              ${pfmMark}
+              ${fgcMark}
+              ${driftMark}
+              ${extractMark}
+              ${impactedMark}
+              ${abscessMark}
               ${bolt}
             ` }
           </g>
           ${sealS}
+          ${sscMark}
         </svg>
       </div>
     `;
@@ -2350,7 +2427,10 @@
     const chart = p.chart || {};
     const counts = { caries: 0, composite: 0, amalgam: 0, missing: 0, crown: 0, planned: 0 };
     Object.values(chart).forEach(t => {
-      Object.values(t || {}).forEach(v => { if (counts[v] != null) counts[v]++; });
+      Object.values(t || {}).forEach(v => {
+        const { type } = parseMarker(v);
+        if (counts[type] != null) counts[type]++;
+      });
     });
     const planned = (p.treatmentPlan || []).filter(l => l.tooth).length;
     counts.planned = planned;
@@ -2384,6 +2464,25 @@
         ${previewBanner}
         <!-- Toolbar -->
         <div class="bg-white rounded border border-slate-200 p-3">
+          <!-- Status toggle (existing = blue, needed/proposed = red) -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-1">Status</span>
+            <div class="inline-flex rounded border border-slate-300 bg-slate-50 p-0.5">
+              <button data-action="set-status" data-status="existing"
+                class="px-3 py-1 text-[11px] font-semibold rounded ${state.ui.chartStatus === 'existing' ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}"
+                title="Charting something already present in the mouth → drawn in blue">
+                ● Existing
+              </button>
+              <button data-action="set-status" data-status="needed"
+                class="px-3 py-1 text-[11px] font-semibold rounded ${state.ui.chartStatus === 'needed' ? 'bg-rose-600 text-white' : 'text-rose-700 hover:bg-rose-50'}"
+                title="Charting a needed / proposed treatment → drawn in red">
+                ● Needed
+              </button>
+            </div>
+            <span class="text-[11px] text-slate-500 ml-1">
+              ${state.ui.chartStatus === 'needed' ? 'Marking proposed treatment in red.' : 'Marking existing findings in blue.'}
+            </span>
+          </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-2">Marker</span>
             ${MARKERS.map(m => `
@@ -2398,7 +2497,7 @@
           </div>
           <div class="text-[11px] text-slate-500 mt-2">
             Click a surface to apply the active marker. <span class="hidden md:inline">Right-click a tooth for more actions.</span>
-            Whole-tooth markers (Crown, RCT, Missing, Implant) apply to the entire tooth.
+            Whole-tooth markers apply to the whole tooth: Crown / PFM / FGC / SSC / RCT / Implant / Missing / Extract / Impacted / Abscess / Drift.
           </div>
         </div>
 
@@ -4253,17 +4352,20 @@
     p.chart[key] = p.chart[key] || {};
     // If tooth had whole-tooth marker, clear it first
     if (p.chart[key].whole) delete p.chart[key].whole;
-    p.chart[key][surf] = val;
+    // Tag with the active needed/existing status so the renderer can color it.
+    const stamped = val ? `${val}:${state.ui.chartStatus || 'existing'}` : val;
+    p.chart[key][surf] = stamped;
     saveSoon();
-    logAction('chart_mark_surface', { tooth, surf, val });
+    logAction('chart_mark_surface', { tooth, surf, val: stamped });
   }
   function markWholeTooth(tooth, val) {
     const p = currentPatient(); if (!p) return;
     if (!chartGate()) return;
     p.chart = p.chart || {};
-    p.chart[`T-${tooth}`] = { whole: val };
+    const stamped = val ? `${val}:${state.ui.chartStatus || 'existing'}` : val;
+    p.chart[`T-${tooth}`] = { whole: stamped };
     saveSoon();
-    logAction('chart_mark_whole', { tooth, val });
+    logAction('chart_mark_whole', { tooth, val: stamped });
   }
   function clearSurface(tooth, surf) {
     const p = currentPatient(); if (!p) return;
@@ -4727,6 +4829,7 @@
           break;
         }
         case 'set-marker': state.ui.chartMarker = t.dataset.marker; rerender(); break;
+        case 'set-status': state.ui.chartStatus = t.dataset.status === 'needed' ? 'needed' : 'existing'; rerender(); break;
         case 'chart-reset': {
           if (!confirm('Clear all chart markings for this patient?')) break;
           const p = currentPatient(); if (p) { p.chart = {}; saveSoon(); logAction('chart_reset', { id: p.id }); rerender(); toast('Chart cleared'); }
