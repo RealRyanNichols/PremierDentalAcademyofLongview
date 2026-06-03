@@ -15,16 +15,15 @@
 //      write fails we return ok=true with a `warning` so the buyer never sees
 //      "failed" and pays again. Amanda grants Pro manually in that rare case.
 //
-// Requires SQUARE_ACCESS_TOKEN as a Supabase function secret (same production
-// token used by the Vercel enroll endpoint). SUPABASE_URL / SERVICE_ROLE_KEY /
-// ANON_KEY are provided automatically by the platform.
+// Reads SQUARE_ACCESS_TOKEN from the public.app_secrets table (same pattern
+// as kajabi-my-courses / quo-*). SUPABASE_URL / SERVICE_ROLE_KEY / ANON_KEY
+// are provided automatically by the platform.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const SQUARE_ACCESS_TOKEN = Deno.env.get("SQUARE_ACCESS_TOKEN");
 
 const LOCATION_ID = "2P2ZE3FJNEYTV";
 const SQUARE_BASE = "https://connect.squareup.com/v2";
@@ -67,6 +66,16 @@ Deno.serve(async (req) => {
 
   const { sourceId } = await req.json().catch(() => ({} as { sourceId?: string }));
   if (!sourceId) return json({ error: "Missing card details." }, 400);
+
+  // Read the Square token from the same app_secrets table other functions use
+  // (kajabi-my-courses, quo-*, etc.). Keeps creds out of Vercel/Edge env vars
+  // and lets ops rotate them with a single SQL update.
+  const { data: secretRow } = await sb
+    .from("app_secrets")
+    .select("value")
+    .eq("key", "SQUARE_ACCESS_TOKEN")
+    .maybeSingle();
+  const SQUARE_ACCESS_TOKEN = secretRow?.value || "";
   if (!SQUARE_ACCESS_TOKEN) return json({ error: "Payments are not configured yet. No charge was made." }, 500);
 
   // (3) Charge $29. Deterministic idempotency key dedupes re-submits.
