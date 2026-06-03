@@ -209,6 +209,103 @@
     else setTimeout(wireAuth, 400);
 
     injectSpecialOfferBar();
+    armExitIntent();
+  }
+
+  // ───────────── Exit-intent email capture ─────────────
+  // When a visitor looks like they're about to bounce, offer the free
+  // practice exam in exchange for an email. Captures into public.subscribers
+  // (which has a public INSERT policy). Skips pages where it would interrupt
+  // an active transaction or where the visitor is already enrolled.
+  function armExitIntent() {
+    const path = location.pathname.toLowerCase().replace(/\/$/, '');
+    if (/^\/(admin|login|logout|dashboard|enroll|enroll-success|tools\/practice-exam|special-offer)/.test(path)) return;
+    try { if (localStorage.getItem('pda.exit.shown.v1') === '1') return; } catch (e) {}
+
+    let shown = false;
+    let scrolledDown = false;
+    let lastY = window.scrollY;
+
+    function maybeShow(trigger) {
+      if (shown) return;
+      shown = true;
+      try { localStorage.setItem('pda.exit.shown.v1', '1'); } catch (e) {}
+      showModal(trigger);
+    }
+
+    // Desktop: mouse heading to URL bar / tab close.
+    function onMouseOut(e) {
+      if (!e.relatedTarget && e.clientY < 5) maybeShow('mouseleave');
+    }
+    // Mobile: scrolled past 40% then sharply scrolled back up → likely bouncing.
+    function onScroll() {
+      const y = window.scrollY;
+      const max = (document.documentElement.scrollHeight - window.innerHeight) || 1;
+      if (y / max > 0.4) scrolledDown = true;
+      if (scrolledDown && y < lastY - 80 && y < 200) maybeShow('mobile-bounce');
+      lastY = y;
+    }
+
+    document.addEventListener('mouseout', onMouseOut);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Tab-blur on desktop is also a bounce signal but noisy; skipping for now.
+
+    function showModal(trigger) {
+      const overlay = document.createElement('div');
+      overlay.id = 'pda-exit-modal';
+      overlay.style.cssText = [
+        'position:fixed', 'inset:0', 'z-index:99999',
+        'background:rgba(15,23,42,0.65)',
+        'display:flex', 'align-items:center', 'justify-content:center',
+        'padding:16px', 'animation:pdaFade 0.2s ease-out',
+        'font:400 14px/1.45 Inter,system-ui,sans-serif',
+      ].join(';');
+      overlay.innerHTML =
+        '<style>@keyframes pdaFade{from{opacity:0}to{opacity:1}}' +
+        '@keyframes pdaPop{from{transform:scale(0.96);opacity:0}to{transform:scale(1);opacity:1}}</style>' +
+        '<div role="dialog" aria-labelledby="pda-exit-title" style="background:#fff;border-radius:18px;max-width:440px;width:100%;padding:28px 24px 22px;box-shadow:0 25px 50px -12px rgba(15,23,42,0.5);animation:pdaPop 0.25s ease-out;text-align:center;position:relative">' +
+          '<button aria-label="Close" id="pda-exit-x" style="position:absolute;top:8px;right:10px;background:transparent;border:0;color:#94a3b8;font-size:22px;cursor:pointer;line-height:1">×</button>' +
+          '<div style="font-size:38px;line-height:1">📝</div>' +
+          '<h2 id="pda-exit-title" style="font-family:Fraunces,serif;font-size:22px;font-weight:800;color:#0f172a;margin:8px 0 4px">Wait — try the free practice exam first.</h2>' +
+          '<p style="color:#475569;margin:0 0 18px;font-size:14px">Texas RDA exam-style questions with instant explanations. Email it to me so I can find it later.</p>' +
+          '<form id="pda-exit-form" style="display:flex;flex-direction:column;gap:8px">' +
+            '<input id="pda-exit-email" type="email" required placeholder="you@email.com" autocomplete="email" style="width:100%;padding:11px 14px;border:1.5px solid #cbd5e1;border-radius:10px;font-size:15px;outline:none;font-family:inherit" />' +
+            '<button type="submit" id="pda-exit-submit" style="background:#0d9488;color:#fff;border:0;padding:12px 18px;border-radius:10px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit">Send me the practice exam →</button>' +
+          '</form>' +
+          '<div id="pda-exit-msg" style="font-size:12px;color:#0f766e;margin-top:8px;min-height:16px"></div>' +
+          '<button id="pda-exit-skip" style="margin-top:10px;background:transparent;border:0;color:#94a3b8;font-size:12px;cursor:pointer;text-decoration:underline">No thanks</button>' +
+        '</div>';
+      document.body.appendChild(overlay);
+
+      const close = () => { overlay.remove(); document.removeEventListener('mouseout', onMouseOut); window.removeEventListener('scroll', onScroll); };
+      overlay.querySelector('#pda-exit-x').addEventListener('click', close);
+      overlay.querySelector('#pda-exit-skip').addEventListener('click', close);
+      overlay.addEventListener('click', (e) => { if (e.target === overlay) close(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); }, { once: true });
+
+      overlay.querySelector('#pda-exit-form').addEventListener('submit', async (ev) => {
+        ev.preventDefault();
+        const email = overlay.querySelector('#pda-exit-email').value.trim();
+        if (!email) return;
+        const btn = overlay.querySelector('#pda-exit-submit');
+        const msg = overlay.querySelector('#pda-exit-msg');
+        btn.disabled = true; btn.textContent = 'Sending…';
+        try {
+          await fetch('https://lmbsuwslsycukynzpzik.supabase.co/rest/v1/subscribers', {
+            method: 'POST',
+            headers: {
+              'apikey': 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+              'Authorization': 'Bearer sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=ignore-duplicates',
+            },
+            body: JSON.stringify({ email, source: 'exit-intent', tags: ['exit-intent', trigger] }),
+          });
+        } catch (e) {}
+        msg.textContent = '✓ Got it — opening the practice exam now.';
+        setTimeout(() => { location.href = '/tools/practice-exam'; }, 900);
+      });
+    }
   }
 
   // ───────────── Site-wide $1,500 special bar ─────────────

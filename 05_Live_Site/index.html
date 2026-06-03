@@ -1065,7 +1065,41 @@
       const officesFromPlacements = new Set(ps.map(p => p.hired_at_office).filter(Boolean));
       const officesFromPartners   = new Set(hp.map(p => (p.practice_name || '').trim()).filter(Boolean));
       const allOffices = new Set([...officesFromPartners, ...officesFromPlacements]);
-      const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+      // Animate numeric stats from 0 → target on first viewport entry (catches
+      // attention, makes the numbers feel real). Non-numeric values fall through
+      // to plain text. Idempotent: never re-animates the same element twice.
+      const animated = new WeakSet();
+      function animateNumber(el, target) {
+        if (animated.has(el)) { el.textContent = target.toLocaleString(); return; }
+        animated.add(el);
+        const start = performance.now();
+        const DURATION = 1200;
+        const original = el.textContent;
+        el.textContent = '0';
+        function step(t) {
+          const p = Math.min(1, (t - start) / DURATION);
+          // ease-out cubic — quick start, gentle land
+          const eased = 1 - Math.pow(1 - p, 3);
+          el.textContent = Math.round(eased * target).toLocaleString();
+          if (p < 1) requestAnimationFrame(step);
+          else el.textContent = target.toLocaleString();
+        }
+        requestAnimationFrame(step);
+      }
+      const set = (id, v) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const n = typeof v === 'number' ? v : (typeof v === 'string' && /^\d+$/.test(v) ? parseInt(v.replace(/,/g, ''), 10) : null);
+        if (n == null) { el.textContent = v; return; }
+        // Defer the animation until the tile is in view so it's not wasted off-screen.
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => { if (e.isIntersecting) { animateNumber(el, n); obs.disconnect(); } });
+          }, { threshold: 0.3 }).observe(el);
+        } else {
+          animateNumber(el, n);
+        }
+      };
 
       const totalGrads    = ps.length + (ov.graduates_extra   || 0);
       const placementRate = ov.placement_rate_pct || null;
