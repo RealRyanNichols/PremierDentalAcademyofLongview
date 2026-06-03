@@ -181,6 +181,15 @@
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 <script src="/assets/pda-social-proof.js" defer></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/index" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/index" />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/og.svg" />
+  <meta name="twitter:title" content="Premier Dental Academy of Longview — RDA training that pays off on day one" />
+  <meta name="twitter:description" content="East Texas RDA training with the only practice management trainers built to teach. Get hired faster — Premier Dental Academy of Longview." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/og.svg" />
 </head>
 <body class="bg-white antialiased">
 
@@ -284,15 +293,17 @@
           <span class="inline-block mt-2 px-3 py-1 text-white text-[10px] sm:text-xs font-bold tracking-widest rounded" style="background:#001a3d">PAY IN FULL OFFER ONLY</span>
         </div>
       </div>
-      <!-- CTA bar (two cohort choices) -->
+      <!-- CTA bar (two cohort choices) — seat counts populated live from Supabase -->
       <div class="grid sm:grid-cols-2 gap-px bg-blue-200">
         <a href="/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026"
            class="block bg-blue-700 hover:bg-blue-800 text-white text-center py-4 sm:py-5 px-4 transition font-bold tracking-wide">
-          Claim June 22 seat — $1,500 →
+          Claim June 22 seat — $1,500
+          <span class="block text-[11px] font-semibold text-amber-300 mt-0.5" data-seats="695198a9-a2e1-4274-815c-a776fa7f582d">→</span>
         </a>
         <a href="/enroll?plan=in-person&cohort=93339313-29c4-4204-a346-c02dcfb8195f&special=summer2026"
            class="block bg-blue-700 hover:bg-blue-800 text-white text-center py-4 sm:py-5 px-4 transition font-bold tracking-wide">
-          Claim July 7 seat — $1,500 →
+          Claim July 7 seat — $1,500
+          <span class="block text-[11px] font-semibold text-amber-300 mt-0.5" data-seats="93339313-29c4-4204-a346-c02dcfb8195f">→</span>
         </a>
       </div>
       <div class="text-center text-xs text-slate-500 py-3 px-4 bg-white border-t border-slate-200">
@@ -320,6 +331,29 @@
     }
     tick();
     setInterval(tick, 30000);
+
+    // Live seat counts — pulls the two eligible cohorts straight from the
+    // cohorts table over the public REST endpoint (no SDK weight). If the
+    // request fails for any reason, the arrows that were there as a fallback
+    // just stay → no broken UI.
+    (function fetchSeats() {
+      var URL_BASE = 'https://lmbsuwslsycukynzpzik.supabase.co/rest/v1';
+      var KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+      var ids = '(695198a9-a2e1-4274-815c-a776fa7f582d,93339313-29c4-4204-a346-c02dcfb8195f)';
+      fetch(URL_BASE + '/cohorts?select=id,capacity,enrolled_count&id=in.' + ids, {
+        headers: { 'apikey': KEY, 'Authorization': 'Bearer ' + KEY },
+      }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        (rows || []).forEach(function (c) {
+          var left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+          var el = document.querySelector('[data-seats="' + c.id + '"]');
+          if (!el) return;
+          if (left <= 0)      el.textContent = 'WAITLIST →';
+          else if (left === 1) el.textContent = '⚠ Last seat available →';
+          else if (left <= 3) el.textContent = '⚠ Only ' + left + ' of ' + c.capacity + ' seats left →';
+          else                el.textContent = left + ' of ' + c.capacity + ' seats left →';
+        });
+      }).catch(function () { /* leave fallback arrows */ });
+    })();
   })();
 </script>
 <!-- ═════════════════════════ end SPECIAL OFFER ═════════════════════════ -->
