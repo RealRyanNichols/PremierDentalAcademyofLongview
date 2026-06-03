@@ -2203,8 +2203,11 @@
       ];
     } else { // lateral incisor
       roots = [
-        // Lateral incisor — visibly narrower than the central.
-        'M 23 50 C 22 36 21 22 24 8 C 25 6 26 5 27 5 C 28 5 29 6 30 8 C 31 22 30 36 29 50 Z',
+        // Lateral incisor — kept the same size as the central per Amanda's
+        // chart-wide consistency call (anatomically a real lateral is
+        // narrower, but the chart reads better when all six anteriors are
+        // the same visual size).
+        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
       ];
     }
     return { crown, zones, roots, cusps: [] };
@@ -2418,13 +2421,36 @@
         <!-- Odontogram (anatomical view) -->
         <div class="bg-white rounded border border-slate-200 p-4 overflow-x-auto">
           <div class="min-w-[880px]">
-            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mb-1">Maxillary (upper) — patient's right ⟵ ⟶ patient's left</div>
+            <!-- Maxillary header: arch title flanked by patient L/R indicators -->
+            <div class="flex items-center justify-between mb-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+              <span>Patient's left</span>
+              <span class="text-slate-700 font-bold">Maxillary (upper)</span>
+              <span>Patient's right</span>
+            </div>
+            <!-- Quadrant labels above the maxillary teeth (5 + 6 + 5 columns) -->
+            <div class="grid gap-1 mb-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+            </div>
             ${renderArch(chart, true,  PERM_TEETH.slice(0, 16))}
             <div class="my-3 border-t-2 border-dashed border-slate-200 relative">
               <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">midline</span>
             </div>
             ${renderArch(chart, false, PERM_TEETH.slice(16).reverse())}
-            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mt-1">Mandibular (lower)</div>
+            <!-- Quadrant labels below the mandibular teeth — reversed display
+                 (32-28 on the left, 27-22 in middle, 21-17 on the right) -->
+            <div class="grid gap-1 mt-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+            </div>
+            <!-- Mandibular footer -->
+            <div class="flex items-center justify-between mt-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+              <span>Patient's left</span>
+              <span class="text-slate-700 font-bold">Mandibular (lower)</span>
+              <span>Patient's right</span>
+            </div>
           </div>
         </div>
 
