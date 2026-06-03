@@ -2112,8 +2112,7 @@
     { id: 'sealant',   label: 'Sealant',    color: '#a3e635' },
     { id: 'fracture',  label: 'Fracture',   color: '#be185d' },
     { id: 'watch',     label: 'Watch',      color: '#f97316' },
-    // Whole-tooth markers
-    { id: 'crown',     label: 'Crown',      color: '#fbbf24', whole: true },
+    // Whole-tooth markers — Crown was removed; use PFM or FGC instead.
     { id: 'pfm',       label: 'PFM crown',  color: '#7c3aed', whole: true },
     { id: 'fgc',       label: 'FGC (gold)', color: '#d97706', whole: true },
     { id: 'ssc',       label: 'SSC',        color: '#64748b', whole: true },
@@ -2123,8 +2122,8 @@
     { id: 'extract',   label: 'Extract',    color: '#dc2626', whole: true },
     { id: 'impacted',  label: 'Impacted',   color: '#9333ea', whole: true },
     { id: 'abscess',   label: 'Abscess',    color: '#be185d', whole: true },
-    { id: 'drift_m',   label: 'Drift M →',  color: '#64748b', whole: true },
-    { id: 'drift_d',   label: '← Drift D',  color: '#64748b', whole: true },
+    { id: 'drift_m',   label: 'Drift M',    color: '#64748b', whole: true },
+    { id: 'drift_d',   label: 'Drift D',    color: '#64748b', whole: true },
   ];
 
   // STATUS: every marker is either an EXISTING finding/restoration (blue) or
@@ -2153,6 +2152,15 @@
     canine:   [[26,8,26,46]],
     central:  [[26,10,26,46]],
     lateral:  [[26,10,26,46]],
+  };
+  // Abscess dots at the very apex of each root — molars get one under each
+  // of the two visible roots, single-rooted teeth get one in the center.
+  const ABSCESS_POSITIONS = {
+    molar:    [[15, 4], [40, 4]],
+    premolar: [[27, 4]],
+    canine:   [[27, 2]],
+    central:  [[27, 5]],
+    lateral:  [[27, 5]],
   };
 
   // Tooth class by universal number (1-32)
@@ -2300,15 +2308,27 @@
     const fractureEntry = parsedAll.find(p => p.type === 'fracture');
     const abscessEntry  = parsedAll.find(p => p.type === 'abscess');
 
-    const showSurfaces = !hasWhole;
+    // RCT and Implant keep the 5-surface boxes visible (the crown isn't
+    // replaced). PFM / FGC / SSC / Missing / Crown (legacy) hide them.
+    const SURFACES_HIDDEN_BY = ['pfm','fgc','ssc','missing','crown'];
+    const showSurfaces = !SURFACES_HIDDEN_BY.includes(wholeType);
     const gradId   = `tg-${num}`;
     const rootGrad = `tr-${num}`;
 
     const transform = isUpper ? '' : 'scale(1,-1) translate(0,-106)';
 
+    // Surface renderer: composite = outline only (transparent middle);
+    // amalgam / caries / watch = filled. This makes composite vs amalgam
+    // visually distinct so students can read the chart at a glance.
     const surfaceFills = showSurfaces ? Object.entries(zones).map(([k, d]) => {
-      const fill = surfaceFillColor(k); if (!fill) return '';
-      return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.82"/>`;
+      const v = m[k]; if (!v) return '';
+      const { type, status } = parseMarker(v);
+      if (!SURFACE_TYPES.includes(type)) return '';
+      const color = statusColor(status);
+      if (type === 'composite') {
+        return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" pointer-events="none"/>`;
+      }
+      return `<path d="${d}" fill="${color}" stroke="none" pointer-events="none" opacity="0.82"/>`;
     }).join('') : '';
 
     const gridLines = showSurfaces ? Object.values(zones).map(d =>
@@ -2340,11 +2360,19 @@
         [60, 72, 84, 96].map(y => `<line x1="6" y1="${y}" x2="50" y2="${y + 6}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('')
       : '';
 
-    // Drift arrows (mesial = M direction, distal = D direction).
+    // Drift arrows — point toward the actual mesial / distal side of THIS
+    // tooth. On the patient's right side (swapMD === true: teeth 1–8 and
+    // 25–32) mesial faces the chart's RIGHT and distal its LEFT, so the
+    // arrow flips. On the patient's left side, mesial faces the chart's
+    // left as drawn.
+    const ARROW_LEFT  = `M 26 78 L 6 78 M 12 72 L 6 78 L 12 84`;
+    const ARROW_RIGHT = `M 30 78 L 50 78 M 44 72 L 50 78 L 44 84`;
+    const mesialArrow = swapMD ? ARROW_RIGHT : ARROW_LEFT;
+    const distalArrow = swapMD ? ARROW_LEFT  : ARROW_RIGHT;
     const driftMark = isDriftM
-      ? `<path d="M 26 78 L 6 78 M 12 72 L 6 78 L 12 84" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      ? `<path d="${mesialArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
       : isDriftD
-      ? `<path d="M 30 78 L 50 78 M 44 72 L 50 78 L 44 84" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      ? `<path d="${distalArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
       : '';
 
     // Extract: bold X across the whole tooth (crown + root).
@@ -2358,9 +2386,12 @@
       ? `<ellipse cx="28" cy="53" rx="27" ry="51" fill="none" stroke="${wholeCol}" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>`
       : '';
 
-    // Abscess: filled dot at the very apex of the root.
+    // Abscess: filled dot at the very apex of EACH root — molars get two
+    // (one under each visible root), single-rooted teeth get one centered.
     const abscessMark = abscessEntry
-      ? `<circle cx="28" cy="3" r="3.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.7" pointer-events="none"/>`
+      ? (ABSCESS_POSITIONS[cls] || [[28, 4]]).map(([cx, cy]) =>
+          `<circle cx="${cx}" cy="${cy}" r="4.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.9" pointer-events="none"/>`
+        ).join('')
       : '';
 
     // Fracture lightning bolt across the crown box.
@@ -2497,7 +2528,7 @@
           </div>
           <div class="text-[11px] text-slate-500 mt-2">
             Click a surface to apply the active marker. <span class="hidden md:inline">Right-click a tooth for more actions.</span>
-            Whole-tooth markers apply to the whole tooth: Crown / PFM / FGC / SSC / RCT / Implant / Missing / Extract / Impacted / Abscess / Drift.
+            Whole-tooth markers: PFM / FGC / SSC / RCT / Implant / Missing / Extract / Impacted / Abscess / Drift.
           </div>
         </div>
 
