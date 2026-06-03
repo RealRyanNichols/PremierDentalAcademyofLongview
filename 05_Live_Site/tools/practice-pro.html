@@ -2174,34 +2174,37 @@
     let roots;
     if (cls === 'molar') {
       roots = [
-        // Mesial root — smooth taper from wide cervical base to narrow rounded
-        // apex, with a subtle inward lean. Cubic Béziers for organic curvature.
-        'M 14 50 C 12 36 10 20 14 7 C 15 4 18 4 19 6 C 22 20 22 36 24 50 Z',
-        // Distal root — mirror of mesial, leaning toward the distal side.
-        'M 32 50 C 34 36 34 20 37 6 C 38 4 41 4 42 7 C 46 20 44 36 42 50 Z',
-        // Central palatal hint — smaller third root nestled between the buccal
-        // pair (visible behind in buccal-view diagrams).
-        'M 25 50 C 25 38 25 24 27 14 C 28 13 30 13 31 14 C 33 24 33 38 33 50 Z',
+        // Mesial root — banana-curved, splayed slightly toward the mesial side,
+        // distinct from the distal root with a clear gap between them, smooth
+        // taper to a rounded apex (Eaglesoft reference).
+        'M 10 50 C 8 38 6 22 11 7 C 12 4 17 4 19 7 C 22 22 21 38 22 50 Z',
+        // Distal root — mirror image of the mesial root.
+        'M 34 50 C 35 38 35 22 37 7 C 39 4 44 4 45 7 C 50 22 48 38 46 50 Z',
+        // No central palatal root — Eaglesoft's buccal-view chart only shows
+        // the two buccal roots for upper molars; the palatal sits behind and
+        // isn't drawn separately.
       ];
     } else if (cls === 'premolar') {
       roots = [
-        // Single root, symmetric organic taper from wide cervix to rounded apex.
-        'M 18 50 C 16 35 15 18 19 6 C 20 4 23 4 27 4 C 31 4 34 4 35 6 C 39 18 38 35 36 50 Z',
+        // Single carrot/cigar-shaped root — fatter at the cervix, smoothly
+        // narrowing to a rounded apex.
+        'M 16 50 C 14 35 13 18 18 6 C 19 3 24 3 27 3 C 30 3 35 3 36 6 C 41 18 40 35 38 50 Z',
       ];
     } else if (cls === 'canine') {
       roots = [
-        // The longest root in the human mouth — exaggerated length, pointed apex
-        // sitting near the top of the root area.
-        'M 22 50 C 19 34 17 17 23 4 C 24 2 26 2 27 2 C 28 2 30 2 31 4 C 35 17 33 34 30 50 Z',
+        // The longest, most pointed root in the mouth — very long taper,
+        // sharper apex than premolars.
+        'M 20 50 C 18 32 16 15 22 4 C 23 2 26 1 27 1 C 28 1 31 2 32 4 C 38 15 34 32 32 50 Z',
       ];
     } else if (cls === 'central') {
       roots = [
-        // Medium single root, wider near the cervix, rounded apex.
-        'M 22 50 C 20 36 19 22 23 8 C 24 6 25 5 27 5 C 29 5 30 6 31 8 C 33 22 32 36 30 50 Z',
+        // Central incisor — wider/sturdier than lateral, rounded apex.
+        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
       ];
-    } else { // lateral incisor — narrower single root
+    } else { // lateral incisor
       roots = [
-        'M 23 50 C 22 36 21 22 24 8 C 25 7 26 6 27 6 C 28 6 29 7 30 8 C 31 22 30 36 29 50 Z',
+        // Lateral incisor — visibly narrower than the central.
+        'M 23 50 C 22 36 21 22 24 8 C 25 6 26 5 27 5 C 28 5 29 6 30 8 C 31 22 30 36 29 50 Z',
       ];
     }
     return { crown, zones, roots, cusps: [] };
@@ -2285,7 +2288,7 @@
       ? `<rect x="21" y="6" width="14" height="44" rx="2.5" fill="${implColor}" pointer-events="none"/>` +
         [12, 18, 24, 30, 36, 42, 47].map(y =>
           `<line x1="21" y1="${y}" x2="35" y2="${y}" stroke="#ffffff" stroke-width="1.3" pointer-events="none"/>`).join('')
-      : shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#94a3b8" stroke-width="0.5" pointer-events="none"/>`).join('');
+      : shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" pointer-events="none"/>`).join('');
 
     // RCT: colored line down each canal.
     const rctLines = isRct ? (ROOT_LINES[cls] || []).map(([x1, y1, x2, y2]) =>
@@ -2313,8 +2316,9 @@
               <stop offset="1" stop-color="#f1f5f9"/>
             </linearGradient>
             <linearGradient id="${rootGrad}" x1="0" y1="4" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#fef3c7"/>
-              <stop offset="1" stop-color="#fde68a"/>
+              <stop offset="0" stop-color="#fff1e8"/>
+              <stop offset="0.55" stop-color="#fbd9c5"/>
+              <stop offset="1" stop-color="#f3b89c"/>
             </linearGradient>
           </defs>
           <g transform="${transform}">
