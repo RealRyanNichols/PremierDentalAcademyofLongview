@@ -276,13 +276,14 @@
     // Practice Pro fix. The previous "paid only" check (is_admin || exam_pro
     // || program !== 'preview') locked out enrolled students because the
     // enrollment flow doesn't stamp profiles.program.
-    if (!sb) return false;
+    if (!sb) { console.info('[practice-exam] no Supabase client → preview'); return false; }
     try {
       const { data: { session } } = await sb.auth.getSession();
-      if (!session) return false;
+      if (!session) { console.info('[practice-exam] no session → preview'); return false; }
       isPro = true;
+      console.info('[practice-exam] signed in (' + (session.user?.email || session.user?.id) + ') → Pro unlocked');
       return isPro;
-    } catch (e) { return false; }
+    } catch (e) { console.warn('[practice-exam] session check failed:', e); return false; }
   }
   async function fetchProQuestions() {
     try {
@@ -501,12 +502,22 @@
     begin(pool.slice(0, n), { timed: true, seconds: n * 60 });
   };
 
-  // Pro-aware labels on load.
+  // Pro-aware labels on load — signed-in students see the Timed Mock Exam
+  // card with the lock icon gone, the "Pro" gold badge swapped for an
+  // "Unlocked" teal badge, and active-CTA styling.
   checkPro().then(async (pro) => {
     if (!pro) return;
     const pq = await fetchProQuestions();
     $('timed-count').textContent = (BANK.length + pq.length);
-    $('timed-cta').textContent = 'Start the timed mock exam →';
+    const cta = $('timed-cta');
+    cta.textContent = 'Start the timed mock exam →';
+    cta.className = 'inline-block mt-3 text-teal-300 font-semibold text-sm';
+    // Swap the gold "Pro" badge for a teal "Unlocked" one.
+    const badge = document.querySelector('#start-timed .absolute');
+    if (badge) {
+      badge.textContent = 'Unlocked';
+      badge.className = 'absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-teal-500 text-white px-2 py-0.5 rounded-full';
+    }
   });
 
   // ---- Unlock modal ----
