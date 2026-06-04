@@ -166,7 +166,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+window.AOS && AOS.init({ duration: 500, once: true });
 
 (async () => {
   const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
@@ -241,7 +241,7 @@ AOS.init({ duration: 500, once: true });
     ? upcoming.map(c => renderCohortCard(c, true)).join('')
     : '<div class="md:col-span-3 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">No upcoming classes posted yet — call (903) 913-6444 to ask about the next one.</div>';
 
-  AOS.refresh();
+  window.AOS && AOS.refresh();
 
   // Reserve flow
   const modal = document.getElementById('reserve-modal');

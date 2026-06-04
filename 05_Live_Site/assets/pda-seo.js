@@ -80,6 +80,53 @@
     document.head.appendChild(ld);
   }
 
+  // ── Organization + LocalBusiness schema (rich results / local SEO) ──
+  if (!document.querySelector('script[data-pda-schema="org"]')) {
+    const ORG = {
+      '@context': 'https://schema.org',
+      '@type': ['EducationalOrganization', 'LocalBusiness'],
+      '@id': 'https://premierdentalacademyoflongview.com/#org',
+      name: 'Premier Dental Academy of Longview',
+      alternateName: 'PDA Longview',
+      description: META.description,
+      url: 'https://premierdentalacademyoflongview.com/',
+      logo: 'https://premierdentalacademyoflongview.com/og.svg',
+      image: 'https://premierdentalacademyoflongview.com/og.svg',
+      telephone: '+1-903-913-6444',
+      priceRange: '$397–$1,997',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '2800 Gilmer Rd, Suite 106',
+        addressLocality: 'Longview',
+        addressRegion: 'TX',
+        postalCode: '75604',
+        addressCountry: 'US',
+      },
+      areaServed: ['Longview', 'Tyler', 'Marshall', 'Kilgore', 'Henderson', 'Gladewater', 'East Texas'],
+    };
+    const orgLd = document.createElement('script');
+    orgLd.type = 'application/ld+json';
+    orgLd.setAttribute('data-pda-schema', 'org');
+    orgLd.textContent = JSON.stringify(ORG);
+    document.head.appendChild(orgLd);
+  }
+
+  // ── AOS resilience ────────────────────────────────────────────
+  // Marketing pages animate sections in with AOS, whose CSS hides [data-aos]
+  // elements (opacity:0) until its JS runs. If that CDN ever fails (outage,
+  // ad-blocker, firewall) the content would be stuck invisible. Safety net:
+  // after load, if AOS never initialised, reveal every [data-aos] element so
+  // a visitor never lands on a blank page.
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      if (window.AOS) return;
+      document.querySelectorAll('[data-aos]').forEach(function (el) {
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      });
+    }, 600);
+  });
+
   // ── Analytics (cookieless, DNT-respecting) ────────────────────
   // Placeholder beacon that captures pageviews + custom events.
   // Currently writes to `analytics_events` Supabase table if we set that up.

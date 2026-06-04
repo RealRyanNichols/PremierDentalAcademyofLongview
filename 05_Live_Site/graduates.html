@@ -122,7 +122,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+window.AOS && AOS.init({ duration: 500, once: true });
 
 (async () => {
   const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
@@ -199,7 +199,7 @@ AOS.init({ duration: 500, once: true });
         </div>
       `;
     }).join('');
-    AOS.refresh();
+    window.AOS && AOS.refresh();
   };
 
   render('all');
