@@ -207,6 +207,11 @@
       mobileDash?.classList.remove('hidden');
       mobileDash?.classList.add('block');
 
+      // Homepage hero: a signed-in visitor already has an account, so drop the
+      // "Try free preview" framing and point them straight into their trainer.
+      const heroTrainer = document.getElementById('hero-cta-trainer');
+      if (heroTrainer) heroTrainer.innerHTML = '▶ Open my trainer';
+
       // Enrolled/paid students shouldn't be pitched the FREE preview / FREE
       // practice exam / Enroll — those are prospect CTAs. Free signups
       // (program 'preview') still see them.
@@ -230,6 +235,12 @@
         const ctaBar = document.getElementById('pda-cta-bar');
         if (ctaBar) ctaBar.style.display = 'none';
         document.body.classList.remove('pda-cta-on');
+
+        // Homepage hero: swap the prospect CTAs for student ones.
+        const heroEnroll = document.getElementById('hero-cta-enroll');
+        if (heroEnroll) { heroEnroll.innerHTML = 'My dashboard →'; heroEnroll.href = '/dashboard'; }
+        const heroExam = document.getElementById('hero-cta-exam');
+        if (heroExam) heroExam.innerHTML = '📝 Practice exam';
       }
     }
     // Try now; if the supabase global isn't there yet, wait a tick.
