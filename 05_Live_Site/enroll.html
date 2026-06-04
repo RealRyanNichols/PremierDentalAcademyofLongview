@@ -281,20 +281,24 @@
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">Down payment today
             <span class="text-slate-400 font-normal">— $200 minimum, pay more to lower installments</span>
           </label>
-          <div class="relative">
-            <span class="absolute left-3 top-2.5 text-slate-500">$</span>
-            <input id="down" type="number" min="200" step="1" value="200" class="w-full sm:w-48 border-2 border-slate-200 rounded-lg pl-7 pr-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          <div class="space-y-2">
+            <div class="flex items-baseline gap-2 flex-wrap">
+              <span id="down-display" class="display text-3xl font-bold text-teal-700">$200</span>
+              <span class="text-xs text-slate-500">of $1,997 total tuition</span>
+            </div>
+            <input id="down" type="range" min="200" max="1997" step="25" value="200"
+                   class="w-full accent-teal-600 cursor-pointer"
+                   oninput="document.getElementById('down-display').textContent = '$' + Number(this.value).toLocaleString();" />
+            <div class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+              <span>$200 min</span>
+              <span>Paid in full · $1,997</span>
+            </div>
           </div>
         </div>
 
         <div data-online-hide>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">How do you want to pay the rest?</label>
-          <div class="grid grid-cols-3 gap-2" id="cadence-group">
-            <label class="cadence-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
-              <input type="radio" name="cadence" value="daily" class="sr-only" />
-              <div class="text-sm font-semibold">Daily</div>
-              <div class="text-xs text-slate-500">small payments</div>
-            </label>
+          <div class="grid grid-cols-2 gap-2" id="cadence-group">
             <label class="cadence-opt cursor-pointer border-2 border-teal-600 bg-teal-50 rounded-lg p-3 text-center transition">
               <input type="radio" name="cadence" value="weekly" checked class="sr-only" />
               <div class="text-sm font-semibold">Weekly</div>
