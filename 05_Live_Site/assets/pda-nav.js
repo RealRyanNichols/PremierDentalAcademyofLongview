@@ -29,6 +29,7 @@
         <div id="pda-more-menu" hidden class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 w-60 z-50 text-slate-700">
           <a href="/tools/practice-exam" class="block px-4 py-2 hover:bg-slate-50 font-semibold text-teal-700">📝 Free practice exam</a>
           <a href="/tools/flashcards"    class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
+          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">📄 Resume builder</a>
           <a href="/tools/how-to-chart"  class="block px-4 py-2 hover:bg-slate-50">How to chart (tutorial)</a>
           <div class="border-t border-slate-100 my-1"></div>
           <a href="/apply"           class="block px-4 py-2 hover:bg-slate-50 font-semibold">📅 Book a campus tour</a>
@@ -64,6 +65,7 @@
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-4">Free study tools</p>
     <a href="/tools/practice-exam" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-teal-700">📝 Free practice exam</a>
     <a href="/tools/flashcards"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
+    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">📄 Resume builder</a>
     <a href="/tools/how-to-chart"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-4">More</p>
