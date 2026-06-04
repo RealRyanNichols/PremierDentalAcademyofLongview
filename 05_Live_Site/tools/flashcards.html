@@ -413,6 +413,7 @@
   // profiles.program never gets stamped after enrollment.
   const FREE_CARD_LIMIT = 12;
   let paid = !!session;
+  console.info('[flashcards] ' + (paid ? 'signed in (' + (session.user?.email || session.user?.id) + ') → full deck' : 'no session → free preview'));
   // Captured before any shuffle, so the free sample is stable across reloads.
   const POOL = paid ? DECK : DECK.slice(0, FREE_CARD_LIMIT);
 
