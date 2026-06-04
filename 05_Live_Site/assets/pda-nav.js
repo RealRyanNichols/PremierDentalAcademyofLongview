@@ -15,7 +15,7 @@
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900 shrink-0">
-      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
       <span class="text-base sm:text-lg hidden sm:inline">Premier Dental Academy</span>
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
