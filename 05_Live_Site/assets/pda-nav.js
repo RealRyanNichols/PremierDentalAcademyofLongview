@@ -98,6 +98,30 @@
     const newMenu = menuWrap.firstElementChild;
     newNav.after(newMenu);
 
+    // ── Sticky mobile Call / Apply bar ──────────────────────────────
+    // High-intent local-search visitors arrive on a phone; keep "Call" and
+    // "Apply" one tap away at all times. Mobile only; sits above the Ask
+    // Premier chat bubble; hidden for enrolled students (see wireAuth).
+    if (!document.getElementById('pda-cta-bar')) {
+      const css = document.createElement('style');
+      css.textContent =
+        '@media (max-width:767px){' +
+        'body.pda-cta-on{padding-bottom:4.5rem}' +
+        'body.pda-cta-on .ap-launcher{bottom:84px!important}' +
+        '}';
+      document.head.appendChild(css);
+
+      const bar = document.createElement('div');
+      bar.id = 'pda-cta-bar';
+      bar.className = 'md:hidden fixed inset-x-0 bottom-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 px-3 py-2 flex items-center gap-2';
+      bar.style.boxShadow = '0 -4px 16px rgba(15,23,42,.08)';
+      bar.innerHTML =
+        '<a href="tel:+19039136444" style="flex:1" class="inline-flex items-center justify-center gap-1.5 border border-teal-600 text-teal-700 font-semibold rounded-lg py-2.5 text-sm">📞 Call</a>' +
+        '<a href="/apply" style="flex:1.4;box-shadow:0 2px 8px rgba(245,158,11,.35)" class="inline-flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg py-2.5 text-sm">Apply now →</a>';
+      document.body.appendChild(bar);
+      document.body.classList.add('pda-cta-on');
+    }
+
     // Highlight current page on both desktop links and mobile menu items.
     const path = (location.pathname.replace(/\/$/, '') || '/').toLowerCase();
     document.querySelectorAll('[data-nav-link]').forEach(a => {
@@ -202,6 +226,10 @@
         ['pda-nav-enroll', 'pda-mobile-enroll'].forEach(id => {
           const el = document.getElementById(id); if (el) el.style.display = 'none';
         });
+        // Enrolled students don't need the prospect Call/Apply bar.
+        const ctaBar = document.getElementById('pda-cta-bar');
+        if (ctaBar) ctaBar.style.display = 'none';
+        document.body.classList.remove('pda-cta-on');
       }
     }
     // Try now; if the supabase global isn't there yet, wait a tick.
