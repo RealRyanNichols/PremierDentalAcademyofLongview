@@ -9,7 +9,9 @@
   <meta property="og:title" content="The Premier Dental Academy Feed" />
   <meta property="og:description" content="Daily thoughts, study tips, and student wins from Premier Dental Academy of Longview." />
   <meta property="og:type" content="website" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -41,7 +43,7 @@
     <div class="h-24 bg-gradient-to-r from-teal-600 to-cyan-700"></div>
     <div class="px-5 pb-5">
       <div class="flex items-end justify-between -mt-10">
-        <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-700 border-4 border-white grid place-items-center text-white font-black text-3xl display">P</div>
+        <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" class="w-20 h-20 rounded-2xl border-4 border-white bg-white object-contain" />
         <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-sm mb-1">Enroll →</a>
       </div>
       <h1 class="display text-2xl font-bold mt-3">Premier Dental Academy</h1>
@@ -57,7 +59,7 @@
   <!-- Composer (admins only) -->
   <div id="composer" class="hidden bg-white rounded-2xl border border-slate-200 shadow-sm p-4 mb-5">
     <div class="flex gap-3">
-      <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-700 grid place-items-center text-white font-bold shrink-0">P</div>
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" class="w-10 h-10 rounded-full bg-white object-contain shrink-0" />
       <div class="flex-1 min-w-0">
         <div id="composer-editing" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mb-2">✏️ Editing a post</div>
         <textarea id="post-body" rows="3" maxlength="2000" placeholder="What's on your mind today?" class="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-teal-600 resize-none text-[15px]"></textarea>
@@ -166,7 +168,7 @@
     feedEl.innerHTML = posts.map(post => `
       <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4">
         <div class="flex gap-3">
-          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-600 to-cyan-700 grid place-items-center text-white font-bold shrink-0">P</div>
+          <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" class="w-10 h-10 rounded-full bg-white object-contain shrink-0" />
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-1.5 text-sm flex-wrap">
               <span class="font-bold text-slate-900">${esc(post.author_name || 'Premier Dental Academy')}</span>
