@@ -406,17 +406,13 @@
 
   await loadProgress();
 
-  // ── Free-preview gate — only enrolled/paid students see the whole deck ──
-  // Everyone else gets a generous sample so they can "see what it looks like."
+  // ── Free-preview gate — ANY signed-in user sees the whole deck ──
+  // Same intent as the ChairSide / Practice Pro / Practice Exam fix:
+  // signed in = enrolled. The previous strict check (is_admin || exam_pro
+  // || program !== 'preview') locked out real enrolled students because
+  // profiles.program never gets stamped after enrollment.
   const FREE_CARD_LIMIT = 12;
-  let paid = false;
-  if (session) {
-    try {
-      const { data: prof } = await sb.from('profiles')
-        .select('program, is_admin, exam_pro').eq('id', session.user.id).maybeSingle();
-      paid = !!(prof && (prof.is_admin || prof.exam_pro || (prof.program && prof.program !== 'preview')));
-    } catch (e) {}
-  }
+  let paid = !!session;
   // Captured before any shuffle, so the free sample is stable across reloads.
   const POOL = paid ? DECK : DECK.slice(0, FREE_CARD_LIMIT);
 
