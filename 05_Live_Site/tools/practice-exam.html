@@ -272,12 +272,15 @@
   function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; $('q-timer').classList.add('hidden'); }
 
   async function checkPro() {
+    // ANY signed-in user gets full access — same intent as the ChairSide /
+    // Practice Pro fix. The previous "paid only" check (is_admin || exam_pro
+    // || program !== 'preview') locked out enrolled students because the
+    // enrollment flow doesn't stamp profiles.program.
     if (!sb) return false;
     try {
       const { data: { session } } = await sb.auth.getSession();
       if (!session) return false;
-      const { data: p } = await sb.from('profiles').select('exam_pro, program, is_admin').eq('id', session.user.id).maybeSingle();
-      isPro = !!(p && (p.exam_pro || p.is_admin || (p.program && p.program !== 'preview')));
+      isPro = true;
       return isPro;
     } catch (e) { return false; }
   }
