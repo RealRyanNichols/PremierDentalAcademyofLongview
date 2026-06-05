@@ -542,14 +542,30 @@ function computeSchedule() {
   const window = diffDays(firstDate, end);
   if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
 
-  let count = Math.floor(window / step) + 1;
-  if (count < 1) count = 1;
+  // Per-payment amounts are FIXED per Amanda — $160/week, $600/month.
+  // Daily is left at "split remaining evenly" because it's only kept for
+  // legacy enrollments (the UI no longer offers daily).
+  const FIXED_PER = { weekly: 16000, monthly: 60000 };
+  let per, count;
+  if (FIXED_PER[cadence]) {
+    per = FIXED_PER[cadence];
+    count = Math.max(1, Math.ceil(remaining / per));
+  } else {
+    count = Math.floor(window / step) + 1;
+    if (count < 1) count = 1;
+    per = Math.floor(remaining / count);
+  }
   if (count > 13) {
-    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} would need more than 13 payments before class ends. Pick a later start date, a slower cadence, or pay more down.`;
+    out.warning = `A ${cadence} plan at $${(per/100).toLocaleString()} per payment would need more than 13 charges. Increase your down payment or pick a slower cadence.`;
+    return out;
+  }
+  // Last payment date must still finish before class ends.
+  const lastDate = addDays(firstDate, (count - 1) * step);
+  if (diffDays(lastDate, end) < 0) {
+    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} at $${(per/100).toLocaleString()} per payment can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
     return out;
   }
 
-  const per = Math.floor(remaining / count);
   const lastAmount = remaining - per * (count - 1);
   out.count = count;
   out.per = per;
