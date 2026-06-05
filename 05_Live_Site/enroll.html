@@ -542,34 +542,48 @@ function computeSchedule() {
   const window = diffDays(firstDate, end);
   if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
 
-  // Per-payment amounts are FIXED per Amanda — $160/week, $600/month.
-  // Daily is left at "split remaining evenly" because it's only kept for
-  // legacy enrollments (the UI no longer offers daily).
-  const FIXED_PER = { weekly: 16000, monthly: 60000 };
-  let per, count;
-  if (FIXED_PER[cadence]) {
-    per = FIXED_PER[cadence];
-    count = Math.max(1, Math.ceil(remaining / per));
+  // Per Amanda: every installment is a CLEAN round number — no "change."
+  //   Weekly  → $160 every week
+  //   Monthly → $400 first month, then $600 each subsequent month
+  // The schedule rounds UP, so the sum of installments is ≥ remaining (the
+  // plan student may pay slightly more than paid-in-full — that's Amanda's
+  // "you pay more for choosing the payment plan" pricing).
+  const FIRST_PER = { weekly: 16000, monthly: 40000 };
+  const NEXT_PER  = { weekly: 16000, monthly: 60000 };
+  let amounts;
+  if (cadence === 'weekly' || cadence === 'monthly') {
+    amounts = [FIRST_PER[cadence]];
+    let covered = amounts[0];
+    while (covered < remaining) {
+      amounts.push(NEXT_PER[cadence]);
+      covered += NEXT_PER[cadence];
+      if (amounts.length > 13) {
+        out.warning = `That cadence would need more than 13 payments before class ends. Increase your down payment.`;
+        return out;
+      }
+    }
   } else {
-    count = Math.floor(window / step) + 1;
-    if (count < 1) count = 1;
-    per = Math.floor(remaining / count);
+    // Daily — legacy, evenly split.
+    const count = Math.max(1, Math.min(13, Math.floor(window / step) + 1));
+    const per = Math.floor(remaining / count);
+    amounts = Array(count).fill(per);
+    amounts[count - 1] = remaining - per * (count - 1);
   }
-  if (count > 13) {
-    out.warning = `A ${cadence} plan at $${(per/100).toLocaleString()} per payment would need more than 13 charges. Increase your down payment or pick a slower cadence.`;
-    return out;
-  }
-  // Last payment date must still finish before class ends.
+  const count = amounts.length;
   const lastDate = addDays(firstDate, (count - 1) * step);
   if (diffDays(lastDate, end) < 0) {
-    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} at $${(per/100).toLocaleString()} per payment can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
+    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
     return out;
   }
 
-  const lastAmount = remaining - per * (count - 1);
+  const totalCharged = amounts.reduce((a, b) => a + b, 0);
   out.count = count;
-  out.per = per;
-  out.lastAmount = lastAmount;
+  out.amounts = amounts;
+  out.per = amounts[amounts.length - 1];           // last installment (the recurring one)
+  out.firstAmount = amounts[0];                    // first installment ($400 monthly, $160 weekly)
+  out.lastAmount = amounts[amounts.length - 1];
+  out.totalCharged = totalCharged;                 // sum of installments
+  out.totalAll = down + totalCharged;              // grand total the student pays
   out.dates = Array.from({ length: count }, (_, i) => addDays(firstDate, i * step));
   out.valid = true;
   return out;
@@ -579,9 +593,13 @@ function renderSummary() {
   if (!state.plan) return;
   const s = computeSchedule();
   document.getElementById('sum-plan-name').textContent = s.plan.name;
-  document.getElementById('sum-total').textContent = fmt(s.total);
+  // Total displayed is now the GRAND TOTAL the student will actually be
+  // charged (down + every installment). For paid-in-full it's just
+  // s.total; for a plan it equals s.totalAll.
+  const grand = (s.count === 0 || !s.valid) ? s.total : s.totalAll;
+  document.getElementById('sum-total').textContent = fmt(grand);
   document.getElementById('sum-today').textContent = fmt(s.down || 0);
-  document.getElementById('sum-remaining').textContent = fmt(s.remaining ?? (s.total - (s.down||0)));
+  document.getElementById('sum-remaining').textContent = fmt(s.valid && s.count > 0 ? (s.totalCharged || 0) : (s.remaining ?? (s.total - (s.down||0))));
 
   const desc  = document.getElementById('sum-plan-desc');
   const final = document.getElementById('sum-final');
@@ -591,15 +609,25 @@ function renderSummary() {
     desc.textContent  = 'Paid in full today';
     final.textContent = '—';
   } else if (s.valid) {
-    const perTxt = s.lastAmount && s.lastAmount !== s.per
-      ? `${s.count - 1} × ${fmt(s.per)} + ${fmt(s.lastAmount)}`
-      : `${s.count} × ${fmt(s.per)}`;
+    // Build a "$400 + 3 × $600" / "12 × $160" style label from the amounts.
+    const amounts = s.amounts || [];
+    const first = amounts[0];
+    const rest = amounts.slice(1);
+    const restSame = rest.length && rest.every(a => a === rest[0]);
+    let perTxt;
+    if (rest.length === 0) {
+      perTxt = `${fmt(first)} once`;
+    } else if (restSame && rest[0] === first) {
+      perTxt = `${amounts.length} × ${fmt(first)}`;
+    } else if (restSame) {
+      perTxt = `${fmt(first)} + ${rest.length} × ${fmt(rest[0])}`;
+    } else {
+      perTxt = amounts.map(fmt).join(' + ');
+    }
     desc.textContent  = `${perTxt} ${s.cadence}`;
     final.textContent = fmtDate(s.dates[s.dates.length - 1]);
     s.dates.forEach((d, i) => {
-      const isLast = i === s.dates.length - 1;
-      const amt = isLast ? s.lastAmount : s.per;
-      list.insertAdjacentHTML('beforeend', `<li>${fmtDate(d)} — ${fmt(amt)}</li>`);
+      list.insertAdjacentHTML('beforeend', `<li>${fmtDate(d)} — ${fmt(amounts[i])}</li>`);
     });
   } else {
     desc.textContent = '—';

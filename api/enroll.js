@@ -95,47 +95,61 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
   const window = diffDays(firstPaymentDate, classEndDate);
   if (window < 0) throw new Error('First payment date is after class ends.');
 
-  // Fixed per-payment amounts per Amanda: $160 weekly, $600 monthly. Daily
-  // falls back to the legacy "split remaining evenly" math because the UI
-  // no longer offers daily — kept only for any in-flight enrollments.
-  const FIXED_PER = { weekly: 16000, monthly: 60000 };
-  let count, per;
-  if (FIXED_PER[cadence]) {
-    per = FIXED_PER[cadence];
-    count = Math.max(1, Math.ceil(remainingCents / per));
-    if (count > MAX_INSTALLMENTS) {
-      throw new Error(`A ${cadence} plan at $${(per/100).toLocaleString()} per payment would need more than ${MAX_INSTALLMENTS} charges. Increase the down payment or pick a slower cadence.`);
+  // Per Amanda: every installment is a CLEAN round number — no "change."
+  //   Weekly  → $160 every week
+  //   Monthly → $400 first month, then $600 each subsequent month
+  // Count rounds UP so total scheduled ≥ remaining. Order base_price will
+  // be set to the schedule total so Square charges exactly these amounts.
+  const FIRST = { weekly: 16000, monthly: 40000 };
+  const NEXT  = { weekly: 16000, monthly: 60000 };
+  let amounts;
+  if (cadence === 'weekly' || cadence === 'monthly') {
+    amounts = [FIRST[cadence]];
+    let covered = amounts[0];
+    while (covered < remainingCents) {
+      amounts.push(NEXT[cadence]);
+      covered += NEXT[cadence];
+      if (amounts.length > MAX_INSTALLMENTS) {
+        throw new Error(`A ${cadence} plan would need more than ${MAX_INSTALLMENTS} payments. Increase the down payment.`);
+      }
     }
   } else {
-    count = Math.floor(window / stepDays) + 1;
-    if (count < 1) count = 1;
+    // Daily — legacy fallback, even split.
+    let count = Math.max(1, Math.floor(window / stepDays) + 1);
     if (count > MAX_INSTALLMENTS) count = MAX_INSTALLMENTS;
-    per = Math.floor(remainingCents / count);
+    const per = Math.floor(remainingCents / count);
+    amounts = Array(count).fill(per);
+    amounts[count - 1] = remainingCents - per * (count - 1);
   }
 
-  const dates = [];
-  for (let i = 0; i < count; i++) dates.push(addDays(firstPaymentDate, i * stepDays));
-
-  const last = dates[dates.length - 1];
+  const count = amounts.length;
+  const dates = Array.from({ length: count }, (_, i) => addDays(firstPaymentDate, i * stepDays));
+  const last = dates[count - 1];
   if (diffDays(last, classEndDate) < 0) {
     throw new Error(`A ${cadence} plan starting ${firstPaymentDate} can't finish by class end (${classEndDate}). Pick an earlier start date or increase your down payment.`);
   }
 
-  const requests = dates.map((due_date, i) => {
-    const isLast = i === dates.length - 1;
-    if (isLast) {
-      return { request_type: 'BALANCE', due_date, automatic_payment_source: 'CARD_ON_FILE' };
-    }
-    return {
-      request_type: 'INSTALLMENT',
-      due_date,
-      fixed_amount_requested_money: { amount: per, currency: 'USD' },
-      automatic_payment_source: 'CARD_ON_FILE',
-    };
-  });
+  // Every payment_request is INSTALLMENT with an explicit fixed amount so
+  // the totals are predictable. (No BALANCE last-payment — that would
+  // auto-compute from the order, which could disagree with our schedule.)
+  const requests = dates.map((due_date, i) => ({
+    request_type: 'INSTALLMENT',
+    due_date,
+    fixed_amount_requested_money: { amount: amounts[i], currency: 'USD' },
+    automatic_payment_source: 'CARD_ON_FILE',
+  }));
 
-  const lastAmount = remainingCents - per * (count - 1);
-  return { count, perCents: per, lastAmountCents: lastAmount, dates, requests };
+  const totalCharged = amounts.reduce((a, b) => a + b, 0);
+  return {
+    count,
+    perCents: amounts[amounts.length - 1],
+    lastAmountCents: amounts[amounts.length - 1],
+    firstAmountCents: amounts[0],
+    amounts,
+    totalCharged,
+    dates,
+    requests,
+  };
 }
 
 export default async function handler(req, res) {
@@ -278,7 +292,12 @@ export default async function handler(req, res) {
           line_items: [{
             name: `${planDef.name} — Tuition (remaining balance)`,
             quantity: '1',
-            base_price_money: { amount: remaining, currency: 'USD' },
+            // Order amount = scheduled total (sum of all installment amounts),
+            // not just `remaining`. With Amanda's clean-amount plan the
+            // scheduled total can exceed `remaining` by up to one full
+            // installment — the order has to match or Square will reject the
+            // INSTALLMENT requests as exceeding the order amount.
+            base_price_money: { amount: schedule.totalCharged, currency: 'USD' },
             note: cohortName || undefined,
           }],
         },
