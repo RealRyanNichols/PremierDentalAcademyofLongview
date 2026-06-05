@@ -95,17 +95,30 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
   const window = diffDays(firstPaymentDate, classEndDate);
   if (window < 0) throw new Error('First payment date is after class ends.');
 
-  let count = Math.floor(window / stepDays) + 1;
-  if (count < 1) count = 1;
-  if (count > MAX_INSTALLMENTS) count = MAX_INSTALLMENTS;
+  // Fixed per-payment amounts per Amanda: $160 weekly, $600 monthly. Daily
+  // falls back to the legacy "split remaining evenly" math because the UI
+  // no longer offers daily — kept only for any in-flight enrollments.
+  const FIXED_PER = { weekly: 16000, monthly: 60000 };
+  let count, per;
+  if (FIXED_PER[cadence]) {
+    per = FIXED_PER[cadence];
+    count = Math.max(1, Math.ceil(remainingCents / per));
+    if (count > MAX_INSTALLMENTS) {
+      throw new Error(`A ${cadence} plan at $${(per/100).toLocaleString()} per payment would need more than ${MAX_INSTALLMENTS} charges. Increase the down payment or pick a slower cadence.`);
+    }
+  } else {
+    count = Math.floor(window / stepDays) + 1;
+    if (count < 1) count = 1;
+    if (count > MAX_INSTALLMENTS) count = MAX_INSTALLMENTS;
+    per = Math.floor(remainingCents / count);
+  }
 
-  const per = Math.floor(remainingCents / count);
   const dates = [];
   for (let i = 0; i < count; i++) dates.push(addDays(firstPaymentDate, i * stepDays));
 
   const last = dates[dates.length - 1];
   if (diffDays(last, classEndDate) < 0) {
-    throw new Error(`A ${cadence} plan starting ${firstPaymentDate} can't finish by class end (${classEndDate}). Pick an earlier start date or a faster cadence.`);
+    throw new Error(`A ${cadence} plan starting ${firstPaymentDate} can't finish by class end (${classEndDate}). Pick an earlier start date or increase your down payment.`);
   }
 
   const requests = dates.map((due_date, i) => {
