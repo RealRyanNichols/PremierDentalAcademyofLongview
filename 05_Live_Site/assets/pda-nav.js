@@ -249,7 +249,7 @@
     if (window.supabase?.createClient) wireAuth();
     else setTimeout(wireAuth, 400);
 
-    injectSpecialOfferBar();
+    // The $1,500 special has ended — offer bar disabled.
     armExitIntent();
   }
 
