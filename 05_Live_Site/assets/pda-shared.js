@@ -108,7 +108,7 @@
     const size = opts.size || 16;
     const cls = opts.class || '';
     const strokeW = opts.strokeWidth || 2;
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${strokeW}" stroke-linecap="round" stroke-linejoin="round" class="${cls}" aria-hidden="true">${path.split(/(?=[A-Z][a-z])/).map(p => p).join('')}<path d="${path}"/></svg>`;
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${strokeW}" stroke-linecap="round" stroke-linejoin="round" class="${cls}" aria-hidden="true"><path d="${path}"/></svg>`;
   }
 
   // ── Helpers ──────────────────────────────────────────────────────
