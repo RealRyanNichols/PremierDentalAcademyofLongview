@@ -352,15 +352,25 @@
   // ───────────── Site-wide $1,500 special bar ─────────────
   // Sticky bottom strip with a live countdown that follows visitors on every
   // page (except the offer/checkout/admin pages where it would duplicate).
-  // Auto-hides at the June 3 2026 5pm CT deadline and respects a dismiss.
+  // Uses a self-rolling weekly deadline and respects a dismiss.
   function injectSpecialOfferBar() {
-    const DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
-    if (!isFinite(DEADLINE_MS) || Date.now() >= DEADLINE_MS) return;
+    // Self-rolling weekly deadline (upcoming Sunday 11:59 PM) so the bar never
+    // shows a stale/past date. Rolls to next week when under 3h remain.
+    const _now = new Date();
+    const _dl = new Date(_now); _dl.setHours(23, 59, 0, 0);
+    _dl.setDate(_dl.getDate() + ((7 - _now.getDay()) % 7));
+    if (_dl.getTime() - _now.getTime() < 3 * 3600000) _dl.setDate(_dl.getDate() + 7);
+    const DEADLINE_MS = _dl.getTime();
     const path = location.pathname.toLowerCase().replace(/\/$/, '');
     // Don't show on pages that already lead with the offer or where a sticky
     // bar would be in the way.
     if (/^\/(admin|login|logout|enroll-success|special-offer|enroll)/.test(path)) return;
     try { if (localStorage.getItem('pda.offer.dismissed.v1') === '1') return; } catch (e) {}
+
+    // Only one bottom bar at a time — the offer bar takes over from the
+    // Call/Apply bar where both would appear (mobile marketing pages).
+    var _cta = document.getElementById('pda-cta-bar');
+    if (_cta) { _cta.remove(); document.body.classList.remove('pda-cta-on'); }
 
     const HREF = '/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026';
     const bar = document.createElement('div');

@@ -270,10 +270,10 @@
         <div class="display text-5xl sm:text-7xl font-black tracking-tight leading-none" style="color:#001a3d">SPECIAL OFFER</div>
         <div class="flex items-center justify-center gap-3 mt-3">
           <span class="h-0.5 w-10 sm:w-14 bg-blue-700"></span>
-          <div class="display text-xl sm:text-2xl font-extrabold tracking-wide text-blue-700">ENDS TOMORROW!</div>
+          <div id="so-ends" class="display text-xl sm:text-2xl font-extrabold tracking-wide text-blue-700">ENDS SOON!</div>
           <span class="h-0.5 w-10 sm:w-14 bg-blue-700"></span>
         </div>
-        <div class="text-base sm:text-lg font-semibold text-slate-700 mt-1 tracking-wide">JUNE 3RD AT 5:00 PM</div>
+        <div id="so-date" class="text-base sm:text-lg font-semibold text-slate-700 mt-1 tracking-wide">&nbsp;</div>
         <div id="special-offer-countdown" class="mt-2 text-sm font-bold text-blue-700"></div>
       </div>
       <!-- Details: dates + price -->
@@ -309,23 +309,44 @@
           <span class="block text-[11px] font-semibold text-amber-300 mt-0.5" data-seats="93339313-29c4-4204-a346-c02dcfb8195f">→</span>
         </a>
       </div>
-      <div class="text-center text-xs text-slate-500 py-3 px-4 bg-white border-t border-slate-200">
-        ⏰ Don't miss out — offer ends Tuesday, June 3rd at 5:00 PM Central. Pay-in-full enrollments only.
+      <div id="so-foot" class="text-center text-xs text-slate-500 py-3 px-4 bg-white border-t border-slate-200">
+        ⏰ Don't miss out. Pay-in-full enrollments only.
       </div>
     </div>
   </div>
 </section>
 <script>
-  // Auto-hide the special-offer section after the June 3, 2026 5:00 PM CDT
-  // deadline, and tick a live countdown so the urgency stays real.
+  // Self-rolling weekly deadline + live countdown so the urgency is always
+  // current (never shows a stale/past date).
   (function () {
-    var DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
+    // Self-rolling deadline: the upcoming Sunday 11:59 PM (rolls weekly so the
+    // urgency is always live and never shows a stale/past date). If under 3h
+    // remain, roll to the next week.
+    function rollingDeadline() {
+      var now = new Date();
+      var dl = new Date(now); dl.setHours(23, 59, 0, 0);
+      dl.setDate(dl.getDate() + ((7 - now.getDay()) % 7));
+      if (dl.getTime() - now.getTime() < 3 * 3600000) dl.setDate(dl.getDate() + 7);
+      return dl;
+    }
+    var DEADLINE = rollingDeadline();
+    var DEADLINE_MS = DEADLINE.getTime();
     var section = document.getElementById('special-offer');
     var cd = document.getElementById('special-offer-countdown');
-    if (!section || !cd) return;
+    if (!section) return;
+    // Fill the date labels from the live deadline.
+    var ends = document.getElementById('so-ends');
+    var dateEl = document.getElementById('so-date');
+    var foot = document.getElementById('so-foot');
+    var wd = DEADLINE.toLocaleDateString('en-US', { weekday: 'long' });
+    var pretty = DEADLINE.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    if (ends) ends.textContent = 'ENDS ' + wd.toUpperCase() + '!';
+    if (dateEl) dateEl.textContent = pretty.toUpperCase() + ' · 11:59 PM';
+    if (foot) foot.textContent = '⏰ Don’t miss out — offer ends ' + pretty + ' at 11:59 PM Central. Pay-in-full enrollments only.';
     function tick() {
+      if (!cd) return;
       var ms = DEADLINE_MS - Date.now();
-      if (ms <= 0) { section.style.display = 'none'; return; }
+      if (ms <= 0) { cd.textContent = ''; return; }
       var h = Math.floor(ms / 3600000);
       var m = Math.floor((ms % 3600000) / 60000);
       cd.textContent = h > 24
