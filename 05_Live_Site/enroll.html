@@ -129,19 +129,23 @@
   <!-- Special offer reminder bar (auto-hides at deadline) -->
   <a id="enroll-special-bar" href="/enroll?plan=in-person&cohort=695198a9-a2e1-4274-815c-a776fa7f582d&special=summer2026"
      class="block mb-6 px-4 py-3 sm:px-6 rounded-xl text-white text-center font-semibold shadow-lg" style="background:#001a3d">
-    🔥 SPECIAL — <span class="text-amber-300 font-bold">$1,500 pay-in-full</span> for June 22 or July 7 in-person class · <span id="enroll-cd" class="text-amber-300">ends June 3, 5pm CT</span> →
+    🔥 SPECIAL — <span class="text-amber-300 font-bold">$1,500 pay-in-full</span> for June 22 or July 7 in-person class · <span id="enroll-cd" class="text-amber-300">offer ends soon</span> →
   </a>
   <script>
     (function(){
-      var D = Date.parse('2026-06-03T17:00:00-05:00');
+      // Self-rolling weekly deadline (upcoming Sunday 11:59 PM) — never stale.
+      var now = new Date(), D = new Date(now); D.setHours(23,59,0,0);
+      D.setDate(D.getDate() + ((7 - now.getDay()) % 7));
+      if (D.getTime() - now.getTime() < 3*3600000) D.setDate(D.getDate() + 7);
+      D = D.getTime();
       var bar = document.getElementById('enroll-special-bar');
       var cd  = document.getElementById('enroll-cd');
       if (!bar || !cd) return;
       function t(){
         var ms = D - Date.now();
-        if (ms <= 0) { bar.style.display = 'none'; return; }
+        if (ms <= 0) { cd.textContent = 'ending today'; return; }
         var h = Math.floor(ms/3600000), m = Math.floor((ms%3600000)/60000);
-        cd.textContent = (h > 24 ? Math.floor(h/24)+'d '+(h%24)+'h' : h+'h '+m+'m') + ' left';
+        cd.textContent = 'ends in ' + (h > 24 ? Math.floor(h/24)+'d '+(h%24)+'h' : h+'h '+m+'m');
       }
       t(); setInterval(t, 30000);
     })();
@@ -409,7 +413,14 @@ const SPECIAL_COHORTS = new Set([
   '695198a9-a2e1-4274-815c-a776fa7f582d', // June 22, 2026 — In-Person
   '93339313-29c4-4204-a346-c02dcfb8195f', // July 7, 2026 — In-Person
 ]);
-const SPECIAL_DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00'); // 5pm CT
+// Self-rolling weekly deadline — mirrors api/enroll.js so the shown special
+// price always matches what the server will charge.
+const SPECIAL_DEADLINE_MS = (() => {
+  const now = new Date(); const dl = new Date(now); dl.setHours(23, 59, 0, 0);
+  dl.setDate(dl.getDate() + ((7 - now.getDay()) % 7));
+  if (dl.getTime() - now.getTime() < 3 * 3600000) dl.setDate(dl.getDate() + 7);
+  return dl.getTime();
+})();
 const SPECIAL_TOTAL_CENTS = 150000;
 
 const fmt = (cents) => '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
@@ -475,10 +486,10 @@ function updateCohortMeta() {
   const sel = document.getElementById('cohort');
   state.cohort = state.cohorts.find(c => c.id === sel.value) || null;
 
-  // Re-evaluate the June 2026 special on every cohort change. Active only
-  // when ?special=summer2026, an eligible in-person cohort is picked, and
-  // we're before the 5pm CT June 3 deadline. When active, snap the down
-  // payment to $1,500 so the user is paying-in-full at the discounted total.
+  // Re-evaluate the special on every cohort change. Active only when
+  // ?special=summer2026, an eligible in-person cohort is picked, and we're
+  // before the rolling weekly deadline. When active, snap the down payment to
+  // $1,500 so the user is paying-in-full at the discounted total.
   const params = new URLSearchParams(location.search);
   state.specialActive = (
     params.get('special') === 'summer2026' &&

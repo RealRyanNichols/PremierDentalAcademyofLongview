@@ -34,7 +34,15 @@ const SPECIAL_COHORTS = new Set([
   '695198a9-a2e1-4274-815c-a776fa7f582d', // June 22, 2026 — In-Person
   '93339313-29c4-4204-a346-c02dcfb8195f', // July 7, 2026 — In-Person
 ]);
-const SPECIAL_DEADLINE_MS = Date.parse('2026-06-03T17:00:00-05:00');
+// Self-rolling weekly deadline (upcoming Sunday 11:59 PM) so the advertised
+// special never silently expires and overcharges the buyer. Mirrors the same
+// rule in enroll.html so the client price always equals the server price.
+const SPECIAL_DEADLINE_MS = (() => {
+  const now = new Date(); const dl = new Date(now); dl.setHours(23, 59, 0, 0);
+  dl.setDate(dl.getDate() + ((7 - now.getDay()) % 7));
+  if (dl.getTime() - now.getTime() < 3 * 3600000) dl.setDate(dl.getDate() + 7);
+  return dl.getTime();
+})();
 const SPECIAL_TOTAL_CENTS = 150000;
 
 async function sq(path, method, body, idempotency) {
