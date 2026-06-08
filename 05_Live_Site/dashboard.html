@@ -402,7 +402,11 @@
   document.getElementById('dd-name').textContent = (p.first_name || '') + ' ' + (p.last_name || '');
   document.getElementById('dd-email').textContent = p.email;
   document.getElementById('user-label').textContent = p.first_name || p.email;
-  if (p.is_admin) {
+  // Admin = profiles.is_admin OR the is_admin claim baked into the JWT
+  // (app_metadata). The JWT claim survives even if the profile read fails, so an
+  // owner is never wrongly shown the student view.
+  const isAdmin = (p.is_admin === true) || (session?.user?.app_metadata?.is_admin === true);
+  if (isAdmin) {
     document.getElementById('admin-link').classList.remove('hidden');
     document.getElementById('admin-office').classList.remove('hidden');
   }
@@ -410,7 +414,7 @@
   // Hero
   const hour = new Date().getHours();
   document.getElementById('hero-greet').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('hero-name').textContent = p.first_name || 'student';
+  document.getElementById('hero-name').textContent = p.first_name || (isAdmin ? (p.email || 'admin').split('@')[0] : 'student');
   const programLabels = {
     preview:      { name: 'Free preview', sub: 'Try the trainers, no save' },
     foundation:   { name: 'PDA RDA Program', sub: 'In-Person at Longview campus' },

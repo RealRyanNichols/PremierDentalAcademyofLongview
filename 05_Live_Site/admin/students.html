@@ -95,7 +95,7 @@
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
   let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
   if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
-  if (!profile?.is_admin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   document.getElementById('view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
