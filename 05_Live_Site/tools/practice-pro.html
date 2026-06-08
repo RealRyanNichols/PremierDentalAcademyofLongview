@@ -4533,6 +4533,11 @@
     state.module = m;
     state.ui.toothContext = null;
     if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    // Opening Reports counts as practicing the analytics module (logged once per session)
+    if (m === 'reports' && !state.ui._reportViewed) {
+      state.ui._reportViewed = true;
+      logAction('report_view', { module: 'reports' });
+    }
     rerender();
   }
   function openModal(type, props = {}) { state.ui.modal = { type, props, lg: type === 'edit-medical' }; rerender(); }
