@@ -46,10 +46,22 @@
 
   <div id="admin-view" class="hidden">
 
-    <div class="mb-8">
+    <div class="mb-6">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Admin</p>
       <h1 class="display text-3xl sm:text-4xl font-bold mt-1">Hi <span id="admin-name">Amanda</span> — here's everything in one place.</h1>
     </div>
+
+    <!-- 🔥 Call these first — appears only when there are leads worth calling right now -->
+    <a id="hot-banner" href="/admin/leads" class="hidden mb-6 bg-gradient-to-br from-rose-600 to-rose-700 text-white rounded-2xl p-4 sm:p-5 hover:shadow-lg transition items-center justify-between gap-3 flex">
+      <div class="flex items-center gap-3 min-w-0">
+        <span class="text-3xl">🔥</span>
+        <div class="min-w-0">
+          <div class="font-bold text-lg leading-tight"><span id="hot-banner-count">0</span> lead(s) need a call now</div>
+          <div id="hot-banner-names" class="text-sm text-rose-100 truncate">—</div>
+        </div>
+      </div>
+      <span class="shrink-0 bg-white/15 hover:bg-white/25 font-semibold text-sm px-4 py-2 rounded-lg">Open inbox →</span>
+    </a>
 
     <!-- Counters -->
     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8" id="counters">
@@ -148,7 +160,7 @@
   const todayIso = new Date(); todayIso.setHours(0,0,0,0);
   const [{ data: students }, { data: leads }, { data: tasks }, { data: subs }, { data: comms }, { data: instructors }, { data: chat }] = await Promise.all([
     sb.from('profiles').select('id', { count: 'exact', head: false }).neq('is_admin', true),
-    sb.from('leads').select('id, created_at, first_name, last_name, source, status').order('created_at', { ascending: false }).limit(50),
+    sb.from('leads').select('id, created_at, first_name, last_name, source, status, phone, pipeline_stage, pay_intent, last_contact_at').order('created_at', { ascending: false }).limit(200),
     sb.from('admin_tasks').select('id, title, priority, status, created_at').eq('status', 'open').order('priority', { ascending: true }).order('created_at', { ascending: false }).limit(20),
     sb.from('subscribers').select('id', { count: 'exact', head: false }).eq('status', 'subscribed'),
     sb.from('communications').select('id, occurred_at, channel, direction, contact_name, contact_phone, contact_email, body, source').order('occurred_at', { ascending: false }).limit(10),
@@ -157,6 +169,28 @@
   ]);
 
   const newToday = (leads || []).filter(l => new Date(l.created_at) >= todayIso).length;
+
+  // 🔥 "Call these first" — same speed-to-lead logic as the inbox hot queue
+  const stageOf = (l) => l.pipeline_stage || (l.status === 'enrolled' ? 'paying' : l.status === 'contacted' ? 'contacted' : 'new');
+  const isHot = (l) => {
+    const stage = stageOf(l);
+    if (stage === 'lost') return false;
+    if (stage === 'paying') return true;
+    if (l.pay_intent) return true;
+    const uncontacted = !l.last_contact_at;
+    if ((l.source || '').toLowerCase().includes('night-class') && uncontacted) return true;
+    const ageH = (Date.now() - new Date(l.created_at).getTime()) / 3600000;
+    return ageH <= 48 && uncontacted;
+  };
+  const hotLeads = (leads || []).filter(isHot);
+  if (hotLeads.length) {
+    const banner = document.getElementById('hot-banner');
+    document.getElementById('hot-banner-count').textContent = hotLeads.length;
+    document.getElementById('hot-banner-names').textContent = hotLeads.slice(0, 4)
+      .map(l => `${l.first_name || ''} ${l.last_name || ''}`.trim() || l.phone || 'New lead').join(' · ')
+      + (hotLeads.length > 4 ? ` +${hotLeads.length - 4} more` : '');
+    banner.classList.remove('hidden');
+  }
 
   document.getElementById('c-students').textContent  = (students || []).length;
   document.getElementById('c-new-leads').textContent = newToday;
