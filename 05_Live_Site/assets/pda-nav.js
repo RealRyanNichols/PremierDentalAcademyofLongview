@@ -249,7 +249,8 @@
     if (window.supabase?.createClient) wireAuth();
     else setTimeout(wireAuth, 400);
 
-    // The $1,500 special has ended — offer bar disabled.
+    // The $1,500 special has ended.
+    injectUrgencyBar();
     armExitIntent();
   }
 
@@ -353,6 +354,44 @@
   // Sticky bottom strip with a live countdown that follows visitors on every
   // page (except the offer/checkout/admin pages where it would duplicate).
   // Uses a self-rolling weekly deadline and respects a dismiss.
+  // Site-wide urgency bar for the soonest upcoming class — funnels last-minute
+  // signups to /night-class. Only shows when a class starts within ~10 days,
+  // and pulls real seat counts (no fabricated numbers).
+  function injectUrgencyBar() {
+    var path = location.pathname.toLowerCase().replace(/\/$/, '');
+    if (/^\/(admin|login|logout|enroll|enroll-success|night-class)/.test(path)) return;
+    try { if (sessionStorage.getItem('pda.urgency.x') === '1') return; } catch (e) {}
+    var URL_BASE = 'https://lmbsuwslsycukynzpzik.supabase.co/rest/v1';
+    var KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+    fetch(URL_BASE + '/cohorts?select=name,start_date,capacity,enrolled_count,delivery_mode,status&status=eq.upcoming&order=start_date.asc&limit=8', {
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY }
+    }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      if (!rows || !rows.length) return;
+      var inperson = rows.filter(function (c) { return (c.delivery_mode || '').indexOf('person') > -1 || /night|in.person/i.test(c.name || ''); });
+      var c = inperson[0] || rows[0];
+      var today = new Date(); today.setHours(0, 0, 0, 0);
+      var d = new Date(c.start_date + 'T00:00:00');
+      var days = Math.round((d - today) / 86400000);
+      if (days < 0 || days > 10) return; // only when genuinely soon
+      var left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+      var when = days <= 0 ? 'starts tonight' : days === 1 ? 'starts tomorrow'
+        : 'starts ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+      var seat = (left > 0 && left <= 6) ? ' · only ' + left + ' seat' + (left === 1 ? '' : 's') + ' left' : '';
+      var bar = document.createElement('div');
+      bar.id = 'pda-urgency-bar';
+      bar.style.cssText = 'background:#001a3d;color:#fff;font:600 13px/1.3 Inter,system-ui,sans-serif;padding:8px 12px;text-align:center';
+      bar.innerHTML = '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">' +
+        '<span>🌙 <b style="color:#fbbf24">RDA class ' + when + '</b>' + seat + '</span>' +
+        '<a href="/night-class" style="background:#fbbf24;color:#001a3d;padding:4px 12px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Reserve a seat →</a>' +
+        '<a href="tel:+19039136444" style="color:#fff;text-decoration:underline;white-space:nowrap">or call (903) 913-6444</a>' +
+        '<button type="button" aria-label="Dismiss" id="pda-urgency-x" style="background:transparent;color:#94a3b8;border:0;font-size:16px;cursor:pointer;line-height:1">×</button>' +
+        '</div>';
+      document.body.insertBefore(bar, document.body.firstChild);
+      var x = document.getElementById('pda-urgency-x');
+      if (x) x.addEventListener('click', function () { bar.remove(); try { sessionStorage.setItem('pda.urgency.x', '1'); } catch (e) {} });
+    }).catch(function () {});
+  }
+
   function injectSpecialOfferBar() {
     // Self-rolling weekly deadline (upcoming Sunday 11:59 PM) so the bar never
     // shows a stale/past date. Rolls to next week when under 3h remain.

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>RDA Night Class — Enrolling Now | Premier Dental Academy of Longview</title>
+  <meta name="description" content="Evening Registered Dental Assistant (RDA) night class in Longview, TX — train after work, become an RDA in ~12 weeks. Seats are limited. Reserve your spot or call (903) 913-6444." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .pulse-dot { animation: pd 1.4s ease-in-out infinite; }
+    @keyframes pd { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .input { width:100%; padding:.7rem .85rem; border:1px solid #cbd5e1; border-radius:.6rem; font-size:1rem; }
+    .input:focus { outline:none; border-color:#0d9488; box-shadow:0 0 0 2px rgba(13,148,136,.25); }
+  </style>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/night-class" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/night-class" />
+  <meta property="og:title" content="RDA Night Class — Enrolling Now | Premier Dental Academy" />
+  <meta property="og:description" content="Train after work and become a Registered Dental Assistant in ~12 weeks. Evening classes in Longview, TX. Seats are limited — reserve yours." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RDA Night Class — Enrolling Now | Premier Dental Academy" />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-slate-900 text-white min-h-screen">
+
+<!-- minimal, focused header -->
+<header class="border-b border-white/10">
+  <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="30" height="30" class="w-7 h-7 rounded bg-white p-0.5" />
+      <span class="text-sm sm:text-base">Premier Dental Academy</span>
+    </a>
+    <a href="tel:+19039136444" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-3 py-1.5 rounded-lg">📞 (903) 913-6444</a>
+  </div>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+  <!-- HERO -->
+  <div class="text-center">
+    <div id="urgency-pill" class="inline-flex items-center gap-2 bg-rose-500/15 border border-rose-400/40 text-rose-200 text-xs font-bold uppercase tracking-widest px-3 py-1.5 rounded-full">
+      <span class="w-2 h-2 rounded-full bg-rose-400 pulse-dot"></span><span id="urgency-text">Enrolling now · seats limited</span>
+    </div>
+    <h1 class="display text-4xl sm:text-6xl font-extrabold mt-4 leading-[1.05]">
+      Become a <span class="text-cyan-300">Registered Dental Assistant</span> — in evening classes.
+    </h1>
+    <p class="text-slate-300 mt-4 text-lg max-w-xl mx-auto">Keep your day job. Train a few nights a week in Longview and be career-ready in about <strong class="text-white">12 weeks</strong> — with real hands-on software practice and job-placement help.</p>
+
+    <div id="seats-banner" class="hidden mt-5 inline-block bg-white text-slate-900 rounded-xl px-5 py-3 shadow-lg">
+      <div class="text-xs uppercase tracking-widest text-rose-600 font-bold" id="seats-when">Next class</div>
+      <div class="display text-2xl font-extrabold" id="seats-line">—</div>
+    </div>
+
+    <div class="mt-7 grid sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+      <a href="tel:+19039136444" class="bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-lg px-6 py-4 rounded-xl shadow-lg">📞 Call / text to enroll</a>
+      <a href="#save" class="bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-extrabold text-lg px-6 py-4 rounded-xl shadow-lg">Save my seat →</a>
+    </div>
+    <p class="text-slate-400 text-xs mt-3">Or <a href="/enroll?plan=in-person" class="underline hover:text-white">enroll &amp; pay online now</a> · $200 down, payment plans available</p>
+  </div>
+
+  <!-- WHY -->
+  <div class="grid sm:grid-cols-3 gap-3 mt-12">
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+      <div class="text-2xl">🌙</div>
+      <div class="font-bold mt-2">Evenings only</div>
+      <p class="text-slate-300 text-sm mt-1">Train after work — no need to quit your job to change your career.</p>
+    </div>
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+      <div class="text-2xl">💻</div>
+      <div class="font-bold mt-2">Real software</div>
+      <p class="text-slate-300 text-sm mt-1">Hands-on practice-management + charting tools — the #1 thing offices hire for.</p>
+    </div>
+    <div class="bg-white/5 border border-white/10 rounded-2xl p-5">
+      <div class="text-2xl">🤝</div>
+      <div class="font-bold mt-2">Job placement</div>
+      <p class="text-slate-300 text-sm mt-1">Local hiring relationships across East Texas when you finish.</p>
+    </div>
+  </div>
+
+  <!-- SAVE MY SEAT FORM -->
+  <div id="save" class="mt-12 bg-white text-slate-900 rounded-3xl p-6 sm:p-8 shadow-2xl scroll-mt-6">
+    <h2 class="display text-2xl sm:text-3xl font-extrabold text-center">Save your seat in 20 seconds</h2>
+    <p class="text-slate-600 text-center text-sm mt-1">Drop your name + number and <strong>Amanda will call or text you right back</strong> to get you in.</p>
+    <form id="seat-form" class="mt-5 grid sm:grid-cols-2 gap-3 max-w-lg mx-auto">
+      <input name="first_name" required placeholder="First name" class="input" />
+      <input name="phone" type="tel" required placeholder="Cell phone" class="input" />
+      <select name="fit" class="input sm:col-span-2">
+        <option value="">I'm interested in… (optional)</option>
+        <option>In-person night class</option>
+        <option>Online ($397)</option>
+        <option>Not sure — help me decide</option>
+      </select>
+      <button type="submit" class="sm:col-span-2 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-lg py-3.5 rounded-xl shadow">🔒 Save my seat &amp; call me back</button>
+      <p class="sm:col-span-2 text-center text-[11px] text-slate-500">No payment now. By submitting you agree we may call/text you about enrollment.</p>
+    </form>
+    <div id="seat-done" class="hidden text-center py-6">
+      <div class="text-5xl mb-2">🎉</div>
+      <h3 class="display text-2xl font-extrabold text-emerald-700">You're on the list!</h3>
+      <p class="text-slate-600 mt-1 text-sm">We'll reach out fast. Want in <em>right now</em>? Call us — we'll lock your seat in 2 minutes.</p>
+      <a href="tel:+19039136444" class="inline-block mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-xl">📞 Call (903) 913-6444</a>
+    </div>
+  </div>
+
+  <!-- PROOF + REASSURANCE -->
+  <div class="mt-10 text-center">
+    <div class="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-slate-300">
+      <span>🎓 <strong class="text-white">406+</strong> graduates hired</span>
+      <span>⭐ <strong class="text-white">85%+</strong> placement</span>
+      <span>🔁 Tuition transfers — never lost</span>
+      <span>💳 Klarna · Afterpay · Affirm</span>
+    </div>
+    <p class="text-slate-500 text-xs mt-5">Premier Dental Academy of Longview · 2800 Gilmer Rd, Suite 106, Longview, TX 75604 · (903) 913-6444</p>
+  </div>
+</main>
+
+<!-- sticky mobile call bar -->
+<a href="tel:+19039136444" class="sm:hidden fixed bottom-0 inset-x-0 z-50 bg-amber-500 text-white font-extrabold text-center py-3.5 shadow-[0_-6px_20px_rgba(0,0,0,.3)]">📞 Tap to call &amp; enroll — (903) 913-6444</a>
+<div class="sm:hidden h-16"></div>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+
+  // ── Live urgency from the real next cohort ──
+  try {
+    const r = await fetch('https://lmbsuwslsycukynzpzik.supabase.co/rest/v1/cohorts?select=name,start_date,capacity,enrolled_count,delivery_mode,status&status=eq.upcoming&order=start_date.asc&limit=8', {
+      headers: { apikey: 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh', Authorization: 'Bearer sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh' }
+    });
+    const rows = r.ok ? await r.json() : [];
+    // prefer an in-person / night cohort; else the soonest upcoming
+    const inperson = rows.filter(c => (c.delivery_mode || '').includes('person') || /night|in.person/i.test(c.name || ''));
+    const c = (inperson[0] || rows[0]);
+    if (c) {
+      const today = new Date(); today.setHours(0,0,0,0);
+      const d = new Date(c.start_date + 'T00:00:00');
+      const days = Math.round((d - today) / 86400000);
+      const left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
+      let when = d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+      if (days <= 0) when = 'Starts TONIGHT';
+      else if (days === 1) when = 'Starts TOMORROW';
+      else when = 'Starts ' + when;
+      document.getElementById('seats-when').textContent = when;
+      document.getElementById('seats-line').textContent = left > 0
+        ? (left <= 6 ? `Only ${left} seat${left===1?'':'s'} left` : `${left} seats open`)
+        : 'Join the waitlist';
+      document.getElementById('seats-banner').classList.remove('hidden');
+      const up = document.getElementById('urgency-text');
+      if (days <= 0) up.textContent = '🚨 Class starts tonight · seats limited';
+      else if (days <= 2) up.textContent = `🔥 Starts in ${days} day${days===1?'':'s'} · seats limited`;
+      else up.textContent = 'Enrolling now · seats limited';
+    }
+  } catch (e) { /* show static fallback */ }
+
+  // ── Save-my-seat form ──
+  const form = document.getElementById('seat-form');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type=submit]');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    const fd = new FormData(form);
+    const lead = {
+      first_name: fd.get('first_name'),
+      phone: fd.get('phone'),
+      interest_path: (fd.get('fit') || '').toLowerCase().includes('online') ? 'online' : 'in_person',
+      message: 'Night-class lead · interest: ' + (fd.get('fit') || 'unspecified'),
+      source: 'night-class',
+    };
+    try { await sb.from('leads').insert(lead); } catch (e) {}
+    try { window.pda && window.pda.track && window.pda.track('night_class_lead'); } catch (e) {}
+    form.classList.add('hidden');
+    document.getElementById('seat-done').classList.remove('hidden');
+  });
+})();
+</script>
+</body>
+</html>
