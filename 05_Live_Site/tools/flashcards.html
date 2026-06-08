@@ -188,7 +188,7 @@
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // ── Card deck (110+ cards across the major Texas RDA exam topics) ──
+  // ── Card deck (100+ cards across the major Texas RDA exam topics) ──
   const DECK = [
     // Infection control
     { id:'ic-01', topic:'Infection Control', q:"What's the most common route of disease transmission in a dental office?", a:"Direct contact with blood, saliva, and oral fluids — that's why standard precautions (gloves, mask, eyewear, gown) are non-negotiable on every patient." },
@@ -426,7 +426,7 @@
         '<div class="text-3xl select-none">🔒</div>' +
         '<div class="flex-1 min-w-0">' +
           '<div class="font-bold text-slate-900">Free preview — ' + FREE_CARD_LIMIT + ' of ' + DECK.length + ' cards</div>' +
-          '<div class="text-sm text-slate-600">Enroll to unlock all ' + DECK.length + '+ Texas RDA exam flashcards and save your progress on every device.</div>' +
+          '<div class="text-sm text-slate-600">Enroll to unlock all ' + DECK.length + ' Texas RDA exam flashcards and save your progress on every device.</div>' +
         '</div>' +
         '<a href="/enroll" class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-bold px-4 py-2 rounded-lg text-sm whitespace-nowrap">Unlock all →</a>';
       cardWrap.parentNode.insertBefore(banner, cardWrap);
