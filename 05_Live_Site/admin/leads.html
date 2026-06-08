@@ -164,7 +164,8 @@
   // Admin gate — must have profiles.is_admin = true (refresh + retry on stale token)
   let profile = (await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle()).data;
   if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle()).data; }
-  if (!profile || !profile.is_admin) {
+  const isAdmin = profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true;
+  if (!isAdmin) {
     const wall = document.getElementById('auth-wall');
     wall.classList.remove('hidden');
     wall.innerHTML = `
@@ -175,7 +176,7 @@
     return;
   }
 
-  document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
+  document.getElementById('user-label').textContent = (profile?.first_name || session.user.email);
   document.getElementById('leads-view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 

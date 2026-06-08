@@ -80,8 +80,12 @@
   const { data: rpcAdmin, error: rerr } = await sb.rpc('is_pda_admin');
   row('Database is_pda_admin() says', rerr ? ('ERROR — ' + rerr.message) : String(rpcAdmin), rpcAdmin === true ? 'ok' : 'bad');
 
+  // 6) JWT admin claim (works even if the DB read fails)
+  const claimAdmin = session.user?.app_metadata?.is_admin === true;
+  row('Admin claim in your login token', String(claimAdmin), claimAdmin ? 'ok' : 'bad');
+
   // verdict
-  const isAdmin = (prof && prof.is_admin === true) || rpcAdmin === true;
+  const isAdmin = (prof && prof.is_admin === true) || rpcAdmin === true || claimAdmin;
   row('➡ VERDICT', isAdmin ? 'You ARE recognized as an admin. The dashboard should show the office panel.'
                             : 'You are NOT being recognized as an admin in this browser.', isAdmin ? 'ok' : 'bad');
   render();
