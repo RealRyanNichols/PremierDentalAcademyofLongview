@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student progress — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+      <span>PDA Admin</span>
+      <span class="text-slate-400 text-sm font-normal hidden sm:inline">/ Student progress</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white hidden sm:inline">Home</a>
+      <a href="/admin/students" class="text-slate-300 hover:text-white hidden sm:inline">Students</a>
+      <a href="/admin/progress" class="text-teal-300">Progress</a>
+      <a href="/admin/leads" class="text-slate-300 hover:text-white hidden sm:inline">Inbox</a>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Teacher access only</h1>
+    <p class="text-slate-600 mt-2">Sign in with the PDA admin account.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+  </div>
+
+  <div id="loading" class="hidden text-center text-slate-500 py-16">Loading your roster…</div>
+
+  <div id="view" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Teacher gradebook</p>
+        <h1 class="display text-3xl font-bold mt-1">How is every student doing?</h1>
+        <p class="text-sm text-slate-600 mt-1">Who's logged in, who's practicing, who's behind, and exactly which modules they still need.</p>
+      </div>
+      <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export gradebook CSV</button>
+    </div>
+
+    <!-- Summary tiles (clickable filters) -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" id="summary"></div>
+
+    <!-- Controls -->
+    <div class="flex flex-wrap items-center gap-2 mb-4">
+      <input id="search" placeholder="Search name / email" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
+      <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">All students</option>
+        <option value="active">🟢 Active (≤2 days)</option>
+        <option value="slipping">🟡 Slipping (3–7 days)</option>
+        <option value="behind">🔴 Behind (7+ days)</option>
+        <option value="nopractice">🔴 No practice yet</option>
+        <option value="never">⚫ Never logged in</option>
+      </select>
+      <select id="sort" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="recent">Sort: most recently active</option>
+        <option value="behind">Sort: most behind first</option>
+        <option value="progress">Sort: least progress first</option>
+        <option value="grade">Sort: lowest grade first</option>
+        <option value="name">Sort: name (A–Z)</option>
+      </select>
+    </div>
+
+    <!-- Legend -->
+    <div class="text-xs text-slate-500 mb-3 flex flex-wrap gap-x-4 gap-y-1">
+      <span>🟢 Active in the trainers in the last 2 days</span>
+      <span>🟡 Slipping — 3–7 days since they practiced</span>
+      <span>🔴 Behind — 7+ days, or signed in but never practiced</span>
+      <span>⚫ Has never logged in</span>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      <div id="list" class="divide-y divide-slate-100"></div>
+      <div id="empty" class="p-10 text-center text-slate-500 hidden">No students match this filter.</div>
+    </div>
+  </div>
+</main>
+
+<!-- SMS modal -->
+<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Send SMS via Quo</div>
+        <h3 id="sms-target" class="display text-lg font-bold">—</h3>
+      </div>
+      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <div id="sms-templates" class="flex flex-wrap gap-1.5 mb-2"></div>
+    <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
+    <div class="flex justify-between items-center mt-3">
+      <span id="sms-status" class="text-xs text-slate-500"></span>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-lg text-sm">Send →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  const { data: profile } = await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+  if (!profile?.is_admin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+  document.getElementById('loading').classList.remove('hidden');
+
+  const MODULES = ['Patient check-in','Medical history','Tooth chart','Perio','Imaging','Treatment plan','Insurance/claims','Ledger','Communication','Schedule','Documentation','Analytics'];
+
+  let rows = [];
+  const { data, error } = await sb.rpc('admin_student_progress');
+  document.getElementById('loading').classList.add('hidden');
+  if (error) {
+    document.getElementById('view').classList.remove('hidden');
+    document.getElementById('list').innerHTML = `<div class="p-8 text-center text-rose-600">Couldn't load progress: ${esc(error.message)}</div>`;
+    return;
+  }
+  rows = (data || []).map(enrich);
+  document.getElementById('view').classList.remove('hidden');
+
+  function daysSince(iso) {
+    if (!iso) return null;
+    return Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+  }
+  function relTime(iso) {
+    if (!iso) return 'never';
+    const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (s < 3600) return Math.max(1, Math.floor(s/60)) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    const d = Math.floor(s/86400);
+    if (d < 30) return d + 'd ago';
+    return new Date(iso).toLocaleDateString();
+  }
+
+  // Compute a status bucket + module progress per student
+  function enrich(r) {
+    const modulesDone = MODULES.reduce((n, m) => n + (r.module_flags && r.module_flags[m] ? 1 : 0), 0);
+    const dLogin = daysSince(r.last_sign_in_at);
+    const dActive = daysSince(r.last_active_at);
+    let status;
+    if (r.last_sign_in_at == null) status = 'never';
+    else if (r.last_active_at == null) status = 'nopractice';
+    else if (dActive <= 2) status = 'active';
+    else if (dActive <= 7) status = 'slipping';
+    else status = 'behind';
+    return { ...r, modulesDone, dLogin, dActive, status };
+  }
+
+  const STATUS_META = {
+    active:     { dot:'🟢', label:'Active',          chip:'bg-emerald-100 text-emerald-700' },
+    slipping:   { dot:'🟡', label:'Slipping',        chip:'bg-amber-100 text-amber-700' },
+    behind:     { dot:'🔴', label:'Behind',          chip:'bg-rose-100 text-rose-700' },
+    nopractice: { dot:'🔴', label:'No practice yet', chip:'bg-rose-100 text-rose-700' },
+    never:      { dot:'⚫', label:'Never logged in',  chip:'bg-slate-200 text-slate-600' },
+  };
+
+  function renderSummary() {
+    const c = { active:0, slipping:0, behind:0, nopractice:0, never:0 };
+    rows.forEach(r => c[r.status]++);
+    const tiles = [
+      ['', 'Total students', rows.length, 'text-slate-800'],
+      ['active', '🟢 Active', c.active, 'text-emerald-700'],
+      ['slipping', '🟡 Slipping', c.slipping, 'text-amber-700'],
+      ['behind', '🔴 Behind / no practice', c.behind + c.nopractice, 'text-rose-700'],
+      ['never', '⚫ Never logged in', c.never, 'text-slate-600'],
+    ];
+    document.getElementById('summary').innerHTML = tiles.map(([f, label, n, color]) => `
+      <button data-filter="${f}" class="text-left bg-white rounded-xl border border-slate-200 hover:border-teal-500 transition p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">${label}</div>
+        <div class="text-2xl font-bold mono mt-1 ${color}">${n}</div>
+      </button>`).join('');
+    document.querySelectorAll('#summary [data-filter]').forEach(b => {
+      b.onclick = () => {
+        const f = b.dataset.filter;
+        const sel = document.getElementById('status-filter');
+        // "behind" tile maps to either behind or nopractice — use behind as the lead
+        sel.value = (f === 'behind') ? 'behind' : f;
+        render();
+      };
+    });
+  }
+
+  function render() {
+    const q = (document.getElementById('search').value || '').toLowerCase().trim();
+    const sf = document.getElementById('status-filter').value;
+    const sort = document.getElementById('sort').value;
+
+    let list = rows.filter(r => {
+      if (sf) {
+        if (sf === 'behind' && !(r.status === 'behind')) return false;
+        if (sf !== 'behind' && r.status !== sf) return false;
+      }
+      if (q) {
+        const hay = `${r.first_name||''} ${r.last_name||''} ${r.email||''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
+    const order = { active:0, slipping:1, behind:2, nopractice:2, never:3 };
+    list.sort((a, b) => {
+      if (sort === 'name') return (`${a.first_name} ${a.last_name}`).localeCompare(`${b.first_name} ${b.last_name}`);
+      if (sort === 'progress') return a.modulesDone - b.modulesDone;
+      if (sort === 'grade') return (a.best_exam_pct ?? -1) - (b.best_exam_pct ?? -1);
+      if (sort === 'behind') {
+        // most behind first: never (no login) → longest since active → ...
+        const av = a.last_sign_in_at == null ? 1e9 : (a.dActive == null ? 1e8 : a.dActive);
+        const bv = b.last_sign_in_at == null ? 1e9 : (b.dActive == null ? 1e8 : b.dActive);
+        return bv - av;
+      }
+      // recent: most recently active first, nulls last
+      const at = a.last_active_at ? new Date(a.last_active_at).getTime() : -1;
+      const bt = b.last_active_at ? new Date(b.last_active_at).getTime() : -1;
+      return bt - at;
+    });
+
+    document.getElementById('empty').classList.toggle('hidden', list.length > 0);
+    document.getElementById('list').innerHTML = list.map(r => {
+      const sm = STATUS_META[r.status];
+      const name = `${r.first_name||''} ${r.last_name||''}`.trim() || '(no name)';
+      const phone = (r.phone || '').replace(/[^\d+]/g, '');
+      const grade = (r.best_exam_pct == null) ? '—' : r.best_exam_pct + '%';
+      const gradeColor = r.best_exam_pct == null ? 'text-slate-400' : r.best_exam_pct >= 75 ? 'text-emerald-700' : r.best_exam_pct >= 50 ? 'text-amber-700' : 'text-rose-700';
+      const pct = Math.round((r.modulesDone / MODULES.length) * 100);
+      const missing = MODULES.filter(m => !(r.module_flags && r.module_flags[m]));
+      return `
+        <div class="p-4 sm:p-5">
+          <div class="flex items-start gap-4 flex-wrap">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-sm shrink-0">
+              ${esc((r.first_name?.[0]||'?').toUpperCase())}${esc((r.last_name?.[0]||'').toUpperCase())}
+            </div>
+            <div class="flex-1 min-w-[220px]">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold">${esc(name)}</span>
+                <span class="text-xs px-2 py-0.5 rounded-full ${sm.chip}">${sm.dot} ${sm.label}</span>
+                ${r.program ? `<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(r.program)}</span>` : ''}
+                ${r.cohort ? `<span class="text-xs text-slate-500">${esc(r.cohort)}</span>` : ''}
+              </div>
+              <div class="text-xs text-slate-500 mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
+                <span>Last login: <strong class="text-slate-700">${relTime(r.last_sign_in_at)}</strong></span>
+                <span>Last practiced: <strong class="text-slate-700">${relTime(r.last_active_at)}</strong></span>
+                <span><strong class="text-slate-700">${r.total_actions}</strong> actions · <strong class="text-slate-700">${r.active_days}</strong> active day(s)</span>
+              </div>
+              <!-- progress bar -->
+              <div class="mt-2 max-w-md">
+                <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold mb-0.5">
+                  <span>Trainer modules</span><span>${r.modulesDone}/${MODULES.length}</span>
+                </div>
+                <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div class="h-full ${pct>=75?'bg-emerald-500':pct>=40?'bg-amber-500':'bg-rose-400'} rounded-full" style="width:${pct}%"></div>
+                </div>
+              </div>
+              <button data-toggle="${r.id}" class="text-xs text-teal-700 font-semibold mt-2 hover:underline">▸ Where they need to catch up</button>
+              <div data-detail="${r.id}" class="hidden mt-2 flex flex-wrap gap-1.5">
+                ${MODULES.map(m => {
+                  const done = r.module_flags && r.module_flags[m];
+                  return `<span class="text-[11px] px-2 py-0.5 rounded-full ${done?'bg-emerald-50 text-emerald-700 border border-emerald-200':'bg-slate-50 text-slate-400 border border-slate-200'}">${done?'✓':'○'} ${m}</span>`;
+                }).join('')}
+                ${missing.length ? `<div class="w-full text-[11px] text-rose-600 mt-1">Still needs: ${missing.map(esc).join(', ')}</div>` : '<div class="w-full text-[11px] text-emerald-600 mt-1">✓ Touched every module.</div>'}
+              </div>
+            </div>
+            <div class="text-center shrink-0">
+              <div class="text-2xl font-bold display ${gradeColor}">${grade}</div>
+              <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Best exam</div>
+              ${r.exam_attempts ? `<div class="text-[10px] text-slate-400 mt-0.5">${r.exam_attempts} attempt(s)</div>` : '<div class="text-[10px] text-slate-400 mt-0.5">no exam yet</div>'}
+            </div>
+            <div class="flex flex-col gap-1 shrink-0">
+              ${phone ? `<button data-sms data-phone="${phone}" data-name="${esc(name)}" data-id="${r.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg">💬 Text</button>` : ''}
+              ${phone ? `<a href="tel:${phone}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">📞 Call</a>` : ''}
+              ${r.email ? `<a href="mailto:${esc(r.email)}?subject=Checking%20in%20on%20your%20PDA%20coursework" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">✉️ Email</a>` : ''}
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    document.querySelectorAll('[data-toggle]').forEach(btn => {
+      btn.onclick = () => {
+        const d = document.querySelector(`[data-detail="${btn.dataset.toggle}"]`);
+        const open = !d.classList.contains('hidden');
+        d.classList.toggle('hidden');
+        btn.innerHTML = (open ? '▸' : '▾') + ' Where they need to catch up';
+      };
+    });
+    document.querySelectorAll('[data-sms]').forEach(btn => {
+      btn.onclick = () => openSms(btn.dataset.phone, btn.dataset.name, btn.dataset.id);
+    });
+  }
+
+  // ── CSV export
+  document.getElementById('export').onclick = () => {
+    const head = ['First','Last','Email','Phone','Program','Cohort','Status','Last login','Last practiced','Total actions','Active days','Modules done','Best exam %','Exam attempts','Missing modules'];
+    const lines = [head];
+    rows.forEach(r => {
+      const missing = MODULES.filter(m => !(r.module_flags && r.module_flags[m])).join('; ');
+      lines.push([r.first_name||'', r.last_name||'', r.email||'', r.phone||'', r.program||'', r.cohort||'',
+        STATUS_META[r.status].label,
+        r.last_sign_in_at ? new Date(r.last_sign_in_at).toISOString() : 'never',
+        r.last_active_at ? new Date(r.last_active_at).toISOString() : 'never',
+        r.total_actions, r.active_days, `${r.modulesDone}/${MODULES.length}`,
+        r.best_exam_pct == null ? '' : r.best_exam_pct, r.exam_attempts, missing]);
+    });
+    const csv = lines.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([csv], { type:'text/csv' }));
+    a.download = `pda-gradebook-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  };
+
+  document.getElementById('search').oninput = render;
+  document.getElementById('status-filter').onchange = render;
+  document.getElementById('sort').onchange = render;
+
+  // ── SMS modal (Quo)
+  const modal = document.getElementById('sms-modal');
+  const bodyEl = document.getElementById('sms-body');
+  const statusEl = document.getElementById('sms-status');
+  let smsTo = null, smsId = null, smsName = '';
+  document.getElementById('sms-close').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+  const TEMPLATES = [
+    ['👋 Check-in', n => `Hi ${n||'there'}, it's Amanda at Premier Dental Academy. Just checking in on your coursework — how's it going? Anything I can help with?`],
+    ['📣 Behind', n => `Hi ${n||'there'}! I noticed you haven't been in the practice trainers lately. Let's get you caught up — what day this week can you set aside 30 minutes?`],
+    ['🎉 Great job', n => `Hi ${n||'there'}, you're doing great in the trainers — keep it up! Proud of your progress. 🦷`],
+  ];
+  function renderTemplates() {
+    document.getElementById('sms-templates').innerHTML = TEMPLATES.map((t,i)=>`<button data-tpl="${i}" class="text-xs bg-slate-100 hover:bg-teal-100 text-slate-700 px-2 py-1 rounded-full">${t[0]}</button>`).join('');
+    document.querySelectorAll('[data-tpl]').forEach(b => { b.onclick = () => { bodyEl.value = TEMPLATES[+b.dataset.tpl][1]((smsName||'').split(' ')[0]); bodyEl.focus(); }; });
+  }
+  function openSms(phone, name, id) {
+    smsTo = phone; smsId = id; smsName = name || '';
+    document.getElementById('sms-target').textContent = `${name} · ${phone}`;
+    bodyEl.value = ''; statusEl.textContent = '';
+    renderTemplates();
+    modal.classList.remove('hidden');
+    setTimeout(() => bodyEl.focus(), 50);
+  }
+  document.getElementById('sms-send').onclick = async () => {
+    const body = bodyEl.value.trim(); if (!body || !smsTo) return;
+    statusEl.textContent = 'Sending…';
+    const resp = await sb.functions.invoke('quo-send-sms', { body: { to: smsTo, body, related_student_id: smsId } });
+    statusEl.textContent = (resp?.error || resp?.data?.error) ? ('✗ ' + (resp?.data?.error || resp?.error?.message || 'failed')) : '✓ Sent';
+    if (!(resp?.error || resp?.data?.error)) setTimeout(() => modal.classList.add('hidden'), 700);
+  };
+
+  renderSummary();
+  render();
+})();
+</script>
+</body>
+</html>
