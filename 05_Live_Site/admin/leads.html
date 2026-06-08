@@ -7,10 +7,13 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="robots" content="noindex,nofollow" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+  <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}
+  @keyframes hotpulse{0%,100%{box-shadow:0 0 0 0 rgba(244,63,94,.0)}50%{box-shadow:0 0 0 4px rgba(244,63,94,.12)}}
+  .hot-ring{animation:hotpulse 2.2s ease-in-out infinite}</style>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen">
@@ -18,20 +21,22 @@
 <nav class="bg-slate-900 text-white">
   <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <a href="/" class="flex items-center gap-2 font-bold">
+      <a href="/admin" class="flex items-center gap-2 font-bold">
         <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
         <span>PDA Admin</span>
       </a>
-      <span class="text-slate-400 text-sm">/ Leads</span>
+      <span class="text-slate-400 text-sm">/ Inbox</span>
     </div>
-    <div class="flex items-center gap-3 text-sm">
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white hidden sm:inline">Home</a>
+      <a href="/admin/students" class="text-slate-300 hover:text-white hidden sm:inline">Students</a>
       <span id="user-label" class="text-slate-400"></span>
       <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
     </div>
   </div>
 </nav>
 
-<main class="max-w-7xl mx-auto px-6 py-8" id="main">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 py-8" id="main">
 
   <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
     <div class="text-5xl mb-3">🔐</div>
@@ -41,38 +46,64 @@
   </div>
 
   <div id="leads-view" class="hidden">
-    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
       <div>
         <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Inbox</p>
-        <h1 class="display text-3xl font-bold mt-1">Applications, contacts &amp; subscribers</h1>
+        <h1 class="display text-3xl font-bold mt-1">Leads &amp; pipeline</h1>
       </div>
-      <div class="flex gap-2">
-        <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
-          <option value="">All statuses</option>
-          <option value="new">New</option>
-          <option value="contacted">Contacted</option>
-          <option value="enrolled">Enrolled</option>
-          <option value="closed">Closed</option>
-        </select>
+      <div class="flex flex-wrap gap-2">
         <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
-        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export leads CSV</button>
-        <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export subscribers CSV</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Leads CSV</button>
+        <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Subscribers CSV</button>
       </div>
     </div>
 
     <!-- Inbox tabs -->
     <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4">
-      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">Applications &amp; contacts</button>
+      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">Leads &amp; pipeline</button>
       <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">Newsletter subscribers</button>
     </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6" id="stats"></div>
+    <div id="panel-leads">
+      <!-- Pipeline board -->
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5" id="pipeline-board"></div>
 
-    <!-- Leads table -->
-    <div id="panel-leads" class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-      <div id="leads-list" class="divide-y divide-slate-100"></div>
-      <div id="empty" class="p-10 text-center text-slate-500 hidden">No applications yet. Once people apply, they'll appear here.</div>
+      <!-- 🔥 Needs callback now -->
+      <div id="hot-strip" class="hidden bg-gradient-to-br from-rose-50 to-amber-50 border border-rose-200 rounded-2xl p-4 mb-5">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xl">🔥</span>
+          <h2 class="display text-lg font-bold text-rose-900">Call these first</h2>
+          <span id="hot-count" class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded-full">0</span>
+          <span class="text-xs text-rose-700/80">new, picked a plan, or never contacted — speed wins these</span>
+        </div>
+        <div id="hot-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
+      </div>
+
+      <!-- Filters -->
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <input id="search" placeholder="Search name / email / phone / notes" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
+        <select id="stage-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="">All stages</option>
+          <option value="new">New</option>
+          <option value="interested">Interested</option>
+          <option value="tour_booked">Tour booked</option>
+          <option value="paying">Paying</option>
+          <option value="contacted">Contacted</option>
+          <option value="lost">Lost</option>
+        </select>
+        <select id="source-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="">All sources</option>
+        </select>
+        <label class="flex items-center gap-1.5 text-sm text-slate-600 bg-white border border-slate-300 rounded-lg px-3 py-2 cursor-pointer">
+          <input type="checkbox" id="uncontacted-only" class="accent-rose-600" /> Uncontacted only
+        </label>
+      </div>
+
+      <!-- Leads list -->
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div id="leads-list" class="divide-y divide-slate-100"></div>
+        <div id="empty" class="p-10 text-center text-slate-500 hidden">No leads match these filters.</div>
+      </div>
     </div>
 
     <!-- Subscribers panel -->
@@ -96,6 +127,7 @@
       </div>
       <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
     </div>
+    <div id="sms-templates" class="flex flex-wrap gap-1.5 mb-2"></div>
     <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
     <div class="flex justify-between items-center mt-3">
       <span id="sms-status" class="text-xs text-slate-500"></span>
@@ -111,24 +143,18 @@
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const { data: { session } } = await sb.auth.getSession();
-  if (!session) {
-    document.getElementById('auth-wall').classList.remove('hidden');
-    return;
-  }
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   // Admin gate — must have profiles.is_admin = true
   const { data: profile } = await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle();
   if (!profile || !profile.is_admin) {
-    document.getElementById('auth-wall').classList.remove('hidden');
     const wall = document.getElementById('auth-wall');
+    wall.classList.remove('hidden');
     wall.innerHTML = `
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center">
-        <div class="text-5xl mb-3">🚫</div>
-        <h1 class="display text-2xl font-bold">Staff access only</h1>
-        <p class="text-slate-600 mt-2">Your account isn't authorized to view the lead inbox. If you should have access, ask Amanda to grant admin status.</p>
-        <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>
-      </div>
-    `;
+      <div class="text-5xl mb-3">🚫</div>
+      <h1 class="display text-2xl font-bold">Staff access only</h1>
+      <p class="text-slate-600 mt-2">Your account isn't authorized to view the lead inbox. If you should have access, ask Amanda to grant admin status.</p>
+      <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>`;
     return;
   }
 
@@ -136,9 +162,35 @@
   document.getElementById('leads-view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
+  // ── Stage config (matches the real pipeline_stage values in the DB)
+  const STAGES = ['new','interested','tour_booked','paying','contacted','lost'];
+  const STAGE_META = {
+    new:         { label: 'New',         dot: 'bg-rose-500',    chip: 'bg-rose-100 text-rose-700' },
+    interested:  { label: 'Interested',  dot: 'bg-amber-500',   chip: 'bg-amber-100 text-amber-700' },
+    tour_booked: { label: 'Tour booked', dot: 'bg-violet-500',  chip: 'bg-violet-100 text-violet-700' },
+    paying:      { label: 'Paying',      dot: 'bg-emerald-500', chip: 'bg-emerald-100 text-emerald-700' },
+    contacted:   { label: 'Contacted',   dot: 'bg-sky-500',     chip: 'bg-sky-100 text-sky-700' },
+    lost:        { label: 'Lost',        dot: 'bg-slate-400',   chip: 'bg-slate-200 text-slate-600' },
+  };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const stageOf = (l) => (l.pipeline_stage && STAGE_META[l.pipeline_stage]) ? l.pipeline_stage : (l.status === 'enrolled' ? 'paying' : l.status === 'contacted' ? 'contacted' : 'new');
+
   let allLeads = [];
   let allSubs = [];
   let currentTab = 'leads';
+
+  // A lead is "hot" (call first) if money's in motion or it's fresh & untouched.
+  function isHot(l) {
+    const stage = stageOf(l);
+    if (stage === 'lost') return false;
+    if (stage === 'paying') return true;                      // mid-payment, don't let them stall
+    if (l.pay_intent) return true;                            // picked a plan on the calculator
+    const uncontacted = !l.last_contact_at;
+    if ((l.source || '').toLowerCase().includes('night-class') && uncontacted) return true;
+    const ageH = (Date.now() - new Date(l.created_at).getTime()) / 3600000;
+    if (ageH <= 48 && uncontacted) return true;               // brand new, never called
+    return false;
+  }
 
   async function load() {
     const [leadsRes, subsRes] = await Promise.all([
@@ -149,98 +201,206 @@
     if (subsRes.error)  console.warn('Subscribers load failed:', subsRes.error.message);
     allLeads = leadsRes.data || [];
     allSubs  = subsRes.data || [];
+    buildSourceFilter();
     render();
   }
 
+  function buildSourceFilter() {
+    const sel = document.getElementById('source-filter');
+    const cur = sel.value;
+    const sources = [...new Set(allLeads.map(l => l.source).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">All sources</option>' +
+      sources.map(s => `<option value="${esc(s)}">${esc(s)}${s.includes('night-class') ? ' 🌙' : ''}</option>`).join('');
+    sel.value = cur;
+  }
+
+  function timeAgo(iso) {
+    if (!iso) return '';
+    const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s/60) + 'm ago';
+    if (s < 86400) return Math.floor(s/3600) + 'h ago';
+    if (s < 604800) return Math.floor(s/86400) + 'd ago';
+    return new Date(iso).toLocaleDateString();
+  }
+
+  function paySignal(l) {
+    const bits = [l.pay_intent, l.pay_when, l.path_preference].filter(Boolean).map(esc);
+    if (!bits.length) return '';
+    return `<div class="text-sm mt-1.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg px-3 py-2">
+      💰 <strong>Ready to pay:</strong> ${bits.join(' · ')}</div>`;
+  }
+
+  function actionButtons(l, compact) {
+    const phone = (l.phone || '').replace(/[^\d+]/g, '');
+    const name = (`${l.first_name||''} ${l.last_name||''}`.trim() || l.email || 'lead');
+    const sz = compact ? 'px-2 py-1' : 'px-2.5 py-1.5';
+    return `<div class="flex flex-wrap gap-1 justify-end">
+      ${phone ? `<button data-action="sms" data-phone="${phone}" data-name="${esc(name)}" data-id="${l.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold ${sz} rounded">💬 Text</button>` : ''}
+      ${phone ? `<a href="tel:${phone}" data-action="call" data-id="${l.id}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold ${sz} rounded">📞 Call</a>` : ''}
+      ${l.email ? `<a href="mailto:${esc(l.email)}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold ${sz} rounded">✉️</a>` : ''}
+    </div>`;
+  }
+
   function render() {
-    const filter = document.getElementById('status-filter').value;
-    const leads = filter ? allLeads.filter(l => l.status === filter) : allLeads;
+    const q = (document.getElementById('search').value || '').toLowerCase().trim();
+    const stageF = document.getElementById('stage-filter').value;
+    const sourceF = document.getElementById('source-filter').value;
+    const uncontactedOnly = document.getElementById('uncontacted-only').checked;
 
-    // Stats — combined view
-    const stats = { new: 0, contacted: 0, enrolled: 0, closed: 0 };
-    allLeads.forEach(l => { stats[l.status || 'new'] = (stats[l.status || 'new'] || 0) + 1; });
-    const subscribed = allSubs.filter(s => s.status === 'subscribed').length;
-    document.getElementById('stats').innerHTML = `
-      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">New leads</div><div class="text-2xl font-bold mono text-rose-700">${stats.new || 0}</div></div>
-      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Enrolled</div><div class="text-2xl font-bold mono text-emerald-700">${stats.enrolled || 0}</div></div>
-      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Total applications</div><div class="text-2xl font-bold mono text-slate-700">${allLeads.length}</div></div>
-      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Newsletter subs</div><div class="text-2xl font-bold mono text-cyan-700">${subscribed}</div></div>
-    `;
+    // ── Pipeline board (counts by real pipeline_stage)
+    const counts = {}; STAGES.forEach(s => counts[s] = 0);
+    allLeads.forEach(l => { counts[stageOf(l)] = (counts[stageOf(l)] || 0) + 1; });
+    document.getElementById('pipeline-board').innerHTML = STAGES.map(s => {
+      const m = STAGE_META[s];
+      const active = stageF === s;
+      return `<button data-stagejump="${s}" class="text-left bg-white rounded-xl border ${active ? 'border-teal-600 ring-1 ring-teal-500' : 'border-slate-200'} hover:border-teal-500 transition p-3">
+        <div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full ${m.dot}"></span><span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">${m.label}</span></div>
+        <div class="text-2xl font-bold mono mt-0.5">${counts[s] || 0}</div>
+      </button>`;
+    }).join('');
 
-    // Leads panel
+    // ── Hot strip
+    const hot = allLeads.filter(isHot);
+    const hotStrip = document.getElementById('hot-strip');
+    if (hot.length) {
+      hotStrip.classList.remove('hidden');
+      document.getElementById('hot-count').textContent = hot.length;
+      document.getElementById('hot-list').innerHTML = hot.slice(0, 12).map(l => {
+        const name = (`${l.first_name||''} ${l.last_name||''}`.trim() || l.email || 'New lead');
+        const why = stageOf(l) === 'paying' ? 'Mid-payment' : l.pay_intent ? 'Picked a plan' : (l.source||'').includes('night-class') ? 'Night class' : 'Just came in';
+        return `<div class="bg-white rounded-xl border border-rose-200 hot-ring p-3">
+          <div class="flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="font-semibold text-sm truncate">${esc(name)}</div>
+              <div class="text-[11px] text-rose-700 font-semibold">${why} · ${timeAgo(l.created_at)}</div>
+            </div>
+          </div>
+          ${actionButtons(l, true)}
+        </div>`;
+      }).join('');
+    } else {
+      hotStrip.classList.add('hidden');
+    }
+
+    // ── Filtered list
+    let leads = allLeads.filter(l => {
+      if (stageF && stageOf(l) !== stageF) return false;
+      if (sourceF && l.source !== sourceF) return false;
+      if (uncontactedOnly && l.last_contact_at) return false;
+      if (q) {
+        const hay = `${l.first_name||''} ${l.last_name||''} ${l.email||''} ${l.phone||''} ${l.source||''} ${l.interest_path||''} ${l.message||''} ${l.amanda_notes||''}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    });
+
     const list = document.getElementById('leads-list');
     document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
     list.innerHTML = leads.map(l => {
-      const meta = l.metadata || {};
+      const stage = stageOf(l);
+      const hot = isHot(l);
+      const name = `${l.first_name||''} ${l.last_name||''}`.trim() || '(no name)';
       return `
-        <div class="p-5 hover:bg-slate-50">
+        <div class="p-4 sm:p-5 hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : ''}">
           <div class="flex items-start gap-4">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-sm shrink-0">
-              ${(l.first_name?.[0] || '?').toUpperCase()}${(l.last_name?.[0] || '').toUpperCase()}
+              ${esc((l.first_name?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2 flex-wrap">
-                <span class="font-semibold">${l.first_name || ''} ${l.last_name || ''}</span>
-                <span class="text-xs mono text-slate-500">${new Date(l.created_at).toLocaleString()}</span>
-                <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${l.source || 'site'}</span>
+                <span class="font-semibold">${esc(name)}</span>
+                ${hot ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">🔥 HOT</span>' : ''}
+                <span class="text-xs mono text-slate-500">${timeAgo(l.created_at)}</span>
+                <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${esc(l.source || 'site')}</span>
               </div>
               <div class="text-sm text-slate-600 mt-1">
-                <a href="mailto:${l.email}" class="text-teal-700 hover:underline">${l.email || '—'}</a>
-                · <a href="tel:${l.phone}" class="text-teal-700 hover:underline">${l.phone || '—'}</a>
-                ${meta.city ? '· ' + meta.city : ''}
-                ${meta.age ? '· age ' + meta.age : ''}
+                ${l.email ? `<a href="mailto:${esc(l.email)}" class="text-teal-700 hover:underline">${esc(l.email)}</a>` : '<span class="text-slate-400">no email</span>'}
+                · ${l.phone ? `<a href="tel:${esc((l.phone||'').replace(/[^\d+]/g,''))}" class="text-teal-700 hover:underline">${esc(l.phone)}</a>` : '<span class="text-slate-400">no phone</span>'}
               </div>
-              ${l.interest_path ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Interest:</strong> ${l.interest_path}</div>` : ''}
-              ${l.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${l.message}</div>` : ''}
-              ${meta.program ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Program:</strong> ${meta.program}</div>` : ''}
-              ${meta.reason ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Reason:</strong> ${meta.reason}</div>` : ''}
-              ${meta.source ? `<div class="text-sm text-slate-700 mt-1.5"><strong>How they heard:</strong> ${meta.source}</div>` : ''}
-              ${meta.notes ? `<div class="text-sm text-slate-700 mt-1.5 bg-amber-50 border border-amber-200 rounded p-2"><strong>Notes:</strong> ${meta.notes}</div>` : ''}
-              ${meta.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${meta.message}</div>` : ''}
+              ${l.interest_path ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Interest:</strong> ${esc(l.interest_path)}</div>` : ''}
+              ${l.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${esc(l.message)}</div>` : ''}
+              ${paySignal(l)}
+              ${l.last_contact_at ? `<div class="text-xs text-slate-500 mt-1.5">Last contacted ${timeAgo(l.last_contact_at)}</div>` : `<div class="text-xs text-rose-600 font-semibold mt-1.5">Never contacted</div>`}
+              <div class="mt-2">
+                <textarea data-notes="${l.id}" rows="1" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
+                <span data-notes-status="${l.id}" class="text-[11px] text-slate-400"></span>
+              </div>
             </div>
-            <div class="text-right shrink-0 space-y-2">
-              <select data-id="${l.id}" class="status-sel bg-white border border-slate-300 rounded px-2 py-1 text-xs">
-                ${['new','contacted','enrolled','closed'].map(s => `<option value="${s}" ${(l.status||'new')===s?'selected':''}>${s}</option>`).join('')}
+            <div class="text-right shrink-0 space-y-2 w-32">
+              <select data-stage="${l.id}" class="stage-sel w-full bg-white border border-slate-300 rounded px-2 py-1.5 text-xs font-semibold">
+                ${STAGES.map(s => `<option value="${s}" ${stage===s?'selected':''}>${STAGE_META[s].label}</option>`).join('')}
               </select>
-              <div class="flex flex-wrap gap-1 justify-end">
-                ${l.phone ? `<button data-action="sms" data-phone="${(l.phone||'').replace(/[^\\d+]/g,'')}" data-name="${(`${l.first_name||''} ${l.last_name||''}`.trim() || l.email || 'lead').replace(/"/g,'&quot;')}" data-id="${l.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-2 py-1 rounded">💬 SMS</button>` : ''}
-                ${l.phone ? `<a href="tel:${(l.phone||'').replace(/[^\\d+]/g,'')}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-2 py-1 rounded">📞</a>` : ''}
-                ${l.email ? `<a href="mailto:${l.email}?subject=Premier%20Dental%20Academy%20-%20following%20up%20on%20your%20application" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-2 py-1 rounded">✉️</a>` : ''}
-              </div>
+              ${actionButtons(l, false)}
             </div>
           </div>
-        </div>
-      `;
+        </div>`;
     }).join('');
 
-    list.querySelectorAll('.status-sel').forEach(sel => {
+    wireRowHandlers();
+    renderSubs();
+  }
+
+  function wireRowHandlers() {
+    // Stage change → write pipeline_stage (and keep legacy status roughly in sync)
+    document.querySelectorAll('.stage-sel').forEach(sel => {
       sel.onchange = async (e) => {
-        await sb.from('leads').update({ status: e.target.value }).eq('id', e.target.dataset.id);
-        const target = allLeads.find(x => x.id === e.target.dataset.id);
-        if (target) target.status = e.target.value;
+        const id = e.target.dataset.stage, stage = e.target.value;
+        const legacy = stage === 'paying' ? 'enrolled' : stage === 'lost' ? 'closed' : stage === 'new' ? 'new' : 'contacted';
+        await sb.from('leads').update({ pipeline_stage: stage, status: legacy }).eq('id', id);
+        const t = allLeads.find(x => x.id === id);
+        if (t) { t.pipeline_stage = stage; t.status = legacy; }
         render();
       };
     });
 
-    list.querySelectorAll('[data-action="sms"]').forEach(btn => {
+    // SMS buttons
+    document.querySelectorAll('[data-action="sms"]').forEach(btn => {
       btn.onclick = () => openSms(btn.dataset.phone, btn.dataset.name, btn.dataset.id);
     });
 
-    // Subscribers panel
+    // Tapping "Call" stamps last_contact_at so the office knows it was dialed
+    document.querySelectorAll('[data-action="call"]').forEach(a => {
+      a.addEventListener('click', async () => {
+        const id = a.dataset.id; if (!id) return;
+        await sb.from('leads').update({ last_contact_at: new Date().toISOString() }).eq('id', id);
+        const t = allLeads.find(x => x.id === id);
+        if (t) t.last_contact_at = new Date().toISOString();
+      });
+    });
+
+    // Notes auto-save (debounced) → amanda_notes
+    document.querySelectorAll('[data-notes]').forEach(ta => {
+      let timer = null;
+      ta.addEventListener('input', () => {
+        const id = ta.dataset.notes;
+        const statusEl = document.querySelector(`[data-notes-status="${id}"]`);
+        if (statusEl) statusEl.textContent = 'saving…';
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+          const { error } = await sb.from('leads').update({ amanda_notes: ta.value }).eq('id', id);
+          const t = allLeads.find(x => x.id === id);
+          if (t) t.amanda_notes = ta.value;
+          if (statusEl) { statusEl.textContent = error ? '✗ not saved' : '✓ saved'; setTimeout(() => statusEl.textContent = '', 1500); }
+        }, 700);
+      });
+    });
+  }
+
+  function renderSubs() {
     const subsList = document.getElementById('subs-list');
     document.getElementById('subs-empty').classList.toggle('hidden', allSubs.length > 0);
     subsList.innerHTML = allSubs.map(s => `
       <div class="p-4 flex items-center justify-between hover:bg-slate-50">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${(s.email[0] || '?').toUpperCase()}</div>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${esc((s.email[0] || '?').toUpperCase())}</div>
           <div class="min-w-0">
-            <a href="mailto:${s.email}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${s.email}</a>
-            <div class="text-xs text-slate-500">${new Date(s.created_at).toLocaleDateString()} · ${s.source || 'site'}</div>
+            <a href="mailto:${esc(s.email)}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${esc(s.email)}</a>
+            <div class="text-xs text-slate-500">${new Date(s.created_at).toLocaleDateString()} · ${esc(s.source || 'site')}</div>
           </div>
         </div>
-        <span class="text-xs px-2 py-0.5 rounded-full ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${s.status}</span>
-      </div>
-    `).join('');
+        <span class="text-xs px-2 py-0.5 rounded-full ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${esc(s.status)}</span>
+      </div>`).join('');
   }
 
   // Tab switching
@@ -256,25 +416,35 @@
     };
   });
 
-  document.getElementById('status-filter').onchange = render;
+  // Pipeline board click → filter to that stage (toggle)
+  document.getElementById('pipeline-board').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-stagejump]'); if (!btn) return;
+    const sf = document.getElementById('stage-filter');
+    sf.value = sf.value === btn.dataset.stagejump ? '' : btn.dataset.stagejump;
+    render();
+  });
+
+  document.getElementById('search').oninput = render;
+  document.getElementById('stage-filter').onchange = render;
+  document.getElementById('source-filter').onchange = render;
+  document.getElementById('uncontacted-only').onchange = render;
   document.getElementById('refresh').onclick = load;
 
-  // CSV: leads (full info)
+  // CSV: leads (full info incl. pipeline + notes + pay signals)
   document.getElementById('export').onclick = () => {
-    const rows = [['Created','First','Last','Email','Phone','Source','Interest','Message','Status']];
-    allLeads.forEach(l => {
-      rows.push([new Date(l.created_at).toISOString(), l.first_name || '', l.last_name || '', l.email, l.phone, l.source, l.interest_path || '', l.message || '', l.status || 'new']);
-    });
+    const rows = [['Created','First','Last','Email','Phone','Source','Stage','Interest','Message','Pay intent','Pay when','Path','Notes','Last contact']];
+    allLeads.forEach(l => rows.push([
+      new Date(l.created_at).toISOString(), l.first_name||'', l.last_name||'', l.email||'', l.phone||'',
+      l.source||'', stageOf(l), l.interest_path||'', l.message||'', l.pay_intent||'', l.pay_when||'',
+      l.path_preference||'', l.amanda_notes||'', l.last_contact_at ? new Date(l.last_contact_at).toISOString() : ''
+    ]));
     downloadCSV(rows, `leads-${new Date().toISOString().slice(0,10)}.csv`);
   };
-
-  // CSV: subscribers (clean format ready for Resend / Mailchimp / MailerLite import)
   document.getElementById('export-subs').onclick = () => {
     const rows = [['email','first_name','source','status','subscribed_at']];
     allSubs.forEach(s => rows.push([s.email, s.first_name || '', s.source || '', s.status, new Date(s.created_at).toISOString()]));
     downloadCSV(rows, `subscribers-${new Date().toISOString().slice(0,10)}.csv`);
   };
-
   function downloadCSV(rows, filename) {
     const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -289,16 +459,30 @@
   const targetEl = document.getElementById('sms-target');
   const bodyEl   = document.getElementById('sms-body');
   const statusEl = document.getElementById('sms-status');
-  let smsTo = null, smsLeadId = null;
+  let smsTo = null, smsLeadId = null, smsName = '';
   document.getElementById('sms-close').onclick = () => modal.classList.add('hidden');
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
 
+  const SMS_TEMPLATES = [
+    ['👋 Intro', (n) => `Hi ${n||'there'}, this is Amanda at Premier Dental Academy of Longview. Thanks for reaching out! What questions can I answer about becoming a dental assistant?`],
+    ['📅 Tour', (n) => `Hi ${n||'there'}! Would you like to come tour the Longview campus this week? I can show you the labs and chairs. What day works?`],
+    ['💸 Plans', (n) => `Hi ${n||'there'}, just a heads up — we have payment plans starting at $200 down so you can start now and pay as you go. Want me to send the details?`],
+    ['🌙 Tonight', (n) => `Hi ${n||'there'}! We still have a seat or two in tonight's class. Want me to hold one for you? Just reply YES.`],
+  ];
+  function renderTemplates() {
+    document.getElementById('sms-templates').innerHTML = SMS_TEMPLATES.map((t, i) =>
+      `<button data-tpl="${i}" class="text-xs bg-slate-100 hover:bg-teal-100 text-slate-700 px-2 py-1 rounded-full">${t[0]}</button>`).join('');
+    document.querySelectorAll('[data-tpl]').forEach(b => {
+      b.onclick = () => { bodyEl.value = SMS_TEMPLATES[+b.dataset.tpl][1](smsName.split(' ')[0]); bodyEl.focus(); };
+    });
+  }
+
   function openSms(phone, name, leadId) {
-    smsTo = phone;
-    smsLeadId = leadId;
+    smsTo = phone; smsLeadId = leadId; smsName = name || '';
     targetEl.textContent = `${name} · ${phone}`;
     bodyEl.value = '';
     statusEl.textContent = '';
+    renderTemplates();
     modal.classList.remove('hidden');
     setTimeout(() => bodyEl.focus(), 50);
   }
@@ -312,11 +496,14 @@
       statusEl.textContent = '✗ ' + (resp?.data?.error || resp?.error?.message || 'failed');
     } else {
       statusEl.textContent = '✓ Sent';
-      // Mark the lead as contacted
       if (smsLeadId) {
-        await sb.from('leads').update({ status: 'contacted', last_contact_at: new Date().toISOString() }).eq('id', smsLeadId);
-        const target = allLeads.find(x => x.id === smsLeadId);
-        if (target) { target.status = 'contacted'; target.last_contact_at = new Date().toISOString(); }
+        const t = allLeads.find(x => x.id === smsLeadId);
+        const nowIso = new Date().toISOString();
+        const patch = { last_contact_at: nowIso };
+        // first touch bumps a brand-new lead into "contacted"
+        if (t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
+        await sb.from('leads').update(patch).eq('id', smsLeadId);
+        if (t) Object.assign(t, patch);
         render();
       }
       setTimeout(() => modal.classList.add('hidden'), 700);
