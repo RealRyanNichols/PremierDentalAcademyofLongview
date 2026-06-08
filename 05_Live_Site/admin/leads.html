@@ -60,9 +60,10 @@
     </div>
 
     <!-- Inbox tabs -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4">
-      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">Leads &amp; pipeline</button>
-      <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">Newsletter subscribers</button>
+    <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4 flex-wrap">
+      <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">📋 Forms &amp; applications</button>
+      <button data-tab="messages" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-messages">💬 Messages <span id="tab-messages-badge" class="hidden ml-1 text-[10px] bg-rose-600 text-white font-bold px-1.5 py-0.5 rounded-full">0</span></button>
+      <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">📧 Newsletter</button>
     </div>
 
     <div id="panel-leads">
@@ -104,6 +105,20 @@
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
         <div id="leads-list" class="divide-y divide-slate-100"></div>
         <div id="empty" class="p-10 text-center text-slate-500 hidden">No leads match these filters.</div>
+      </div>
+    </div>
+
+    <!-- Messages panel (everyone who texted / messaged the website) -->
+    <div id="panel-messages" class="hidden">
+      <div class="flex flex-wrap items-center gap-2 mb-4">
+        <input id="msg-search" placeholder="Search messages / name / phone" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
+        <label class="flex items-center gap-1.5 text-sm text-slate-600 bg-white border border-slate-300 rounded-lg px-3 py-2 cursor-pointer">
+          <input type="checkbox" id="msg-needs-reply" class="accent-rose-600" /> Needs reply only
+        </label>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+        <div id="msg-list" class="divide-y divide-slate-100"></div>
+        <div id="msg-empty" class="p-10 text-center text-slate-500 hidden">No messages yet. Inbound texts and website messages will show here.</div>
       </div>
     </div>
 
@@ -178,6 +193,8 @@
 
   let allLeads = [];
   let allSubs = [];
+  let allComms = [];
+  let expandedThreads = new Set();
   let currentTab = 'leads';
 
   // A lead is "hot" (call first) if money's in motion or it's fresh & untouched.
@@ -194,16 +211,20 @@
   }
 
   async function load() {
-    const [leadsRes, subsRes] = await Promise.all([
+    const [leadsRes, subsRes, commsRes] = await Promise.all([
       sb.from('leads').select('*').order('created_at', { ascending: false }),
       sb.from('subscribers').select('*').order('created_at', { ascending: false }),
+      sb.from('communications').select('*').order('occurred_at', { ascending: false }).limit(2000),
     ]);
     if (leadsRes.error) alert('Failed to load leads: ' + leadsRes.error.message);
     if (subsRes.error)  console.warn('Subscribers load failed:', subsRes.error.message);
+    if (commsRes.error) console.warn('Messages load failed:', commsRes.error.message);
     allLeads = leadsRes.data || [];
     allSubs  = subsRes.data || [];
+    allComms = commsRes.data || [];
     buildSourceFilter();
     render();
+    renderMessages();
   }
 
   function buildSourceFilter() {
@@ -404,6 +425,125 @@
       </div>`).join('');
   }
 
+  // ── Messages: group communications into per-contact threads ──
+  function threadKey(c) {
+    return (c.contact_phone || '').replace(/[^\d+]/g, '') || (c.contact_email || '').toLowerCase() || c.contact_name || 'unknown';
+  }
+  function buildThreads() {
+    const map = new Map();
+    allComms.forEach(c => {
+      const k = threadKey(c);
+      if (!map.has(k)) map.set(k, []);
+      map.get(k).push(c);
+    });
+    const threads = [];
+    map.forEach((msgs, k) => {
+      msgs.sort((a, b) => new Date(a.occurred_at) - new Date(b.occurred_at));
+      const last = msgs[msgs.length - 1];
+      const phone = (msgs.map(m => m.contact_phone).find(Boolean) || '').replace(/[^\d+]/g, '');
+      const email = msgs.map(m => m.contact_email).find(Boolean) || '';
+      const name  = msgs.map(m => m.contact_name).find(Boolean) || phone || email || 'Unknown';
+      threads.push({ key: k, msgs, last, phone, email, name, needsReply: last.direction === 'inbound', count: msgs.length });
+    });
+    threads.sort((a, b) => new Date(b.last.occurred_at) - new Date(a.last.occurred_at));
+    return threads;
+  }
+
+  function renderMessages() {
+    const q = (document.getElementById('msg-search').value || '').toLowerCase().trim();
+    const needsOnly = document.getElementById('msg-needs-reply').checked;
+    let threads = buildThreads();
+
+    const needsCount = threads.filter(t => t.needsReply).length;
+    const badge = document.getElementById('tab-messages-badge');
+    if (needsCount > 0) { badge.textContent = needsCount; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
+
+    if (needsOnly) threads = threads.filter(t => t.needsReply);
+    if (q) threads = threads.filter(t => {
+      const hay = `${t.name} ${t.phone} ${t.email} ${t.msgs.map(m => m.body || '').join(' ')}`.toLowerCase();
+      return hay.includes(q);
+    });
+
+    const list = document.getElementById('msg-list');
+    document.getElementById('msg-empty').classList.toggle('hidden', threads.length > 0);
+    list.innerHTML = threads.map(t => {
+      const open = expandedThreads.has(t.key);
+      const lastBody = (t.last.body || '').slice(0, 140);
+      const chanIcon = t.last.channel === 'email' ? '✉️' : t.last.channel === 'note' ? '📝' : '💬';
+      const thread = open ? `
+        <div class="mt-3 space-y-2 border-t border-slate-100 pt-3">
+          ${t.msgs.map(m => {
+            const out = m.direction === 'outbound';
+            return `<div class="flex ${out ? 'justify-end' : 'justify-start'}">
+              <div class="max-w-[80%] rounded-2xl px-3 py-2 text-sm ${out ? 'bg-teal-600 text-white' : 'bg-slate-100 text-slate-800'}">
+                <div>${esc(m.body || '')}</div>
+                <div class="text-[10px] mt-1 ${out ? 'text-teal-100' : 'text-slate-400'}">${out ? 'You' : 'Them'} · ${m.channel} · ${new Date(m.occurred_at).toLocaleString()}</div>
+              </div></div>`;
+          }).join('')}
+          ${t.phone ? `
+          <div class="flex gap-2 pt-1">
+            <input data-reply-input="${esc(t.key)}" placeholder="Reply by text…" class="flex-1 text-sm px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none" />
+            <button data-reply-send="${esc(t.key)}" data-phone="${t.phone}" class="bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-4 rounded-lg">Send</button>
+          </div>
+          <div data-reply-status="${esc(t.key)}" class="text-[11px] text-slate-400"></div>` : ''}
+        </div>` : '';
+      return `
+        <div class="p-4 hover:bg-slate-50">
+          <div class="flex items-start gap-3 cursor-pointer" data-thread-toggle="${esc(t.key)}">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-sm shrink-0">${esc((t.name[0] || '?').toUpperCase())}</div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="font-semibold">${esc(t.name)}</span>
+                ${t.needsReply ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">NEEDS REPLY</span>' : ''}
+                <span class="text-xs text-slate-400 mono">${t.phone || t.email || ''}</span>
+                <span class="text-xs text-slate-400">· ${t.count} msg${t.count > 1 ? 's' : ''}</span>
+              </div>
+              <div class="text-sm text-slate-600 mt-0.5 truncate">${chanIcon} ${t.last.direction === 'outbound' ? '<span class=\"text-slate-400\">You:</span> ' : ''}${esc(lastBody)}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5">${timeAgo(t.last.occurred_at)}</div>
+            </div>
+            <div class="shrink-0 flex items-center gap-1">
+              ${t.phone ? `<a href="tel:${t.phone}" onclick="event.stopPropagation()" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-2 py-1 rounded">📞</a>` : ''}
+              <span class="text-slate-400 text-lg">${open ? '▾' : '▸'}</span>
+            </div>
+          </div>
+          ${thread}
+        </div>`;
+    }).join('');
+
+    // expand / collapse
+    list.querySelectorAll('[data-thread-toggle]').forEach(el => {
+      el.onclick = (e) => {
+        if (e.target.closest('[data-reply-send]') || e.target.closest('[data-reply-input]') || e.target.closest('a')) return;
+        const k = el.dataset.threadToggle;
+        if (expandedThreads.has(k)) expandedThreads.delete(k); else expandedThreads.add(k);
+        renderMessages();
+      };
+    });
+    // reply send
+    list.querySelectorAll('[data-reply-send]').forEach(btn => {
+      btn.onclick = async (e) => {
+        e.stopPropagation();
+        const k = btn.dataset.replySend;
+        const input = document.querySelector(`[data-reply-input="${CSS.escape(k)}"]`);
+        const statusEl = document.querySelector(`[data-reply-status="${CSS.escape(k)}"]`);
+        const body = (input?.value || '').trim();
+        if (!body) return;
+        if (statusEl) statusEl.textContent = 'Sending…';
+        const resp = await sb.functions.invoke('quo-send-sms', { body: { to: btn.dataset.phone, body } });
+        if (resp?.error || resp?.data?.error) {
+          if (statusEl) statusEl.textContent = '✗ ' + (resp?.data?.error || resp?.error?.message || 'failed');
+        } else {
+          if (statusEl) statusEl.textContent = '✓ Sent';
+          // optimistic append so she sees it immediately; full refresh in background
+          allComms.unshift({ id: 'tmp-' + Date.now(), occurred_at: new Date().toISOString(), contact_phone: btn.dataset.phone, channel: 'sms', direction: 'outbound', body });
+          renderMessages();
+          load();
+        }
+      };
+    });
+  }
+
   // Tab switching
   document.querySelectorAll('[data-tab]').forEach(b => {
     b.onclick = () => {
@@ -413,7 +553,9 @@
         else { x.classList.remove('bg-slate-900','text-white'); x.classList.add('text-slate-700','hover:bg-slate-100'); }
       });
       document.getElementById('panel-leads').classList.toggle('hidden', currentTab !== 'leads');
+      document.getElementById('panel-messages').classList.toggle('hidden', currentTab !== 'messages');
       document.getElementById('panel-subs').classList.toggle('hidden', currentTab !== 'subs');
+      if (currentTab === 'messages') renderMessages();
     };
   });
 
@@ -429,6 +571,8 @@
   document.getElementById('stage-filter').onchange = render;
   document.getElementById('source-filter').onchange = render;
   document.getElementById('uncontacted-only').onchange = render;
+  document.getElementById('msg-search').oninput = renderMessages;
+  document.getElementById('msg-needs-reply').onchange = renderMessages;
   document.getElementById('refresh').onclick = load;
 
   // CSV: leads (full info incl. pipeline + notes + pay signals)
@@ -512,6 +656,12 @@
   };
 
   load();
+
+  // Deep link: /admin/leads#messages opens the Messages tab straight away.
+  if (location.hash === '#messages') {
+    const tb = document.getElementById('tab-messages');
+    if (tb) tb.click();
+  }
 })();
 </script>
 </body>
