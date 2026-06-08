@@ -70,7 +70,8 @@
   const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
-  const { data: profile } = await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle();
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
   if (!profile?.is_admin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
   document.getElementById('view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };

@@ -374,8 +374,19 @@
   }
   document.getElementById('dashboard').classList.remove('hidden');
 
-  // Fetch profile
-  const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  // Fetch profile. If it comes back empty, the stored access token may be
+  // stale — refresh the session once and retry so admins reliably get their
+  // is_admin flag (otherwise the office panel/admin link silently hide).
+  let profile = null;
+  {
+    const r1 = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+    profile = r1.data;
+    if (!profile) {
+      try { await sb.auth.refreshSession(); } catch (e) {}
+      const r2 = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+      profile = r2.data;
+    }
+  }
   const p = profile || {
     id: session.user.id, email: session.user.email,
     first_name: '', last_name: '', phone: '', program: 'preview', is_admin: false,
