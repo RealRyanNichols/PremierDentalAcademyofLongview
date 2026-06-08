@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PDA Practice Pro — Practice Management Trainer</title>
   <meta name="description" content="Premier Dental Academy of Longview — Practice Pro practice management trainer." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230f172a'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='%230d9488'%3EP%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -109,6 +111,19 @@
     }
   </style>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/practice-pro" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/practice-pro" />
+  <meta property="og:title" content="PDA Practice Pro — Practice Management Trainer" />
+  <meta property="og:description" content="Premier Dental Academy of Longview — Practice Pro practice management trainer." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PDA Practice Pro — Practice Management Trainer" />
+  <meta name="twitter:description" content="Premier Dental Academy of Longview — Practice Pro practice management trainer." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
   <script src="/assets/speed-insights.js" type="module" defer></script>
 </head>
 <body>
@@ -157,6 +172,9 @@
       sidebarOpen: window.matchMedia('(min-width: 769px)').matches,
       isMobile: window.matchMedia('(max-width: 768px)').matches,
       chartMarker: 'caries',
+      chartStatus: 'existing', // 'existing' (blue) | 'needed' (red)
+      bridgeStart: null,       // tooth # picked as the start of a bridge in progress
+      diastemaStart: null,     // tooth # picked as the start of a diastema in progress
       toothContext: null,
       paletteOpen: false,
       modal: null,
@@ -2092,17 +2110,69 @@
   // ── Chart module: odontogram with surface marking ──────────────
   const MARKERS = [
     { id: '',          label: 'Erase',      color: '#ffffff', text: 'Clear' },
+    // Surface-level conditions / restorations
     { id: 'caries',    label: 'Caries',     color: '#ef4444' },
     { id: 'composite', label: 'Composite',  color: '#0d9488' },
     { id: 'amalgam',   label: 'Amalgam',    color: '#475569' },
     { id: 'sealant',   label: 'Sealant',    color: '#a3e635' },
-    { id: 'crown',     label: 'Crown',      color: '#fbbf24', whole: true },
-    { id: 'rct',       label: 'RCT',        color: '#9333ea', whole: true },
-    { id: 'missing',   label: 'Missing',    color: '#1e293b', whole: true },
-    { id: 'implant',   label: 'Implant',    color: '#0ea5e9', whole: true },
-    { id: 'watch',     label: 'Watch',      color: '#f97316' },
     { id: 'fracture',  label: 'Fracture',   color: '#be185d' },
+    { id: 'watch',     label: 'Watch',      color: '#f97316' },
+    // Whole-tooth markers — Crown was removed; use PFM or FGC instead.
+    { id: 'pfm',       label: 'PFM crown',  color: '#7c3aed', whole: true },
+    { id: 'fgc',       label: 'FGC (gold)', color: '#d97706', whole: true },
+    { id: 'ssc',       label: 'SSC',        color: '#64748b', whole: true },
+    { id: 'rct',       label: 'RCT',        color: '#9333ea', whole: true },
+    { id: 'implant',   label: 'Implant',    color: '#0ea5e9', whole: true },
+    { id: 'missing',   label: 'Missing',    color: '#1e293b', whole: true },
+    { id: 'extract',   label: 'Extract',    color: '#dc2626', whole: true },
+    { id: 'impacted',  label: 'Impacted',   color: '#9333ea', whole: true },
+    { id: 'abscess',   label: 'Abscess',    color: '#be185d', whole: true },
+    { id: 'drift_m',   label: 'Drift M',    color: '#64748b', whole: true },
+    { id: 'drift_d',   label: 'Drift D',    color: '#64748b', whole: true },
+    // Bridge — special: click two teeth to define start and end. Stored at
+    // the chart level (p.chart.bridges) rather than on an individual tooth.
+    { id: 'bridge',    label: 'Bridge',     color: '#0f766e', bridge: true },
+    // Diastema — two parallel lines drawn BETWEEN two adjacent teeth.
+    // Same two-click flow as Bridge; stored on p.chart.diastemas.
+    { id: 'diastema',  label: 'Diastema',   color: '#0f766e', diastema: true },
   ];
+
+  // STATUS: every marker is either an EXISTING finding/restoration (blue) or
+  // a NEEDED / proposed treatment (red). Stored alongside the marker type as
+  // "type:status" (e.g., "caries:needed"). Legacy values without ':' default
+  // to existing for back-compat.
+  const STATUS_COLORS = { existing: '#2563eb', needed: '#dc2626' };
+  function parseMarker(val) {
+    if (!val) return { type: '', status: '' };
+    const i = String(val).indexOf(':');
+    if (i < 0) return { type: String(val), status: 'existing' };
+    return { type: String(val).slice(0, i), status: String(val).slice(i + 1) || 'existing' };
+  }
+  function statusColor(status) { return STATUS_COLORS[status] || STATUS_COLORS.existing; }
+
+  // Center coordinates of the crown box (y=50–106). Sealant "S" sits at the
+  // occlusal center, drawn outside the maxillary/mandibular flip so it stays
+  // upright either way.
+  const OCC_CENTER = {
+    molar: [28, 82], premolar: [28, 82], canine: [28, 82], central: [28, 82], lateral: [28, 82],
+  };
+  // RCT lines drawn down each root canal (root area y=4–48, varies by class).
+  const ROOT_LINES = {
+    molar:    [[16,10,16,46],[37,10,37,46],[26,28,26,46]],
+    premolar: [[25,10,25,46]],
+    canine:   [[26,8,26,46]],
+    central:  [[26,10,26,46]],
+    lateral:  [[26,10,26,46]],
+  };
+  // Abscess dots at the very apex of each root — molars get one under each
+  // of the two visible roots, single-rooted teeth get one in the center.
+  const ABSCESS_POSITIONS = {
+    molar:    [[15, 4], [40, 4]],
+    premolar: [[27, 4]],
+    canine:   [[27, 2]],
+    central:  [[27, 5]],
+    lateral:  [[27, 5]],
+  };
 
   // Tooth class by universal number (1-32)
   function toothClass(n) {
@@ -2125,166 +2195,65 @@
   // Maxillary teeth (1-16) draw root-up / crown-down (the anatomical convention).
   // Mandibular teeth (17-32) get vertically flipped at render time.
   function toothShapes(cls, num) {
-    // Posterior maxillary molars have 3 roots (2 buccal + 1 palatal); mandibular have 2.
-    // We render a simplified 2-root view for both since the chart is a buccal-view diagram.
-    if (cls === 'molar') {
-      return {
-        // Two distinct roots branching from the cervical line
-        roots: [
-          'M 18 48 Q 14 28 12 8 Q 12 4 14 4 Q 17 4 18 8 Q 22 28 22 48 Z',  // mesial root
-          'M 34 48 Q 38 28 40 8 Q 40 4 42 4 Q 39 4 38 8 Q 34 28 34 48 Z', // distal root
-          'M 22 48 Q 24 32 26 24 Q 28 32 30 48 Z',                           // central (palatal hint)
-        ],
-        crown: [
-          // Crown body — wider than root, narrows slightly toward occlusal edge,
-          // with 4 rounded cusp bumps along the chewing surface
-          'M 8 50',
-          'Q 6 50 6 54',                         // cervical bulge mesial
-          'L 6 90',
-          'Q 6 102 12 104',                       // mesial corner
-          'Q 14 108 17 105',                      // MB cusp
-          'Q 20 109 23 105',                      // ML cusp
-          'Q 26 110 28 106',                      // central groove dip
-          'Q 31 110 34 106',                      // DL cusp
-          'Q 37 110 40 105',                      // DB cusp
-          'Q 44 102 44 90',                       // distal corner
-          'L 44 54',
-          'Q 44 50 42 50',                        // cervical bulge distal
-          'Z'
-        ].join(' '),
-        zones: {
-          M: 'M 6 52 L 6 105 L 14 108 L 14 52 Z',
-          D: 'M 36 52 L 36 108 L 44 105 L 44 52 Z',
-          B: 'M 6 50 L 44 50 L 44 70 L 6 70 Z',
-          L: 'M 6 92 L 44 92 L 44 108 L 6 108 Z',
-          O: 'M 14 70 L 36 70 L 36 92 L 14 92 Z',
-        },
-        cusps: [
-          { x: 17, y: 105 }, { x: 23, y: 104 }, { x: 28, y: 106 }, { x: 34, y: 104 }, { x: 40, y: 104 }
-        ],
-        groove: 'M 14 82 L 40 82',
-      };
-    }
-    if (cls === 'premolar') {
-      return {
-        roots: [
-          // single root with hint of bifurcation at apex
-          'M 18 48 Q 14 30 18 8 Q 22 4 25 4 Q 28 4 32 8 Q 36 30 32 48 L 28 48 Q 30 30 28 16 Q 26 30 26 48 Q 26 30 22 16 Q 20 30 22 48 Z',
-        ],
-        crown: [
-          'M 10 50',
-          'Q 8 50 8 54',
-          'L 8 88',
-          'Q 8 100 14 104',
-          'Q 17 109 22 105',                      // buccal cusp (taller)
-          'Q 25 110 28 106',                      // central groove
-          'Q 32 109 36 105',                      // lingual cusp
-          'Q 42 100 42 88',
-          'L 42 54',
-          'Q 42 50 40 50',
-          'Z'
-        ].join(' '),
-        zones: {
-          M: 'M 8 52 L 8 105 L 16 107 L 16 52 Z',
-          D: 'M 34 52 L 34 107 L 42 105 L 42 52 Z',
-          B: 'M 8 50 L 42 50 L 42 72 L 8 72 Z',
-          L: 'M 8 92 L 42 92 L 42 108 L 8 108 Z',
-          O: 'M 16 72 L 34 72 L 34 92 L 16 92 Z',
-        },
-        cusps: [{ x: 22, y: 105 }, { x: 36, y: 105 }],
-        groove: 'M 18 88 L 36 88',
-      };
-    }
-    if (cls === 'canine') {
-      return {
-        roots: [
-          // Single very long root — the longest in the human mouth
-          'M 22 48 Q 20 24 24 4 Q 25 2 26 2 Q 28 2 29 4 Q 32 24 30 48 Z',
-        ],
-        crown: [
-          'M 10 50',
-          'Q 8 50 8 54',
-          'L 8 80',                                // narrows toward incisal third
-          'Q 8 92 11 100',
-          'Q 14 106 18 104',                       // mesial slope of cusp
-          'Q 22 110 26 110',                       // POINTED CUSP TIP
-          'Q 30 110 34 104',                       // distal slope of cusp
-          'Q 38 106 41 100',
-          'Q 44 92 44 80',
-          'L 44 54',
-          'Q 44 50 42 50',
-          'Z'
-        ].join(' '),
-        zones: {
-          M: 'M 8 52 L 8 100 L 18 106 L 18 52 Z',
-          D: 'M 34 52 L 34 106 L 44 100 L 44 52 Z',
-          B: 'M 8 50 L 44 50 L 44 75 L 8 75 Z',
-          L: 'M 8 95 L 44 95 L 44 110 L 8 110 Z',
-          I: 'M 18 75 L 34 75 L 34 95 L 18 95 Z',
-        },
-        cusps: [{ x: 26, y: 110, peak: true }],
-        cingulum: 'M 22 90 Q 26 95 30 90',
-      };
-    }
-    if (cls === 'central') {
-      return {
-        roots: [
-          'M 22 48 Q 20 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 32 26 30 48 Z',
-        ],
-        crown: [
-          'M 10 50',
-          'Q 8 50 8 54',
-          'L 8 88',
-          'Q 8 100 12 104',
-          'L 14 106',                              // mesioincisal angle (sharper than canine)
-          'Q 18 108 22 107',                       // mamelon dip
-          'Q 26 109 30 107',                       // mamelon dip
-          'L 38 106',                              // distoincisal angle
-          'Q 44 100 44 88',
-          'L 44 54',
-          'Q 44 50 42 50',
-          'Z'
-        ].join(' '),
-        zones: {
-          M: 'M 8 52 L 8 105 L 16 107 L 16 52 Z',
-          D: 'M 34 52 L 34 107 L 44 105 L 44 52 Z',
-          B: 'M 8 50 L 44 50 L 44 75 L 8 75 Z',
-          L: 'M 8 92 L 44 92 L 44 108 L 8 108 Z',
-          I: 'M 16 75 L 34 75 L 34 92 L 16 92 Z',
-        },
-        mamelons: [{ x: 18, y: 105 }, { x: 26, y: 106 }, { x: 34, y: 105 }],
-        cingulum: 'M 22 90 Q 26 95 30 90',
-      };
-    }
-    // lateral incisor — narrower
-    return {
-      roots: [
-        'M 22 48 Q 21 26 24 6 Q 26 4 26 4 Q 28 4 30 6 Q 31 26 30 48 Z',
-      ],
-      crown: [
-        'M 13 50',
-        'Q 11 50 11 54',
-        'L 11 88',
-        'Q 11 100 14 104',
-        'L 17 106',
-        'Q 20 108 24 107',
-        'Q 28 109 32 107',
-        'L 35 106',
-        'Q 41 100 41 88',
-        'L 41 54',
-        'Q 41 50 39 50',
-        'Z'
-      ].join(' '),
-      zones: {
-        M: 'M 11 52 L 11 105 L 17 107 L 17 52 Z',
-        D: 'M 35 52 L 35 107 L 41 105 L 41 52 Z',
-        B: 'M 11 50 L 41 50 L 41 75 L 11 75 Z',
-        L: 'M 11 92 L 41 92 L 41 108 L 11 108 Z',
-        I: 'M 17 75 L 35 75 L 35 92 L 17 92 Z',
-      },
-      mamelons: [{ x: 20, y: 105 }, { x: 26, y: 106 }, { x: 32, y: 105 }],
-      cingulum: 'M 23 90 Q 26 94 29 90',
+    // Uniform crown box (y=50–106) with five trapezoid surfaces (M/D/B/L
+    // around a central O for posterior, I for anterior), PLUS class-specific
+    // roots above (y=2–48) styled after the Eaglesoft reference: molars get
+    // two splayed roots with a central palatal hint, premolars get a single
+    // root with a bifurcation hint at the apex, canines get one very long
+    // root, and incisors get a single narrower root.
+    // The whole SVG flips vertically for mandibular teeth in renderTooth so
+    // the root ends up below the box for the bottom arch.
+    const isAnt = (cls === 'central' || cls === 'lateral' || cls === 'canine');
+    const centerKey = isAnt ? 'I' : 'O';
+    const zones = {
+      B: 'M 2 50 L 54 50 L 40 66 L 16 66 Z',
+      M: 'M 2 50 L 2 106 L 16 90 L 16 66 Z',
+      D: 'M 54 50 L 54 106 L 40 90 L 40 66 Z',
+      L: 'M 2 106 L 54 106 L 40 90 L 16 90 Z',
     };
+    zones[centerKey] = 'M 16 66 L 40 66 L 40 90 L 16 90 Z';
+    const crown = 'M 2 50 L 54 50 L 54 106 L 2 106 Z';
+
+    let roots;
+    if (cls === 'molar') {
+      roots = [
+        // Mesial root — banana-curved, splayed slightly toward the mesial side,
+        // distinct from the distal root with a clear gap between them, smooth
+        // taper to a rounded apex (Eaglesoft reference).
+        'M 10 50 C 8 38 6 22 11 7 C 12 4 17 4 19 7 C 22 22 21 38 22 50 Z',
+        // Distal root — mirror image of the mesial root.
+        'M 34 50 C 35 38 35 22 37 7 C 39 4 44 4 45 7 C 50 22 48 38 46 50 Z',
+        // No central palatal root — Eaglesoft's buccal-view chart only shows
+        // the two buccal roots for upper molars; the palatal sits behind and
+        // isn't drawn separately.
+      ];
+    } else if (cls === 'premolar') {
+      roots = [
+        // Single carrot/cigar-shaped root — fatter at the cervix, smoothly
+        // narrowing to a rounded apex.
+        'M 16 50 C 14 35 13 18 18 6 C 19 3 24 3 27 3 C 30 3 35 3 36 6 C 41 18 40 35 38 50 Z',
+      ];
+    } else if (cls === 'canine') {
+      roots = [
+        // The longest, most pointed root in the mouth — very long taper,
+        // sharper apex than premolars.
+        'M 20 50 C 18 32 16 15 22 4 C 23 2 26 1 27 1 C 28 1 31 2 32 4 C 38 15 34 32 32 50 Z',
+      ];
+    } else if (cls === 'central') {
+      roots = [
+        // Central incisor — wider/sturdier than lateral, rounded apex.
+        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
+      ];
+    } else { // lateral incisor
+      roots = [
+        // Lateral incisor — kept the same size as the central per Amanda's
+        // chart-wide consistency call (anatomically a real lateral is
+        // narrower, but the chart reads better when all six anteriors are
+        // the same visual size).
+        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
+      ];
+    }
+    return { crown, zones, roots, cusps: [] };
   }
 
   function toothLabel(num) {
@@ -2301,86 +2270,199 @@
   }
 
   function renderTooth(num, marks, isUpper) {
+    // viewBox 56×106: root area y=2–48, crown box y=50–106. Maxillary renders
+    // as-is, mandibular flips vertically. Every marker value is parsed as
+    // "type:status" so the renderer can color it (existing=blue, needed=red).
     const cls = toothClass(num);
     const shape = toothShapes(cls, num);
     const m = marks || {};
-    const WHOLE_VALS = ['crown', 'rct', 'missing', 'implant'];
-    const wholeVal = m.whole || Object.values(m).find(v => WHOLE_VALS.includes(v));
-    const wholeColor = wholeVal ? (MARKERS.find(x => x.id === wholeVal)?.color || '#ffffff') : null;
-    const isMissing = wholeVal === 'missing';
 
-    const surfaceColor = (key) => {
-      const v = m[key]; if (!v || WHOLE_VALS.includes(v)) return null;
-      return (MARKERS.find(x => x.id === v) || {}).color || null;
-    };
+    const WHOLE_TYPES = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
+    const SURFACE_TYPES = ['caries','composite','amalgam','watch'];
 
-    // Mandibular: flip vertically so crown faces up. ViewBox is now 56x110.
-    const flip = !isUpper;
-    const transform = flip ? 'scale(1,-1) translate(0,-110)' : '';
+    // Pick the whole-tooth marker (m.whole takes precedence, else any value
+    // whose parsed type is a whole-tooth type).
+    const wholeRaw = m.whole || Object.values(m).find(v => WHOLE_TYPES.includes(parseMarker(v).type));
+    const { type: wholeType, status: wholeStatus } = parseMarker(wholeRaw);
+    const isMissing  = wholeType === 'missing';
+    const isCrown    = wholeType === 'crown';
+    const isPfm      = wholeType === 'pfm';
+    const isFgc      = wholeType === 'fgc';
+    const isSsc      = wholeType === 'ssc';
+    const isRct      = wholeType === 'rct';
+    const isImplant  = wholeType === 'implant';
+    const isExtract  = wholeType === 'extract';
+    const isImpacted = wholeType === 'impacted';
+    const isDriftM   = wholeType === 'drift_m';
+    const isDriftD   = wholeType === 'drift_d';
+    const hasWhole   = !!wholeType;
+    const wholeCol   = hasWhole ? statusColor(wholeStatus) : '#475569';
 
-    const gradId = `tg-${num}`;
+    // Mesial faces midline → mirror M↔D on the patient's right side
+    // (teeth 1–8 maxillary right, 25–32 mandibular right).
+    const swapMD = (num <= 8) || (num >= 25 && num <= 32);
+    let zones = shape.zones;
+    if (swapMD && zones.M && zones.D) zones = { ...zones, M: shape.zones.D, D: shape.zones.M };
+
+    // Surface fills only when no whole-tooth marker is set.
+    function surfaceFillColor(key) {
+      const v = m[key]; if (!v) return null;
+      const { type, status } = parseMarker(v);
+      if (!SURFACE_TYPES.includes(type)) return null;
+      return statusColor(status);
+    }
+
+    // Overlay markers (sealant, fracture, abscess) can live on top of a tooth
+    // alongside other markers — scan all values for them.
+    const parsedAll = Object.entries(m).map(([k, v]) => ({ k, ...parseMarker(v) }));
+    const sealantEntry  = parsedAll.find(p => p.type === 'sealant');
+    const fractureEntry = parsedAll.find(p => p.type === 'fracture');
+    const abscessEntry  = parsedAll.find(p => p.type === 'abscess');
+
+    // RCT and Implant keep the 5-surface boxes visible (the crown isn't
+    // replaced). PFM / FGC / SSC / Missing / Crown (legacy) hide them.
+    const SURFACES_HIDDEN_BY = ['pfm','fgc','ssc','missing','crown'];
+    const showSurfaces = !SURFACES_HIDDEN_BY.includes(wholeType);
+    const gradId   = `tg-${num}`;
     const rootGrad = `tr-${num}`;
 
-    const surfaceFills = Object.entries(shape.zones).map(([k, d]) => {
-      const fill = surfaceColor(k); if (!fill) return '';
-      return `<path d="${d}" fill="${fill}" stroke="none" pointer-events="none" opacity="0.78"/>`;
-    }).join('');
+    const transform = isUpper ? '' : 'scale(1,-1) translate(0,-106)';
 
-    const cuspDots = (shape.cusps || []).map(c => `
-      <circle cx="${c.x}" cy="${c.y - 2}" r="${c.peak ? 1.2 : 1.0}" fill="#ffffff" stroke="#94a3b8" stroke-width="0.4" pointer-events="none"/>
-    `).join('');
+    // Surface renderer: composite = outline only (transparent middle);
+    // amalgam / caries / watch = filled. This makes composite vs amalgam
+    // visually distinct so students can read the chart at a glance.
+    const surfaceFills = showSurfaces ? Object.entries(zones).map(([k, d]) => {
+      const v = m[k]; if (!v) return '';
+      const { type, status } = parseMarker(v);
+      if (!SURFACE_TYPES.includes(type)) return '';
+      // Watch is always YELLOW per Amanda — it's a "keep an eye on it"
+      // note, not a needed/existing distinction. Everything else honors
+      // the status color.
+      const color = (type === 'watch') ? '#facc15' : statusColor(status);
+      if (type === 'composite') {
+        return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" pointer-events="none"/>`;
+      }
+      return `<path d="${d}" fill="${color}" stroke="none" pointer-events="none" opacity="0.82"/>`;
+    }).join('') : '';
 
-    const mamelons = (shape.mamelons || []).map(c => `
-      <circle cx="${c.x}" cy="${c.y}" r="0.8" fill="#cbd5e1" pointer-events="none"/>
-    `).join('');
+    const gridLines = showSurfaces ? Object.values(zones).map(d =>
+      `<path d="${d}" fill="none" stroke="#94a3b8" stroke-width="0.6" pointer-events="none"/>`
+    ).join('') : '';
 
-    const groove = shape.groove
-      ? `<path d="${shape.groove}" stroke="#94a3b8" stroke-width="0.5" fill="none" pointer-events="none" stroke-dasharray="0.8 0.8"/>`
+    const hitZones = showSurfaces ? Object.entries(zones).map(([k, d]) =>
+      `<path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />`
+    ).join('') : '';
+
+    // Implant: threaded screw down the root area (resembling a screw).
+    const rootPaths = isImplant
+      ? `<rect x="20" y="6" width="16" height="44" rx="3" fill="${wholeCol}" pointer-events="none"/>` +
+        [10, 16, 22, 28, 34, 40, 46].map(y =>
+          `<line x1="20" y1="${y}" x2="36" y2="${y + 3}" stroke="#ffffff" stroke-width="1.4" pointer-events="none"/>`).join('')
+      : shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" pointer-events="none"/>`).join('');
+
+    const rctLines = isRct ? (ROOT_LINES[cls] || []).map(([x1, y1, x2, y2]) =>
+      `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${wholeCol}" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`).join('') : '';
+
+    // PFM crown: rounded-rect outline around the crown box.
+    const pfmMark = isPfm
+      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>`
       : '';
 
-    const cingulum = shape.cingulum
-      ? `<path d="${shape.cingulum}" stroke="#cbd5e1" stroke-width="0.6" fill="none" pointer-events="none"/>`
+    // FGC: same outline + diagonal hatching to indicate gold.
+    const fgcMark = isFgc
+      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>` +
+        [60, 72, 84, 96].map(y => `<line x1="6" y1="${y}" x2="50" y2="${y + 6}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('')
       : '';
 
-    const rootPaths = shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#94a3b8" stroke-width="0.5" pointer-events="none"/>`).join('');
+    // Drift arrows — point toward the actual mesial / distal side of THIS
+    // tooth. On the patient's right side (swapMD === true: teeth 1–8 and
+    // 25–32) mesial faces the chart's RIGHT and distal its LEFT, so the
+    // arrow flips. On the patient's left side, mesial faces the chart's
+    // left as drawn.
+    const ARROW_LEFT  = `M 26 78 L 6 78 M 12 72 L 6 78 L 12 84`;
+    const ARROW_RIGHT = `M 30 78 L 50 78 M 44 72 L 50 78 L 44 84`;
+    const mesialArrow = swapMD ? ARROW_RIGHT : ARROW_LEFT;
+    const distalArrow = swapMD ? ARROW_LEFT  : ARROW_RIGHT;
+    const driftMark = isDriftM
+      ? `<path d="${mesialArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      : isDriftD
+      ? `<path d="${distalArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+      : '';
+
+    // Extract: bold X across the whole tooth (crown + root).
+    const extractMark = isExtract ? `
+      <line x1="6" y1="6" x2="50" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
+      <line x1="50" y1="6" x2="6" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
+    ` : '';
+
+    // Impacted: dashed ellipse encircling the entire tooth.
+    const impactedMark = isImpacted
+      ? `<ellipse cx="28" cy="53" rx="27" ry="51" fill="none" stroke="${wholeCol}" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>`
+      : '';
+
+    // Abscess: filled dot at the very apex of EACH root — molars get two
+    // (one under each visible root), single-rooted teeth get one centered.
+    const abscessMark = abscessEntry
+      ? (ABSCESS_POSITIONS[cls] || [[28, 4]]).map(([cx, cy]) =>
+          `<circle cx="${cx}" cy="${cy}" r="4.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.9" pointer-events="none"/>`
+        ).join('')
+      : '';
+
+    // Fracture lightning bolt across the crown box.
+    const bolt = fractureEntry
+      ? `<path d="M 31 55 L 23 80 L 29 80 L 21 105 L 37 76 L 30 76 Z" fill="${statusColor(fractureEntry.status)}" stroke="#ffffff" stroke-width="0.7" stroke-linejoin="round" pointer-events="none"/>`
+      : '';
+
+    // Sealant "S" / SSC text drawn OUTSIDE the flip so they stay upright.
+    const [ox, oy] = OCC_CENTER[cls] || [28, 82];
+    const sealS = sealantEntry
+      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="${statusColor(sealantEntry.status)}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>`
+      : '';
+    const sscMark = isSsc
+      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="800" fill="${wholeCol}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>`
+      : '';
+
+    // Crown fill: if `crown` marker, paint the box in the status color.
+    const crownFill = isCrown ? wholeCol : `url(#${gradId})`;
 
     return `
       <div class="tooth flex flex-col items-center" data-tooth="${num}" title="#${num} — ${escapeHtml(toothLabel(num))}">
-        <svg viewBox="0 0 56 110" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">
+        <svg viewBox="0 0 56 106" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">
           <defs>
-            <linearGradient id="${gradId}" x1="0" y1="50" x2="0" y2="110" gradientUnits="userSpaceOnUse">
+            <linearGradient id="${gradId}" x1="0" y1="50" x2="0" y2="106" gradientUnits="userSpaceOnUse">
               <stop offset="0" stop-color="#ffffff"/>
               <stop offset="1" stop-color="#f1f5f9"/>
             </linearGradient>
             <linearGradient id="${rootGrad}" x1="0" y1="4" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#fef3c7"/>
-              <stop offset="1" stop-color="#fde68a"/>
+              <stop offset="0" stop-color="#fff1e8"/>
+              <stop offset="0.55" stop-color="#fbd9c5"/>
+              <stop offset="1" stop-color="#f3b89c"/>
             </linearGradient>
           </defs>
           <g transform="${transform}">
             ${ isMissing ? `
-              <path d="${shape.crown}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.5" stroke-dasharray="2 2" pointer-events="none"/>
-              <line x1="14" y1="56" x2="42" y2="100" stroke="#94a3b8" stroke-width="2"/>
-              <line x1="42" y1="56" x2="14" y2="100" stroke="#94a3b8" stroke-width="2"/>
+              <path d="${shape.crown}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2" pointer-events="none"/>
+              <line x1="8" y1="56" x2="48" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
+              <line x1="48" y1="56" x2="8" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
             ` : `
-              <!-- Roots (anatomically correct count per class) -->
               ${rootPaths}
-              <!-- Gingival margin -->
               <path d="M 4 50 Q 28 47 52 50" stroke="#fbcfe8" stroke-width="1.2" fill="none" pointer-events="none" opacity="0.7"/>
-              <!-- Crown body -->
-              <path d="${shape.crown}" fill="${wholeColor || `url(#${gradId})`}" stroke="${wholeVal === 'rct' ? '#0f172a' : '#475569'}" stroke-width="1" stroke-linejoin="round"/>
-              ${ wholeColor ? '' : surfaceFills }
-              ${ wholeColor ? '' : groove }
-              ${ wholeColor ? '' : cingulum }
-              ${ wholeColor ? '' : cuspDots }
-              ${ wholeColor ? '' : mamelons }
-              ${ wholeColor ? '' : Object.entries(shape.zones).map(([k, d]) => `
-                <path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />
-              `).join('') }
-              ${ wholeVal === 'rct' ? '<path d="M 26 8 L 26 48" stroke="#9333ea" stroke-width="2.5" pointer-events="none" stroke-linecap="round"/>' : '' }
-              ${ wholeVal === 'implant' ? '<rect x="24" y="6" width="6" height="42" rx="1" fill="#0ea5e9" pointer-events="none"/><rect x="22" y="48" width="10" height="3" fill="#0ea5e9" pointer-events="none"/>' : '' }
+              <path d="${shape.crown}" fill="${crownFill}" stroke="#475569" stroke-width="1" stroke-linejoin="round"/>
+              ${surfaceFills}
+              ${gridLines}
+              ${hitZones}
+              ${rctLines}
+              ${pfmMark}
+              ${fgcMark}
+              ${driftMark}
+              ${extractMark}
+              ${impactedMark}
+              ${abscessMark}
+              ${bolt}
             ` }
           </g>
+          ${sealS}
+          ${sscMark}
         </svg>
       </div>
     `;
@@ -2390,17 +2472,62 @@
     const chart = p.chart || {};
     const counts = { caries: 0, composite: 0, amalgam: 0, missing: 0, crown: 0, planned: 0 };
     Object.values(chart).forEach(t => {
-      Object.values(t || {}).forEach(v => { if (counts[v] != null) counts[v]++; });
+      Object.values(t || {}).forEach(v => {
+        const { type } = parseMarker(v);
+        if (counts[type] != null) counts[type]++;
+      });
     });
     const planned = (p.treatmentPlan || []).filter(l => l.tooth).length;
     counts.planned = planned;
     const activeMarker = state.ui.chartMarker || 'caries';
     const ctx = state.ui.toothContext;
 
+    // Free-preview teaser banner — dangles the carrot right on the fun part.
+    let previewBanner = '';
+    if (state.access !== 'student') {
+      const left = Math.max(0, PREVIEW_CHART_LIMIT - previewMarksUsed());
+      previewBanner = left > 0
+        ? `<div class="rounded-lg border border-amber-300 bg-gradient-to-r from-amber-50 to-teal-50 p-3 flex items-center gap-3">
+             <div class="text-2xl select-none">🦷</div>
+             <div class="flex-1 min-w-0 text-[12px]">
+               <div class="font-bold text-slate-900">This is the fun part — try it free!</div>
+               <div class="text-slate-600">Pick a marker, click a tooth surface. You've got <strong class="text-amber-700">${left} free practice mark${left === 1 ? '' : 's'}</strong> left.</div>
+             </div>
+             <a href="${SIGNUP_URL}" class="shrink-0 bg-amber-500 hover:bg-amber-600 text-white font-bold text-[12px] px-3 py-1.5 rounded">Enroll →</a>
+           </div>`
+        : `<div class="rounded-lg border border-rose-300 bg-rose-50 p-3 flex items-center gap-3">
+             <div class="text-2xl select-none">🔒</div>
+             <div class="flex-1 min-w-0 text-[12px]">
+               <div class="font-bold text-slate-900">You're hooked, aren't you?</div>
+               <div class="text-slate-600">Your free charting is used up. Enroll to chart every patient — unlimited.</div>
+             </div>
+             <a href="${SIGNUP_URL}" class="shrink-0 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[12px] px-3 py-1.5 rounded">Enroll →</a>
+           </div>`;
+    }
     return `
       <div class="space-y-3">
+        ${previewBanner}
         <!-- Toolbar -->
         <div class="bg-white rounded border border-slate-200 p-3">
+          <!-- Status toggle (existing = blue, needed/proposed = red) -->
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-1">Status</span>
+            <div class="inline-flex rounded border border-slate-300 bg-slate-50 p-0.5">
+              <button data-action="set-status" data-status="existing"
+                class="px-3 py-1 text-[11px] font-semibold rounded ${state.ui.chartStatus === 'existing' ? 'bg-blue-600 text-white' : 'text-blue-700 hover:bg-blue-50'}"
+                title="Charting something already present in the mouth → drawn in blue">
+                ● Existing
+              </button>
+              <button data-action="set-status" data-status="needed"
+                class="px-3 py-1 text-[11px] font-semibold rounded ${state.ui.chartStatus === 'needed' ? 'bg-rose-600 text-white' : 'text-rose-700 hover:bg-rose-50'}"
+                title="Charting a needed / proposed treatment → drawn in red">
+                ● Needed
+              </button>
+            </div>
+            <span class="text-[11px] text-slate-500 ml-1">
+              ${state.ui.chartStatus === 'needed' ? 'Marking proposed treatment in red.' : 'Marking existing findings in blue.'}
+            </span>
+          </div>
           <div class="flex flex-wrap items-center gap-2">
             <span class="text-[11px] uppercase tracking-wide text-slate-500 font-semibold mr-2">Marker</span>
             ${MARKERS.map(m => `
@@ -2415,7 +2542,7 @@
           </div>
           <div class="text-[11px] text-slate-500 mt-2">
             Click a surface to apply the active marker. <span class="hidden md:inline">Right-click a tooth for more actions.</span>
-            Whole-tooth markers (Crown, RCT, Missing, Implant) apply to the entire tooth.
+            Whole-tooth markers: PFM / FGC / SSC / RCT / Implant / Missing / Extract / Impacted / Abscess / Drift.
           </div>
         </div>
 
@@ -2438,13 +2565,36 @@
         <!-- Odontogram (anatomical view) -->
         <div class="bg-white rounded border border-slate-200 p-4 overflow-x-auto">
           <div class="min-w-[880px]">
-            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mb-1">Maxillary (upper) — patient's right ⟵ ⟶ patient's left</div>
+            <!-- Maxillary header: arch title flanked by patient L/R indicators -->
+            <div class="flex items-center justify-between mb-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+              <span>Patient's left</span>
+              <span class="text-slate-700 font-bold">Maxillary (upper)</span>
+              <span>Patient's right</span>
+            </div>
+            <!-- Quadrant labels above the maxillary teeth (5 + 6 + 5 columns) -->
+            <div class="grid gap-1 mb-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+            </div>
             ${renderArch(chart, true,  PERM_TEETH.slice(0, 16))}
             <div class="my-3 border-t-2 border-dashed border-slate-200 relative">
               <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">midline</span>
             </div>
             ${renderArch(chart, false, PERM_TEETH.slice(16).reverse())}
-            <div class="text-[10px] uppercase tracking-widest text-slate-400 font-semibold text-center mt-1">Mandibular (lower)</div>
+            <!-- Quadrant labels below the mandibular teeth — reversed display
+                 (32-28 on the left, 27-22 in middle, 21-17 on the right) -->
+            <div class="grid gap-1 mt-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
+              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
+            </div>
+            <!-- Mandibular footer -->
+            <div class="flex items-center justify-between mt-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
+              <span>Patient's left</span>
+              <span class="text-slate-700 font-bold">Mandibular (lower)</span>
+              <span>Patient's right</span>
+            </div>
           </div>
         </div>
 
@@ -2471,12 +2621,60 @@
   }
 
   function renderArch(chart, isUpper, teethRange) {
+    // Diastemas in this arch — two parallel vertical lines BETWEEN two
+    // adjacent teeth, overlaid on the tooth row so the lines visually sit
+    // in the gap between the teeth.
+    const diastemas = ((chart.diastemas) || []).filter(d => (d.a <= 16) === isUpper);
+    const diastemasOverlay = diastemas.length ? `
+      <div class="absolute inset-0 grid gap-1 pointer-events-none" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+        ${diastemas.map(d => {
+          const ca = isUpper ? d.a : (33 - d.a);
+          const cb = isUpper ? d.b : (33 - d.b);
+          const cMin = Math.min(ca, cb);
+          const cMax = Math.max(ca, cb);
+          if (cMax - cMin !== 1) return '';
+          const color = statusColor(d.status || 'existing');
+          return `<div style="grid-column: ${cMin} / ${cMax + 1};">
+            <svg viewBox="0 0 100 106" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true">
+              <line x1="46" y1="2" x2="46" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
+              <line x1="54" y1="2" x2="54" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
+            </svg>
+          </div>`;
+        }).join('')}
+      </div>` : '';
+
+    // Bridges in this arch only. The bracket sits over the number row.
+    const bridges = ((chart.bridges) || []).filter(b => (b.start <= 16) === isUpper);
+    const bridgesRow = bridges.length ? `
+      <div class="relative mt-1" style="height: 14px;">
+        <div class="grid gap-1 absolute inset-0" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+          ${bridges.map(b => {
+            // Display-column index for each tooth. Maxillary renders 1→16
+            // left-to-right (col = num); mandibular renders 32→17 left-to-
+            // right (col = 33 - num). Bracket spans from the smaller display
+            // column to the larger.
+            const ca = isUpper ? b.start : (33 - b.start);
+            const cb = isUpper ? b.end   : (33 - b.end);
+            const cMin = Math.min(ca, cb);
+            const cMax = Math.max(ca, cb);
+            const col = `${cMin} / ${cMax + 1}`;
+            const color = statusColor(b.status || 'existing');
+            return `<div style="grid-column: ${col}; height: 14px;">
+              <svg viewBox="0 0 100 14" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true">
+                <path d="M 2 13 L 2 3 L 98 3 L 98 13" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>` : '';
     return `
-      <div class="grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
+      <div class="relative grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
         ${teethRange.map(n => renderTooth(n, chart[`T-${n}`] || {}, isUpper)).join('')}
+        ${diastemasOverlay}
       </div>
+      ${bridgesRow}
       <div class="grid grid-cols-16 gap-1 mt-0.5" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500">${n}</div>`).join('')}
+        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500 ${(state.ui.bridgeStart === n || state.ui.diastemaStart === n) ? 'ring-2 ring-teal-600 rounded' : ''}">${n}</div>`).join('')}
       </div>
     `;
   }
@@ -2506,8 +2704,7 @@
     return `
       <div class="fixed inset-0 z-30" data-action="close-tooth-menu" style="background:transparent">
         <div class="absolute bg-white border border-slate-200 rounded shadow-lg py-1 text-[12px]"
-             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px"
-             onclick="event.stopPropagation()">
+             style="left:${ctx.x}px;top:${ctx.y}px;min-width:180px">
           <div class="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-500 border-b border-slate-100">Tooth #${ctx.tooth}</div>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-plan" data-tooth="${ctx.tooth}">＋ Plan procedure</button>
           <button class="w-full text-left px-3 py-1.5 hover:bg-slate-50" data-action="tooth-mark-missing" data-tooth="${ctx.tooth}">Mark missing</button>
@@ -3316,7 +3513,7 @@
     if (!content) return '';
     return `
       <div class="modal-back" data-action="close-modal">
-        <div class="modal ${m.lg ? 'modal-lg' : ''}" onclick="event.stopPropagation()">
+        <div class="modal ${m.lg ? 'modal-lg' : ''}">
           ${content(m.props || {})}
         </div>
       </div>
@@ -4051,32 +4248,43 @@
             <strong>You're enrolled.</strong> Full trainer unlocked. Your work auto-saves to your account.
           </div>
         `}
-        <div class="flex justify-end pt-2 border-t border-slate-200">
-          <button data-action="close-modal" class="btn btn-primary">Got it — let's go</button>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-200">
+          <button data-action="close-modal" class="btn btn-soft">Just close this</button>
+          <button data-action="welcome-launch" class="btn btn-primary">Got it — let's go →</button>
         </div>
       </div>
     `;
   }
 
   function modalPaywall(props) {
+    const charting = props.feature === 'charting';
+    const title = charting ? "🦷 You're a natural at this!" : '🔒 Enroll to unlock this';
+    const sub = charting
+      ? "That felt good, right? You just charted like a real dental assistant. Enroll to keep charting every patient — and unlock the rest of the trainer."
+      : `${escapeHtml(props.feature || 'This module')} is part of the full Practice Pro trainer.`;
     return `
-      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-amber-50 to-orange-50">
-        <h2 class="text-lg font-semibold text-slate-900">🔒 Enroll to unlock this feature</h2>
-        <p class="text-[12px] text-slate-600 mt-1">${escapeHtml(props.feature || 'This module')} is part of the full Practice Pro trainer.</p>
+      <div class="px-5 py-4 border-b border-slate-200 bg-gradient-to-r from-teal-50 via-amber-50 to-orange-50">
+        <h2 class="text-lg font-bold text-slate-900">${title}</h2>
+        <p class="text-[12px] text-slate-600 mt-1">${sub}</p>
       </div>
       <div class="p-5 space-y-3 text-[13px]">
-        <p class="text-slate-700">Premier Dental Academy of Longview's full curriculum includes:</p>
+        <div class="text-[11px] font-bold uppercase tracking-wide text-teal-800">Enroll &amp; unlock the full trainer</div>
         <ul class="space-y-1.5 text-slate-700 text-[12px]">
-          <li>✓ 16 hands-on practice management modules</li>
-          <li>✓ Real workflows for charting, perio, claims, prescriptions, treatment planning</li>
-          <li>✓ SmartDoc clinical notes with legal compliance pattern</li>
-          <li>✓ Certificate of completion</li>
-          <li>✓ Live instructor support + in-house training</li>
-          <li>✓ Job placement assistance with East Texas dental offices</li>
+          <li>✅ <strong>Unlimited charting</strong> on all 25 patients</li>
+          <li>✅ Perio charting, X-rays &amp; imaging</li>
+          <li>✅ Treatment plans, insurance claims &amp; prescriptions</li>
+          <li>✅ SmartDoc clinical notes + legal compliance</li>
+          <li>✅ Your <strong>Certificate of Completion</strong></li>
+          <li>✅ Job placement help with East Texas dental offices</li>
         </ul>
-        <div class="flex gap-2 justify-end pt-3 border-t border-slate-200">
-          <button data-action="close-modal" class="btn btn-ghost">Maybe later</button>
-          <a href="${SIGNUP_URL}" class="btn btn-primary !bg-amber-500 hover:!bg-amber-600">Enroll now →</a>
+        <div class="bg-rose-50 border border-rose-200 rounded-lg p-3 text-center">
+          <div class="text-[10px] uppercase tracking-wider text-rose-700 font-bold">Limited-time</div>
+          <div class="text-slate-900 font-bold mt-0.5">Online program — just <span class="text-rose-700">$397</span></div>
+        </div>
+        <div class="grid gap-2 pt-3 border-t border-slate-200">
+          <a href="${SIGNUP_URL}" class="btn btn-primary !bg-amber-500 hover:!bg-amber-600 !w-full justify-center font-bold">Enroll now &amp; chart unlimited →</a>
+          <a href="/login" class="btn btn-soft !w-full justify-center">Already enrolled? Sign in →</a>
+          <button data-action="close-modal" class="text-[11px] text-slate-400 hover:text-slate-600 mt-0.5">Keep looking around</button>
         </div>
       </div>
     `;
@@ -4111,7 +4319,7 @@
     if (!state.ui.paletteOpen) return '';
     return `
       <div class="modal-back" data-action="close-palette">
-        <div class="modal" onclick="event.stopPropagation()" style="max-width:560px">
+        <div class="modal" style="max-width:560px">
           <div class="p-2 border-b border-slate-200">
             <input id="palette-input" data-action="palette-input" autofocus
               placeholder="Find patient, ADA code, or action..."
@@ -4200,23 +4408,111 @@
   }
 
   // ── Actions ─────────────────────────────────────────────────────
+  // ── Free-preview charting teaser ────────────────────────────────
+  // Charting is the most fun part of the trainer, so unpaid visitors get a
+  // real taste — a handful of free marks — then a carrot-dangling paywall.
+  // Enrolled/paid students (state.access === 'student') are never gated.
+  const PREVIEW_CHART_LIMIT = 5;
+  function previewMarksUsed() {
+    try { return parseInt(localStorage.getItem('pda.pp.previewMarks') || '0', 10) || 0; } catch (e) { return 0; }
+  }
+  // Returns true if a chart mark is allowed (and counts it); false if the
+  // visitor has hit the free limit (and pops the enroll wall).
+  function chartGate() {
+    if (state.access === 'student') return true;
+    let used = previewMarksUsed();
+    if (used >= PREVIEW_CHART_LIMIT) {
+      logAction('preview_chart_wall', {});
+      openModal('paywall', { feature: 'charting' });
+      return false;
+    }
+    used++;
+    try { localStorage.setItem('pda.pp.previewMarks', String(used)); } catch (e) {}
+    const left = PREVIEW_CHART_LIMIT - used;
+    if (left > 0) {
+      toast(`🦷 Nice! ${left} free practice ${left === 1 ? 'mark' : 'marks'} left — feels good, right?`, { tone: 'success', ms: 1700 });
+    } else {
+      toast(`🔥 That was your last free mark. Enroll to chart every patient →`, { tone: 'warn', ms: 2400 });
+    }
+    return true;
+  }
+
   function markSurface(tooth, surf, val) {
     const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
     p.chart = p.chart || {};
     const key = `T-${tooth}`;
     p.chart[key] = p.chart[key] || {};
     // If tooth had whole-tooth marker, clear it first
     if (p.chart[key].whole) delete p.chart[key].whole;
-    p.chart[key][surf] = val;
+    // Tag with the active needed/existing status so the renderer can color it.
+    const stamped = val ? `${val}:${state.ui.chartStatus || 'existing'}` : val;
+    p.chart[key][surf] = stamped;
     saveSoon();
-    logAction('chart_mark_surface', { tooth, surf, val });
+    logAction('chart_mark_surface', { tooth, surf, val: stamped });
   }
+  // Add a bridge spanning two teeth (in the same arch). Stored at the
+  // chart level so it can render as a bracket across multiple tooth columns.
+  function addBridge(toothA, toothB) {
+    const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
+    const a = +toothA, b = +toothB;
+    if (!a || !b || a === b) return;
+    const isUpperA = a <= 16, isUpperB = b <= 16;
+    if (isUpperA !== isUpperB) {
+      toast('Bridge teeth must be in the same arch.', { tone: 'warn' });
+      return;
+    }
+    p.chart = p.chart || {};
+    p.chart.bridges = p.chart.bridges || [];
+    p.chart.bridges.push({
+      start: Math.min(a, b),
+      end:   Math.max(a, b),
+      status: state.ui.chartStatus || 'existing',
+    });
+    saveSoon();
+    logAction('chart_bridge_add', { start: Math.min(a,b), end: Math.max(a,b) });
+  }
+
+  // Add a diastema between two adjacent teeth in the same arch. Stored at
+  // the chart level so it renders as two parallel vertical lines between
+  // the teeth in the chart row.
+  function addDiastema(toothA, toothB) {
+    const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
+    const a = +toothA, b = +toothB;
+    if (!a || !b || a === b) return;
+    const isUpperA = a <= 16, isUpperB = b <= 16;
+    if (isUpperA !== isUpperB) {
+      toast('Diastema teeth must be in the same arch.', { tone: 'warn' });
+      return;
+    }
+    // Adjacency: difference of 1 in tooth number works for everything except
+    // the midline. Within an arch, adjacent universal numbers are physically
+    // adjacent teeth.
+    if (Math.abs(a - b) !== 1) {
+      toast('Diastema needs two adjacent teeth.', { tone: 'warn' });
+      return;
+    }
+    p.chart = p.chart || {};
+    p.chart.diastemas = p.chart.diastemas || [];
+    p.chart.diastemas.push({
+      a: Math.min(a, b),
+      b: Math.max(a, b),
+      status: state.ui.chartStatus || 'existing',
+    });
+    saveSoon();
+    logAction('chart_diastema_add', { a: Math.min(a,b), b: Math.max(a,b) });
+  }
+
   function markWholeTooth(tooth, val) {
     const p = currentPatient(); if (!p) return;
+    if (!chartGate()) return;
     p.chart = p.chart || {};
-    p.chart[`T-${tooth}`] = { whole: val };
+    const stamped = val ? `${val}:${state.ui.chartStatus || 'existing'}` : val;
+    p.chart[`T-${tooth}`] = { whole: stamped };
     saveSoon();
-    logAction('chart_mark_whole', { tooth, val });
+    logAction('chart_mark_whole', { tooth, val: stamped });
   }
   function clearSurface(tooth, surf) {
     const p = currentPatient(); if (!p) return;
@@ -4238,6 +4534,11 @@
     state.module = m;
     state.ui.toothContext = null;
     if (state.ui.isMobile) state.ui.sidebarOpen = false;
+    // Opening Reports counts as practicing the analytics module (logged once per session)
+    if (m === 'reports' && !state.ui._reportViewed) {
+      state.ui._reportViewed = true;
+      logAction('report_view', { module: 'reports' });
+    }
     rerender();
   }
   function openModal(type, props = {}) { state.ui.modal = { type, props, lg: type === 'edit-medical' }; rerender(); }
@@ -4278,7 +4579,7 @@
         case 'go-signup':   location.href = SIGNUP_URL; break;
         case 'close-sidebar': state.ui.sidebarOpen = false; rerender(); break;
         case 'open-palette': openPalette(); break;
-        case 'close-palette': closePalette(); break;
+        case 'close-palette': if (ev.target === t) closePalette(); break;
         case 'audit-toggle': openModal('audit'); break;
         case 'set-module': setModule(t.dataset.module); break;
         case 'select-patient': selectPatient(t.dataset.id); break;
@@ -4286,6 +4587,21 @@
         case 'open-modal': openModal(t.dataset.modal); break;
         case 'close-modal':
           if (ev.target === t) closeModal(); break;
+        case 'welcome-launch': {
+          // Closes the intro modal AND launches the user into something useful
+          // so they're not staring at a blank canvas. Tries the command palette
+          // (best — instant search of patients/actions/codes); falls back to a
+          // toast hint if the palette button isn't on screen.
+          closeModal();
+          const palette = document.querySelector('[data-action="open-palette"]');
+          if (palette) {
+            setTimeout(() => palette.click(), 60);
+            toast('Type to search any patient, ADA code, or action. Press ⌘K or Ctrl+K anytime.', { ms: 4500 });
+          } else {
+            toast('You’re in! Pick a patient on the left, or press ⌘K to search.', { ms: 4500 });
+          }
+          break;
+        }
         case 'walkout-print': window.print(); break;
         case 'walkout-pdf': downloadWalkout(); break;
         case 'toggle-premed': {
@@ -4664,7 +4980,15 @@
           saveSoon(); logAction('imaging_doc_remove'); rerender();
           break;
         }
-        case 'set-marker': state.ui.chartMarker = t.dataset.marker; rerender(); break;
+        case 'set-marker':
+          // Leaving bridge/diastema mode mid-selection? Drop the pending
+          // start so it doesn't quietly hijack the next click.
+          if (state.ui.bridgeStart   != null && t.dataset.marker !== 'bridge')   state.ui.bridgeStart   = null;
+          if (state.ui.diastemaStart != null && t.dataset.marker !== 'diastema') state.ui.diastemaStart = null;
+          state.ui.chartMarker = t.dataset.marker;
+          rerender();
+          break;
+        case 'set-status': state.ui.chartStatus = t.dataset.status === 'needed' ? 'needed' : 'existing'; rerender(); break;
         case 'chart-reset': {
           if (!confirm('Clear all chart markings for this patient?')) break;
           const p = currentPatient(); if (p) { p.chart = {}; saveSoon(); logAction('chart_reset', { id: p.id }); rerender(); toast('Chart cleared'); }
@@ -4714,6 +5038,22 @@
     root.oninput = (ev) => {
       const t = ev.target.closest('[data-action]');
       if (!t) return;
+      // Native <select> menus emit `change`/`input`, not a reliable `click`,
+      // so the ribbon dropdowns are wired here as well as in the click switch.
+      if (t.dataset.action === 'skill-level') {
+        state.ui.skillLevel = t.value;
+        try { localStorage.setItem('pda.pp.skillLevel', state.ui.skillLevel); } catch (e) {}
+        rerender();
+        return;
+      }
+      if (t.dataset.action === 'switch-staff') {
+        state.activeStaffId = t.value;
+        const s = activeStaff();
+        logAction('switch_staff', { id: s.id, role: s.role });
+        toast(`Now signed in as ${s.name} (${s.role})`, { tone: 'info' });
+        rerender();
+        return;
+      }
       if (t.dataset.action === 'patient-filter') {
         state.ui.patientFilter = t.value;
         // Cheap re-render of just the list section
@@ -4777,6 +5117,31 @@
       ev.stopPropagation();
       state.ui.toothContext = null;
       if (!marker) { clearSurface(tooth, surf.dataset.surface); rerender(); return; }
+      // Bridge: click two teeth in order — first selects the start, second
+      // commits the bracket. Toast hints the user during the in-between step.
+      if (def?.bridge) {
+        if (state.ui.bridgeStart == null) {
+          state.ui.bridgeStart = +tooth;
+          toast(`Bridge starts at #${tooth}. Now click the END tooth.`, { ms: 2400 });
+        } else {
+          addBridge(state.ui.bridgeStart, +tooth);
+          state.ui.bridgeStart = null;
+        }
+        rerender();
+        return;
+      }
+      // Diastema: same two-click flow as bridge, but two ADJACENT teeth only.
+      if (def?.diastema) {
+        if (state.ui.diastemaStart == null) {
+          state.ui.diastemaStart = +tooth;
+          toast(`Diastema starts at #${tooth}. Click the adjacent tooth.`, { ms: 2400 });
+        } else {
+          addDiastema(state.ui.diastemaStart, +tooth);
+          state.ui.diastemaStart = null;
+        }
+        rerender();
+        return;
+      }
       if (def?.whole) {
         markWholeTooth(tooth, marker);
       } else {
@@ -5603,20 +5968,36 @@
 
   // ── Boot ────────────────────────────────────────────────────────
   async function boot() {
-    // Check auth session — paid students get full access, anyone else gets preview
+    // Direct Supabase session detection — bypasses window.PDA so a race or
+    // a null sb in auth.js can't keep a signed-in student stuck in preview.
+    // ANY signed-in user is a 'student' with unlimited access; profile
+    // fetch is best-effort and never demotes them.
+    let session = null;
     try {
-      const session = await window.PDA?.getSession?.();
-      if (session) {
-        state.user = await window.PDA.getProfile();
-        state.access = 'student';
-      } else {
-        state.user = null;
-        state.access = 'preview';
+      if (window.supabase?.createClient) {
+        const sb = window.supabase.createClient(
+          'https://lmbsuwslsycukynzpzik.supabase.co',
+          'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+          { auth: { persistSession: true, autoRefreshToken: true } }
+        );
+        const { data } = await sb.auth.getSession();
+        session = data?.session || null;
+        if (session) {
+          try {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            state.user = prof || { id: session.user.id, email: session.user.email };
+          } catch (e) {
+            state.user = { id: session.user.id, email: session.user.email };
+          }
+        }
       }
-    } catch (e) {
-      state.user = null;
-      state.access = 'preview';
+    } catch (e) { console.warn('[practice-pro] direct session check failed:', e); }
+    if (!session && window.PDA?.getSession) {
+      try { session = await window.PDA.getSession(); } catch (e) {}
     }
+    if (!session) state.user = null;
+    state.access = session ? 'student' : 'preview';
+    console.info('[practice-pro] access=' + state.access + (session ? ' (' + (session.user?.email || session.user?.id) + ')' : ' (no session)'));
 
     // In preview mode, lock the skill level to 'new' and disable persistence
     if (state.access === 'preview') {

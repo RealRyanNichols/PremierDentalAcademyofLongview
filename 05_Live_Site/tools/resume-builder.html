@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Free Dental Assistant Resume Builder | Premier Dental Academy</title>
+  <meta name="description" content="Build a professional Registered Dental Assistant (RDA) resume in minutes — dental-specific skills and certifications, live preview, and a one-click PDF download. Free from Premier Dental Academy of Longview." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg,#0d9488,#0891b2); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .input { width:100%; padding:.5rem .6rem; border:1px solid #cbd5e1; border-radius:.5rem; font-size:.875rem; }
+    .input:focus { outline:none; border-color:#0d9488; box-shadow:0 0 0 1px #0d9488; }
+    .lbl { font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; color:#64748b; }
+    /* Resume preview */
+    #resume { font-family:'Inter',sans-serif; color:#1e293b; }
+    #resume h1 { font-family:'Fraunces',serif; }
+    .chip { display:inline-flex; align-items:center; gap:.3rem; background:#ccfbf1; color:#0f766e; font-size:.75rem; font-weight:600; padding:.2rem .5rem; border-radius:9999px; }
+    @media print { .no-print{display:none!important} #resume{box-shadow:none!important;border:0!important} body{background:#fff} }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50 no-print">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="flex items-center gap-3">
+      <a href="/dashboard" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Dashboard</a>
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+    </div>
+  </div>
+</nav>
+
+<header class="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-2 no-print">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Student tools · Free</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-1">Dental Assistant <span class="gradient-text">Resume Builder</span></h1>
+  <p class="text-slate-600 mt-2 max-w-2xl">Fill in the left side and watch your resume build on the right. Dental-specific skills and certs are one tap away. When you're done, download a clean PDF — it auto-saves on this device.</p>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-2 gap-6 items-start">
+
+  <!-- ───────── Editor ───────── -->
+  <div class="space-y-4 no-print">
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <h2 class="font-bold mb-3">Your details</h2>
+      <div class="grid sm:grid-cols-2 gap-3">
+        <label class="block sm:col-span-2"><span class="lbl">Full name</span><input id="f-name" class="input mt-1" placeholder="Jordan Smith" /></label>
+        <label class="block"><span class="lbl">Credential / title</span><input id="f-credential" class="input mt-1" placeholder="Registered Dental Assistant (RDA)" /></label>
+        <label class="block"><span class="lbl">City, State</span><input id="f-location" class="input mt-1" placeholder="Longview, TX" /></label>
+        <label class="block"><span class="lbl">Phone</span><input id="f-phone" class="input mt-1" placeholder="(903) 555-0123" /></label>
+        <label class="block"><span class="lbl">Email</span><input id="f-email" class="input mt-1" placeholder="you@email.com" /></label>
+        <label class="block sm:col-span-2"><span class="lbl">LinkedIn / portfolio (optional)</span><input id="f-link" class="input mt-1" placeholder="linkedin.com/in/you" /></label>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-bold">Professional summary</h2>
+        <button id="btn-suggest-summary" class="text-xs font-semibold text-teal-700 hover:text-teal-900">✨ Suggest one</button>
+      </div>
+      <textarea id="f-summary" rows="4" class="input" placeholder="A short 2–3 sentence intro. Tap 'Suggest one' for a dental-assistant starter you can tweak."></textarea>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <h2 class="font-bold mb-2">Skills</h2>
+      <div class="flex gap-2">
+        <input id="skill-input" class="input" placeholder="Add a skill and press Enter" />
+        <button id="skill-add" class="shrink-0 bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-3 rounded-lg">Add</button>
+      </div>
+      <div class="mt-2 text-xs text-slate-500">Quick add:</div>
+      <div id="skill-suggest" class="flex flex-wrap gap-1.5 mt-1"></div>
+      <div id="skill-list" class="flex flex-wrap gap-1.5 mt-3"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <h2 class="font-bold mb-2">Certifications &amp; licenses</h2>
+      <div class="flex gap-2">
+        <input id="cert-input" class="input" placeholder="Add a certification" />
+        <button id="cert-add" class="shrink-0 bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-3 rounded-lg">Add</button>
+      </div>
+      <div class="mt-2 text-xs text-slate-500">Quick add:</div>
+      <div id="cert-suggest" class="flex flex-wrap gap-1.5 mt-1"></div>
+      <div id="cert-list" class="flex flex-wrap gap-1.5 mt-3"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-bold">Education</h2>
+        <button data-add="edu" class="text-xs font-semibold text-teal-700 hover:text-teal-900">＋ Add</button>
+      </div>
+      <div id="edu-list" class="space-y-3"></div>
+    </section>
+
+    <section class="bg-white rounded-2xl border border-slate-200 p-5">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-bold">Experience</h2>
+        <button data-add="exp" class="text-xs font-semibold text-teal-700 hover:text-teal-900">＋ Add</button>
+      </div>
+      <div id="exp-list" class="space-y-3"></div>
+      <p class="text-xs text-slate-500 mt-2">No dental experience yet? Add any job — front desk, retail, caregiving — and we'll show transferable skills.</p>
+    </section>
+
+    <div class="flex flex-wrap gap-2 pb-10">
+      <button id="btn-pdf" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-lg shadow">⬇ Download PDF</button>
+      <button id="btn-print" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-4 py-2.5 rounded-lg">⎙ Print</button>
+      <button id="btn-clear" class="text-rose-600 hover:bg-rose-50 font-semibold px-4 py-2.5 rounded-lg">Clear</button>
+      <span id="save-status" class="self-center text-xs text-slate-400"></span>
+    </div>
+  </div>
+
+  <!-- ───────── Live preview ───────── -->
+  <div class="lg:sticky lg:top-20">
+    <div id="resume" class="bg-white rounded-xl shadow-xl border border-slate-200 p-8 sm:p-10 mx-auto" style="max-width:720px;min-height:840px">
+      <div class="border-b-2 border-teal-700 pb-3">
+        <h1 id="r-name" class="text-3xl font-bold text-slate-900">Your Name</h1>
+        <div id="r-credential" class="text-teal-700 font-semibold text-sm mt-0.5">Registered Dental Assistant (RDA)</div>
+        <div id="r-contact" class="text-xs text-slate-500 mt-1.5"></div>
+      </div>
+      <div id="r-summary-wrap" class="mt-4 hidden">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">Summary</h3>
+        <p id="r-summary" class="text-sm text-slate-700 mt-1 leading-relaxed"></p>
+      </div>
+      <div id="r-skills-wrap" class="mt-4 hidden">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">Skills</h3>
+        <div id="r-skills" class="flex flex-wrap gap-1.5 mt-1.5"></div>
+      </div>
+      <div id="r-certs-wrap" class="mt-4 hidden">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">Certifications &amp; Licenses</h3>
+        <ul id="r-certs" class="text-sm text-slate-700 mt-1 list-disc pl-5 space-y-0.5"></ul>
+      </div>
+      <div id="r-exp-wrap" class="mt-4 hidden">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">Experience</h3>
+        <div id="r-exp" class="mt-1.5 space-y-3"></div>
+      </div>
+      <div id="r-edu-wrap" class="mt-4 hidden">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">Education</h3>
+        <div id="r-edu" class="mt-1.5 space-y-2"></div>
+      </div>
+      <div class="mt-4">
+        <h3 class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">References</h3>
+        <p class="text-sm text-slate-600 mt-1">Available upon request.</p>
+      </div>
+    </div>
+    <p class="text-center text-xs text-slate-400 mt-3 no-print">This resume saves automatically on this device. Sign in to keep it on your account.</p>
+  </div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+(function () {
+  'use strict';
+  var LS = 'pda.resume.v1';
+  var SKILL_SUGGEST = ['Chairside Assisting','Sterilization & Infection Control','Dental Radiography (X-rays)','Dentrix','Eaglesoft','Open Dental','Tooth Charting','Patient Care','Scheduling','Insurance & Claims','Four-Handed Dentistry','Impressions','Sealants & Coronal Polishing','Bilingual (English/Spanish)'];
+  var CERT_SUGGEST = ['Registered Dental Assistant (RDA) — Texas','Dental Radiology Certification','Infection Control Certification','Jurisprudence (Texas)','CPR / BLS','Coronal Polishing'];
+
+  var data = load() || {
+    name:'', credential:'Registered Dental Assistant (RDA)', location:'', phone:'', email:'', link:'',
+    summary:'', skills:[], certs:[],
+    education:[{ school:'Premier Dental Academy of Longview', credential:'Registered Dental Assistant Program', year:'2026' }],
+    experience:[]
+  };
+
+  function load(){ try { return JSON.parse(localStorage.getItem(LS)); } catch(e){ return null; } }
+  function save(){ try { localStorage.setItem(LS, JSON.stringify(data)); } catch(e){} flashSaved(); }
+  var st; function flashSaved(){ var el=document.getElementById('save-status'); if(!el)return; el.textContent='✓ Saved'; clearTimeout(st); st=setTimeout(function(){el.textContent='';},1200); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function $(id){ return document.getElementById(id); }
+
+  // ── Bind simple fields ──
+  [['f-name','name'],['f-credential','credential'],['f-location','location'],['f-phone','phone'],['f-email','email'],['f-link','link'],['f-summary','summary']].forEach(function(p){
+    var el=$(p[0]); el.value = data[p[1]] || '';
+    el.addEventListener('input', function(){ data[p[1]] = el.value; save(); render(); });
+  });
+
+  // ── Chips (skills / certs) ──
+  function chipField(kind, inputId, addId, listId, suggestId, suggestions){
+    function add(v){ v=(v||'').trim(); if(!v) return; if(data[kind].indexOf(v)===-1){ data[kind].push(v); save(); renderChips(); render(); } }
+    $(addId).addEventListener('click', function(){ add($(inputId).value); $(inputId).value=''; $(inputId).focus(); });
+    $(inputId).addEventListener('keydown', function(e){ if(e.key==='Enter'){ e.preventDefault(); add($(inputId).value); $(inputId).value=''; } });
+    var sug=$(suggestId); sug.innerHTML = suggestions.map(function(s){ return '<button type="button" class="chip hover:opacity-80" data-sg="'+esc(s)+'">＋ '+esc(s)+'</button>'; }).join('');
+    sug.addEventListener('click', function(e){ var b=e.target.closest('[data-sg]'); if(b) add(b.getAttribute('data-sg')); });
+    function renderChips(){
+      $(listId).innerHTML = data[kind].map(function(s,i){ return '<span class="chip">'+esc(s)+'<button type="button" data-rm="'+i+'" class="text-teal-900/60 hover:text-rose-600 font-bold">×</button></span>'; }).join('') || '<span class="text-xs text-slate-400">None added yet.</span>';
+    }
+    $(listId).addEventListener('click', function(e){ var b=e.target.closest('[data-rm]'); if(b){ data[kind].splice(+b.getAttribute('data-rm'),1); save(); renderChips(); render(); } });
+    renderChips();
+  }
+  chipField('skills','skill-input','skill-add','skill-list','skill-suggest',SKILL_SUGGEST);
+  chipField('certs','cert-input','cert-add','cert-list','cert-suggest',CERT_SUGGEST);
+
+  // ── Repeatable rows (education / experience) ──
+  function renderEdu(){
+    $('edu-list').innerHTML = data.education.map(function(e,i){
+      return '<div class="grid sm:grid-cols-[1fr_1fr_auto] gap-2 items-end border border-slate-100 rounded-lg p-2">'
+        +'<label class="block"><span class="lbl">School / program</span><input class="input mt-1" data-edu="'+i+'" data-k="school" value="'+esc(e.school)+'" /></label>'
+        +'<label class="block"><span class="lbl">Credential</span><input class="input mt-1" data-edu="'+i+'" data-k="credential" value="'+esc(e.credential)+'" /></label>'
+        +'<div class="flex gap-1"><label class="block w-20"><span class="lbl">Year</span><input class="input mt-1" data-edu="'+i+'" data-k="year" value="'+esc(e.year)+'" /></label>'
+        +'<button data-del-edu="'+i+'" class="text-rose-500 hover:bg-rose-50 rounded px-2 self-end h-9">✕</button></div></div>';
+    }).join('') || '<p class="text-xs text-slate-400">No education added.</p>';
+  }
+  function renderExp(){
+    $('exp-list').innerHTML = data.experience.map(function(e,i){
+      return '<div class="border border-slate-100 rounded-lg p-2 space-y-2">'
+        +'<div class="grid sm:grid-cols-2 gap-2">'
+        +'<label class="block"><span class="lbl">Job title</span><input class="input mt-1" data-exp="'+i+'" data-k="title" value="'+esc(e.title)+'" /></label>'
+        +'<label class="block"><span class="lbl">Employer</span><input class="input mt-1" data-exp="'+i+'" data-k="employer" value="'+esc(e.employer)+'" /></label>'
+        +'<label class="block"><span class="lbl">Dates</span><input class="input mt-1" data-exp="'+i+'" data-k="dates" value="'+esc(e.dates)+'" placeholder="2024 – Present" /></label>'
+        +'<label class="block"><span class="lbl">Location</span><input class="input mt-1" data-exp="'+i+'" data-k="location" value="'+esc(e.location||'')+'" /></label>'
+        +'</div>'
+        +'<label class="block"><span class="lbl">What you did (one bullet per line)</span><textarea rows="3" class="input mt-1" data-exp="'+i+'" data-k="bullets" placeholder="Assisted chairside during procedures&#10;Sterilized instruments per OSHA standards">'+esc(e.bullets||'')+'</textarea></label>'
+        +'<div class="text-right"><button data-del-exp="'+i+'" class="text-rose-500 hover:bg-rose-50 rounded px-3 py-1 text-sm">Remove</button></div></div>';
+    }).join('') || '<p class="text-xs text-slate-400">No experience added yet.</p>';
+  }
+  document.addEventListener('input', function(e){
+    var t=e.target;
+    if(t.dataset.edu!=null){ data.education[+t.dataset.edu][t.dataset.k]=t.value; save(); render(); }
+    if(t.dataset.exp!=null){ data.experience[+t.dataset.exp][t.dataset.k]=t.value; save(); render(); }
+  });
+  document.addEventListener('click', function(e){
+    var a=e.target.closest('[data-add]'); if(a){ if(a.dataset.add==='edu'){ data.education.push({school:'',credential:'',year:''}); } else { data.experience.push({title:'',employer:'',dates:'',location:'',bullets:''}); } save(); renderEdu(); renderExp(); render(); }
+    var de=e.target.closest('[data-del-edu]'); if(de){ data.education.splice(+de.getAttribute('data-del-edu'),1); save(); renderEdu(); render(); }
+    var dx=e.target.closest('[data-del-exp]'); if(dx){ data.experience.splice(+dx.getAttribute('data-del-exp'),1); save(); renderExp(); render(); }
+  });
+
+  // ── Summary suggestion ──
+  $('btn-suggest-summary').addEventListener('click', function(){
+    var s = "Detail-oriented Registered Dental Assistant trained at Premier Dental Academy of Longview with hands-on experience in chairside assisting, sterilization, dental radiography, and practice-management software. Known for compassionate patient care and being ready to contribute from day one.";
+    $('f-summary').value = s; data.summary = s; save(); render();
+  });
+
+  // ── Render preview ──
+  function show(id, on){ var el=$(id); if(el) el.classList.toggle('hidden', !on); }
+  function render(){
+    $('r-name').textContent = data.name || 'Your Name';
+    $('r-credential').textContent = data.credential || '';
+    show('r-credential', !!data.credential);
+    var bits = [data.location, data.phone, data.email, data.link].filter(Boolean);
+    $('r-contact').textContent = bits.join('  ·  ');
+    $('r-summary').textContent = data.summary || ''; show('r-summary-wrap', !!data.summary);
+    $('r-skills').innerHTML = data.skills.map(function(s){ return '<span class="chip">'+esc(s)+'</span>'; }).join('');
+    show('r-skills-wrap', data.skills.length>0);
+    $('r-certs').innerHTML = data.certs.map(function(c){ return '<li>'+esc(c)+'</li>'; }).join('');
+    show('r-certs-wrap', data.certs.length>0);
+    var exp = data.experience.filter(function(e){ return e.title||e.employer; });
+    $('r-exp').innerHTML = exp.map(function(e){
+      var bullets=(e.bullets||'').split(/\n/).map(function(b){return b.trim();}).filter(Boolean);
+      return '<div><div class="flex justify-between items-baseline"><span class="font-semibold text-slate-900 text-sm">'+esc(e.title||'')+(e.employer?' · '+esc(e.employer):'')+'</span><span class="text-xs text-slate-500">'+esc(e.dates||'')+'</span></div>'
+        +(e.location?'<div class="text-xs text-slate-500">'+esc(e.location)+'</div>':'')
+        +(bullets.length?'<ul class="list-disc pl-5 text-sm text-slate-700 mt-1 space-y-0.5">'+bullets.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul>':'')+'</div>';
+    }).join('');
+    show('r-exp-wrap', exp.length>0);
+    var edu = data.education.filter(function(e){ return e.school; });
+    $('r-edu').innerHTML = edu.map(function(e){
+      return '<div class="flex justify-between items-baseline"><span class="text-sm"><span class="font-semibold text-slate-900">'+esc(e.school)+'</span>'+(e.credential?' — '+esc(e.credential):'')+'</span><span class="text-xs text-slate-500">'+esc(e.year||'')+'</span></div>';
+    }).join('');
+    show('r-edu-wrap', edu.length>0);
+  }
+
+  // ── Actions ──
+  $('btn-pdf').addEventListener('click', function(){
+    var name = (data.name||'resume').replace(/[^a-z0-9]+/gi,'-').toLowerCase();
+    window.html2pdf().set({ margin:8, filename:name+'-resume.pdf', image:{type:'jpeg',quality:.98}, html2canvas:{scale:2,useCORS:true}, jsPDF:{unit:'mm',format:'letter',orientation:'portrait'} }).from($('resume')).save();
+  });
+  $('btn-print').addEventListener('click', function(){ window.print(); });
+  $('btn-clear').addEventListener('click', function(){
+    if(!confirm('Clear the whole resume and start over?')) return;
+    localStorage.removeItem(LS);
+    data = { name:'', credential:'Registered Dental Assistant (RDA)', location:'', phone:'', email:'', link:'', summary:'', skills:[], certs:[], education:[], experience:[] };
+    location.reload();
+  });
+
+  renderEdu(); renderExp(); render();
+
+  // ── Pre-fill from signed-in profile (name/email/phone) if empty ──
+  (async function(){
+    try {
+      if(!window.supabase) return;
+      var sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co','sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+      var s = (await sb.auth.getSession()).data.session; if(!s) return;
+      var p = (await sb.from('profiles').select('first_name,last_name,email,phone').eq('id', s.user.id).maybeSingle()).data;
+      if(!p) return;
+      if(!data.name && (p.first_name||p.last_name)){ data.name = ((p.first_name||'')+' '+(p.last_name||'')).trim(); $('f-name').value=data.name; }
+      if(!data.email && p.email){ data.email=p.email; $('f-email').value=p.email; }
+      if(!data.phone && p.phone){ data.phone=p.phone; $('f-phone').value=p.phone; }
+      save(); render();
+    } catch(e){}
+  })();
+})();
+</script>
+</body>
+</html>

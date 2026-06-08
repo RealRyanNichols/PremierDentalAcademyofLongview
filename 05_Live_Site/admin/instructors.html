@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Instructor Applications — PDA Admin</title>
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <a href="/admin" class="flex items-center gap-2 font-bold">
+        <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+        <span>PDA Admin</span>
+      </a>
+      <span class="text-slate-400 text-sm">/ Instructor applications</span>
+    </div>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white">Home</a>
+      <a href="/admin/leads" class="text-slate-300 hover:text-white">Inbox</a>
+      <span id="user-label" class="text-slate-400 hidden sm:inline"></span>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="max-w-7xl mx-auto px-6 py-8" id="main">
+
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Staff access only</h1>
+    <p class="text-slate-600 mt-2">Sign in with your PDA admin account to review instructor applications.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+  </div>
+
+  <div id="view" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Hiring</p>
+        <h1 class="display text-3xl font-bold mt-1">Instructor applications</h1>
+      </div>
+      <div class="flex gap-2">
+        <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="reviewing">Reviewing</option>
+          <option value="interview">Interview</option>
+          <option value="approved">Approved (awaiting state fee)</option>
+          <option value="hired">Hired</option>
+          <option value="declined">Declined</option>
+        </select>
+        <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export CSV</button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" id="stats"></div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+      <div id="list" class="divide-y divide-slate-100"></div>
+      <div id="empty" class="p-10 text-center text-slate-500 hidden">No instructor applications yet. Once people apply at <a href="/teach" class="text-teal-700 underline">/teach</a>, they'll show up here.</div>
+    </div>
+  </div>
+</main>
+
+<!-- SMS modal -->
+<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Send SMS via Quo</div>
+        <h3 id="sms-target" class="display text-lg font-bold">—</h3>
+      </div>
+      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
+    <div class="flex justify-between items-center mt-3">
+      <span id="sms-status" class="text-xs text-slate-500"></span>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-lg text-sm">Send →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const STATUSES = ['new','reviewing','interview','approved','hired','declined'];
+  const STATUS_LABEL = { new:'New', reviewing:'Reviewing', interview:'Interview', approved:'Approved · awaiting state fee', hired:'Hired', declined:'Declined' };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+
+  const { data: profile } = await sb.from('profiles').select('is_admin, first_name').eq('id', session.user.id).maybeSingle();
+  if (!profile || !profile.is_admin) {
+    const wall = document.getElementById('auth-wall');
+    wall.classList.remove('hidden');
+    wall.innerHTML = `
+      <div class="text-5xl mb-3">🚫</div>
+      <h1 class="display text-2xl font-bold">Staff access only</h1>
+      <p class="text-slate-600 mt-2">Your account isn't authorized. Ask Amanda to grant admin status.</p>
+      <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>`;
+    return;
+  }
+
+  document.getElementById('user-label').textContent = (profile.first_name || session.user.email);
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  let all = [];
+
+  async function load() {
+    const { data, error } = await sb.from('instructor_applications').select('*').order('created_at', { ascending: false });
+    if (error) { alert('Failed to load applications: ' + error.message); return; }
+    all = data || [];
+    render();
+  }
+
+  function render() {
+    const filter = document.getElementById('status-filter').value;
+    const rows = filter ? all.filter(a => (a.status || 'new') === filter) : all;
+
+    const counts = { new:0, reviewing:0, interview:0, approved:0, hired:0, declined:0 };
+    all.forEach(a => { counts[a.status || 'new'] = (counts[a.status || 'new'] || 0) + 1; });
+    document.getElementById('stats').innerHTML = `
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">New</div><div class="text-2xl font-bold mono text-rose-700">${counts.new||0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Interview</div><div class="text-2xl font-bold mono text-amber-700">${counts.interview||0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Approved</div><div class="text-2xl font-bold mono text-teal-700">${counts.approved||0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Hired</div><div class="text-2xl font-bold mono text-emerald-700">${counts.hired||0}</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Total</div><div class="text-2xl font-bold mono text-slate-700">${all.length}</div></div>
+    `;
+
+    const list = document.getElementById('list');
+    document.getElementById('empty').classList.toggle('hidden', rows.length > 0);
+    list.innerHTML = rows.map(a => {
+      const name = `${a.first_name || ''} ${a.last_name || ''}`.trim() || a.email || 'Applicant';
+      const phone = (a.phone || '').replace(/[^\d+]/g, '');
+      const lic = a.license_current === true ? '<span class="text-emerald-700">✓ current</span>'
+                : a.license_current === false ? '<span class="text-rose-700">not current</span>' : '—';
+      const flag = (a.years_rda != null && a.years_rda < 5) ? '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">⚠ under 5 yrs</span>' : '';
+      return `
+        <div class="p-5 hover:bg-slate-50">
+          <div class="flex items-start gap-4">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-sm shrink-0">
+              ${esc((a.first_name?.[0] || '?').toUpperCase())}${esc((a.last_name?.[0] || '').toUpperCase())}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-baseline gap-2 flex-wrap">
+                <span class="font-semibold">${esc(name)}</span>
+                <span class="text-xs mono text-slate-500">${new Date(a.created_at).toLocaleString()}</span>
+                ${flag}
+              </div>
+              <div class="text-sm text-slate-600 mt-1">
+                ${a.email ? `<a href="mailto:${esc(a.email)}" class="text-teal-700 hover:underline">${esc(a.email)}</a>` : '—'}
+                · ${a.phone ? `<a href="tel:${esc(phone)}" class="text-teal-700 hover:underline">${esc(a.phone)}</a>` : '—'}
+                ${a.city ? '· ' + esc(a.city) : ''}
+              </div>
+              <div class="grid sm:grid-cols-2 gap-x-6 gap-y-1 text-sm text-slate-700 mt-2">
+                <div><strong>Experience:</strong> ${a.years_rda != null ? esc(a.years_rda) + ' yrs RDA' : '—'} · License: ${lic}</div>
+                <div><strong>License #:</strong> ${esc(a.license_number) || '—'} ${a.license_expiration ? '· exp ' + esc(a.license_expiration) : ''}</div>
+                <div><strong>Now at:</strong> ${esc(a.current_employer) || '—'}</div>
+                <div><strong>Can start:</strong> ${esc(a.start_when) || '—'}</div>
+                <div><strong>12-wk commit:</strong> ${a.commit_12_weeks ? '✓ yes' : '—'}</div>
+                <div><strong>Heard via:</strong> ${esc(a.heard_from) || '—'}</div>
+              </div>
+              ${a.availability ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Availability:</strong> ${esc(a.availability)}</div>` : ''}
+              ${a.why_teach ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2"><strong>Why teach:</strong> ${esc(a.why_teach)}</div>` : ''}
+              ${a.links ? `<div class="text-sm mt-1.5"><strong>Link:</strong> <a href="${esc(a.links)}" target="_blank" rel="noopener" class="text-teal-700 hover:underline break-all">${esc(a.links)}</a></div>` : ''}
+              <details class="mt-2">
+                <summary class="text-xs text-slate-500 cursor-pointer">Private notes</summary>
+                <textarea data-notes="${esc(a.id)}" rows="2" class="mt-1 w-full text-sm px-2 py-1 border border-slate-300 rounded focus:border-teal-600 focus:outline-none" placeholder="Internal notes…">${esc(a.admin_notes)}</textarea>
+                <button data-save-notes="${esc(a.id)}" class="mt-1 text-xs bg-slate-700 hover:bg-slate-800 text-white px-2 py-1 rounded">Save note</button>
+              </details>
+            </div>
+            <div class="text-right shrink-0 space-y-2">
+              <select data-id="${esc(a.id)}" class="status-sel bg-white border border-slate-300 rounded px-2 py-1 text-xs">
+                ${STATUSES.map(s => `<option value="${s}" ${(a.status||'new')===s?'selected':''}>${STATUS_LABEL[s]}</option>`).join('')}
+              </select>
+              <div class="flex flex-wrap gap-1 justify-end">
+                ${a.phone ? `<button data-action="sms" data-phone="${esc(phone)}" data-name="${esc(name)}" data-id="${esc(a.id)}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-2 py-1 rounded">💬 SMS</button>` : ''}
+                ${a.phone ? `<a href="tel:${esc(phone)}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-2 py-1 rounded">📞</a>` : ''}
+                ${a.email ? `<a href="mailto:${esc(a.email)}?subject=Teaching%20at%20Premier%20Dental%20Academy" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-2 py-1 rounded">✉️</a>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }).join('');
+
+    list.querySelectorAll('.status-sel').forEach(sel => {
+      sel.onchange = async (e) => {
+        const { error } = await sb.from('instructor_applications').update({ status: e.target.value }).eq('id', e.target.dataset.id);
+        if (error) { alert('Could not update status: ' + error.message); return; }
+        const t = all.find(x => x.id === e.target.dataset.id);
+        if (t) t.status = e.target.value;
+        render();
+      };
+    });
+
+    list.querySelectorAll('[data-save-notes]').forEach(b => {
+      b.onclick = async () => {
+        const id = b.dataset.saveNotes;
+        const ta = list.querySelector(`[data-notes="${id}"]`);
+        const { error } = await sb.from('instructor_applications').update({ admin_notes: ta.value }).eq('id', id);
+        if (error) { alert('Could not save note: ' + error.message); return; }
+        const t = all.find(x => x.id === id);
+        if (t) t.admin_notes = ta.value;
+        b.textContent = '✓ Saved';
+        setTimeout(() => (b.textContent = 'Save note'), 1200);
+      };
+    });
+
+    list.querySelectorAll('[data-action="sms"]').forEach(btn => {
+      btn.onclick = () => openSms(btn.dataset.phone, btn.dataset.name, btn.dataset.id);
+    });
+  }
+
+  document.getElementById('status-filter').onchange = render;
+  document.getElementById('refresh').onclick = load;
+
+  document.getElementById('export').onclick = () => {
+    const rows = [['Created','First','Last','Email','Phone','City','Years RDA','License current','License #','License exp','Current office','Can start','Availability','12wk commit','Why teach','Link','Heard from','Status','Notes']];
+    all.forEach(a => rows.push([
+      new Date(a.created_at).toISOString(), a.first_name||'', a.last_name||'', a.email||'', a.phone||'', a.city||'',
+      a.years_rda ?? '', a.license_current === true ? 'yes' : a.license_current === false ? 'no' : '', a.license_number||'', a.license_expiration||'',
+      a.current_employer||'', a.start_when||'', a.availability||'', a.commit_12_weeks ? 'yes' : 'no', a.why_teach||'', a.links||'', a.heard_from||'', a.status||'new', a.admin_notes||''
+    ]));
+    const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const aEl = document.createElement('a');
+    aEl.href = URL.createObjectURL(blob);
+    aEl.download = `instructor-applications-${new Date().toISOString().slice(0,10)}.csv`;
+    aEl.click();
+  };
+
+  // ── SMS modal
+  const modal = document.getElementById('sms-modal');
+  const targetEl = document.getElementById('sms-target');
+  const bodyEl = document.getElementById('sms-body');
+  const statusEl = document.getElementById('sms-status');
+  let smsTo = null, smsId = null;
+  document.getElementById('sms-close').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+  function openSms(phone, name, id) {
+    smsTo = phone; smsId = id;
+    targetEl.textContent = `${name} · ${phone}`;
+    bodyEl.value = ''; statusEl.textContent = '';
+    modal.classList.remove('hidden');
+    setTimeout(() => bodyEl.focus(), 50);
+  }
+
+  document.getElementById('sms-send').onclick = async () => {
+    const body = bodyEl.value.trim();
+    if (!body || !smsTo) return;
+    statusEl.textContent = 'Sending…';
+    const resp = await sb.functions.invoke('quo-send-sms', { body: { to: smsTo, body } });
+    if (resp?.error || resp?.data?.error) {
+      statusEl.textContent = '✗ ' + (resp?.data?.error || resp?.error?.message || 'failed');
+    } else {
+      statusEl.textContent = '✓ Sent';
+      if (smsId) {
+        await sb.from('instructor_applications').update({ last_contact_at: new Date().toISOString() }).eq('id', smsId);
+        const t = all.find(x => x.id === smsId);
+        if (t) t.last_contact_at = new Date().toISOString();
+      }
+      setTimeout(() => modal.classList.add('hidden'), 700);
+    }
+  };
+
+  load();
+})();
+</script>
+</body>
+</html>

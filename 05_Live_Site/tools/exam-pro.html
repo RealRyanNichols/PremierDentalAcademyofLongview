@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Exam Pro — Test Checkout (unlisted)</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://web.squarecdn.com/v1/square.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    #card-container { min-height: 90px; }
+  </style>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/exam-pro" />
+  <meta property="og:title" content="Exam Pro — Test Checkout (unlisted)" />
+  <meta property="og:description" content="Premier Dental Academy of Longview — Texas RDA school in Longview, TX. Real practice management trainers, hands-on hours, lowest tuition in East Texas." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Exam Pro — Test Checkout (unlisted)" />
+  <meta name="twitter:description" content="Premier Dental Academy of Longview — Texas RDA school in Longview, TX. Real practice management trainers, hands-on hours, lowest tuition in East Texas." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-cyan-50 min-h-screen flex flex-col">
+
+<main class="flex-1 max-w-lg mx-auto w-full px-4 py-10">
+
+  <div class="mb-6 rounded-lg bg-amber-100 border border-amber-300 text-amber-900 text-sm font-semibold px-4 py-3">
+    TEST PAGE — not linked anywhere public yet. This charges a real $29 to unlock Exam Pro on your account.
+  </div>
+
+  <h1 class="display text-3xl font-extrabold mb-1">Unlock Exam Pro</h1>
+  <p class="text-slate-600 mb-6">One-time <strong>$29</strong> — full timed mock exams, the Pro question bank, and weak-area analytics. No subscription.</p>
+
+  <!-- STATE: loading -->
+  <div id="state-loading" class="text-slate-500">Checking your account…</div>
+
+  <!-- STATE: signed out -->
+  <div id="state-signedout" hidden class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+    <p class="font-semibold mb-2">Please sign in first</p>
+    <p class="text-slate-600 text-sm mb-4">Exam Pro unlocks on your student account, so you need to be signed in before you buy.</p>
+    <a href="/login" class="inline-block bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2.5 rounded-lg">Sign in</a>
+  </div>
+
+  <!-- STATE: already pro -->
+  <div id="state-alreadypro" hidden class="rounded-xl bg-emerald-50 border border-emerald-200 p-6">
+    <p class="font-semibold text-emerald-800 mb-2">You already have Exam Pro</p>
+    <p class="text-emerald-700 text-sm mb-4">No charge needed — everything is unlocked on your account.</p>
+    <a href="/tools/practice-exam" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg">Go to the exam</a>
+  </div>
+
+  <!-- STATE: checkout -->
+  <div id="state-checkout" hidden class="rounded-xl bg-white border border-slate-200 p-6 shadow-sm">
+    <p class="text-sm text-slate-500 mb-1">Signed in as</p>
+    <p id="who" class="font-semibold mb-4">—</p>
+    <label class="block text-sm font-semibold text-slate-700 mb-2">Card details</label>
+    <div id="card-container" class="border border-slate-300 rounded-lg p-3 mb-4"></div>
+    <button id="pay-btn" disabled
+      class="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-3 rounded-lg">
+      Pay $29 &amp; unlock Pro
+    </button>
+    <p id="err" hidden class="mt-3 text-sm font-medium text-rose-600"></p>
+    <p class="mt-3 text-xs text-slate-400">Secure payment processed by Square. You'll get a receipt by email.</p>
+  </div>
+
+  <!-- STATE: success -->
+  <div id="state-success" hidden class="rounded-xl bg-emerald-50 border border-emerald-200 p-6">
+    <p class="font-semibold text-emerald-800 mb-2">Payment received — Pro unlocked!</p>
+    <p id="success-note" class="text-emerald-700 text-sm mb-4">Your account now has full access.</p>
+    <a href="/tools/practice-exam" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2.5 rounded-lg">Start a timed exam</a>
+  </div>
+
+</main>
+
+<script>
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const SQUARE_APP_ID = 'sq0idp-wP-0xugR7vYxfPzzYDVt7Q';
+  const SQUARE_LOCATION_ID = '2P2ZE3FJNEYTV';
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  let card = null;
+
+  const show = (id) => {
+    ['loading', 'signedout', 'alreadypro', 'checkout', 'success'].forEach((k) => {
+      document.getElementById('state-' + k).hidden = (k !== id);
+    });
+  };
+
+  async function init() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { show('signedout'); return; }
+
+    const { data: p } = await sb.from('profiles')
+      .select('exam_pro, program, is_admin').eq('id', session.user.id).maybeSingle();
+    const isPro = !!(p && (p.exam_pro || p.is_admin || (p.program && p.program !== 'preview')));
+    if (isPro) { show('alreadypro'); return; }
+
+    document.getElementById('who').textContent = session.user.email || session.user.id;
+    show('checkout');
+
+    if (!window.Square) {
+      document.getElementById('err').textContent = 'Payment form failed to load. Refresh and try again.';
+      document.getElementById('err').hidden = false;
+      return;
+    }
+    const payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+    card = await payments.card();
+    await card.attach('#card-container');
+    document.getElementById('pay-btn').disabled = false;
+  }
+
+  // Module-level lock: this card session can NEVER submit twice (same guard
+  // that stopped the enrollment triple-charge).
+  let SUBMIT_LOCKED = false;
+
+  async function pay() {
+    if (SUBMIT_LOCKED) return;
+    SUBMIT_LOCKED = true;
+
+    const btn = document.getElementById('pay-btn');
+    const err = document.getElementById('err');
+    err.hidden = true;
+    btn.disabled = true;
+    btn.textContent = 'Processing… DO NOT close this tab.';
+
+    // Tokenize the card. If this fails, nothing was charged — safe to retry.
+    let token;
+    try {
+      const res = await card.tokenize();
+      if (res.status !== 'OK') {
+        SUBMIT_LOCKED = false;
+        btn.disabled = false;
+        btn.textContent = 'Pay $29 & unlock Pro';
+        err.textContent = res.errors?.[0]?.message || 'Card was rejected. Try another card.';
+        err.hidden = false;
+        return;
+      }
+      token = res.token;
+    } catch (e) {
+      SUBMIT_LOCKED = false;
+      btn.disabled = false;
+      btn.textContent = 'Pay $29 & unlock Pro';
+      err.textContent = e.message || 'Card could not be read.';
+      err.hidden = false;
+      return;
+    }
+
+    // From here a charge may have been sent. NEVER re-enable the button, and
+    // NEVER show "failed" if the server returns ok=true.
+    try {
+      const { data, error } = await sb.functions.invoke('buy-exam-pro', { body: { sourceId: token } });
+      if (error) {
+        // Surface the function's own error message (e.g. "card declined").
+        let msg = 'Something went wrong. If you were charged, do not pay again — call (903) 913-6444.';
+        try { const b = await error.context.json(); if (b?.error) msg = b.error; } catch (_) {}
+        btn.textContent = 'Could not complete';
+        err.textContent = msg;
+        err.hidden = false;
+        return;
+      }
+      if (data?.warning) {
+        document.getElementById('success-note').textContent = data.warning;
+      }
+      show('success');
+    } catch (e) {
+      btn.textContent = 'Could not complete';
+      err.textContent = 'Network error. If you were charged, do not pay again — call (903) 913-6444.';
+      err.hidden = false;
+    }
+  }
+
+  document.getElementById('pay-btn').addEventListener('click', pay);
+  init();
+</script>
+</body>
+</html>

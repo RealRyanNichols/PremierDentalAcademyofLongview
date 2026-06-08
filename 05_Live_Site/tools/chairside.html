@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>PDA ChairSide — Clinical Workflow Trainer</title>
   <meta name="description" content="Premier Dental Academy of Longview — ChairSide clinical workflow trainer." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230e7490'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='%23e0f2fe'%3EC%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -69,6 +71,19 @@
     }
   </style>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/chairside" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/chairside" />
+  <meta property="og:title" content="PDA ChairSide — Clinical Workflow Trainer" />
+  <meta property="og:description" content="Premier Dental Academy of Longview — ChairSide clinical workflow trainer." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="PDA ChairSide — Clinical Workflow Trainer" />
+  <meta name="twitter:description" content="Premier Dental Academy of Longview — ChairSide clinical workflow trainer." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
   <script src="/assets/speed-insights.js" type="module" defer></script>
 </head>
 <body>
@@ -216,6 +231,7 @@
             PDA ChairSide
             <span class="text-cyan-200 font-normal hidden sm:inline">— Clinical Workflow Trainer</span>
           </a>
+          <a href="/tools/how-to-chart" target="_blank" class="bg-white/15 hover:bg-white/30 text-white px-2 py-1 rounded text-[11px] font-semibold" title="Step-by-step charting tutorial">📘 How to chart</a>
           ${!isStudent ? `<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">PREVIEW</span>` : ''}
         </div>
         <div class="flex items-center gap-3">
@@ -754,7 +770,7 @@
     if (!m) return '';
     const content = ({ 'new-patient': modalNewPatient, 'audit': modalAudit, 'welcome': modalWelcome })[m.type];
     if (!content) return '';
-    return `<div class="modal-back" data-action="close-modal"><div class="modal" onclick="event.stopPropagation()">${content(m.props || {})}</div></div>`;
+    return `<div class="modal-back" data-action="close-modal"><div class="modal">${content(m.props || {})}</div></div>`;
   }
 
   function modalWelcome() {
@@ -786,8 +802,9 @@
         ` : `
           <div class="bg-emerald-50 border border-emerald-200 rounded p-3 text-[12px]"><strong>You're enrolled.</strong> Notes save to your account.</div>
         `}
-        <div class="flex justify-end pt-2 border-t border-cyan-100">
-          <button data-action="close-modal" class="btn btn-primary">Got it</button>
+        <div class="flex justify-end gap-2 pt-2 border-t border-cyan-100">
+          <button data-action="close-modal" class="btn btn-soft">Just close this</button>
+          <button data-action="welcome-launch" class="btn btn-primary">Got it — let's go →</button>
         </div>
       </div>
     `;
@@ -865,6 +882,13 @@
         case 'select-patient': selectPatient(t.dataset.id); break;
         case 'open-modal': openModal(t.dataset.modal); break;
         case 'close-modal': if (ev.target === t) closeModal(); break;
+        case 'welcome-launch': {
+          // Closes the intro modal and points the user at a real next step
+          // (instead of just dismissing into a blank canvas).
+          closeModal();
+          toast('You’re in! Pick a patient on the left to start charting, or add a new one with ＋ New.', { tone: 'success', ms: 4500 });
+          break;
+        }
         case 'clinical-tab': state.ui.clinicalTab = t.dataset.t; rerender(); break;
         case 'smartdoc-pick': {
           state.ui.smartDocSelected = t.dataset.t;
@@ -1002,15 +1026,41 @@
   }
 
   async function boot() {
+    // Direct Supabase session detection. Two prior attempts (PRs #49, #53)
+    // tried to rely on window.PDA from auth.js, but enrolled signed-in
+    // students still kept seeing preview. The most likely cause is that
+    // window.PDA wasn't fully initialized when boot ran (auth.js race) or
+    // its internal sb was null. So we ALSO build a fresh client right here
+    // — guaranteed to find the session if it's in localStorage. ANY signed-
+    // in user is a 'student' with unlimited access; profile fetch is
+    // best-effort and never demotes them.
+    let session = null;
     try {
-      const session = await window.PDA?.getSession?.();
-      if (session) {
-        state.user = await window.PDA.getProfile();
-        state.access = 'student';
-      } else {
-        state.access = 'preview';
+      if (window.supabase?.createClient) {
+        const sb = window.supabase.createClient(
+          'https://lmbsuwslsycukynzpzik.supabase.co',
+          'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh',
+          { auth: { persistSession: true, autoRefreshToken: true } }
+        );
+        const { data } = await sb.auth.getSession();
+        session = data?.session || null;
+        if (session) {
+          try {
+            const { data: prof } = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+            state.user = prof || { id: session.user.id, email: session.user.email };
+          } catch (e) {
+            state.user = { id: session.user.id, email: session.user.email };
+          }
+        }
       }
-    } catch (e) { state.user = null; state.access = 'preview'; }
+    } catch (e) { console.warn('[chairside] direct session check failed:', e); }
+    // Fallback to window.PDA — only if direct check didn't find a session.
+    if (!session && window.PDA?.getSession) {
+      try { session = await window.PDA.getSession(); } catch (e) {}
+    }
+
+    state.access = session ? 'student' : 'preview';
+    console.info('[chairside] access=' + state.access + (session ? ' (' + (session.user?.email || session.user?.id) + ')' : ' (no session)'));
 
     if (state.access === 'preview') {
       state.patients = JSON.parse(JSON.stringify(SEED.patients));

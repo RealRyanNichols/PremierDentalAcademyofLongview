@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Enroll — Premier Dental Academy of Longview</title>
+  <title>Enroll in Dental Assistant School — Longview, TX & Online | PDA</title>
   <meta name="description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,6 +21,11 @@
     .seat-pill.normal { background: #ecfeff; color: #155e75; }
     .seat-pill.urgent { background: #fef3c7; color: #92400e; }
     .seat-pill.full   { background: #fee2e2; color: #991b1b; }
+    /* When Online plan is picked: hide all the payment-plan controls because
+       it's a $397 one-time payment, no cohort, no schedule. */
+    body[data-plan="online"] [data-online-hide] { display: none !important; }
+    body[data-plan="online"] #online-summary { display: block; }
+    #online-summary { display: none; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/seat-mask.js"></script>
@@ -26,6 +33,74 @@
   <script src="https://web.squarecdn.com/v1/square.js"></script>
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script src="/assets/pda-social-proof.js" defer></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/enroll" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/enroll" />
+  <meta property="og:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
+  <meta property="og:description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
+  <meta name="twitter:description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+
+  <!-- Course schema → Google Course rich results in SERPs (price, provider). -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    "name": "Texas Registered Dental Assistant (RDA) Program",
+    "description": "Complete RDA training in Longview, TX. Real practice-management trainers, hands-on clinical hours, Texas TDLR compliance prep, and direct job placement with East Texas partner offices.",
+    "url": "https://www.premierdentalacademyoflongview.com/enroll",
+    "provider": {
+      "@type": "EducationalOrganization",
+      "name": "Premier Dental Academy of Longview",
+      "sameAs": "https://www.premierdentalacademyoflongview.com"
+    },
+    "educationalCredentialAwarded": "Texas Registered Dental Assistant (RDA)",
+    "hasCourseInstance": [
+      {
+        "@type": "CourseInstance",
+        "name": "PDA RDA Program — In-Person (Longview campus)",
+        "courseMode": "Onsite",
+        "courseWorkload": "PT12W",
+        "location": {
+          "@type": "Place",
+          "name": "Premier Dental Academy of Longview",
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Longview",
+            "addressRegion": "TX",
+            "addressCountry": "US"
+          }
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "1997",
+          "priceCurrency": "USD",
+          "url": "https://www.premierdentalacademyoflongview.com/enroll",
+          "availability": "https://schema.org/InStock"
+        }
+      },
+      {
+        "@type": "CourseInstance",
+        "name": "PDA RDA Program — Online",
+        "courseMode": "Online",
+        "offers": {
+          "@type": "Offer",
+          "price": "397",
+          "priceCurrency": "USD",
+          "url": "https://www.premierdentalacademyoflongview.com/enroll",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    ]
+  }
+  </script>
   <script src="/assets/speed-insights.js" type="module" defer></script>
 </head>
 <body class="min-h-screen">
@@ -33,7 +108,7 @@
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
       <span class="text-base sm:text-lg">Premier Dental Academy</span>
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
@@ -56,6 +131,12 @@
     <p class="text-xs uppercase tracking-widest text-cyan-200 font-semibold">Enroll</p>
     <h1 class="display text-4xl sm:text-5xl font-bold mt-2">Pick your <span class="gradient-text">format.</span></h1>
     <p class="text-cyan-50/90 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
+    <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-5 text-sm text-cyan-50/90">
+      <span class="inline-flex items-center gap-1.5">🔒 Secure checkout via Square</span>
+      <span class="inline-flex items-center gap-1.5">🎓 406+ graduates</span>
+      <span class="inline-flex items-center gap-1.5">💼 85%+ job placement</span>
+      <span class="inline-flex items-center gap-1.5">↩️ Texas-compliant refund policy</span>
+    </div>
   </div>
 
   <!-- ───────── Format cards ───────── -->
@@ -80,22 +161,31 @@
       </button>
     </div>
 
-    <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
-      <div class="flex items-center gap-2"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
-      <p class="text-sm text-slate-500 mt-1">Live classes, attend from anywhere</p>
-      <div class="display text-4xl font-bold mt-5">$997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · $200 down, then daily/weekly/monthly</div>
+    <div class="bg-white border-2 border-rose-400 rounded-2xl p-6 hover:border-rose-600 transition relative shadow-lg">
+      <span class="absolute -top-3 left-5 bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">🔥 Limited time</span>
+      <div class="flex items-center gap-2 mt-1"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
+      <p class="text-sm text-slate-500 mt-1">Start any day · no class schedule</p>
+      <div class="mt-5">
+        <div class="flex items-baseline gap-2">
+          <span class="display text-4xl font-extrabold text-rose-700">$397</span>
+          <span class="line-through text-slate-400 text-xl font-semibold">$997</span>
+        </div>
+        <div class="text-xs font-bold text-rose-700 mt-0.5 uppercase tracking-wider">One-time payment · sale price</div>
+      </div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live video instruction with our instructors</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Start any day, work at your own pace</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum as in-person</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Full Practice Pro + ChairSide trainer access</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Infection control + radiology coursework</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
       </ul>
+      <div class="mt-5 text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3 leading-relaxed">
+        <strong>Non-refundable at this price.</strong> You're getting tools worth thousands at a fraction of the cost. If Online isn't right for you, we'll <strong>transfer your full payment</strong> as credit toward the In-Person program — your money is never lost.
+      </div>
       <button type="button" data-action="pick-plan" data-plan="online"
-        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
-        Choose Online →
+        class="block w-full text-center mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg shadow-md">
+        Lock In Online — $397 →
       </button>
     </div>
 
@@ -132,10 +222,26 @@
       <!-- Left: form -->
       <div class="lg:col-span-3 space-y-5">
 
-        <div>
+        <div data-online-hide>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">Choose your class</label>
           <select id="cohort" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none"></select>
           <p id="cohort-meta" class="text-xs text-slate-500 mt-1.5">—</p>
+        </div>
+
+        <!-- Shown only when Online is selected — the rose, one-time $397 callout -->
+        <div id="online-summary" class="bg-gradient-to-br from-rose-50 to-amber-50 border-2 border-rose-300 rounded-xl p-5">
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-white bg-rose-500 px-2 py-1 rounded-full animate-pulse">🔥 Limited time</span>
+            <span class="text-xs font-bold text-rose-700 uppercase tracking-wider">Online — start any day</span>
+          </div>
+          <div class="mt-3 flex items-baseline gap-2">
+            <span class="display text-4xl font-extrabold text-rose-700">$397</span>
+            <span class="line-through text-slate-400 text-xl font-semibold">$997</span>
+            <span class="text-sm text-slate-600">one-time payment</span>
+          </div>
+          <p class="text-xs text-slate-700 mt-3 leading-relaxed">
+            <strong>Non-refundable at this sale price.</strong> You're getting tools worth thousands at a fraction of full price. If Online isn't the right fit, we'll <strong>transfer your full $397 as credit toward the In-Person program</strong> — your money is never lost.
+          </p>
         </div>
 
         <div class="grid sm:grid-cols-2 gap-3">
@@ -153,24 +259,28 @@
           <input id="phone" type="tel" autocomplete="tel" class="w-full sm:w-1/2 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
         </div>
 
-        <div>
+        <div data-online-hide>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">Down payment today
             <span class="text-slate-400 font-normal">— $200 minimum, pay more to lower installments</span>
           </label>
-          <div class="relative">
-            <span class="absolute left-3 top-2.5 text-slate-500">$</span>
-            <input id="down" type="number" min="200" step="1" value="200" class="w-full sm:w-48 border-2 border-slate-200 rounded-lg pl-7 pr-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          <div class="space-y-2">
+            <div class="flex items-baseline gap-2 flex-wrap">
+              <span id="down-display" class="display text-3xl font-bold text-teal-700">$200</span>
+              <span class="text-xs text-slate-500">of $1,997 total tuition</span>
+            </div>
+            <input id="down" type="range" min="200" max="1997" step="25" value="200"
+                   class="w-full accent-teal-600 cursor-pointer"
+                   oninput="document.getElementById('down-display').textContent = '$' + Number(this.value).toLocaleString();" />
+            <div class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
+              <span>$200 min</span>
+              <span>Paid in full · $1,997</span>
+            </div>
           </div>
         </div>
 
-        <div>
+        <div data-online-hide>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">How do you want to pay the rest?</label>
-          <div class="grid grid-cols-3 gap-2" id="cadence-group">
-            <label class="cadence-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
-              <input type="radio" name="cadence" value="daily" class="sr-only" />
-              <div class="text-sm font-semibold">Daily</div>
-              <div class="text-xs text-slate-500">small payments</div>
-            </label>
+          <div class="grid grid-cols-2 gap-2" id="cadence-group">
             <label class="cadence-opt cursor-pointer border-2 border-teal-600 bg-teal-50 rounded-lg p-3 text-center transition">
               <input type="radio" name="cadence" value="weekly" checked class="sr-only" />
               <div class="text-sm font-semibold">Weekly</div>
@@ -184,7 +294,7 @@
           </div>
         </div>
 
-        <div>
+        <div data-online-hide>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">Start paying on</label>
           <input id="first-date" type="date" class="w-full sm:w-56 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
           <p class="text-xs text-slate-500 mt-1.5">Final payment must be done by the time class ends.</p>
@@ -218,6 +328,13 @@
 
           <div id="sum-warning" hidden class="mt-3 text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded p-2"></div>
 
+          <!-- Risk reversal / reassurance right at the decision point -->
+          <div class="mt-4 rounded-lg bg-teal-50 border border-teal-100 p-3 text-[12px] text-teal-900 space-y-1.5">
+            <div class="flex items-start gap-2"><span>🔁</span><span>Change your mind? Your payment <strong>transfers in full</strong> as credit toward the In-Person program — your money is never lost.</span></div>
+            <div class="flex items-start gap-2"><span>🤝</span><span><strong>Job-placement help</strong> with East Texas dental offices when you finish.</span></div>
+            <div class="flex items-start gap-2"><span>💳</span><span>Split it up with <strong>Klarna, Afterpay, or Affirm</strong> at checkout.</span></div>
+          </div>
+
           <button type="button" id="pay-btn" data-action="submit"
             class="block w-full text-center mt-5 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-bold py-3 rounded-lg">
             Reserve seat & pay today
@@ -230,9 +347,22 @@
     </div>
   </section>
 
+  <!-- Pay-over-time / financing -->
+  <div class="bg-white/10 border border-white/20 rounded-2xl max-w-3xl mx-auto mt-10 p-5 text-center">
+    <p class="font-semibold text-white">💳 Want to pay over time?</p>
+    <p class="text-cyan-50/90 text-sm mt-1 max-w-xl mx-auto">Our <strong>In-Person plan</strong> lets you put a deposit down and pay the rest in scheduled installments. You can also split tuition with a buy-now-pay-later service:</p>
+    <div class="flex flex-wrap items-center justify-center gap-2 mt-3">
+      <a href="https://www.klarna.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Klarna</a>
+      <a href="https://www.afterpay.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Afterpay</a>
+      <a href="https://www.affirm.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Affirm</a>
+    </div>
+    <p class="text-cyan-100/80 text-xs mt-3">Buy-now-pay-later is offered by these third parties, subject to their approval and terms. Questions about a plan? Call (903) 913-6444.</p>
+  </div>
+
   <div class="text-center mt-10 text-sm text-cyan-50/90 max-w-2xl mx-auto">
-    <p class="font-semibold text-white">14-day satisfaction guarantee</p>
-    <p class="mt-1">If you decide the program isn't for you within 14 days of enrollment, we refund 100% of your tuition. No questions asked.</p>
+    <p class="font-semibold text-white">Refund &amp; transfer policy</p>
+    <p class="mt-1"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.</p>
+    <p class="mt-1"><strong>In-Person ($1,997):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing; refunds process within 30 days.</p>
   </div>
 
   <div class="text-center mt-6 text-xs text-cyan-100/80">
@@ -250,7 +380,7 @@ const SQUARE_LOCATION_ID = '2P2ZE3FJNEYTV';
 
 const PLAN_DEFS = {
   'in-person': { name: 'PDA RDA Program — In-Person', total: 199700, mode: 'in_person' },
-  'online':    { name: 'PDA RDA Program — Online',    total:  99700, mode: 'online' },
+  'online':    { name: 'PDA RDA Program — Online',    total:  39700, mode: 'online' },
 };
 
 const sb = window.supabase.createClient(
@@ -258,7 +388,8 @@ const sb = window.supabase.createClient(
   'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'
 );
 
-const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayments: null };
+const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayments: null, specialActive: false };
+
 
 const fmt = (cents) => '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
 const isoToday = () => new Date().toISOString().slice(0, 10);
@@ -298,9 +429,21 @@ function renderCohortOptions() {
   updateCohortMeta();
 }
 
-// If the user arrived with ?cohort=<id>, auto-pick the matching plan format.
+// If the user arrived with ?plan=in-person|online or ?cohort=<id>,
+// auto-pick the matching plan format so they land on the calculator
+// instead of the "pick a path" screen.
 function autoPickFromUrl() {
-  const id = new URLSearchParams(location.search).get('cohort');
+  const params = new URLSearchParams(location.search);
+  const planParam = (params.get('plan') || params.get('mode') || '').toLowerCase().trim();
+  if (planParam === 'in-person' || planParam === 'in_person' || planParam === 'inperson') {
+    pickPlan('in-person');
+    return;
+  }
+  if (planParam === 'online') {
+    pickPlan('online');
+    return;
+  }
+  const id = params.get('cohort');
   if (!id) return;
   const c = state.cohorts.find(x => x.id === id);
   if (!c) return;
@@ -310,6 +453,10 @@ function autoPickFromUrl() {
 function updateCohortMeta() {
   const sel = document.getElementById('cohort');
   state.cohort = state.cohorts.find(c => c.id === sel.value) || null;
+
+  // The $1,500 pay-in-full special has ended — regular tuition always applies.
+  state.specialActive = false;
+
   const el = document.getElementById('cohort-meta');
   if (!state.cohort) { el.textContent = '—'; return; }
   const c = state.cohort;
@@ -331,6 +478,15 @@ function updateCohortMeta() {
 function computeSchedule() {
   const plan = PLAN_DEFS[state.plan];
   const total = plan.total;
+  // ── Online ($397) is a one-time, non-refundable payment with no
+  //    cohort / cadence / start-date. Short-circuit the validations.
+  if (state.plan === 'online') {
+    return {
+      total, down: total, cadence: 'one-time', firstDate: '', end: '',
+      remaining: 0, count: 0, dates: [], perCents: 0, lastAmountCents: 0,
+      valid: true, warning: '', plan,
+    };
+  }
   const down = Math.round(Number(document.getElementById('down').value) * 100);
   const cadence = document.querySelector('[name="cadence"]:checked').value;
   const firstDate = document.getElementById('first-date').value;
@@ -349,18 +505,48 @@ function computeSchedule() {
   const window = diffDays(firstDate, end);
   if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
 
-  let count = Math.floor(window / step) + 1;
-  if (count < 1) count = 1;
-  if (count > 13) {
-    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} would need more than 13 payments before class ends. Pick a later start date, a slower cadence, or pay more down.`;
+  // Per Amanda: every installment is a CLEAN round number — no "change."
+  //   Weekly  → $160 every week
+  //   Monthly → $400 first month, then $600 each subsequent month
+  // The schedule rounds UP, so the sum of installments is ≥ remaining (the
+  // plan student may pay slightly more than paid-in-full — that's Amanda's
+  // "you pay more for choosing the payment plan" pricing).
+  const FIRST_PER = { weekly: 16000, monthly: 40000 };
+  const NEXT_PER  = { weekly: 16000, monthly: 60000 };
+  let amounts;
+  if (cadence === 'weekly' || cadence === 'monthly') {
+    amounts = [FIRST_PER[cadence]];
+    let covered = amounts[0];
+    while (covered < remaining) {
+      amounts.push(NEXT_PER[cadence]);
+      covered += NEXT_PER[cadence];
+      if (amounts.length > 13) {
+        out.warning = `That cadence would need more than 13 payments before class ends. Increase your down payment.`;
+        return out;
+      }
+    }
+  } else {
+    // Daily — legacy, evenly split.
+    const count = Math.max(1, Math.min(13, Math.floor(window / step) + 1));
+    const per = Math.floor(remaining / count);
+    amounts = Array(count).fill(per);
+    amounts[count - 1] = remaining - per * (count - 1);
+  }
+  const count = amounts.length;
+  const lastDate = addDays(firstDate, (count - 1) * step);
+  if (diffDays(lastDate, end) < 0) {
+    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
     return out;
   }
 
-  const per = Math.floor(remaining / count);
-  const lastAmount = remaining - per * (count - 1);
+  const totalCharged = amounts.reduce((a, b) => a + b, 0);
   out.count = count;
-  out.per = per;
-  out.lastAmount = lastAmount;
+  out.amounts = amounts;
+  out.per = amounts[amounts.length - 1];           // last installment (the recurring one)
+  out.firstAmount = amounts[0];                    // first installment ($400 monthly, $160 weekly)
+  out.lastAmount = amounts[amounts.length - 1];
+  out.totalCharged = totalCharged;                 // sum of installments
+  out.totalAll = down + totalCharged;              // grand total the student pays
   out.dates = Array.from({ length: count }, (_, i) => addDays(firstDate, i * step));
   out.valid = true;
   return out;
@@ -370,9 +556,13 @@ function renderSummary() {
   if (!state.plan) return;
   const s = computeSchedule();
   document.getElementById('sum-plan-name').textContent = s.plan.name;
-  document.getElementById('sum-total').textContent = fmt(s.total);
+  // Total displayed is now the GRAND TOTAL the student will actually be
+  // charged (down + every installment). For paid-in-full it's just
+  // s.total; for a plan it equals s.totalAll.
+  const grand = (s.count === 0 || !s.valid) ? s.total : s.totalAll;
+  document.getElementById('sum-total').textContent = fmt(grand);
   document.getElementById('sum-today').textContent = fmt(s.down || 0);
-  document.getElementById('sum-remaining').textContent = fmt(s.remaining ?? (s.total - (s.down||0)));
+  document.getElementById('sum-remaining').textContent = fmt(s.valid && s.count > 0 ? (s.totalCharged || 0) : (s.remaining ?? (s.total - (s.down||0))));
 
   const desc  = document.getElementById('sum-plan-desc');
   const final = document.getElementById('sum-final');
@@ -382,15 +572,25 @@ function renderSummary() {
     desc.textContent  = 'Paid in full today';
     final.textContent = '—';
   } else if (s.valid) {
-    const perTxt = s.lastAmount && s.lastAmount !== s.per
-      ? `${s.count - 1} × ${fmt(s.per)} + ${fmt(s.lastAmount)}`
-      : `${s.count} × ${fmt(s.per)}`;
+    // Build a "$400 + 3 × $600" / "12 × $160" style label from the amounts.
+    const amounts = s.amounts || [];
+    const first = amounts[0];
+    const rest = amounts.slice(1);
+    const restSame = rest.length && rest.every(a => a === rest[0]);
+    let perTxt;
+    if (rest.length === 0) {
+      perTxt = `${fmt(first)} once`;
+    } else if (restSame && rest[0] === first) {
+      perTxt = `${amounts.length} × ${fmt(first)}`;
+    } else if (restSame) {
+      perTxt = `${fmt(first)} + ${rest.length} × ${fmt(rest[0])}`;
+    } else {
+      perTxt = amounts.map(fmt).join(' + ');
+    }
     desc.textContent  = `${perTxt} ${s.cadence}`;
     final.textContent = fmtDate(s.dates[s.dates.length - 1]);
     s.dates.forEach((d, i) => {
-      const isLast = i === s.dates.length - 1;
-      const amt = isLast ? s.lastAmount : s.per;
-      list.insertAdjacentHTML('beforeend', `<li>${fmtDate(d)} — ${fmt(amt)}</li>`);
+      list.insertAdjacentHTML('beforeend', `<li>${fmtDate(d)} — ${fmt(amounts[i])}</li>`);
     });
   } else {
     desc.textContent = '—';
@@ -417,6 +617,10 @@ async function pickPlan(plan) {
   state.plan = plan;
   document.getElementById('co-plan-name').textContent = PLAN_DEFS[plan].name;
   document.getElementById('checkout').hidden = false;
+  // Online is a $397 one-time payment with no class schedule — hide the
+  // payment-plan UI (cohort picker, down-payment slider, cadence picker,
+  // start-paying-on date) since none of it applies.
+  document.body.setAttribute('data-plan', plan);
   renderCohortOptions();
   renderSummary();
   document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -424,59 +628,115 @@ async function pickPlan(plan) {
   renderSummary();
 }
 
+// Module-level lock so the same form session can NEVER submit twice — even
+// if the user double-clicks, the button briefly re-enables, or the network
+// hiccups. This is the line that stopped the triple-charge bug.
+let __PDA_SUBMIT_LOCKED = false;
+
 async function submit() {
+  if (__PDA_SUBMIT_LOCKED) return;
+  __PDA_SUBMIT_LOCKED = true;
+
   const btn = document.getElementById('pay-btn');
   const err = document.getElementById('err');
   err.hidden = true;
 
   const s = computeSchedule();
-  if (!s.valid) { err.textContent = s.warning || 'Please fix the plan first.'; err.hidden = false; return; }
+  if (!s.valid) {
+    __PDA_SUBMIT_LOCKED = false; // safe to retry — nothing went to Square
+    err.textContent = s.warning || 'Please fix the plan first.'; err.hidden = false; return;
+  }
 
   const name  = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
   const phone = document.getElementById('phone').value.trim();
-  if (!name || !email) { err.textContent = 'Name and email are required.'; err.hidden = false; return; }
+  if (!name || !email) {
+    __PDA_SUBMIT_LOCKED = false;
+    err.textContent = 'Name and email are required.'; err.hidden = false; return;
+  }
 
   btn.disabled = true;
-  btn.textContent = 'Processing…';
+  btn.textContent = 'Processing… DO NOT close this tab.';
+
+  let tokenRes;
   try {
-    const tokenRes = await state.card.tokenize();
+    tokenRes = await state.card.tokenize();
     if (tokenRes.status !== 'OK') {
-      throw new Error(tokenRes.errors?.[0]?.message || 'Card was rejected. Try another card.');
+      // Tokenization failed — card was NEVER charged, safe to allow retry.
+      __PDA_SUBMIT_LOCKED = false;
+      btn.disabled = false;
+      btn.textContent = 'Reserve seat & pay today';
+      err.textContent = tokenRes.errors?.[0]?.message || 'Card was rejected. Try another card.';
+      err.hidden = false;
+      return;
     }
+  } catch (e) {
+    __PDA_SUBMIT_LOCKED = false;
+    btn.disabled = false;
+    btn.textContent = 'Reserve seat & pay today';
+    err.textContent = e.message || 'Card tokenization failed.';
+    err.hidden = false;
+    return;
+  }
+
+  // From here on, we may have sent a charge to Square. NEVER re-enable
+  // the button. NEVER show "Payment failed" if the server returns ok=true.
+  try {
     const body = {
       plan: state.plan, downCents: s.down, cadence: s.cadence,
       firstPaymentDate: s.firstDate, classEndDate: s.end,
       sourceId: tokenRes.token, email, name, phone,
       cohortName: state.cohort?.name || null,
+      cohortId: state.cohort?.id || null,
+      special: null,
     };
     const resp = await fetch('/api/enroll', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
-    const out = await resp.json();
-    if (!resp.ok || !out.ok) throw new Error(out.error || 'Payment failed.');
+    const out = await resp.json().catch(() => ({}));
 
-    const params = new URLSearchParams({
-      plan: out.plan,
-      total: out.totalCents,
-      down: out.downCents,
-      remaining: out.remainingCents,
-      receipt: out.receiptUrl || '',
-      cadence: out.schedule?.cadence || '',
-      count: String(out.schedule?.count || 0),
-      per: String(out.schedule?.perCents || 0),
-      last: String(out.schedule?.lastAmountCents || 0),
-      finalDate: out.schedule?.dates?.[out.schedule.dates.length - 1] || '',
-      cohort: state.cohort?.name || '',
-    });
-    window.location.href = '/enroll-success?' + params.toString();
-  } catch (e) {
-    err.textContent = e.message;
+    if (resp.ok && out.ok) {
+      // Success path. Note: out.warning may be set if the down-payment
+      // succeeded but the recurring-invoice creation failed — the success
+      // page surfaces the warning so the student isn't confused.
+      const params = new URLSearchParams({
+        plan: out.plan,
+        total: out.totalCents,
+        down: out.downCents,
+        remaining: out.remainingCents,
+        receipt: out.receiptUrl || '',
+        cadence: out.schedule?.cadence || '',
+        count: String(out.schedule?.count || 0),
+        per: String(out.schedule?.perCents || 0),
+        last: String(out.schedule?.lastAmountCents || 0),
+        finalDate: out.schedule?.dates?.[out.schedule.dates.length - 1] || '',
+        cohort: state.cohort?.name || '',
+        warning: out.warning || '',
+      });
+      window.location.href = '/enroll-success?' + params.toString();
+      return;
+    }
+
+    // Server returned non-ok. We don't know if Square took the card or not.
+    // Tell the student to CALL US instead of allowing a re-submit.
+    btn.textContent = '⛔ Stopped — call (903) 913-6444';
+    btn.classList.add('bg-rose-700');
+    err.innerHTML = `
+      <strong>Hold on — don't try again.</strong> ${(out.error || 'Something went wrong with checkout.').replace(/</g,'&lt;')}<br><br>
+      We may or may not have captured your card. To avoid any double-charge, <strong>call Amanda at (903) 913-6444</strong> right now — she'll confirm in Square in 30 seconds. If we charged you and the page errored, she refunds it on the spot.
+    `;
     err.hidden = false;
-    btn.disabled = false;
-    btn.textContent = 'Reserve seat & pay today';
+  } catch (e) {
+    // Network error / unparseable response. Same rule: do NOT allow retry.
+    btn.textContent = '⛔ Stopped — call (903) 913-6444';
+    btn.classList.add('bg-rose-700');
+    err.innerHTML = `
+      <strong>Connection problem.</strong> The page couldn't confirm whether your card was charged.<br><br>
+      <strong>Call Amanda at (903) 913-6444 right now</strong> — she'll check Square in 30 seconds. Don't click pay again from this page.
+    `;
+    err.hidden = false;
   }
 }
 

@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Upcoming Classes — Premier Dental Academy of Longview</title>
+  <title>Dental Assistant Classes in Longview, TX — 2026 RDA Cohorts</title>
   <meta name="description" content="See PDA's current and upcoming RDA training cohorts. Reserve your seat in any 2026 class. Choose In-Person at our Longview campus or Online from anywhere." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
@@ -31,13 +33,27 @@
   <script src="/assets/ask-premier.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script src="/assets/pda-social-proof.js" defer></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/classes" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/classes" />
+  <meta property="og:title" content="Dental Assistant Classes in Longview, TX — 2026 RDA Cohorts" />
+  <meta property="og:description" content="See current and upcoming RDA training cohorts at Premier Dental Academy of Longview. Reserve your seat in any 2026 class — In-Person at our Longview, TX campus or Online from anywhere in East Texas." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Dental Assistant Classes in Longview, TX — 2026 RDA Cohorts" />
+  <meta name="twitter:description" content="See PDA" />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
   <script src="/assets/speed-insights.js" type="module" defer></script>
 </head>
 <body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
 
 <nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
   <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white grid place-items-center font-extrabold">P</span> Premier Dental Academy</a>
+    <a href="/" class="flex items-center gap-2 font-bold"><img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" /> Premier Dental Academy</a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
       <a href="/#programs" class="hover:text-teal-700">Programs</a>
       <a href="/calendar" class="hover:text-teal-700">Calendar</a>
@@ -135,7 +151,7 @@
       <label class="block"><span class="text-sm font-medium">Phone *</span><input name="phone" type="tel" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600" /></label>
       <label class="block"><span class="text-sm font-medium">Anything we should know?</span><textarea name="notes" rows="2" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600"></textarea></label>
       <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg">Reserve my seat →</button>
-      <p class="text-xs text-slate-500 text-center">No payment required to reserve · 14-day money-back guarantee once enrolled · We confirm within 1 business day</p>
+      <p class="text-xs text-slate-500 text-center">No payment required to reserve · Online sale non-refundable (transferable) · In-Person pro-rated per TX guidelines</p>
     </form>
     <div id="rm-success" class="hidden text-center py-6">
       <div class="text-5xl mb-2">🎉</div>
@@ -153,7 +169,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+window.AOS && AOS.init({ duration: 500, once: true });
 
 (async () => {
   const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
@@ -162,9 +178,9 @@ AOS.init({ duration: 500, once: true });
   const fmtRange = (a, b) => fmtDate(a) + ' – ' + fmtDate(b);
   const PROGRAMS = {
     foundation:   { label: 'In-Person', price: '$1,997', dur: 'At our Longview campus' },
-    career_track: { label: 'Online',    price: '$997',   dur: 'Live video from home' },
+    career_track: { label: 'Online',    price: '$397',   dur: 'Live video from home' },
     in_person:    { label: 'In-Person', price: '$1,997', dur: 'At our Longview campus' },
-    online:       { label: 'Online',    price: '$997',   dur: 'Live video from home' },
+    online:       { label: 'Online',    price: '$397',   dur: 'Live video from home' },
   };
 
   const renderCohortCard = (c, isUpcoming) => {
@@ -228,7 +244,7 @@ AOS.init({ duration: 500, once: true });
     ? upcoming.map(c => renderCohortCard(c, true)).join('')
     : '<div class="md:col-span-3 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">No upcoming classes posted yet — call (903) 913-6444 to ask about the next one.</div>';
 
-  AOS.refresh();
+  window.AOS && AOS.refresh();
 
   // Reserve flow
   const modal = document.getElementById('reserve-modal');
@@ -252,17 +268,33 @@ AOS.init({ duration: 500, once: true });
   form.onsubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData(form);
-    await sb.from('leads').insert({
+    const detail = [
+      currentCohort?.name ? `Cohort: ${currentCohort.name}` : '',
+      currentCohort?.meta || '',
+      fd.get('notes') ? `Notes: ${fd.get('notes')}` : '',
+    ].filter(Boolean).join(' · ');
+    const lead = {
       first_name: fd.get('first_name'),
       last_name: fd.get('last_name'),
       email: fd.get('email'),
       phone: fd.get('phone'),
       source: 'classes-reservation',
-      metadata: {
-        cohort_id: currentCohort.id, cohort_name: currentCohort.name, meta: currentCohort.meta,
-        notes: fd.get('notes'),
-      },
-    });
+      interest_path: currentCohort?.name ? `Seat reservation — ${currentCohort.name}` : 'Seat reservation',
+      message: detail || null,
+    };
+    let saved = false;
+    try {
+      const { error } = await sb.from('leads').insert(lead);
+      saved = !error;
+      if (error) console.error('[classes] insert error:', error.message);
+    } catch (e) { console.error('[classes] insert threw:', e); }
+    if (!saved) {
+      try {
+        const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        p.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
+      } catch (e2) {}
+    }
     form.classList.add('hidden'); success.classList.remove('hidden');
   };
 })();

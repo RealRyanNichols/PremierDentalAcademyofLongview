@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>How to Chart in ChairSide — Step-by-Step Tutorial | Premier Dental Academy</title>
+  <meta name="description" content="A plain-English, step-by-step tutorial for students on how to chart in the PDA ChairSide trainer: open a patient, read the clinical chart, and write a SmartDoc SOAP note." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/how-to-chart" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .step { counter-increment: step; }
+    .tab-chip { display:inline-flex; align-items:center; gap:.35rem; background:#ecfeff; color:#155e75; border:1px solid #a5f3fc; border-radius:9999px; padding:.15rem .6rem; font-weight:600; font-size:.8rem; white-space:nowrap; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/how-to-chart" />
+  <meta property="og:title" content="How to Chart in ChairSide — Step-by-Step Tutorial | Premier Dental Academy" />
+  <meta property="og:description" content="A plain-English, step-by-step tutorial for students on how to chart in the PDA ChairSide trainer: open a patient, read the clinical chart, and write a SmartDoc SOAP note." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="How to Chart in ChairSide — Step-by-Step Tutorial | Premier Dental Academy" />
+  <meta name="twitter:description" content="A plain-English, step-by-step tutorial for students on how to chart in the PDA ChairSide trainer: open a patient, read the clinical chart, and write a SmartDoc SOAP note." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col">
+
+<main class="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+
+  <!-- Hero -->
+  <div class="text-center mb-8">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Student Tutorial</p>
+    <h1 class="display text-3xl sm:text-4xl font-black mt-2">How to <span class="gradient-text">chart</span> in ChairSide</h1>
+    <p class="text-slate-600 mt-3">No experience needed. Follow these steps with the trainer open in another tab and you'll be charting like a pro in a few minutes.</p>
+    <div class="flex flex-wrap gap-2 justify-center mt-5">
+      <a href="/tools/chairside" target="_blank" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Open the ChairSide trainer ↗</a>
+      <a href="#start" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Start the tutorial ↓</a>
+    </div>
+    <p class="text-xs text-slate-500 mt-3">Tip: open the trainer in a <strong>second tab</strong> so you can read here and click there.</p>
+  </div>
+
+  <!-- What is charting -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <h2 class="display text-xl font-bold">First — what is "charting"?</h2>
+    <p class="text-slate-700 mt-2 text-[15px] leading-relaxed">Charting just means <strong>writing down what's going on in a patient's mouth and what was done about it</strong> — in the patient's official record. As a dental assistant you'll record things like which tooth was worked on, what procedure was done, and the dentist's notes. ChairSide is our practice software where you learn to do this safely, with fake patients, before you ever touch a real chart.</p>
+  </section>
+
+  <!-- Tab tour -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <h2 class="display text-xl font-bold">The 7 tabs across the top</h2>
+    <p class="text-slate-600 text-sm mt-1">Everything in ChairSide lives under one of these tabs. Here's what each one is for:</p>
+    <ul class="mt-4 space-y-2 text-[15px]">
+      <li><span class="tab-chip">👤 Patient</span> &nbsp;Their name, contact info, and insurance.</li>
+      <li><span class="tab-chip">📅 OnSchedule</span> &nbsp;Today's appointments.</li>
+      <li><span class="tab-chip">🦷 Clinical</span> &nbsp;<strong>The chart</strong> — what's been done, gum health, notes, and medical alerts.</li>
+      <li><span class="tab-chip">📝 SmartDoc</span> &nbsp;Where you <strong>write a clinical note</strong> (this is the main charting step).</li>
+      <li><span class="tab-chip">📷 Imaging</span> &nbsp;X-rays and photos on file.</li>
+      <li><span class="tab-chip">💵 Ledger</span> &nbsp;Charges, payments, and balance.</li>
+      <li><span class="tab-chip">🚪 Walkout</span> &nbsp;The end-of-visit receipt you hand the patient.</li>
+    </ul>
+  </section>
+
+  <div id="start"></div>
+
+  <!-- Tutorial 1 -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-9 h-9 rounded-full bg-teal-700 text-white grid place-items-center font-bold display">1</span>
+      <h2 class="display text-xl font-bold">Open a patient</h2>
+    </div>
+    <ol class="space-y-3 text-[15px] text-slate-700">
+      <li><strong>1.</strong> Open the <a href="/tools/chairside" target="_blank" class="text-teal-700 underline">ChairSide trainer</a>.</li>
+      <li><strong>2.</strong> Look at the <strong>list of patients on the left side</strong>. (On a phone, tap the <strong>☰</strong> button first to show it.)</li>
+      <li><strong>3.</strong> Start typing a name in the <strong>search box</strong> to find someone fast.</li>
+      <li><strong>4.</strong> <strong>Click a patient's name.</strong> Their chart opens. You'll start on the <span class="tab-chip">👤 Patient</span> tab.</li>
+    </ol>
+    <p class="mt-4 text-sm bg-teal-50 border border-teal-200 rounded-lg p-3 text-teal-900">✅ <strong>You did it when:</strong> you see the patient's name at the top and the tabs across the top become clickable.</p>
+  </section>
+
+  <!-- Tutorial 2 -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-9 h-9 rounded-full bg-teal-700 text-white grid place-items-center font-bold display">2</span>
+      <h2 class="display text-xl font-bold">Read the chart (and always check alerts!)</h2>
+    </div>
+    <ol class="space-y-3 text-[15px] text-slate-700">
+      <li><strong>1.</strong> Click the <span class="tab-chip">🦷 Clinical</span> tab at the top.</li>
+      <li><strong>2.</strong> You'll see <strong>four little sub-tabs</strong>. Here's what each shows:
+        <ul class="mt-2 ml-4 space-y-1.5 list-disc">
+          <li><strong>Restorative</strong> — every procedure already done, listed by tooth and surface.</li>
+          <li><strong>Perio</strong> — a summary of the gum (periodontal) exam.</li>
+          <li><strong>Notes</strong> — the written clinical notes (the ones you'll create in Step 3).</li>
+          <li><strong>Medical</strong> — allergies, medications, and health alerts.</li>
+        </ul>
+      </li>
+      <li><strong>3.</strong> 👉 <strong>Always click "Medical" first</strong> on a new patient. If someone is allergic to a medication or needs to pre-medicate, you must know <em>before</em> treatment. This is the #1 safety habit.</li>
+    </ol>
+    <p class="mt-4 text-sm bg-amber-50 border border-amber-200 rounded-lg p-3 text-amber-900">⚠️ <strong>Why it matters:</strong> missing an allergy or a heart condition is one of the most dangerous mistakes in a dental office. Checking Medical first becomes second nature.</p>
+  </section>
+
+  <!-- Tutorial 3 -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-9 h-9 rounded-full bg-teal-700 text-white grid place-items-center font-bold display">3</span>
+      <h2 class="display text-xl font-bold">Write & save a clinical note (the main charting skill)</h2>
+    </div>
+    <ol class="space-y-3 text-[15px] text-slate-700">
+      <li><strong>1.</strong> Click the <span class="tab-chip">📝 SmartDoc</span> tab.</li>
+      <li><strong>2.</strong> On the <strong>left</strong> you'll see a list of <strong>note templates</strong> (Prophy Adult, Restorative, Crown Seat, RCT, SRP, and more). <strong>Click the one that matches today's visit</strong> — for a routine cleaning, pick <strong>"Prophy Adult."</strong></li>
+      <li><strong>3.</strong> The note body <strong>fills in automatically</strong> using the SOAP layout (explained below). You don't start from a blank page!</li>
+      <li><strong>4.</strong> <strong>Click into the note and edit it</strong> — add the details for this patient (which teeth, what you saw, what the dentist did).</li>
+      <li><strong>5.</strong> Click <strong>💾 Save note.</strong> That's it — you've charted the visit.</li>
+      <li><strong>6.</strong> Want to start over? Click <strong>⟲ Reset</strong> to reload the blank template.</li>
+    </ol>
+    <p class="mt-4 text-sm bg-teal-50 border border-teal-200 rounded-lg p-3 text-teal-900">✅ <strong>You did it when:</strong> you switch to <span class="tab-chip">🦷 Clinical</span> → <strong>Notes</strong> and your saved note is there. (Saved notes lock so they can't be secretly changed — that's the law. Corrections are added as separate "amendments.")</p>
+  </section>
+
+  <!-- SOAP explainer -->
+  <section class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 mb-5">
+    <h2 class="display text-xl font-bold">What does "SOAP" mean?</h2>
+    <p class="text-slate-300 text-sm mt-1">Every clinical note follows the same four-part shape. Just remember <strong>S-O-A-P</strong>:</p>
+    <div class="grid sm:grid-cols-2 gap-3 mt-4 text-sm">
+      <div class="bg-white/10 rounded-xl p-4"><div class="font-bold text-teal-300">S — Subjective</div><div class="text-slate-200 mt-1">What the <em>patient says</em>. ("Tooth hurts when I drink cold water.")</div></div>
+      <div class="bg-white/10 rounded-xl p-4"><div class="font-bold text-teal-300">O — Objective</div><div class="text-slate-200 mt-1">What <em>you observe / measure</em>. (X-ray findings, swelling, vitals.)</div></div>
+      <div class="bg-white/10 rounded-xl p-4"><div class="font-bold text-teal-300">A — Assessment</div><div class="text-slate-200 mt-1">The <em>diagnosis</em> — what's going on. ("Decay on tooth #14.")</div></div>
+      <div class="bg-white/10 rounded-xl p-4"><div class="font-bold text-teal-300">P — Plan</div><div class="text-slate-200 mt-1">What you'll <em>do about it</em>. ("Filling placed today; recall in 6 months.")</div></div>
+    </div>
+  </section>
+
+  <!-- Tooth numbering quick ref -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <h2 class="display text-xl font-bold">Quick reference: teeth & surfaces</h2>
+    <p class="text-slate-600 text-sm mt-1">Charting uses tooth <strong>numbers</strong> and <strong>surfaces</strong>. Here are the basics:</p>
+    <div class="grid sm:grid-cols-2 gap-4 mt-4 text-[15px]">
+      <div>
+        <h3 class="font-bold text-slate-900">Tooth numbers (1–32)</h3>
+        <ul class="mt-1 space-y-1 text-slate-700 text-sm list-disc ml-4">
+          <li>Start at the <strong>upper-right back tooth = #1</strong>.</li>
+          <li>Count across the top to the upper-left = #16.</li>
+          <li>Drop down and come back: lower-left = #17 … lower-right = #32.</li>
+          <li>#8 &amp; #9 are your two upper front teeth.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-slate-900">Surfaces</h3>
+        <ul class="mt-1 space-y-1 text-slate-700 text-sm list-disc ml-4">
+          <li><strong>M</strong> — Mesial (toward the front/midline)</li>
+          <li><strong>D</strong> — Distal (toward the back)</li>
+          <li><strong>O</strong> — Occlusal (chewing surface)</li>
+          <li><strong>B</strong> — Buccal/Facial (cheek side) · <strong>L</strong> — Lingual (tongue side)</li>
+        </ul>
+      </div>
+    </div>
+    <p class="mt-3 text-sm text-slate-600">So <strong>"MO on #14"</strong> means a filling on the mesial + occlusal surfaces of tooth 14. Want to drill this? <a href="/tools/flashcards" class="text-teal-700 underline">Practice with flashcards →</a></p>
+  </section>
+
+  <!-- Tutorial 4 -->
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+    <div class="flex items-center gap-3 mb-4">
+      <span class="w-9 h-9 rounded-full bg-teal-700 text-white grid place-items-center font-bold display">4</span>
+      <h2 class="display text-xl font-bold">Finish the visit</h2>
+    </div>
+    <ol class="space-y-3 text-[15px] text-slate-700">
+      <li><strong>1.</strong> Click <span class="tab-chip">💵 Ledger</span> to see today's charges, payments, and the running balance.</li>
+      <li><strong>2.</strong> Click <span class="tab-chip">🚪 Walkout</span> to create the end-of-visit receipt.</li>
+      <li><strong>3.</strong> Use <strong>⎙ Print</strong> or <strong>⬇ PDF receipt</strong> to hand (or email) it to the patient on their way out.</li>
+    </ol>
+  </section>
+
+  <!-- Practice CTA -->
+  <section class="bg-gradient-to-br from-teal-700 to-cyan-800 text-white rounded-2xl p-6 text-center">
+    <h2 class="display text-2xl font-bold">Now go practice — you can't break anything</h2>
+    <p class="text-teal-50 mt-2 text-sm">Every patient in ChairSide is fake. Open it, pick a patient, and write a few notes until it feels easy. Repetition is the whole secret.</p>
+    <div class="flex flex-wrap gap-2 justify-center mt-5">
+      <a href="/tools/chairside" target="_blank" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-xl shadow">Open ChairSide & practice ↗</a>
+      <a href="/tools/practice-exam" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-xl">Take the practice exam</a>
+    </div>
+    <p class="text-teal-100 text-xs mt-4">Not enrolled yet? The full program walks you through all of this with an instructor. <a href="/enroll" class="underline font-semibold">Enroll →</a></p>
+  </section>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-6">
+  <div class="max-w-3xl mx-auto px-6 text-xs text-center">
+    <p>© 2026 Premier Dental Academy of Longview · <a href="/tools/chairside" class="hover:text-white">ChairSide</a> · <a href="/tools/practice-exam" class="hover:text-white">Practice exam</a> · <a href="/contact" class="hover:text-white">Need help? Contact us</a></p>
+  </div>
+</footer>
+
+</body>
+</html>

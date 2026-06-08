@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Free Texas RDA Practice Exam — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Take a free Texas Registered Dental Assistant (RDA) practice exam. Real exam-style questions with instant explanations and a weak-area breakdown. Built by Premier Dental Academy of Longview." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/practice-exam" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Free Texas RDA Practice Exam — test your readiness" />
+  <meta property="og:description" content="Real RDA exam-style questions with instant explanations. See exactly which topics to study. 100% free." />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/practice-exam" />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .opt { transition: all .15s ease; }
+    .opt:not(:disabled):hover { border-color:#0d9488; background:#f0fdfa; }
+    .opt-correct { border-color:#059669 !important; background:#ecfdf5 !important; }
+    .opt-wrong { border-color:#e11d48 !important; background:#fff1f2 !important; }
+    .opt-sel { border-color:#0d9488 !important; background:#f0fdfa !important; }
+    .bar { transition: width .5s cubic-bezier(.34,1.4,.64,1); }
+    @keyframes pop { from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
+    .pop { animation: pop .25s ease both; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta name="twitter:title" content="Free Texas RDA Practice Exam — Premier Dental Academy of Longview" />
+  <meta name="twitter:description" content="Take a free Texas Registered Dental Assistant (RDA) practice exam. Real exam-style questions with instant explanations and a weak-area breakdown. Built by Premier Dental Academy of Longview." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-white to-cyan-50 min-h-screen flex flex-col">
+
+<main class="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12">
+
+  <!-- ============ START SCREEN ============ -->
+  <section id="screen-start">
+    <div class="text-center mb-8">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free Study Tool</p>
+      <h1 class="display text-3xl sm:text-5xl font-black mt-2 leading-tight">Texas RDA <span class="gradient-text">Practice Exam</span></h1>
+      <p class="text-slate-600 mt-3 max-w-xl mx-auto">Real exam-style questions with instant explanations. Find out exactly how ready you are — and which topics to study next. 100% free.</p>
+    </div>
+
+    <div class="grid grid-cols-3 gap-3 mb-8 text-center">
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="display text-2xl font-black text-teal-700" id="bank-count">48</div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mt-1">Questions</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="display text-2xl font-black text-teal-700" id="topic-count">8</div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mt-1">Topics</div></div>
+      <div class="bg-white rounded-xl border border-slate-200 p-3"><div class="display text-2xl font-black text-teal-700">100%</div><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold mt-1">Free</div></div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <button id="start-quick" class="text-left bg-white border-2 border-teal-600 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition">
+        <div class="text-3xl mb-2">⚡</div>
+        <h2 class="display text-xl font-bold">Quick Quiz</h2>
+        <p class="text-sm text-slate-600 mt-1">10 random questions. Perfect for a fast warm-up. Free, no sign-up.</p>
+        <span class="inline-block mt-3 text-teal-700 font-semibold text-sm">Start quick quiz →</span>
+      </button>
+      <button id="start-full" class="text-left bg-white border-2 border-slate-200 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-400 transition">
+        <div class="text-3xl mb-2">📝</div>
+        <h2 class="display text-xl font-bold">Full Practice Exam</h2>
+        <p class="text-sm text-slate-600 mt-1">All <span id="full-count">48</span> questions across every topic, scored like the real thing.</p>
+        <span id="full-cta" class="inline-block mt-3 text-amber-600 font-semibold text-sm">Unlock free with your email →</span>
+      </button>
+      <button id="start-timed" class="text-left bg-gradient-to-br from-slate-900 to-slate-800 text-white border-2 border-slate-900 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition relative">
+        <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">Pro</span>
+        <div class="text-3xl mb-2">⏱️</div>
+        <h2 class="display text-xl font-bold">Timed Mock Exam</h2>
+        <p class="text-sm text-slate-200 mt-1">A full, timed exam from our expanded <span id="timed-count">75+</span>-question bank — real test conditions.</p>
+        <span id="timed-cta" class="inline-block mt-3 text-amber-300 font-semibold text-sm">🔒 Unlock with Exam Pro →</span>
+      </button>
+    </div>
+
+    <p class="text-center text-xs text-slate-500 mt-6">Built by Premier Dental Academy of Longview · 406+ graduates · 85%+ job placement</p>
+  </section>
+
+  <!-- ============ QUIZ SCREEN ============ -->
+  <section id="screen-quiz" class="hidden">
+    <div class="flex items-center justify-between mb-2 text-sm">
+      <span class="font-semibold text-slate-700">Question <span id="q-num">1</span> of <span id="q-total">10</span></span>
+      <div class="flex items-center gap-3">
+        <span id="q-timer" class="hidden font-mono font-semibold text-slate-700 bg-slate-100 rounded px-2 py-0.5">--:--</span>
+        <button id="quit-btn" class="text-slate-400 hover:text-rose-600 text-xs">Quit</button>
+      </div>
+    </div>
+    <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-6">
+      <div id="progress-bar" class="bar h-full bg-gradient-to-r from-teal-500 to-cyan-600" style="width:0%"></div>
+    </div>
+
+    <div id="q-card" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 pop">
+      <span class="inline-block text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full bg-teal-50 text-teal-700" id="q-topic">Topic</span>
+      <h2 class="display text-xl sm:text-2xl font-bold mt-3 leading-snug" id="q-text">…</h2>
+      <div id="q-options" class="space-y-3 mt-5"></div>
+
+      <div id="q-explain" class="hidden mt-5 rounded-xl p-4 text-sm"></div>
+
+      <div class="flex justify-between items-center mt-6">
+        <span id="q-feedback" class="text-sm font-semibold"></span>
+        <button id="next-btn" class="hidden bg-teal-700 hover:bg-teal-800 text-white font-semibold px-6 py-2.5 rounded-lg">Next →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ RESULTS SCREEN ============ -->
+  <section id="screen-results" class="hidden">
+    <div class="text-center mb-6">
+      <div id="result-emoji" class="text-6xl mb-2">🎉</div>
+      <h1 class="display text-3xl sm:text-4xl font-black">You scored <span id="score-pct" class="gradient-text">0%</span></h1>
+      <p class="text-slate-600 mt-2" id="score-line">—</p>
+    </div>
+
+    <!-- Score ring + count -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5 text-center">
+      <div class="text-sm text-slate-500">You answered</div>
+      <div class="display text-4xl font-black mt-1"><span id="score-correct">0</span> <span class="text-slate-300">/</span> <span id="score-total">0</span></div>
+      <div class="text-sm text-slate-500 mt-1">correct</div>
+      <div class="w-full h-3 bg-slate-200 rounded-full overflow-hidden mt-4">
+        <div id="score-bar" class="bar h-full" style="width:0%"></div>
+      </div>
+      <div class="text-xs text-slate-400 mt-2">Most state exams require about 75% to pass.</div>
+    </div>
+
+    <!-- Topic breakdown -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-5">
+      <h3 class="display text-lg font-bold mb-3">How you did by topic</h3>
+      <div id="topic-breakdown" class="space-y-3"></div>
+      <p id="weak-tip" class="hidden text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3 mt-4"></p>
+    </div>
+
+    <!-- BUYING CTA -->
+    <div id="cta-block" class="rounded-2xl p-6 mb-5 text-white bg-gradient-to-br from-teal-700 to-cyan-800 text-center">
+      <h3 class="display text-2xl font-bold" id="cta-head">Ready to make it official?</h3>
+      <p class="text-teal-50 mt-2 text-sm" id="cta-sub">Our 12-week program covers every topic on this exam — and our graduates pass and get hired across East Texas.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-5">
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-xl shadow">Enroll now →</a>
+        <a href="/apply" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-xl">Apply free</a>
+      </div>
+      <p class="text-teal-100 text-xs mt-3">Online program just $397 (limited-time) · In-person $1,997</p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 justify-center">
+      <button id="review-btn" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Review answers</button>
+      <button id="retake-btn" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Retake</button>
+      <a href="/tools/flashcards" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Study flashcards →</a>
+    </div>
+
+    <!-- Review list -->
+    <div id="review-list" class="hidden mt-6 space-y-3"></div>
+  </section>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-6">
+  <div class="max-w-3xl mx-auto px-6 text-xs text-center">
+    <p>© 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/enroll" class="hover:text-white">Enroll</a> · <a href="/tools/flashcards" class="hover:text-white">Flashcards</a> · <a href="/contact" class="hover:text-white">Contact</a></p>
+  </div>
+</footer>
+
+<!-- ============ EMAIL UNLOCK MODAL ============ -->
+<div id="unlock-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6 pop">
+    <div class="text-center">
+      <div class="text-4xl mb-2">🔓</div>
+      <h3 class="display text-2xl font-bold">Unlock the full exam — free</h3>
+      <p class="text-slate-600 text-sm mt-2">Enter your email to start the complete <span id="modal-count">48</span>-question practice exam. We'll also send you study tips. No spam, unsubscribe anytime.</p>
+    </div>
+    <form id="unlock-form" class="mt-5 space-y-3">
+      <input name="email" type="email" required placeholder="you@email.com" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      <button type="submit" id="unlock-submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg">Start the full exam →</button>
+      <p id="unlock-err" class="hidden text-xs text-rose-600 text-center"></p>
+      <button type="button" id="unlock-cancel" class="w-full text-slate-400 hover:text-slate-600 text-sm">Maybe later</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  let sb = null;
+  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {} }
+
+  // ---- Question bank ----
+  const BANK = [
+    {t:'Infection Control', q:'Which method is the most widely used for sterilizing dental instruments?', o:['Boiling water','Autoclave (steam under pressure)','Ultrasonic cleaning','Disinfectant wipes'], a:1, e:'Autoclaving — steam under pressure — is the gold standard. Ultrasonic cleaning only removes debris before sterilization; it does not sterilize.'},
+    {t:'Infection Control', q:'A standard steam autoclave operates at approximately:', o:['250°F (121°C) at 15 psi','160°F at 5 psi','400°F at 30 psi','Room temperature'], a:0, e:'A typical steam autoclave runs about 250°F (121°C) at 15 psi for 15–30 minutes.'},
+    {t:'Infection Control', q:'According to the CDC, when should hands be washed?', o:['Only after seeing patients','Before gloving and after glove removal','Once per day','Only if visibly dirty'], a:1, e:'Hand hygiene is performed before donning gloves and after removing them — gloves are not a substitute for handwashing.'},
+    {t:'Infection Control', q:'An instrument that penetrates soft tissue or bone (e.g., a scalpel) is classified as:', o:['Noncritical','Semicritical','Critical','Disposable'], a:2, e:'Critical items contact bone or penetrate tissue and must be heat-sterilized. Semicritical items touch mucous membranes; noncritical items touch only intact skin.'},
+    {t:'Infection Control', q:'The single most important way to prevent disease transmission in the office is:', o:['Wearing a mask','Hand hygiene','Wearing a gown','Using a rubber dam'], a:1, e:'Hand hygiene is the number-one measure to prevent cross-contamination.'},
+    {t:'Infection Control', q:'A biological indicator (spore test) is used to:', o:['Time appointments','Verify the autoclave actually sterilizes','Measure radiation','Whiten teeth'], a:1, e:'Spore tests use bacterial spores to confirm the sterilizer is achieving sterilization — performed at least weekly.'},
+    {t:'Infection Control', q:'Which item is single-use and must be discarded after one patient?', o:['Mouth mirror','Saliva ejector tip','Autoclave','Curing light'], a:1, e:'Saliva ejector tips and many barriers are disposable, single-use items.'},
+
+    {t:'Radiography', q:'The ALARA principle stands for:', o:['Always Limit All Radiation Always','As Low As Reasonably Achievable','A Lead Apron Reduces All','Avoid Long Radiographic Appointments'], a:1, e:'ALARA = As Low As Reasonably Achievable — keep patient and operator radiation exposure to the minimum needed.'},
+    {t:'Radiography', q:'Which radiograph is best for detecting interproximal (between-teeth) caries?', o:['Panoramic','Bitewing','Periapical of the apex','Occlusal'], a:1, e:'Bitewings show the crowns and interproximal surfaces of upper and lower teeth plus crestal bone — ideal for interproximal decay.'},
+    {t:'Radiography', q:'Increasing the kilovoltage (kVp) primarily affects radiographic:', o:['Contrast','Patient name','Film size','Appointment length'], a:0, e:'kVp controls contrast/penetrating power of the beam; mA and time control density.'},
+    {t:'Radiography', q:'Which device shields the patient’s torso and reproductive organs during exposure?', o:['Thyroid collar','Lead apron','Position-indicating device','Bite block'], a:1, e:'The lead apron protects the torso/gonads; the thyroid collar protects the thyroid gland.'},
+    {t:'Radiography', q:'In the paralleling technique, the receptor is placed:', o:['Touching the tooth','Parallel to the long axis of the tooth','At a 45° angle','Outside the mouth'], a:1, e:'Paralleling places the receptor parallel to the tooth’s long axis, with the beam perpendicular to both — the most accurate image.'},
+    {t:'Radiography', q:'A radiograph that is too dark was most likely:', o:['Underexposed','Overexposed / overdeveloped','Perfectly exposed','Not exposed'], a:1, e:'Excess exposure or overdevelopment produces a dark (high-density) image; too little produces a light image.'},
+
+    {t:'Dental Anatomy', q:'How many teeth are in the permanent (adult) dentition?', o:['20','28','32','36'], a:2, e:'Adults have 32 permanent teeth (including wisdom teeth); children have 20 primary teeth.'},
+    {t:'Dental Anatomy', q:'In the Universal Numbering System, tooth #8 is the:', o:['Maxillary right central incisor','Maxillary left central incisor','Mandibular left central incisor','Maxillary right third molar'], a:0, e:'#1 is the maxillary right third molar; counting around, #8 is the maxillary right central incisor and #9 the maxillary left central incisor.'},
+    {t:'Dental Anatomy', q:'The chewing surface of a posterior tooth is called the:', o:['Incisal surface','Occlusal surface','Lingual surface','Facial surface'], a:1, e:'Posterior teeth have an occlusal (chewing) surface; anterior teeth have an incisal edge.'},
+    {t:'Dental Anatomy', q:'The surface of a tooth closest to the midline is the:', o:['Distal','Mesial','Buccal','Apical'], a:1, e:'Mesial is toward the midline; distal is away from the midline.'},
+    {t:'Dental Anatomy', q:'The hardest substance in the body, covering the crown of the tooth, is:', o:['Dentin','Enamel','Cementum','Pulp'], a:1, e:'Enamel is the hardest, most mineralized tissue and covers the anatomic crown.'},
+    {t:'Dental Anatomy', q:'The soft tissue inside the tooth containing nerves and blood vessels is the:', o:['Enamel','Dentin','Pulp','Cementum'], a:2, e:'The pulp houses the nerves and blood vessels; inflammation of it (pulpitis) causes a toothache.'},
+    {t:'Dental Anatomy', q:'The pointed, single-cusped teeth used for tearing food are the:', o:['Incisors','Canines (cuspids)','Molars','Premolars'], a:1, e:'Canines (cuspids) have a single pointed cusp, are the longest teeth, and are used to tear/grip food.'},
+    {t:'Dental Anatomy', q:'The number of primary (baby) teeth is:', o:['16','20','24','32'], a:1, e:'There are 20 primary teeth.'},
+
+    {t:'Dental Materials', q:'Dental amalgam is created by mixing alloy powder with:', o:['Water','Mercury','Acid etch','Calcium hydroxide'], a:1, e:'Amalgam = an alloy (silver/tin/copper) combined with mercury.'},
+    {t:'Dental Materials', q:'Composite resin restorations are typically hardened by:', o:['Air drying','A curing light','Boiling','Mixing two pastes only'], a:1, e:'Most composites are light-cured with a visible blue (LED/halogen) curing light.'},
+    {t:'Dental Materials', q:'Alginate, used for preliminary impressions, is a(n):', o:['Irreversible hydrocolloid','Elastomer','Gypsum','Wax'], a:0, e:'Alginate is an irreversible hydrocolloid — once set, it cannot return to its original state.'},
+    {t:'Dental Materials', q:'Which material is poured into an impression to create a study model?', o:['Composite','Gypsum (dental stone/plaster)','Amalgam','Alginate'], a:1, e:'Gypsum products (plaster, dental stone) are poured into impressions to form casts/models.'},
+    {t:'Dental Materials', q:'Acid etching of enamel before bonding is done to:', o:['Whiten the tooth','Create micro-roughness for bonding','Numb the tooth','Remove the pulp'], a:1, e:'Phosphoric acid etch creates microscopic porosities so bonding resin mechanically locks onto enamel.'},
+
+    {t:'Instruments', q:'Which instrument is used to detect caries and check tooth surfaces?', o:['Periodontal probe','Explorer','Spoon excavator','Cotton pliers'], a:1, e:'The explorer detects caries, calculus, and surface irregularities. The periodontal probe measures pocket depth.'},
+    {t:'Instruments', q:'A periodontal probe is calibrated to measure:', o:['Tooth shade','Sulcus/pocket depth in millimeters','Bite force','Radiation'], a:1, e:'The periodontal probe is marked in millimeters to measure the depth of the gingival sulcus/periodontal pocket.'},
+    {t:'Instruments', q:'The spoon excavator is primarily used to:', o:['Measure pockets','Remove soft carious dentin','Polish teeth','Take X-rays'], a:1, e:'The spoon excavator removes soft, decayed dentin from a cavity preparation.'},
+
+    {t:'Chairside Assisting', q:'High-volume evacuation (HVE) is used mainly to:', o:['Light the operatory','Remove fluids and debris from the mouth','Cure composite','Sterilize instruments'], a:1, e:'The HVE removes large volumes of saliva, water, blood, and debris, keeping the field clear.'},
+    {t:'Chairside Assisting', q:'In four-handed dentistry, positions around the patient are described using the:', o:['Clock concept (zones)','Compass','Ruler','Calendar'], a:0, e:'Positions are described using clock-hour zones: operator, assistant, transfer, and static.'},
+    {t:'Chairside Assisting', q:'A stable finger rest that supports an instrument during a procedure is called a:', o:['Fulcrum','Pivot','Bevel','Margin'], a:0, e:'A fulcrum is the finger rest that stabilizes the hand and instrument, improving control and safety.'},
+    {t:'Chairside Assisting', q:'When passing an instrument to the dentist, the assistant works in the:', o:['Transfer zone','Static zone','Operator zone','Hallway'], a:0, e:'Instruments are passed in the transfer zone (about 4–7 o’clock for a right-handed operator), below the patient’s chin.'},
+
+    {t:'Emergencies & Patient Care', q:'The most common medical emergency in the dental office is:', o:['Cardiac arrest','Syncope (fainting)','Stroke','Allergic reaction'], a:1, e:'Syncope (fainting) is the most common; placing the patient supine usually restores cerebral blood flow.'},
+    {t:'Emergencies & Patient Care', q:'A patient with angina has chest pain. The appropriate emergency medication is:', o:['Nitroglycerin','Insulin','Albuterol','Fluoride'], a:0, e:'Sublingual nitroglycerin is given for angina to dilate coronary vessels.'},
+    {t:'Emergencies & Patient Care', q:'Epinephrine is the drug of choice for:', o:['Fainting','Anaphylaxis (severe allergic reaction)','Toothache','Dry mouth'], a:1, e:'Epinephrine is administered for anaphylaxis — a severe, life-threatening allergic reaction.'},
+    {t:'Emergencies & Patient Care', q:'Before any treatment, the assistant should always review the patient’s:', o:['Favorite color','Updated medical history','Parking spot','Shoe size'], a:1, e:'An updated medical history identifies allergies, medications, and conditions that affect safe care.'},
+    {t:'Emergencies & Patient Care', q:'A diabetic patient becomes shaky, sweaty, and confused. This most likely indicates:', o:['Hyperglycemia','Hypoglycemia (low blood sugar)','Fear','Dehydration'], a:1, e:'Sudden shakiness, sweating, and confusion suggest hypoglycemia; give a fast-acting sugar if the patient can swallow.'},
+    {t:'Emergencies & Patient Care', q:'A normal adult resting pulse rate is approximately:', o:['20–40 bpm','60–100 bpm','120–160 bpm','180–200 bpm'], a:1, e:'A normal resting adult heart rate is 60–100 beats per minute.'},
+    {t:'Emergencies & Patient Care', q:'A typical normal adult blood pressure reading is about:', o:['120/80 mmHg','200/120 mmHg','80/40 mmHg','60/30 mmHg'], a:0, e:'About 120/80 mmHg is considered normal; readings of 130/80 or higher may indicate hypertension.'},
+
+    {t:'Pharmacology', q:'The most commonly used local anesthetic in dentistry is:', o:['Lidocaine','Penicillin','Ibuprofen','Fluoride'], a:0, e:'Lidocaine is the most widely used dental local anesthetic, often combined with epinephrine.'},
+    {t:'Pharmacology', q:'A vasoconstrictor (e.g., epinephrine) is added to local anesthetic to:', o:['Improve taste','Prolong anesthesia and reduce bleeding','Sterilize the area','Speed up decay'], a:1, e:'Vasoconstrictors slow absorption, prolonging anesthesia and reducing bleeding at the site.'},
+
+    {t:'Prevention', q:'Fluoride helps prevent caries primarily by:', o:['Whitening teeth','Strengthening enamel (remineralization)','Numbing the tooth','Removing plaque mechanically'], a:1, e:'Fluoride promotes remineralization and makes enamel more resistant to acid attack.'},
+    {t:'Prevention', q:'The sticky bacterial biofilm that forms on teeth is called:', o:['Calculus','Plaque (biofilm)','Enamel','Cementum'], a:1, e:'Dental plaque is a soft biofilm; if not removed it mineralizes into calculus (tartar).'},
+    {t:'Prevention', q:'Hardened, mineralized plaque is known as:', o:['Calculus (tartar)','Dentin','Pulp','Fluoride'], a:0, e:'Calculus (tartar) is calcified plaque that must be removed by scaling.'},
+    {t:'Prevention', q:'Dental sealants are most often placed on the:', o:['Roots of teeth','Pits and fissures of posterior teeth','Gums','Tongue'], a:1, e:'Sealants flow into the pits and fissures of molars/premolars to prevent occlusal decay.'},
+
+    {t:'Texas Jurisprudence', q:'In Texas, a dental assistant must hold a certificate to legally:', o:['Diagnose cavities','Take dental radiographs (X-rays)','Extract teeth','Write prescriptions'], a:1, e:'Texas requires a Dental Assistant Radiology certification (or RDA) to expose radiographs; assistants don’t diagnose, extract, or prescribe.'},
+    {t:'Texas Jurisprudence', q:'Dental assistants in Texas perform delegated duties under the supervision of:', o:['No one','A licensed dentist','The front desk','Another assistant'], a:1, e:'Assistants perform delegated duties under the supervision of a licensed dentist.'},
+  ];
+
+  const PASS = 75;
+  const $ = (id) => document.getElementById(id);
+  const topics = [...new Set(BANK.map(b => b.t))];
+  $('bank-count').textContent = BANK.length;
+  $('full-count').textContent = BANK.length;
+  $('modal-count').textContent = BANK.length;
+  $('topic-count').textContent = topics.length;
+
+  let quiz = [], idx = 0, answers = [], answered = false, currentMode = 'quick';
+  let examMode = false, timerId = null, timeLeft = 0, isPro = false;
+  const LS_UNLOCK = 'pda.examUnlocked';
+
+  function updateTimer() {
+    const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
+    const el = $('q-timer');
+    el.textContent = m + ':' + String(s).padStart(2, '0');
+    el.classList.toggle('text-rose-600', timeLeft <= 60);
+  }
+  function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; $('q-timer').classList.add('hidden'); }
+
+  async function checkPro() {
+    // ANY signed-in user gets full access — same intent as the ChairSide /
+    // Practice Pro fix. The previous "paid only" check (is_admin || exam_pro
+    // || program !== 'preview') locked out enrolled students because the
+    // enrollment flow doesn't stamp profiles.program.
+    if (!sb) { console.info('[practice-exam] no Supabase client → preview'); return false; }
+    try {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) { console.info('[practice-exam] no session → preview'); return false; }
+      isPro = true;
+      console.info('[practice-exam] signed in (' + (session.user?.email || session.user?.id) + ') → Pro unlocked');
+      return isPro;
+    } catch (e) { console.warn('[practice-exam] session check failed:', e); return false; }
+  }
+  async function fetchProQuestions() {
+    try {
+      const { data } = await sb.from('exam_questions_pro').select('topic,question,options,answer,explanation');
+      return (data || []).map(r => ({ t: r.topic, q: r.question, o: r.options, a: r.answer, e: r.explanation }));
+    } catch (e) { return []; }
+  }
+
+  async function saveAttempt(mode, pct, correct, total, byTopic) {
+    if (!sb) return;
+    try {
+      const { data } = await sb.auth.getSession();
+      const uid = data?.session?.user?.id;
+      if (!uid) return;
+      await sb.from('practice_exam_attempts').insert({
+        student_id: uid, mode, score_pct: pct, correct, total, topic_breakdown: byTopic,
+      });
+    } catch (e) { /* never block results on a save failure */ }
+  }
+
+  function shuffle(arr) { const a = arr.slice(); for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+  function show(screen) { ['start','quiz','results'].forEach(s => $('screen-'+s).classList.toggle('hidden', s !== screen)); window.scrollTo({top:0,behavior:'smooth'}); }
+
+  function begin(list, opts) {
+    opts = opts || {};
+    examMode = !!opts.timed;
+    quiz = list; idx = 0; answers = new Array(list.length).fill(null);
+    $('q-total').textContent = list.length;
+    stopTimer();
+    if (examMode && opts.seconds) {
+      timeLeft = opts.seconds;
+      $('q-timer').classList.remove('hidden');
+      updateTimer();
+      timerId = setInterval(() => {
+        timeLeft--; updateTimer();
+        if (timeLeft <= 0) { stopTimer(); finish(); }
+      }, 1000);
+    }
+    show('quiz'); renderQ();
+  }
+
+  function renderQ() {
+    answered = false;
+    const item = quiz[idx];
+    $('q-num').textContent = idx + 1;
+    $('progress-bar').style.width = ((idx) / quiz.length * 100) + '%';
+    $('q-topic').textContent = item.t;
+    $('q-text').textContent = item.q;
+    $('q-feedback').textContent = '';
+    $('next-btn').classList.add('hidden');
+    const exp = $('q-explain'); exp.classList.add('hidden'); exp.className = 'hidden mt-5 rounded-xl p-4 text-sm';
+    const box = $('q-options'); box.innerHTML = '';
+    item.o.forEach((opt, i) => {
+      const b = document.createElement('button');
+      b.className = 'opt w-full text-left border-2 border-slate-200 rounded-xl px-4 py-3 font-medium';
+      b.textContent = opt;
+      b.onclick = () => choose(i, b);
+      box.appendChild(b);
+    });
+    $('q-card').classList.remove('pop'); void $('q-card').offsetWidth; $('q-card').classList.add('pop');
+  }
+
+  function choose(i, btn) {
+    if (answered) return;
+    answered = true;
+    const item = quiz[idx];
+    answers[idx] = i;
+    const opts = $('q-options').querySelectorAll('button');
+
+    // Timed exam mode: lock the choice but DON'T reveal the answer until the end.
+    if (examMode) {
+      opts.forEach(b => b.disabled = true);
+      btn.classList.add('opt-sel');
+      $('q-feedback').textContent = '';
+      $('next-btn').classList.remove('hidden');
+      $('next-btn').textContent = (idx === quiz.length - 1) ? 'Finish exam →' : 'Next →';
+      return;
+    }
+
+    opts.forEach((b, j) => {
+      b.disabled = true;
+      if (j === item.a) b.classList.add('opt-correct');
+      if (j === i && i !== item.a) b.classList.add('opt-wrong');
+    });
+    const correct = i === item.a;
+    $('q-feedback').textContent = correct ? '✓ Correct' : '✗ Not quite';
+    $('q-feedback').className = 'text-sm font-semibold ' + (correct ? 'text-emerald-700' : 'text-rose-600');
+    const exp = $('q-explain');
+    exp.className = 'mt-5 rounded-xl p-4 text-sm ' + (correct ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-rose-50 text-rose-900 border border-rose-200');
+    exp.innerHTML = '<strong>' + (correct ? 'Right!' : 'Answer: ' + item.o[item.a]) + '</strong> — ' + item.e;
+    exp.classList.remove('hidden');
+    $('next-btn').classList.remove('hidden');
+    $('next-btn').textContent = (idx === quiz.length - 1) ? 'See results →' : 'Next →';
+  }
+
+  $('next-btn').onclick = () => { if (idx < quiz.length - 1) { idx++; renderQ(); } else finish(); };
+  $('quit-btn').onclick = () => { if (confirm('Quit this quiz? Your progress will be lost.')) { stopTimer(); show('start'); } };
+
+  function finish() {
+    stopTimer();
+    let correct = 0;
+    const byTopic = {};
+    quiz.forEach((item, i) => {
+      const ok = answers[i] === item.a;
+      if (ok) correct++;
+      byTopic[item.t] = byTopic[item.t] || { c: 0, n: 0 };
+      byTopic[item.t].n++; if (ok) byTopic[item.t].c++;
+    });
+    const pct = Math.round(correct / quiz.length * 100);
+    saveAttempt(currentMode, pct, correct, quiz.length, byTopic);
+    $('score-pct').textContent = pct + '%';
+    $('score-correct').textContent = correct;
+    $('score-total').textContent = quiz.length;
+    const bar = $('score-bar');
+    bar.style.width = pct + '%';
+    bar.className = 'bar h-full ' + (pct >= PASS ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-rose-500');
+
+    const passed = pct >= PASS;
+    $('result-emoji').textContent = pct >= 90 ? '🏆' : passed ? '🎉' : pct >= 50 ? '💪' : '📚';
+    $('score-line').textContent = passed
+      ? 'Great work — you’re at or above a typical passing score!'
+      : 'Good start — a little more study and you’ll be there.';
+
+    // Topic breakdown
+    const weak = [];
+    $('topic-breakdown').innerHTML = Object.keys(byTopic).sort().map(t => {
+      const { c, n } = byTopic[t];
+      const p = Math.round(c / n * 100);
+      if (p < 70) weak.push(t);
+      const color = p >= 75 ? 'bg-emerald-500' : p >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+      return `<div>
+        <div class="flex justify-between text-sm mb-1"><span class="font-medium">${t}</span><span class="text-slate-500">${c}/${n}</span></div>
+        <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden"><div class="bar h-full ${color}" style="width:${p}%"></div></div>
+      </div>`;
+    }).join('');
+    if (weak.length) {
+      $('weak-tip').classList.remove('hidden');
+      $('weak-tip').innerHTML = '📌 Focus your studying on: <strong>' + weak.join(', ') + '</strong>. Our program drills these until they’re second nature.';
+    } else {
+      $('weak-tip').classList.add('hidden');
+    }
+
+    // Conversion copy tuned to score
+    if (passed) {
+      $('cta-head').textContent = 'You’ve got the knack — now get certified.';
+      $('cta-sub').textContent = 'You clearly have what it takes. Turn that into a real RDA credential and a career — our graduates get hired across East Texas at 85%+.';
+    } else {
+      $('cta-head').textContent = 'We’ll get you exam-ready.';
+      $('cta-sub').textContent = 'Our 12-week program covers every topic on this exam, step by step — most students go from unsure to confident and certified.';
+    }
+
+    buildReview();
+    show('results');
+  }
+
+  function buildReview() {
+    $('review-list').classList.add('hidden');
+    $('review-list').innerHTML = quiz.map((item, i) => {
+      const yours = answers[i];
+      const ok = yours === item.a;
+      return `<div class="bg-white rounded-xl border ${ok?'border-emerald-200':'border-rose-200'} p-4 text-sm">
+        <div class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">${item.t}</div>
+        <div class="font-semibold mt-1">${i+1}. ${item.q}</div>
+        <div class="mt-2 ${ok?'text-emerald-700':'text-rose-700'}">Your answer: ${yours==null?'—':item.o[yours]} ${ok?'✓':'✗'}</div>
+        ${ok?'':`<div class="text-emerald-700">Correct: ${item.o[item.a]}</div>`}
+        <div class="text-slate-600 mt-1">${item.e}</div>
+      </div>`;
+    }).join('');
+  }
+
+  $('review-btn').onclick = () => {
+    const rl = $('review-list');
+    rl.classList.toggle('hidden');
+    if (!rl.classList.contains('hidden')) rl.scrollIntoView({ behavior:'smooth' });
+  };
+  $('retake-btn').onclick = () => show('start');
+
+  // ---- Start buttons ----
+  $('start-quick').onclick = () => { currentMode = 'quick'; begin(shuffle(BANK).slice(0, 10)); };
+
+  async function fullUnlocked() {
+    if (localStorage.getItem(LS_UNLOCK) === '1') return true;
+    if (sb) { try { const { data } = await sb.auth.getSession(); if (data?.session) return true; } catch (e) {} }
+    return false;
+  }
+  $('start-full').onclick = async () => {
+    currentMode = 'full';
+    if (await fullUnlocked()) begin(shuffle(BANK));
+    else $('unlock-modal').classList.remove('hidden');
+  };
+
+  function showProUpsell() {
+    const wrap = document.createElement('div');
+    wrap.className = 'fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4';
+    wrap.innerHTML = `<div class="bg-white rounded-2xl max-w-md w-full p-6 text-center pop">
+      <div class="text-4xl mb-2">🔒</div>
+      <h3 class="display text-2xl font-bold">Unlock Exam Pro</h3>
+      <p class="text-slate-600 text-sm mt-2">The Timed Mock Exam and our expanded question bank are part of <strong>Exam Pro</strong> — included <strong>free</strong> when you enroll. Already a student? Just sign in.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-5">
+        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-lg">Enroll →</a>
+        <a href="/login" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">I'm a student — sign in</a>
+      </div>
+      <button class="pro-close mt-4 text-slate-400 hover:text-slate-700 text-sm">Maybe later</button>
+    </div>`;
+    wrap.addEventListener('click', (e) => { if (e.target === wrap || e.target.classList.contains('pro-close')) wrap.remove(); });
+    document.body.appendChild(wrap);
+  }
+
+  $('start-timed').onclick = async () => {
+    const pro = await checkPro();
+    if (!pro) { showProUpsell(); return; }
+    currentMode = 'timed';
+    const pq = await fetchProQuestions();
+    const pool = shuffle(BANK.concat(pq));
+    const n = Math.min(50, pool.length);
+    begin(pool.slice(0, n), { timed: true, seconds: n * 60 });
+  };
+
+  // Pro-aware labels on load — signed-in students see the Timed Mock Exam
+  // card with the lock icon gone, the "Pro" gold badge swapped for an
+  // "Unlocked" teal badge, and active-CTA styling.
+  checkPro().then(async (pro) => {
+    if (!pro) return;
+    const pq = await fetchProQuestions();
+    $('timed-count').textContent = (BANK.length + pq.length);
+    const cta = $('timed-cta');
+    cta.textContent = 'Start the timed mock exam →';
+    cta.className = 'inline-block mt-3 text-teal-300 font-semibold text-sm';
+    // Swap the gold "Pro" badge for a teal "Unlocked" one.
+    const badge = document.querySelector('#start-timed .absolute');
+    if (badge) {
+      badge.textContent = 'Unlocked';
+      badge.className = 'absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-teal-500 text-white px-2 py-0.5 rounded-full';
+    }
+  });
+
+  // ---- Unlock modal ----
+  const modal = $('unlock-modal');
+  $('unlock-cancel').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+  $('unlock-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = $('unlock-submit');
+    const email = new FormData(e.target).get('email');
+    btn.disabled = true; btn.textContent = 'Unlocking…';
+    $('unlock-err').classList.add('hidden');
+    if (sb) {
+      try {
+        const { error } = await sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] });
+        if (error) console.error('[practice-exam] subscribe error:', error.message);
+      } catch (err) { console.error('[practice-exam] subscribe threw:', err); }
+    }
+    try { localStorage.setItem(LS_UNLOCK, '1'); } catch (e2) {}
+    modal.classList.add('hidden');
+    btn.disabled = false; btn.textContent = 'Start the full exam →';
+    begin(shuffle(BANK));
+  });
+
+  // If already unlocked / signed in, soften the full-exam label.
+  fullUnlocked().then(u => { if (u) { $('full-cta').textContent = 'Start the full exam →'; $('full-cta').className = 'inline-block mt-3 text-teal-700 font-semibold text-sm'; } });
+})();
+</script>
+</body>
+</html>

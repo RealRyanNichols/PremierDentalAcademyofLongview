@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>For Dental Offices — Hire PDA Graduates | Premier Dental Academy</title>
   <meta name="description" content="East Texas dental offices: hire RDAs who are already fluent in Dentrix, EagleSoft, charting, and insurance. Tell us what you need and we'll match a PDA graduate to your practice." />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
@@ -31,6 +33,20 @@
   <script src="/assets/ask-premier.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+<script src="/assets/pda-social-proof.js" defer></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/hiring-partners" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/hiring-partners" />
+  <meta property="og:title" content="For Dental Offices — Hire PDA Graduates | Premier Dental Academy" />
+  <meta property="og:description" content="East Texas dental offices: hire RDAs who are already fluent in Dentrix, EagleSoft, charting, and insurance. Tell us what you need and we’ll send you qualified Premier Dental Academy graduates." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="For Dental Offices — Hire PDA Graduates | Premier Dental Academy" />
+  <meta name="twitter:description" content="East Texas dental offices: hire RDAs who are already fluent in Dentrix, EagleSoft, charting, and insurance. Tell us what you need and we’ll send you qualified Premier Dental Academy graduates." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
   <script src="/assets/speed-insights.js" type="module" defer></script>
 </head>
 <body class="bg-white">
@@ -38,7 +54,7 @@
 <nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
-      <span class="inline-block w-8 h-8 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-base grid place-items-center">P</span>
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
       <span class="text-base sm:text-lg">Premier Dental Academy</span>
     </a>
     <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
@@ -192,7 +208,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 600, once: true });
+window.AOS && AOS.init({ duration: 600, once: true });
 (async () => {
   const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
   const form = document.getElementById('partner-req');
@@ -200,16 +216,33 @@ AOS.init({ duration: 600, once: true });
     e.preventDefault();
     const fd = new FormData(form);
     const [first, ...rest] = (fd.get('name') || '').split(' ');
-    await sb.from('leads').insert({
+    const detail = [
+      fd.get('office') ? `Office: ${fd.get('office')}` : '',
+      fd.get('city')   ? `City: ${fd.get('city')}` : '',
+      fd.get('role')   ? `Hiring for: ${fd.get('role')}` : '',
+      fd.get('when')   ? `Timeline: ${fd.get('when')}` : '',
+      fd.get('notes')  ? `Notes: ${fd.get('notes')}` : '',
+    ].filter(Boolean).join(' · ');
+    const lead = {
       first_name: first, last_name: rest.join(' '),
       email: fd.get('email'), phone: fd.get('phone'),
       source: 'hiring-partners',
-      metadata: {
-        office: fd.get('office'), city: fd.get('city'),
-        role: fd.get('role'), when: fd.get('when'), notes: fd.get('notes'),
-        kind: 'hiring-partner'
-      },
-    });
+      interest_path: 'hiring-partner',
+      message: detail || null,
+    };
+    let saved = false;
+    try {
+      const { error } = await sb.from('leads').insert(lead);
+      saved = !error;
+      if (error) console.error('[hiring-partners] insert error:', error.message);
+    } catch (e) { console.error('[hiring-partners] insert threw:', e); }
+    if (!saved) {
+      try {
+        const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        p.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
+      } catch (e2) {}
+    }
     form.classList.add('hidden');
     document.getElementById('partner-success').classList.remove('hidden');
   };

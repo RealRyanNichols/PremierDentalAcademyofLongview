@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>You did it — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Celebrate finishing your PDA course — share your win and keep going." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+    .confetti span { position: absolute; width: 10px; height: 14px; opacity: 0; animation: fall 4s linear forwards; }
+    @keyframes fall {
+      0%   { transform: translate3d(0, -10vh, 0) rotate(0deg); opacity: 1; }
+      100% { transform: translate3d(0, 110vh, 0) rotate(720deg); opacity: 0; }
+    }
+    .ring-pop { animation: pop .9s cubic-bezier(.34,1.56,.64,1) both; }
+    @keyframes pop { 0% { transform: scale(.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
+
+  <!-- SEO sweep: canonical + Open Graph + Twitter (auto-added) -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/congrats" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/congrats" />
+  <meta property="og:title" content="You did it — Premier Dental Academy of Longview" />
+  <meta property="og:description" content="Celebrate finishing your PDA course — share your win and keep going." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="You did it — Premier Dental Academy of Longview" />
+  <meta name="twitter:description" content="Celebrate finishing your PDA course — share your win and keep going." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-gradient-to-br from-teal-50 via-cyan-50 to-amber-50 min-h-screen flex flex-col">
+
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<main class="relative flex-1 flex items-center justify-center p-6">
+  <div class="max-w-2xl w-full bg-white rounded-3xl border border-slate-200 shadow-2xl p-8 sm:p-10 text-center ring-pop">
+    <div class="text-6xl sm:text-7xl mb-3">🎉</div>
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">You did it</p>
+    <h1 class="display text-3xl sm:text-5xl font-extrabold mt-2 leading-tight">
+      Congrats, <span class="gradient-text" id="student-name">friend</span>!
+    </h1>
+    <p class="text-slate-700 mt-3 text-lg">You just finished <strong id="course-name" class="text-slate-900">your PDA course</strong>.</p>
+    <p class="text-slate-500 mt-1 text-sm" id="completion-date"></p>
+
+    <!-- Share row -->
+    <div class="mt-7">
+      <p class="text-xs uppercase tracking-widest text-slate-500 font-semibold mb-3">Share your win</p>
+      <div class="flex flex-wrap gap-2 justify-center">
+        <a id="share-fb"  target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-[#1877f2] hover:bg-[#155bbf] text-white font-semibold px-4 py-2.5 rounded-lg text-sm">📘 Facebook</a>
+        <a id="share-x"   target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2.5 rounded-lg text-sm">𝕏 Post</a>
+        <a id="share-li"  target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-[#0a66c2] hover:bg-[#084d92] text-white font-semibold px-4 py-2.5 rounded-lg text-sm">in LinkedIn</a>
+        <button id="share-copy" class="inline-flex items-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold px-4 py-2.5 rounded-lg text-sm">🔗 Copy link</button>
+        <button id="share-native" class="inline-flex items-center gap-2 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2.5 rounded-lg text-sm hidden">📲 Share…</button>
+      </div>
+      <p id="copy-feedback" class="text-xs text-emerald-700 font-semibold mt-3 invisible">✓ Link copied — paste it anywhere</p>
+    </div>
+
+    <!-- Sample post -->
+    <div class="mt-7 text-left bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm">
+      <p class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold mb-2">Suggested caption — copy &amp; paste</p>
+      <p id="suggested-caption" class="text-slate-800 font-medium leading-relaxed">—</p>
+    </div>
+
+    <!-- Next steps -->
+    <div class="mt-8 grid sm:grid-cols-2 gap-3">
+      <a href="/dashboard" class="bg-teal-700 hover:bg-teal-800 text-white font-bold py-3 rounded-lg shadow-sm">▶ Keep going — Dashboard</a>
+      <a href="/tools/practice-pro" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-800 font-semibold py-3 rounded-lg">Practice on the trainer</a>
+    </div>
+
+    <p class="text-xs text-slate-500 mt-6">Tag <strong>@PremierDentalAcademy</strong> when you post — Amanda re-shares every win.</p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-6">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview · <a href="/" class="hover:text-white">Home</a> · <a href="/contact" class="hover:text-white">Contact</a></div>
+</footer>
+
+<script>
+(function () {
+  const params = new URLSearchParams(location.search);
+  const courseName  = (params.get('course') || params.get('c') || '').trim() || 'your PDA course';
+  const studentName = (params.get('name')   || params.get('n') || '').trim();
+  const dateStr     = (params.get('date')   || '').trim();
+
+  const safeCourse = courseName.replace(/</g, '&lt;');
+  const safeName   = (studentName || 'friend').replace(/</g, '&lt;');
+
+  document.getElementById('course-name').textContent  = safeCourse;
+  document.getElementById('student-name').textContent = safeName;
+  if (dateStr) {
+    const d = new Date(dateStr);
+    if (!isNaN(d)) {
+      document.getElementById('completion-date').textContent =
+        'Completed ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+  }
+
+  const shareUrl   = location.origin + '/';
+  const baseTxt    = `I just finished ${courseName} at Premier Dental Academy of Longview! One step closer to my RDA career in East Texas. 🦷✨`;
+  const fullPost   = `${baseTxt}\n\n#DentalAssistant #PDALongview #RDA #DentalCareer`;
+
+  document.getElementById('suggested-caption').textContent = fullPost;
+
+  document.getElementById('share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(baseTxt)}`;
+  document.getElementById('share-x').href  = `https://x.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(baseTxt)}`;
+  document.getElementById('share-li').href = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+
+  document.getElementById('share-copy').onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(`${fullPost}\n\n${shareUrl}`);
+      const fb = document.getElementById('copy-feedback');
+      fb.classList.remove('invisible');
+      setTimeout(() => fb.classList.add('invisible'), 2000);
+    } catch (e) {}
+  };
+
+  // Native share (mobile)
+  if (navigator.share) {
+    const btn = document.getElementById('share-native');
+    btn.classList.remove('hidden');
+    btn.onclick = () => navigator.share({ title: 'I finished my PDA course', text: fullPost, url: shareUrl }).catch(()=>{});
+  }
+
+  // Confetti
+  const colors = ['#0d9488', '#0891b2', '#f59e0b', '#fb7185', '#22c55e', '#a855f7'];
+  const root = document.getElementById('confetti');
+  const N = 70;
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement('span');
+    s.style.left  = Math.random() * 100 + 'vw';
+    s.style.background = colors[i % colors.length];
+    s.style.animationDelay   = (Math.random() * 1.5) + 's';
+    s.style.animationDuration = (3 + Math.random() * 3) + 's';
+    s.style.borderRadius = Math.random() > .5 ? '50%' : '2px';
+    root.appendChild(s);
+  }
+
+  // Log the completion for analytics (best-effort)
+  if (window.pda?.track) {
+    window.pda.track('course_completion', { course: courseName, student: studentName });
+  }
+})();
+</script>
+</body>
+</html>
