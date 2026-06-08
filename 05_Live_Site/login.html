@@ -199,19 +199,15 @@
     if (btn._origText) btn.textContent = btn._origText;
   }
 
-  // ── Remember-me storage swap ──
-  // When unchecked, after successful login we move the auth token from
-  // localStorage (persistent) to sessionStorage so closing the tab signs
-  // the user out. They stay signed in across refreshes within the same tab.
+  // ── Remember-me ──
+  // NOTE: previously this moved the auth token from localStorage to
+  // sessionStorage when "remember me" was unchecked. That broke sessions —
+  // the Supabase client (and every page) reads localStorage, so the moved
+  // token became invisible and users were silently signed out / dropped to a
+  // logged-out view on the next page. We now always persist to localStorage.
   function applyRemember(remember) {
-    if (remember) return;
-    try {
-      const v = localStorage.getItem(AUTH_KEY);
-      if (v) {
-        sessionStorage.setItem(AUTH_KEY, v);
-        localStorage.removeItem(AUTH_KEY);
-      }
-    } catch (e) {}
+    // intentionally a no-op: keep the session where the client expects it.
+    return;
   }
 
   // ── Tab switching ──
