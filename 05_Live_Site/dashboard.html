@@ -367,25 +367,29 @@
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const { data: { session } } = await sb.auth.getSession();
+  let { data: sessData } = await sb.auth.getSession();
+  let session = sessData?.session || null;
   if (!session) {
     document.getElementById('auth-wall').classList.remove('hidden');
     return;
   }
+
+  // getSession() can return an EXPIRED access token. If we query the database
+  // with it, RLS sees no user and returns no profile — which silently drops an
+  // admin into the logged-out "student" view. So if the token is expired (or
+  // about to be), refresh it first.
+  const nearExpiry = !session.expires_at || (session.expires_at * 1000 < Date.now() + 60000);
+  if (nearExpiry) {
+    try { const rs = await sb.auth.refreshSession(); if (rs?.data?.session) session = rs.data.session; } catch (e) {}
+  }
+
   document.getElementById('dashboard').classList.remove('hidden');
 
-  // Fetch profile. If it comes back empty, the stored access token may be
-  // stale — refresh the session once and retry so admins reliably get their
-  // is_admin flag (otherwise the office panel/admin link silently hide).
-  let profile = null;
-  {
-    const r1 = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-    profile = r1.data;
-    if (!profile) {
-      try { await sb.auth.refreshSession(); } catch (e) {}
-      const r2 = await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
-      profile = r2.data;
-    }
+  // Fetch profile; one more refresh + retry if it still comes back empty.
+  let profile = (await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) {
+    try { await sb.auth.refreshSession(); } catch (e) {}
+    profile = (await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()).data;
   }
   const p = profile || {
     id: session.user.id, email: session.user.email,
@@ -393,7 +397,7 @@
   };
 
   // Top nav identity
-  const initials = ((p.first_name?.[0] || p.email[0] || '?') + (p.last_name?.[0] || '')).toUpperCase();
+  const initials = ((p.first_name?.[0] || p.email?.[0] || '?') + (p.last_name?.[0] || '')).toUpperCase();
   document.getElementById('avatar-btn').textContent = initials;
   document.getElementById('dd-name').textContent = (p.first_name || '') + ' ' + (p.last_name || '');
   document.getElementById('dd-email').textContent = p.email;
