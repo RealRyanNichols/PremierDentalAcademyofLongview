@@ -238,7 +238,9 @@
     document.getElementById('empty').classList.toggle('hidden', list.length > 0);
     document.getElementById('list').innerHTML = list.map(r => {
       const sm = STATUS_META[r.status];
-      const name = `${r.first_name||''} ${r.last_name||''}`.trim() || '(no name)';
+      // Real preview users sometimes skip the name field — fall back to their
+      // email handle so Amanda can still tell who they are.
+      const name = `${r.first_name||''} ${r.last_name||''}`.trim() || (r.email||'').split('@')[0] || '(no name)';
       const phone = (r.phone || '').replace(/[^\d+]/g, '');
       const grade = (r.best_exam_pct == null) ? '—' : r.best_exam_pct + '%';
       const gradeColor = r.best_exam_pct == null ? 'text-slate-400' : r.best_exam_pct >= 75 ? 'text-emerald-700' : r.best_exam_pct >= 50 ? 'text-amber-700' : 'text-rose-700';
