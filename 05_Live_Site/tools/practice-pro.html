@@ -2149,29 +2149,80 @@
   }
   function statusColor(status) { return STATUS_COLORS[status] || STATUS_COLORS.existing; }
 
-  // Center coordinates of the crown box (y=50–106). Sealant "S" sits at the
+  // Center coordinates of the crown (y=50–106). Sealant "S" sits at the
   // occlusal center, drawn outside the maxillary/mandibular flip so it stays
   // upright either way.
   const OCC_CENTER = {
     molar: [28, 82], premolar: [28, 82], canine: [28, 82], central: [28, 82], lateral: [28, 82],
   };
-  // RCT lines drawn down each root canal (root area y=4–48, varies by class).
-  const ROOT_LINES = {
-    molar:    [[16,10,16,46],[37,10,37,46],[26,28,26,46]],
-    premolar: [[25,10,25,46]],
-    canine:   [[26,8,26,46]],
-    central:  [[26,10,26,46]],
-    lateral:  [[26,10,26,46]],
+
+  // Anatomical crown silhouettes (maxillary orientation; gingival line y=50,
+  // biting/incisal edge at the bottom ~y104). The whole SVG flips for the
+  // mandibular arch in renderTooth. Each class has its real morphology:
+  //   incisors  — flat incisal edge (central wider than lateral)
+  //   canine    — single pointed cusp tip
+  //   premolar  — two cusps (buccal + lingual)
+  //   molar     — wide crown, multi-cusp occlusal silhouette
+  const CROWN_PATHS = {
+    central: 'M 12 50 L 44 50 L 49 97 Q 49.5 104 42 104 L 14 104 Q 6.5 104 7 97 Z',
+    lateral: 'M 17 50 L 39 50 L 43 96 Q 43 103 37 103 L 19 103 Q 13 103 13 96 Z',
+    canine:  'M 15 50 L 41 50 L 44 86 L 30 105 Q 28 107.5 26 105 L 12 86 Z',
+    premolar:'M 12 50 L 44 50 L 45 88 Q 37 101 28.5 91 Q 19 101 11 88 Z',
+    molar:   'M 6 50 L 50 50 L 49 88 Q 42 101 35 91 Q 28 101 21 91 Q 14 101 7 88 Z',
   };
-  // Abscess dots at the very apex of each root — molars get one under each
-  // of the two visible roots, single-rooted teeth get one in the center.
-  const ABSCESS_POSITIONS = {
-    molar:    [[15, 4], [40, 4]],
-    premolar: [[27, 4]],
-    canine:   [[27, 2]],
-    central:  [[27, 5]],
-    lateral:  [[27, 5]],
+  // Occlusal / incisal detail strokes (cusp ridges, central groove).
+  const OCC_DETAIL = {
+    central: ['M 13 100 L 43 100'],
+    lateral: ['M 16 99.5 L 40 99.5'],
+    canine:  ['M 18 88 L 28 103 L 38 88'],
+    premolar:['M 28.5 70 L 28.5 91','M 20 92 L 20 86','M 37 92 L 37 86'],
+    molar:   ['M 28 68 L 28 92','M 13 90 L 49 90'],
   };
+  // Roots are ANATOMICALLY ARCH-AWARE (this is the part students must learn):
+  //   maxillary molars   → 3 roots (mesiobuccal, distobuccal, palatal)
+  //   mandibular molars  → 2 roots (mesial, distal)
+  //   maxillary 1st PM   → 2 roots (buccal, palatal); all other premolars → 1
+  //   canine             → 1 very long root; incisors → 1 root
+  function rootsFor(num, cls) {
+    const max = num <= 16;
+    if (cls === 'molar') {
+      if (max) return [
+        { d: 'M 10 50 C 6 35 3 16 9 4 Q 11 1.5 14 4 C 19 16 18 35 19 50 Z', opacity: 1 },    // mesiobuccal
+        { d: 'M 37 50 C 38 35 37 16 42 4 Q 45 1.5 47 4 C 53 16 50 35 46 50 Z', opacity: 1 },  // distobuccal
+        { d: 'M 23 50 C 22 34 22 18 28 6 C 34 18 34 34 33 50 Z', opacity: 0.85 },             // palatal
+      ];
+      return [
+        { d: 'M 11 50 C 8 34 6 16 12 4 Q 14 1.5 17 4 C 22 16 21 34 21 50 Z', opacity: 1 },    // mesial
+        { d: 'M 36 50 C 37 35 36 19 41 7 Q 43 4.5 45 7 C 49 19 48 35 45 50 Z', opacity: 1 },  // distal
+      ];
+    }
+    if (cls === 'premolar') {
+      if (max && (num === 5 || num === 12)) return [
+        { d: 'M 17 50 C 15 36 14 20 19 7 Q 21 4 24 7 C 27 20 26 36 26 50 Z', opacity: 1 },
+        { d: 'M 30 50 C 30 36 30 20 33 7 Q 35 4 38 7 C 41 20 40 36 39 50 Z', opacity: 0.9 },
+      ];
+      return [{ d: 'M 16 50 C 14 34 13 17 19 5 C 21 2 26 1.5 28 1.5 C 30 1.5 35 2 37 5 C 43 17 40 34 38 50 Z', opacity: 1 }];
+    }
+    if (cls === 'canine') return [{ d: 'M 20 50 C 16 28 14 10 22 2 C 24 0.5 26 0 28 0 C 30 0 32 0.5 34 2 C 42 10 36 28 33 50 Z', opacity: 1 }];
+    const w = cls === 'central' ? 0 : 1.5; // lateral root a touch narrower
+    return [{ d: `M ${20 + w} 50 C ${18 + w} 35 ${18 + w} 21 ${22 + w} 7 C 23 5 26 4 27 4 C 28 4 31 5 ${32 - w} 7 C ${36 - w} 21 ${36 - w} 35 ${34 - w} 50 Z`, opacity: 1 }];
+  }
+  // RCT canals drawn down each root (matches the real root count above).
+  function rctLinesFor(num, cls) {
+    const max = num <= 16;
+    if (cls === 'molar')    return max ? [[12,8,12,46],[44,8,44,46],[28,12,28,46]] : [[14,8,14,46],[43,12,43,46]];
+    if (cls === 'premolar') return (max && (num === 5 || num === 12)) ? [[22,10,22,46],[35,10,35,46]] : [[27,8,27,46]];
+    if (cls === 'canine')   return [[28,4,28,46]];
+    return [[28,8,28,46]];
+  }
+  // Abscess dot at the apex of each root.
+  function abscessFor(num, cls) {
+    const max = num <= 16;
+    if (cls === 'molar')    return max ? [[11,3],[45,3],[28,5]] : [[13,3],[43,6]];
+    if (cls === 'premolar') return (max && (num === 5 || num === 12)) ? [[21,5],[36,5]] : [[27,2]];
+    if (cls === 'canine')   return [[28,1]];
+    return [[28,5]];
+  }
 
   // Tooth class by universal number (1-32)
   function toothClass(n) {
@@ -2194,14 +2245,11 @@
   // Maxillary teeth (1-16) draw root-up / crown-down (the anatomical convention).
   // Mandibular teeth (17-32) get vertically flipped at render time.
   function toothShapes(cls, num) {
-    // Uniform crown box (y=50–106) with five trapezoid surfaces (M/D/B/L
-    // around a central O for posterior, I for anterior), PLUS class-specific
-    // roots above (y=2–48) styled after the Eaglesoft reference: molars get
-    // two splayed roots with a central palatal hint, premolars get a single
-    // root with a bifurcation hint at the apex, canines get one very long
-    // root, and incisors get a single narrower root.
-    // The whole SVG flips vertically for mandibular teeth in renderTooth so
-    // the root ends up below the box for the bottom arch.
+    // Five trapezoid surfaces (occlusal-view grid: O/I center, with M/D/B/L
+    // around it) overlaid on an ANATOMICAL crown silhouette + arch-aware roots.
+    // The surface fills/grid get clipped to the crown outline in renderTooth so
+    // they conform to the real tooth shape. The whole SVG flips vertically for
+    // mandibular teeth so the root ends up below the crown for the bottom arch.
     const isAnt = (cls === 'central' || cls === 'lateral' || cls === 'canine');
     const centerKey = isAnt ? 'I' : 'O';
     const zones = {
@@ -2211,48 +2259,8 @@
       L: 'M 2 106 L 54 106 L 40 90 L 16 90 Z',
     };
     zones[centerKey] = 'M 16 66 L 40 66 L 40 90 L 16 90 Z';
-    const crown = 'M 2 50 L 54 50 L 54 106 L 2 106 Z';
-
-    let roots;
-    if (cls === 'molar') {
-      roots = [
-        // Mesial root — banana-curved, splayed slightly toward the mesial side,
-        // distinct from the distal root with a clear gap between them, smooth
-        // taper to a rounded apex (Eaglesoft reference).
-        'M 10 50 C 8 38 6 22 11 7 C 12 4 17 4 19 7 C 22 22 21 38 22 50 Z',
-        // Distal root — mirror image of the mesial root.
-        'M 34 50 C 35 38 35 22 37 7 C 39 4 44 4 45 7 C 50 22 48 38 46 50 Z',
-        // No central palatal root — Eaglesoft's buccal-view chart only shows
-        // the two buccal roots for upper molars; the palatal sits behind and
-        // isn't drawn separately.
-      ];
-    } else if (cls === 'premolar') {
-      roots = [
-        // Single carrot/cigar-shaped root — fatter at the cervix, smoothly
-        // narrowing to a rounded apex.
-        'M 16 50 C 14 35 13 18 18 6 C 19 3 24 3 27 3 C 30 3 35 3 36 6 C 41 18 40 35 38 50 Z',
-      ];
-    } else if (cls === 'canine') {
-      roots = [
-        // The longest, most pointed root in the mouth — very long taper,
-        // sharper apex than premolars.
-        'M 20 50 C 18 32 16 15 22 4 C 23 2 26 1 27 1 C 28 1 31 2 32 4 C 38 15 34 32 32 50 Z',
-      ];
-    } else if (cls === 'central') {
-      roots = [
-        // Central incisor — wider/sturdier than lateral, rounded apex.
-        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
-      ];
-    } else { // lateral incisor
-      roots = [
-        // Lateral incisor — kept the same size as the central per Amanda's
-        // chart-wide consistency call (anatomically a real lateral is
-        // narrower, but the chart reads better when all six anteriors are
-        // the same visual size).
-        'M 20 50 C 18 36 18 22 22 7 C 23 5 26 4 27 4 C 28 4 31 5 32 7 C 34 22 34 36 32 50 Z',
-      ];
-    }
-    return { crown, zones, roots, cusps: [] };
+    const crown = CROWN_PATHS[cls] || CROWN_PATHS.molar;
+    return { crown, zones, roots: rootsFor(num, cls), occlusal: (OCC_DETAIL[cls] || []) };
   }
 
   function toothLabel(num) {
@@ -2348,6 +2356,11 @@
       `<path d="${d}" fill="none" stroke="#94a3b8" stroke-width="0.6" pointer-events="none"/>`
     ).join('') : '';
 
+    // Occlusal/incisal cusp + groove detail (cosmetic, sits on top of the crown).
+    const occMark = showSurfaces ? (shape.occlusal || []).map(d =>
+      `<path d="${d}" fill="none" stroke="#8fa0b2" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
+    ).join('') : '';
+
     const hitZones = showSurfaces ? Object.entries(zones).map(([k, d]) =>
       `<path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />`
     ).join('') : '';
@@ -2357,20 +2370,22 @@
       ? `<rect x="20" y="6" width="16" height="44" rx="3" fill="${wholeCol}" pointer-events="none"/>` +
         [10, 16, 22, 28, 34, 40, 46].map(y =>
           `<line x1="20" y1="${y}" x2="36" y2="${y + 3}" stroke="#ffffff" stroke-width="1.4" pointer-events="none"/>`).join('')
-      : shape.roots.map(r => `<path d="${r}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" pointer-events="none"/>`).join('');
+      : shape.roots.map(r => `<path d="${r.d}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" opacity="${r.opacity}" pointer-events="none"/>`).join('');
 
-    const rctLines = isRct ? (ROOT_LINES[cls] || []).map(([x1, y1, x2, y2]) =>
+    const rctLines = isRct ? rctLinesFor(num, cls).map(([x1, y1, x2, y2]) =>
       `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${wholeCol}" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`).join('') : '';
 
-    // PFM crown: rounded-rect outline around the crown box.
+    // PFM crown: bold outline following the actual crown silhouette.
     const pfmMark = isPfm
-      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>`
+      ? `<path d="${shape.crown}" fill="none" stroke="${wholeCol}" stroke-width="2.4" stroke-linejoin="round" pointer-events="none"/>`
       : '';
 
-    // FGC: same outline + diagonal hatching to indicate gold.
+    // FGC: same crown outline + diagonal hatching (clipped to the crown) for gold.
     const fgcMark = isFgc
-      ? `<rect x="2" y="50" width="52" height="56" rx="6" fill="none" stroke="${wholeCol}" stroke-width="2.4" pointer-events="none"/>` +
-        [60, 72, 84, 96].map(y => `<line x1="6" y1="${y}" x2="50" y2="${y + 6}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('')
+      ? `<path d="${shape.crown}" fill="none" stroke="${wholeCol}" stroke-width="2.4" stroke-linejoin="round" pointer-events="none"/>` +
+        `<g clip-path="url(#cc-${num})">` +
+        [58, 70, 82, 94].map(y => `<line x1="4" y1="${y}" x2="52" y2="${y + 7}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('') +
+        `</g>`
       : '';
 
     // Drift arrows — point toward the actual mesial / distal side of THIS
@@ -2402,7 +2417,7 @@
     // Abscess: filled dot at the very apex of EACH root — molars get two
     // (one under each visible root), single-rooted teeth get one centered.
     const abscessMark = abscessEntry
-      ? (ABSCESS_POSITIONS[cls] || [[28, 4]]).map(([cx, cy]) =>
+      ? abscessFor(num, cls).map(([cx, cy]) =>
           `<circle cx="${cx}" cy="${cy}" r="4.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.9" pointer-events="none"/>`
         ).join('')
       : '';
@@ -2428,6 +2443,7 @@
       <div class="tooth flex flex-col items-center" data-tooth="${num}" title="#${num} — ${escapeHtml(toothLabel(num))}">
         <svg viewBox="0 0 56 106" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">
           <defs>
+            <clipPath id="cc-${num}"><path d="${shape.crown}"/></clipPath>
             <linearGradient id="${gradId}" x1="0" y1="50" x2="0" y2="106" gradientUnits="userSpaceOnUse">
               <stop offset="0" stop-color="#ffffff"/>
               <stop offset="1" stop-color="#f1f5f9"/>
@@ -2447,8 +2463,11 @@
               ${rootPaths}
               <path d="M 4 50 Q 28 47 52 50" stroke="#fbcfe8" stroke-width="1.2" fill="none" pointer-events="none" opacity="0.7"/>
               <path d="${shape.crown}" fill="${crownFill}" stroke="#475569" stroke-width="1" stroke-linejoin="round"/>
-              ${surfaceFills}
-              ${gridLines}
+              <g clip-path="url(#cc-${num})">
+                ${surfaceFills}
+                ${gridLines}
+              </g>
+              ${occMark}
               ${hitZones}
               ${rctLines}
               ${pfmMark}
