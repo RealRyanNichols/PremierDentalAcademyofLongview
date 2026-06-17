@@ -2277,213 +2277,92 @@
   }
 
   function renderTooth(num, marks, isUpper) {
-    // viewBox 56×106: root area y=2–48, crown box y=50–106. Maxillary renders
-    // as-is, mandibular flips vertically. Every marker value is parsed as
-    // "type:status" so the renderer can color it (existing=blue, needed=red).
-    const cls = toothClass(num);
-    const shape = toothShapes(cls, num);
+    // 5-surface SQUARE crown (y3-53) + anatomy-sized root(s) below (y52-87).
+    // Molars biggest (2 roots), bicuspids 2 roots just under molars, canine
+    // longest single, incisors single sized like a bicuspid. Mandibular arch
+    // flips vertically. Text (SSC, sealant S) is drawn outside the flip so it
+    // always reads upright. Surface hit zones keep click-to-mark working.
     const m = marks || {};
-
-    const WHOLE_TYPES = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
-    const SURFACE_TYPES = ['caries','composite','amalgam','watch'];
-
-    // Pick the whole-tooth marker (m.whole takes precedence, else any value
-    // whose parsed type is a whole-tooth type).
-    const wholeRaw = m.whole || Object.values(m).find(v => WHOLE_TYPES.includes(parseMarker(v).type));
-    const { type: wholeType, status: wholeStatus } = parseMarker(wholeRaw);
-    const isMissing  = wholeType === 'missing';
-    const isCrown    = wholeType === 'crown';
-    const isPfm      = wholeType === 'pfm';
-    const isFgc      = wholeType === 'fgc';
-    const isSsc      = wholeType === 'ssc';
-    const isRct      = wholeType === 'rct';
-    const isImplant  = wholeType === 'implant';
-    const isExtract  = wholeType === 'extract';
-    const isImpacted = wholeType === 'impacted';
-    const isDriftM   = wholeType === 'drift_m';
-    const isDriftD   = wholeType === 'drift_d';
-    const hasWhole   = !!wholeType;
-    const wholeCol   = hasWhole ? statusColor(wholeStatus) : '#475569';
-
-    // Mesial faces midline → mirror M↔D on the patient's right side
-    // (teeth 1–8 maxillary right, 25–32 mandibular right).
+    const center = isAnterior(num) ? 'I' : 'O';
+    const baseZones = {
+      B: 'M3 3 L53 3 L40 16 L16 16 Z',
+      M: 'M3 3 L3 53 L16 40 L16 16 Z',
+      D: 'M53 3 L53 53 L40 40 L40 16 Z',
+      L: 'M3 53 L53 53 L40 40 L16 40 Z',
+    };
+    baseZones[center] = 'M16 16 L40 16 L40 40 L16 40 Z';
+    // Mesial faces midline: patient's right (1-8, 25-32) -> mesial on the right.
     const swapMD = (num <= 8) || (num >= 25 && num <= 32);
-    let zones = shape.zones;
-    if (swapMD && zones.M && zones.D) zones = { ...zones, M: shape.zones.D, D: shape.zones.M };
+    let zones = { ...baseZones };
+    if (swapMD) { const M = zones.M, D = zones.D; zones = { ...zones, M: D, D: M }; }
 
-    // Surface fills only when no whole-tooth marker is set.
-    function surfaceFillColor(key) {
-      const v = m[key]; if (!v) return null;
-      const { type, status } = parseMarker(v);
-      if (!SURFACE_TYPES.includes(type)) return null;
-      return statusColor(status);
+    const WHOLE = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
+    const SURF = ['caries','composite','amalgam','watch'];
+    const wholeRaw = m.whole || Object.values(m).find(function (v) { return WHOLE.includes(parseMarker(v).type); });
+    const parsedWhole = parseMarker(wholeRaw);
+    const wType = parsedWhole.type, wStatus = parsedWhole.status;
+    const wCol = wType ? statusColor(wStatus) : '#475569';
+    const hideSurf = ['pfm','fgc','ssc','missing','crown'].includes(wType);
+
+    const cls = toothClass(num);
+    const APEX = cls === 'molar' ? [[18,86],[38,86]]
+              : cls === 'premolar' ? [[18,84],[38,84]]
+              : cls === 'canine' ? [[28,87]]
+              : [[28,84]];
+    function rootShape() {
+      if (cls === 'molar') return 'M9 52 L26 52 C26 69 23 81 18 86 C13 81 9 69 9 52 Z M30 52 L47 52 C47 69 43 81 38 86 C33 81 30 69 30 52 Z';
+      if (cls === 'premolar') return 'M11 52 L25 52 C25 68 22 79 18 84 C14 79 11 68 11 52 Z M31 52 L45 52 C45 68 42 79 38 84 C34 79 31 68 31 52 Z';
+      if (cls === 'canine') return 'M17 52 L39 52 C38 69 33 84 28 87 C23 84 18 69 17 52 Z';
+      return 'M19 52 L37 52 C36 67 32 80 28 84 C24 80 20 67 19 52 Z';
     }
+    const rootGrad = 'tr-' + num;
+    const rootPeg = wType === 'implant'
+      ? '<rect x="21" y="55" width="14" height="27" rx="2.5" fill="' + wCol + '"/>' + [59,63,67,71,75,79].map(function (y) { return '<line x1="21" y1="' + y + '" x2="35" y2="' + (y+2) + '" stroke="#fff" stroke-width="1.1"/>'; }).join('')
+      : '<path d="' + rootShape() + '" fill="url(#' + rootGrad + ')" stroke="#cda287" stroke-width="0.5" stroke-linejoin="round" opacity="' + (wType==='missing'?0.4:1) + '" pointer-events="none"/>';
+    const rctLines = wType === 'rct' ? APEX.map(function (p) { return '<line x1="' + p[0] + '" y1="56" x2="' + p[0] + '" y2="' + (p[1]-3) + '" stroke="' + wCol + '" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>'; }).join('') : '';
+    const all = Object.entries(m).map(function (e) { const pm = parseMarker(e[1]); return { k: e[0], type: pm.type, status: pm.status }; });
+    const seal = all.find(function (p) { return p.type === 'sealant'; });
+    const frac = all.find(function (p) { return p.type === 'fracture'; });
+    const absc = all.find(function (p) { return p.type === 'abscess'; });
+    const abscDot = absc ? APEX.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + (p[1]-2) + '" r="4" fill="' + statusColor(absc.status) + '" stroke="#fff" stroke-width="0.8" pointer-events="none"/>'; }).join('') : '';
 
-    // Overlay markers (sealant, fracture, abscess) can live on top of a tooth
-    // alongside other markers — scan all values for them.
-    const parsedAll = Object.entries(m).map(([k, v]) => ({ k, ...parseMarker(v) }));
-    const sealantEntry  = parsedAll.find(p => p.type === 'sealant');
-    const fractureEntry = parsedAll.find(p => p.type === 'fracture');
-    const abscessEntry  = parsedAll.find(p => p.type === 'abscess');
+    let fills = '';
+    if (!hideSurf) { for (const k in zones) { const v = m[k]; if (!v) continue; const pm = parseMarker(v); if (!SURF.includes(pm.type)) continue;
+      const c = (pm.type === 'watch') ? '#facc15' : statusColor(pm.status);
+      fills += (pm.type === 'composite') ? '<path d="' + zones[k] + '" fill="none" stroke="' + c + '" stroke-width="2" pointer-events="none"/>' : '<path d="' + zones[k] + '" fill="' + c + '" opacity="0.82" pointer-events="none"/>'; } }
+    let grid = '';
+    if (!hideSurf) { for (const k in zones) { grid += '<path d="' + zones[k] + '" fill="none" stroke="#94a3b8" stroke-width="0.7" pointer-events="none"/>'; } }
+    const hitZones = !hideSurf ? Object.entries(zones).map(function (e) { return '<path d="' + e[1] + '" fill="transparent" data-surface="' + e[0] + '" class="surface-hit cursor-pointer"/>'; }).join('') : '';
+    const boxFill = wType === 'crown' ? wCol : '#ffffff';
+    const box = '<rect x="3" y="3" width="50" height="50" rx="4" fill="' + boxFill + '" stroke="#475569" stroke-width="1.2"/>';
 
-    // RCT and Implant keep the 5-surface boxes visible (the crown isn't
-    // replaced). PFM / FGC / SSC / Missing / Crown (legacy) hide them.
-    const SURFACES_HIDDEN_BY = ['pfm','fgc','ssc','missing','crown'];
-    const showSurfaces = !SURFACES_HIDDEN_BY.includes(wholeType);
-    const gradId   = `tg-${num}`;
-    const rootGrad = `tr-${num}`;
+    let ov = '';
+    if (wType === 'missing' || wType === 'extract') {
+      ov += '<line x1="7" y1="7" x2="49" y2="49" stroke="' + wCol + '" stroke-width="3" stroke-linecap="round" pointer-events="none"/><line x1="49" y1="7" x2="7" y2="49" stroke="' + wCol + '" stroke-width="3" stroke-linecap="round" pointer-events="none"/>';
+      if (wType === 'missing') ov += '<rect x="3" y="3" width="50" height="50" rx="4" fill="none" stroke="' + wCol + '" stroke-width="1" stroke-dasharray="3 2" pointer-events="none"/>';
+    }
+    if (wType === 'pfm' || wType === 'fgc') { ov += '<rect x="4.5" y="4.5" width="47" height="47" rx="3" fill="none" stroke="' + wCol + '" stroke-width="2.6" pointer-events="none"/>';
+      if (wType === 'fgc') { for (let y = 12; y < 52; y += 10) { ov += '<line x1="5" y1="' + y + '" x2="51" y2="' + (y+6) + '" stroke="' + wCol + '" stroke-width="1.3" opacity="0.7" pointer-events="none"/>'; } } }
+    if (wType === 'impacted') ov += '<ellipse cx="28" cy="45" rx="26" ry="41" fill="none" stroke="' + wCol + '" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>';
+    if (wType === 'drift_m' || wType === 'drift_d') { const right = (wType === 'drift_d') !== swapMD;
+      ov += right ? '<path d="M20 28 L44 28 M37 22 L44 28 L37 34" stroke="' + wCol + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'
+                  : '<path d="M36 28 L12 28 M19 22 L12 28 L19 34" stroke="' + wCol + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'; }
+    if (frac) ov += '<path d="M31 8 L23 30 L29 30 L21 52 L37 26 L30 26 Z" fill="' + statusColor(frac.status) + '" stroke="#fff" stroke-width="0.6" stroke-linejoin="round" pointer-events="none"/>';
 
-    const transform = isUpper ? '' : 'scale(1,-1) translate(0,-106)';
+    const ty = isUpper ? 33 : 64;
+    let txt = '';
+    if (wType === 'ssc') txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="' + wCol + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>';
+    if (seal) txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="800" fill="' + statusColor(seal.status) + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>';
 
-    // Surface renderer: composite = outline only (transparent middle);
-    // amalgam / caries / watch = filled. This makes composite vs amalgam
-    // visually distinct so students can read the chart at a glance.
-    const surfaceFills = showSurfaces ? Object.entries(zones).map(([k, d]) => {
-      const v = m[k]; if (!v) return '';
-      const { type, status } = parseMarker(v);
-      if (!SURFACE_TYPES.includes(type)) return '';
-      // Watch is always YELLOW per Amanda — it's a "keep an eye on it"
-      // note, not a needed/existing distinction. Everything else honors
-      // the status color.
-      const color = (type === 'watch') ? '#facc15' : statusColor(status);
-      if (type === 'composite') {
-        return `<path d="${d}" fill="none" stroke="${color}" stroke-width="1.8" pointer-events="none"/>`;
-      }
-      return `<path d="${d}" fill="${color}" stroke="none" pointer-events="none" opacity="0.82"/>`;
-    }).join('') : '';
-
-    const gridLines = showSurfaces ? Object.values(zones).map(d =>
-      `<path d="${d}" fill="none" stroke="#94a3b8" stroke-width="0.6" pointer-events="none"/>`
-    ).join('') : '';
-
-    // Occlusal/incisal cusp + groove detail (cosmetic, sits on top of the crown).
-    const occMark = showSurfaces ? (shape.occlusal || []).map(d =>
-      `<path d="${d}" fill="none" stroke="#8fa0b2" stroke-width="0.7" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
-    ).join('') : '';
-
-    const hitZones = showSurfaces ? Object.entries(zones).map(([k, d]) =>
-      `<path d="${d}" fill="transparent" data-surface="${k}" class="surface-hit cursor-pointer" />`
-    ).join('') : '';
-
-    // Implant: threaded screw down the root area (resembling a screw).
-    const rootPaths = isImplant
-      ? `<rect x="20" y="6" width="16" height="44" rx="3" fill="${wholeCol}" pointer-events="none"/>` +
-        [10, 16, 22, 28, 34, 40, 46].map(y =>
-          `<line x1="20" y1="${y}" x2="36" y2="${y + 3}" stroke="#ffffff" stroke-width="1.4" pointer-events="none"/>`).join('')
-      : shape.roots.map(r => `<path d="${r.d}" fill="url(#${rootGrad})" stroke="#a07059" stroke-width="0.5" opacity="${r.opacity}" pointer-events="none"/>`).join('');
-
-    const rctLines = isRct ? rctLinesFor(num, cls).map(([x1, y1, x2, y2]) =>
-      `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${wholeCol}" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>`).join('') : '';
-
-    // PFM crown: bold outline following the actual crown silhouette.
-    const pfmMark = isPfm
-      ? `<path d="${shape.crown}" fill="none" stroke="${wholeCol}" stroke-width="2.4" stroke-linejoin="round" pointer-events="none"/>`
-      : '';
-
-    // FGC: same crown outline + diagonal hatching (clipped to the crown) for gold.
-    const fgcMark = isFgc
-      ? `<path d="${shape.crown}" fill="none" stroke="${wholeCol}" stroke-width="2.4" stroke-linejoin="round" pointer-events="none"/>` +
-        `<g clip-path="url(#cc-${num})">` +
-        [58, 70, 82, 94].map(y => `<line x1="4" y1="${y}" x2="52" y2="${y + 7}" stroke="${wholeCol}" stroke-width="1.4" opacity="0.7" pointer-events="none"/>`).join('') +
-        `</g>`
-      : '';
-
-    // Drift arrows — point toward the actual mesial / distal side of THIS
-    // tooth. On the patient's right side (swapMD === true: teeth 1–8 and
-    // 25–32) mesial faces the chart's RIGHT and distal its LEFT, so the
-    // arrow flips. On the patient's left side, mesial faces the chart's
-    // left as drawn.
-    const ARROW_LEFT  = `M 26 78 L 6 78 M 12 72 L 6 78 L 12 84`;
-    const ARROW_RIGHT = `M 30 78 L 50 78 M 44 72 L 50 78 L 44 84`;
-    const mesialArrow = swapMD ? ARROW_RIGHT : ARROW_LEFT;
-    const distalArrow = swapMD ? ARROW_LEFT  : ARROW_RIGHT;
-    const driftMark = isDriftM
-      ? `<path d="${mesialArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
-      : isDriftD
-      ? `<path d="${distalArrow}" stroke="${wholeCol}" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>`
-      : '';
-
-    // Extract: bold X across the whole tooth (crown + root).
-    const extractMark = isExtract ? `
-      <line x1="6" y1="6" x2="50" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
-      <line x1="50" y1="6" x2="6" y2="100" stroke="${wholeCol}" stroke-width="3.5" stroke-linecap="round" pointer-events="none"/>
-    ` : '';
-
-    // Impacted: dashed ellipse encircling the entire tooth.
-    const impactedMark = isImpacted
-      ? `<ellipse cx="28" cy="53" rx="27" ry="51" fill="none" stroke="${wholeCol}" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>`
-      : '';
-
-    // Abscess: filled dot at the very apex of EACH root — molars get two
-    // (one under each visible root), single-rooted teeth get one centered.
-    const abscessMark = abscessEntry
-      ? abscessFor(num, cls).map(([cx, cy]) =>
-          `<circle cx="${cx}" cy="${cy}" r="4.4" fill="${statusColor(abscessEntry.status)}" stroke="#ffffff" stroke-width="0.9" pointer-events="none"/>`
-        ).join('')
-      : '';
-
-    // Fracture lightning bolt across the crown box.
-    const bolt = fractureEntry
-      ? `<path d="M 31 55 L 23 80 L 29 80 L 21 105 L 37 76 L 30 76 Z" fill="${statusColor(fractureEntry.status)}" stroke="#ffffff" stroke-width="0.7" stroke-linejoin="round" pointer-events="none"/>`
-      : '';
-
-    // Sealant "S" / SSC text drawn OUTSIDE the flip so they stay upright.
-    const [ox, oy] = OCC_CENTER[cls] || [28, 82];
-    const sealS = sealantEntry
-      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="${statusColor(sealantEntry.status)}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>`
-      : '';
-    const sscMark = isSsc
-      ? `<text x="${ox}" y="${(isUpper ? oy : 106 - oy) + 4}" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="800" fill="${wholeCol}" stroke="#ffffff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>`
-      : '';
-
-    // Crown fill: if `crown` marker, paint the box in the status color.
-    const crownFill = isCrown ? wholeCol : `url(#${gradId})`;
-
-    return `
-      <div class="tooth flex flex-col items-center" data-tooth="${num}" title="#${num} — ${escapeHtml(toothLabel(num))}">
-        <svg viewBox="0 0 56 106" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">
-          <defs>
-            <clipPath id="cc-${num}"><path d="${shape.crown}"/></clipPath>
-            <linearGradient id="${gradId}" x1="0" y1="50" x2="0" y2="106" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#ffffff"/>
-              <stop offset="1" stop-color="#f1f5f9"/>
-            </linearGradient>
-            <linearGradient id="${rootGrad}" x1="0" y1="4" x2="0" y2="50" gradientUnits="userSpaceOnUse">
-              <stop offset="0" stop-color="#fff1e8"/>
-              <stop offset="0.55" stop-color="#fbd9c5"/>
-              <stop offset="1" stop-color="#f3b89c"/>
-            </linearGradient>
-          </defs>
-          <g transform="${transform}">
-            ${ isMissing ? `
-              <path d="${shape.crown}" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="2 2" pointer-events="none"/>
-              <line x1="8" y1="56" x2="48" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
-              <line x1="48" y1="56" x2="8" y2="100" stroke="${wholeCol}" stroke-width="2.6"/>
-            ` : `
-              ${rootPaths}
-              <path d="M 4 50 Q 28 47 52 50" stroke="#fbcfe8" stroke-width="1.2" fill="none" pointer-events="none" opacity="0.7"/>
-              <path d="${shape.crown}" fill="${crownFill}" stroke="#475569" stroke-width="1" stroke-linejoin="round"/>
-              <g clip-path="url(#cc-${num})">
-                ${surfaceFills}
-                ${gridLines}
-              </g>
-              ${occMark}
-              ${hitZones}
-              ${rctLines}
-              ${pfmMark}
-              ${fgcMark}
-              ${driftMark}
-              ${extractMark}
-              ${impactedMark}
-              ${abscessMark}
-              ${bolt}
-            ` }
-          </g>
-          ${sealS}
-          ${sscMark}
-        </svg>
-      </div>
-    `;
+    const flip = isUpper ? '' : 'transform="translate(0,88) scale(1,-1)"';
+    return '' +
+      '<div class="tooth flex flex-col items-center" data-tooth="' + num + '" title="#' + num + ' — ' + toothLabel(num) + '">' +
+        '<svg viewBox="0 0 56 88" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">' +
+          '<defs><linearGradient id="' + rootGrad + '" x1="0" y1="53" x2="0" y2="86" gradientUnits="userSpaceOnUse">' +
+            '<stop offset="0" stop-color="#fbe2d2"/><stop offset="1" stop-color="#f1bd9e"/></linearGradient></defs>' +
+          '<g ' + flip + '>' + rootPeg + rctLines + abscDot + box + fills + grid + hitZones + ov + '</g>' + txt +
+        '</svg>' +
+      '</div>';
   }
 
   function renderChart(p) {

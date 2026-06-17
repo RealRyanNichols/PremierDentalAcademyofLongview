@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Practice Quiz Hub — Skills Lab | Premier Dental Academy</title>
+<meta name="description" content="Premier Dental Academy Skills Lab Quiz Hub — realistic dental-assisting practice across terminology, instruments, x-ray errors, charting, scheduling, infection control, and patient communication. Unlimited retakes; every attempt builds your First Day Ready Score.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/quizzes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .gradient-text{background:linear-gradient(90deg,#0d9488,#0891b2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .fade-in{animation:fadeIn .28s ease both}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="sl-header"></div>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <!-- Hero -->
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Practice Quiz Hub</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Drill it until it's automatic.</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Realistic dental-assisting questions across every category an office cares about. Unlimited retakes. Every attempt feeds your <span class="font-semibold text-white">First Day Ready Score</span>.</p>
+  </div>
+
+  <!-- Live stats strip -->
+  <div class="grid grid-cols-3 gap-3 sm:gap-4 mt-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+      <div id="stBank" class="display text-3xl font-bold text-navy-900">0</div>
+      <div class="text-[11px] text-slate-500 mt-0.5">questions in the bank</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+      <div id="stTaken" class="display text-3xl font-bold text-teal-700">0</div>
+      <div class="text-[11px] text-slate-500 mt-0.5">quizzes you've taken</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+      <div id="stAvg" class="display text-3xl font-bold gradient-text">—</div>
+      <div class="text-[11px] text-slate-500 mt-0.5">your quiz average</div>
+    </div>
+  </div>
+
+  <!-- Picker -->
+  <div id="picker" class="mt-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+      <label for="cat" class="block text-sm font-semibold text-navy-900 mb-2">Choose a category</label>
+      <div class="flex flex-col sm:flex-row gap-3">
+        <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
+        <div class="flex items-center gap-2">
+          <label for="len" class="text-sm text-slate-500">Questions</label>
+          <select id="len" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
+            <option value="5">5</option><option value="8" selected>8</option><option value="10">10</option><option value="0">All</option>
+          </select>
+        </div>
+        <button id="start" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-700 transition shadow-sm">Start practice</button>
+      </div>
+      <div id="chips" class="mt-4 flex flex-wrap gap-2"></div>
+    </div>
+
+    <!-- Mode cards (drive engagement) -->
+    <div class="grid sm:grid-cols-3 gap-3 mt-4">
+      <button data-quick="__mixed__" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
+        <div class="text-2xl">&#127919;</div><div class="font-bold text-navy-900 mt-1">Mixed practice</div>
+        <div class="text-xs text-slate-500 mt-0.5">A random spread across every category — like a real exam.</div>
+      </button>
+      <button data-quick="X-Ray Errors" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
+        <div class="text-2xl">&#129463;</div><div class="font-bold text-navy-900 mt-1">X-Ray error drill</div>
+        <div class="text-xs text-slate-500 mt-0.5">Cone cut, elongation, foreshortening, overlap — spot them fast.</div>
+      </button>
+      <button data-quick="Patient Communication" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
+        <div class="text-2xl">&#128172;</div><div class="font-bold text-navy-900 mt-1">"What would you do?"</div>
+        <div class="text-xs text-slate-500 mt-0.5">Real chairside patient scenarios. Sound like a pro on day one.</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- Engine mounts here -->
+  <div id="quiz" class="mt-6 hidden"></div>
+</main>
+
+<div id="sl-footer"></div>
+
+<script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/store.js"></script>
+<script src="/assets/skills-lab/ui.js"></script>
+<script src="/assets/skills-lab/quiz-engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var D = window.SL_DATA, U = window.SL_UI;
+  document.getElementById('sl-header').innerHTML = U.headerHTML('quizzes');
+  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+
+  var picker = document.getElementById('picker');
+  var quiz = document.getElementById('quiz');
+  var catSel = document.getElementById('cat');
+
+  function refreshStats() {
+    var m = U.computeMetrics();
+    document.getElementById('stBank').textContent = D.QUIZ_BANK.length;
+    document.getElementById('stTaken').textContent = m.attempts.length;
+    document.getElementById('stAvg').textContent = m.attempts.length ? (m.quizAvg + '%') : '—';
+  }
+
+  // Category dropdown + chips
+  var optMixed = document.createElement('option');
+  optMixed.value = '__mixed__'; optMixed.textContent = 'Mixed practice (random)';
+  catSel.appendChild(optMixed);
+  D.QUIZ_CATEGORIES.forEach(function (cat) {
+    var n = D.QUIZ_BANK.filter(function (q) { return q.category === cat; }).length;
+    var o = document.createElement('option'); o.value = cat; o.textContent = cat + ' (' + n + ')';
+    catSel.appendChild(o);
+  });
+  document.getElementById('chips').innerHTML =
+    '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-navy-900 text-white hover:opacity-90 transition" data-cat="__mixed__">Mixed practice</button>' +
+    D.QUIZ_CATEGORIES.map(function (cat) {
+      return '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-cat="' + U.escapeHTML(cat) + '">' + U.escapeHTML(cat) + '</button>';
+    }).join('');
+
+  function backToPicker() {
+    quiz.classList.add('hidden'); quiz.innerHTML = '';
+    picker.classList.remove('hidden');
+    refreshStats();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function startQuiz(catValue) {
+    var cat = catValue || catSel.value;
+    var len = parseInt(document.getElementById('len').value, 10);
+    var pool = (cat === '__mixed__') ? D.QUIZ_BANK.slice() : D.QUIZ_BANK.filter(function (q) { return q.category === cat; });
+    pool = U.shuffle(pool);
+    if (len > 0) pool = pool.slice(0, len);
+    picker.classList.add('hidden');
+    quiz.classList.remove('hidden'); quiz.classList.add('fade-in');
+    window.SL_QUIZ.run({
+      mount: quiz,
+      questions: pool,
+      category: cat === '__mixed__' ? 'Mixed practice' : cat,
+      onFinish: function () { refreshStats(); },
+      onRetake: backToPicker
+    });
+    window.scrollTo({ top: quiz.offsetTop - 80, behavior: 'smooth' });
+  }
+
+  document.getElementById('start').addEventListener('click', function () { startQuiz(); });
+  Array.prototype.slice.call(document.querySelectorAll('.chip')).forEach(function (c) {
+    c.addEventListener('click', function () { catSel.value = c.dataset.cat; startQuiz(c.dataset.cat); });
+  });
+  Array.prototype.slice.call(document.querySelectorAll('[data-quick]')).forEach(function (b) {
+    b.addEventListener('click', function () { catSel.value = b.dataset.quick; startQuiz(b.dataset.quick); });
+  });
+
+  // Deep link: /skills-lab/quizzes?cat=X-Ray%20Errors
+  var qp = new URLSearchParams(location.search).get('cat');
+  refreshStats();
+  if (qp && (qp === '__mixed__' || D.QUIZ_CATEGORIES.indexOf(qp) !== -1)) { catSel.value = qp; startQuiz(qp); }
+})();
+</script>
+</body>
+</html>

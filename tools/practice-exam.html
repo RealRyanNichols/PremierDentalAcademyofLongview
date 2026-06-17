@@ -63,14 +63,14 @@
       <button id="start-quick" class="text-left bg-white border-2 border-teal-600 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition">
         <div class="text-3xl mb-2">⚡</div>
         <h2 class="display text-xl font-bold">Quick Quiz</h2>
-        <p class="text-sm text-slate-600 mt-1">10 random questions. Perfect for a fast warm-up. Free, no sign-up.</p>
+        <p class="text-sm text-slate-600 mt-1">10 random questions. Perfect for a fast warm-up. 100% free.</p>
         <span class="inline-block mt-3 text-teal-700 font-semibold text-sm">Start quick quiz →</span>
       </button>
       <button id="start-full" class="text-left bg-white border-2 border-slate-200 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 hover:border-amber-400 transition">
         <div class="text-3xl mb-2">📝</div>
         <h2 class="display text-xl font-bold">Full Practice Exam</h2>
         <p class="text-sm text-slate-600 mt-1">All <span id="full-count">48</span> questions across every topic, scored like the real thing.</p>
-        <span id="full-cta" class="inline-block mt-3 text-amber-600 font-semibold text-sm">Unlock free with your email →</span>
+        <span id="full-cta" class="inline-block mt-3 text-amber-600 font-semibold text-sm">Start free →</span>
       </button>
       <button id="start-timed" class="text-left bg-gradient-to-br from-slate-900 to-slate-800 text-white border-2 border-slate-900 rounded-2xl p-6 hover:shadow-lg hover:-translate-y-0.5 transition relative">
         <span class="absolute top-3 right-3 text-[10px] font-bold uppercase tracking-wider bg-amber-400 text-slate-900 px-2 py-0.5 rounded-full">Pro</span>
@@ -169,13 +169,16 @@
 <div id="unlock-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
   <div class="bg-white rounded-2xl max-w-md w-full p-6 pop">
     <div class="text-center">
-      <div class="text-4xl mb-2">🔓</div>
-      <h3 class="display text-2xl font-bold">Unlock the full exam — free</h3>
-      <p class="text-slate-600 text-sm mt-2">Enter your email to start the complete <span id="modal-count">48</span>-question practice exam. We'll also send you study tips. No spam, unsubscribe anytime.</p>
+      <div class="text-4xl mb-2">📝</div>
+      <h3 class="display text-2xl font-bold">Start your free practice exam</h3>
+      <p class="text-slate-600 text-sm mt-2">It's 100% free — just tell us who we're helping so we can send your results and study tips. No spam, unsubscribe anytime.</p>
     </div>
     <form id="unlock-form" class="mt-5 space-y-3">
-      <input name="email" type="email" required placeholder="you@email.com" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
-      <button type="submit" id="unlock-submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg">Start the full exam →</button>
+      <input name="name" type="text" required placeholder="Your name" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      <input name="email" type="email" placeholder="you@email.com" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      <input name="phone" type="tel" placeholder="Cell phone (so we can text your results)" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      <p class="text-[11px] text-slate-400 text-center">Enter your name and at least an email <em>or</em> a phone number.</p>
+      <button type="submit" id="unlock-submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-lg">Start my exam →</button>
       <p id="unlock-err" class="hidden text-xs text-rose-600 text-center"></p>
       <button type="button" id="unlock-cancel" class="w-full text-slate-400 hover:text-slate-600 text-sm">Maybe later</button>
     </form>
@@ -256,7 +259,6 @@
   const topics = [...new Set(BANK.map(b => b.t))];
   $('bank-count').textContent = BANK.length;
   $('full-count').textContent = BANK.length;
-  $('modal-count').textContent = BANK.length;
   $('topic-count').textContent = topics.length;
 
   let quiz = [], idx = 0, answers = [], answered = false, currentMode = 'quick';
@@ -461,19 +463,20 @@
   };
   $('retake-btn').onclick = () => show('start');
 
-  // ---- Start buttons ----
-  $('start-quick').onclick = () => { currentMode = 'quick'; begin(shuffle(BANK).slice(0, 10)); };
+  // ---- Start buttons (gated: capture a lead before the free exam) ----
+  let pendingStart = null;
 
   async function fullUnlocked() {
     if (localStorage.getItem(LS_UNLOCK) === '1') return true;
     if (sb) { try { const { data } = await sb.auth.getSession(); if (data?.session) return true; } catch (e) {} }
     return false;
   }
-  $('start-full').onclick = async () => {
-    currentMode = 'full';
-    if (await fullUnlocked()) begin(shuffle(BANK));
-    else $('unlock-modal').classList.remove('hidden');
-  };
+  async function gateThenStart(startFn) {
+    if (await fullUnlocked()) startFn();
+    else { pendingStart = startFn; $('unlock-modal').classList.remove('hidden'); }
+  }
+  $('start-quick').onclick = () => { currentMode = 'quick'; gateThenStart(() => begin(shuffle(BANK).slice(0, 10))); };
+  $('start-full').onclick  = () => { currentMode = 'full';  gateThenStart(() => begin(shuffle(BANK))); };
 
   function showProUpsell() {
     const wrap = document.createElement('div');
@@ -526,20 +529,38 @@
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
   $('unlock-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = $('unlock-submit');
-    const email = new FormData(e.target).get('email');
-    btn.disabled = true; btn.textContent = 'Unlocking…';
-    $('unlock-err').classList.add('hidden');
+    const fd = new FormData(e.target);
+    const name = (fd.get('name') || '').trim();
+    const email = (fd.get('email') || '').trim();
+    const phone = (fd.get('phone') || '').trim();
+    const err = $('unlock-err');
+    if (!name) { err.textContent = 'Please enter your name.'; err.classList.remove('hidden'); return; }
+    if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.classList.remove('hidden'); return; }
+    err.classList.add('hidden');
+    const btn = $('unlock-submit'); btn.disabled = true; btn.textContent = 'Starting…';
+
+    // Capture as a real lead (lands in /admin/leads), plus the email list.
+    const lead = {
+      first_name: name.split(' ')[0] || '',
+      last_name: name.split(' ').slice(1).join(' '),
+      email: email || null, phone: phone || null,
+      interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam'
+    };
+    let saved = false;
     if (sb) {
-      try {
-        const { error } = await sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] });
-        if (error) console.error('[practice-exam] subscribe error:', error.message);
-      } catch (err) { console.error('[practice-exam] subscribe threw:', err); }
+      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[practice-exam] lead error:', error.message); }
+      catch (err2) { console.error('[practice-exam] lead threw:', err2); }
+      if (email) { try { await sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] }); } catch (e3) {} }
     }
-    try { localStorage.setItem(LS_UNLOCK, '1'); } catch (e2) {}
+    if (!saved) {
+      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e4) {}
+    }
+    try { localStorage.setItem(LS_UNLOCK, '1'); localStorage.setItem('pda.examLead', JSON.stringify({ name: name, email: email, phone: phone })); } catch (e5) {}
+
     modal.classList.add('hidden');
-    btn.disabled = false; btn.textContent = 'Start the full exam →';
-    begin(shuffle(BANK));
+    btn.disabled = false; btn.textContent = 'Start my exam →';
+    if (pendingStart) { const fn = pendingStart; pendingStart = null; fn(); }
+    else begin(shuffle(BANK));
   });
 
   // If already unlocked / signed in, soften the full-exam label.

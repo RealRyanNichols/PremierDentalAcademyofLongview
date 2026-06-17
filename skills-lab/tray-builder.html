@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tray Builder & Instrument Library — Skills Lab | Premier Dental Academy</title>
+<meta name="description" content="Practice setting up dental trays. Drag or tap the right instruments onto the tray for each procedure — exam, restorative, crown prep, extraction and more — and get graded on what's missing or doesn't belong. Includes a full instrument library.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/tray-builder">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .lib-card{display:flex;gap:.7rem;align-items:center;border:1px solid #e2e8f0;background:#fff;border-radius:.8rem;padding:.6rem .7rem}
+  .lib-card .thumb{flex:0 0 auto;width:48px;height:48px;border-radius:.5rem;background:#f1f5f9;display:grid;place-items:center;overflow:hidden}
+  .lib-card .thumb img{width:100%;height:100%;object-fit:contain}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="sl-header"></div>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Tray Builder</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Set up the tray before the dentist sits down.</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Drag or tap the right instruments onto the tray for each procedure. We'll grade what's missing and what doesn't belong — the same eye your lead assistant will have on day one. Build it right and the skill counts toward your <strong class="text-white">First Day Ready Score</strong>.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6">
+    <div class="flex items-center justify-between mb-2">
+      <div class="font-semibold text-navy-900 text-sm">Trays built correctly</div>
+      <div class="text-sm text-slate-500"><span id="trayDone">0</span> of <span id="trayTotal">0</span></div>
+    </div>
+    <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="trayBar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all" style="width:0%"></div></div>
+  </div>
+
+  <div id="picker">
+    <h2 class="display text-xl font-bold text-navy-900 mt-8 mb-3">Choose a procedure tray</h2>
+    <div id="trayCards" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+
+    <!-- Instrument library -->
+    <div class="mt-10">
+      <div class="flex items-center justify-between">
+        <h2 class="display text-xl font-bold text-navy-900">Instrument library</h2>
+        <button id="libToggle" class="text-sm font-semibold text-teal-700 hover:text-teal-800">Show all →</button>
+      </div>
+      <p class="text-slate-500 text-sm mt-1">Know each instrument before you build the tray.</p>
+      <div id="library" class="hidden grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-4"></div>
+    </div>
+  </div>
+
+  <div id="builder" class="hidden"></div>
+</main>
+
+<div id="sl-footer"></div>
+
+<script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/store.js"></script>
+<script src="/assets/skills-lab/ui.js"></script>
+<script src="/assets/skills-lab/data/virtual-office.js"></script>
+<script src="/assets/skills-lab/tray-builder.js"></script>
+<script>
+(function () {
+  'use strict';
+  var U = window.SL_UI, esc = U.escapeHTML, VO = window.SL_VO_DATA, TB = window.SL_TRAY;
+  document.getElementById('sl-header').innerHTML = U.headerHTML('trays');
+  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+
+  var TRAYS = VO.TRAYS;
+  document.getElementById('trayTotal').textContent = TRAYS.length;
+  var picker = document.getElementById('picker');
+  var builder = document.getElementById('builder');
+  var trayCards = document.getElementById('trayCards');
+
+  function paintProgress() {
+    var n = TRAYS.filter(function (t) { return TB.isDone(t.id); }).length;
+    document.getElementById('trayDone').textContent = n;
+    document.getElementById('trayBar').style.width = (n / TRAYS.length * 100) + '%';
+  }
+
+  function renderCards() {
+    trayCards.innerHTML = TRAYS.map(function (t) {
+      var done = TB.isDone(t.id);
+      return '<button data-tray="' + t.id + '" class="text-left bg-white rounded-2xl shadow-sm border ' +
+        (done ? 'border-emerald-200' : 'border-slate-100') + ' p-4 hover:border-teal-300 hover:shadow transition">' +
+        '<div class="flex items-center gap-2"><span class="text-2xl">🧰</span>' +
+        (done ? '<span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ Built</span>' : '') + '</div>' +
+        '<div class="display font-bold text-navy-900 mt-2">' + esc(t.procedure) + '</div>' +
+        '<div class="text-xs text-slate-500 mt-1">' + t.requiredInstrumentIds.length + ' instruments</div>' +
+        '<div class="mt-2 text-teal-700 font-semibold text-sm">' + (done ? 'Build it again →' : 'Build this tray →') + '</div>' +
+        '</button>';
+    }).join('');
+    trayCards.querySelectorAll('[data-tray]').forEach(function (b) {
+      b.addEventListener('click', function () { startTray(b.dataset.tray); });
+    });
+  }
+
+  function backToPicker() {
+    builder.classList.add('hidden'); builder.innerHTML = '';
+    picker.classList.remove('hidden');
+    renderCards(); paintProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function startTray(id) {
+    var tray = TRAYS.find(function (t) { return t.id === id; });
+    if (!tray) return;
+    picker.classList.add('hidden');
+    builder.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    TB.run({
+      mount: builder, tray: tray, onExit: backToPicker, exitLabel: 'All trays',
+      onFinish: function (res) {
+        var others = TRAYS.filter(function (t) { return t.id !== id && !TB.isDone(t.id); });
+        if (others.length) {
+          var nb = document.createElement('button');
+          nb.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition';
+          nb.textContent = 'Next: ' + others[0].procedure + ' tray →';
+          nb.addEventListener('click', function () { startTray(others[0].id); });
+          res.ctas.appendChild(nb);
+        } else {
+          var a = document.createElement('a');
+          a.href = '/skills-lab'; a.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition inline-block';
+          a.textContent = 'See your First Day Ready Score →';
+          res.ctas.appendChild(a);
+        }
+        var back = document.createElement('button');
+        back.className = 'text-sm text-slate-500 hover:text-slate-700 font-semibold';
+        back.textContent = 'All trays';
+        back.addEventListener('click', backToPicker);
+        res.ctas.appendChild(back);
+        paintProgress();
+      }
+    });
+  }
+
+  // ---- Instrument library ----
+  var library = document.getElementById('library');
+  function thumb(item) {
+    var e = item.emoji || '🦷';
+    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none;font-size:22px">' + e + '</span></div>';
+  }
+  library.innerHTML = VO.INSTRUMENTS.map(function (it) {
+    return '<div class="lib-card">' + thumb(it) +
+      '<div class="min-w-0"><div class="font-semibold text-sm text-navy-900">' + esc(it.name) + '</div>' +
+      '<div class="text-xs text-slate-500">' + esc(it.usedFor) + '</div></div></div>';
+  }).join('');
+  var libToggle = document.getElementById('libToggle');
+  libToggle.addEventListener('click', function () {
+    var hidden = library.classList.toggle('hidden');
+    libToggle.textContent = hidden ? 'Show all →' : 'Hide';
+  });
+
+  renderCards();
+  paintProgress();
+  var qp = new URLSearchParams(location.search).get('tray');
+  if (qp && TRAYS.some(function (t) { return t.id === qp; })) startTray(qp);
+})();
+</script>
+</body>
+</html>

@@ -42,6 +42,7 @@
     </div>
     <div class="flex items-center gap-3 shrink-0">
       <a id="pda-nav-auth"  href="/login"     data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
+      <a id="pda-nav-admin" href="/admin"     class="hidden items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold px-3 py-2 rounded-lg shadow-sm">🛠 Admin</a>
       <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-medium text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
       <a href="/enroll" id="pda-nav-enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="pda-nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
@@ -74,6 +75,7 @@
     <a href="/hiring-partners" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
     <a href="/teach"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
     <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Sign in</a>
+    <a id="pda-mobile-admin" href="/admin"     class="hidden py-2.5 px-1 border-b border-slate-100 text-base font-bold text-slate-900">🛠 Admin dashboard →</a>
     <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-2.5 px-1 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
 
     <a href="/enroll" id="pda-mobile-enroll" class="mt-5 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-3.5 rounded-lg shadow">Enroll →</a>
@@ -217,12 +219,24 @@
       // Enrolled/paid students shouldn't be pitched the FREE preview / FREE
       // practice exam / Enroll — those are prospect CTAs. Free signups
       // (program 'preview') still see them.
-      let paid = false;
+      let paid = false, isAdmin = (session.user?.app_metadata?.is_admin === true);
       try {
         const { data: prof } = await sb.from('profiles')
           .select('program, is_admin').eq('id', session.user.id).maybeSingle();
+        if (prof?.is_admin === true) isAdmin = true;
         paid = !!(prof && (prof.is_admin || (prof.program && prof.program !== 'preview')));
       } catch (e) {}
+
+      // Owner/admin: surface a prominent Admin link in the nav on every page,
+      // and point the existing Dashboard link at the admin dashboard too.
+      if (isAdmin) {
+        const adminD = document.getElementById('pda-nav-admin');
+        const adminM = document.getElementById('pda-mobile-admin');
+        if (adminD) { adminD.classList.remove('hidden'); adminD.classList.add('inline-flex'); }
+        if (adminM) { adminM.classList.remove('hidden'); adminM.classList.add('block'); }
+        if (desktopDash) desktopDash.href = '/admin';
+        if (mobileDash) { mobileDash.href = '/admin'; mobileDash.textContent = 'Go to admin dashboard →'; }
+      }
 
       if (paid) {
         document.querySelectorAll('#pda-more-menu a[href="/tools/practice-exam"], #pda-mobile-menu a[href="/tools/practice-exam"]')
