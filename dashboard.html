@@ -135,16 +135,17 @@
     <div class="flex items-center justify-between gap-3 flex-wrap mb-4">
       <div>
         <p class="text-xs uppercase tracking-widest text-teal-300 font-semibold">Owner / Admin</p>
-        <h2 class="display text-2xl font-bold">Your office</h2>
-        <p class="text-sm text-slate-300 mt-0.5">Everyone who applied or messaged the website, and how your students are doing.</p>
+        <h2 class="display text-2xl font-bold">Run your school</h2>
+        <p class="text-sm text-slate-300 mt-0.5">Everything to run Premier Dental Academy is right here — applicants, messages, your roster, and how every student is doing.</p>
       </div>
-      <a href="/admin" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 rounded-lg text-sm">Open full admin →</a>
+      <a href="/admin" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 rounded-lg text-sm shrink-0">Open full admin →</a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
       <a href="/admin/leads" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">📥</div><div class="font-bold mt-1">Leads &amp; forms</div><div class="text-xs text-slate-300 mt-0.5">Everyone who applied</div></a>
       <a href="/admin/leads#messages" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">💬</div><div class="font-bold mt-1">Messages</div><div class="text-xs text-slate-300 mt-0.5">Texts &amp; website messages</div></a>
       <a href="/admin/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">📊</div><div class="font-bold mt-1">Student progress</div><div class="text-xs text-slate-300 mt-0.5">Grades, logins, who's behind</div></a>
       <a href="/admin/students" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">🎓</div><div class="font-bold mt-1">Students</div><div class="text-xs text-slate-300 mt-0.5">Full roster</div></a>
+      <a href="/admin/instructors" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">👩‍🏫</div><div class="font-bold mt-1">Instructors</div><div class="text-xs text-slate-300 mt-0.5">Staff &amp; access</div></a>
     </div>
   </section>
 
@@ -402,13 +403,17 @@
   document.getElementById('dd-name').textContent = (p.first_name || '') + ' ' + (p.last_name || '');
   document.getElementById('dd-email').textContent = p.email;
   document.getElementById('user-label').textContent = p.first_name || p.email;
-  // Admin = profiles.is_admin OR the is_admin claim baked into the JWT
-  // (app_metadata). The JWT claim survives even if the profile read fails, so an
-  // owner is never wrongly shown the student view.
-  const isAdmin = (p.is_admin === true) || (session?.user?.app_metadata?.is_admin === true);
+  // Admin = the owner email, profiles.is_admin, OR the is_admin claim baked
+  // into the JWT (app_metadata). The email + JWT checks survive even if the
+  // profile read fails, so the owner is never wrongly shown the student view.
+  const ownerEmail = (session?.user?.email || p.email || '').trim().toLowerCase() === 'hello@premierdentalacademyoflongview.com';
+  const isAdmin = ownerEmail || (p.is_admin === true) || (session?.user?.app_metadata?.is_admin === true);
   if (isAdmin) {
-    document.getElementById('admin-link').classList.remove('hidden');
-    document.getElementById('admin-office').classList.remove('hidden');
+    // Owner/admin: the admin tools are built right into this dashboard, so
+    // there's no separate page to hunt for. ("Open full admin →" and the
+    // nav button still link to /admin for the detailed views.)
+    document.getElementById('admin-link')?.classList.remove('hidden');
+    document.getElementById('admin-office')?.classList.remove('hidden');
   }
 
   // Hero

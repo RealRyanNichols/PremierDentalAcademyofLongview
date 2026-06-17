@@ -1,23 +1,18 @@
 # Premier Dental Academy of Longview
 
-Website + student tools for Premier Dental Academy of Longview, an RDA
-training program in East Texas.
+Production website for Premier Dental Academy of Longview — a Registered Dental Assistant (RDA) training school in Longview, TX.
 
-## Layout
+- Static site (HTML + Tailwind via CDN; Inter / Fraunces fonts)
+- Supabase backend (auth, student dashboard, admin) — RLS enforced, admin-only data access
+- Deployed on Vercel; clean URLs via `vercel.json`
 
-```
-05_Live_Site/
-  tools/                     student practice-management trainers
-    practice-pro.html        Practice management trainer (PDA Practice Pro)
-    chairside.html           Clinical workflow trainer (PDA ChairSide)
-  assets/                    shared JS modules
-  auth.js                    Supabase auth shim (window.PDA)
-db/migrations/               SQL migrations (apply via Supabase dashboard)
-```
+## Structure
+- `*.html` — pages, served at clean URLs (`/night-class`, `/dashboard`, `/login`, `/enroll`, `/admin`, …)
+- `assets/` — shared JS and images
+- `tools/` — student practice tools (charting, flashcards, etc.)
+- `admin/`, `blog/` — admin pages and blog posts
 
-## Stack
+## Deploy
+Static deploy on Vercel. `vercel.json` enables clean URLs.
 
-- Vanilla HTML + Tailwind CDN + plain JS — every tool ships as one
-  deployable `.html` file.
-- Supabase for persistence (project `lmbsuwslsycukynzpzik`).
-- Vercel for hosting.
+> Note: the Square enrollment serverless function (`api/enroll.js`) is being restored separately and is not yet in this repo.

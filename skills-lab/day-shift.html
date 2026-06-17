@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Shift — A Day at the Chair | Skills Lab · Premier Dental Academy</title>
+<meta name="description" content="Work a full day at the chair. Greet a schedule of real patients — read their charts, watch for allergies and meds, set the right tray, keep them comfortable — and get scored appointment by appointment.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/day-shift">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .chart-ava{width:64px;height:64px;border-radius:9999px;overflow:hidden;background:#0f766e;display:grid;place-items:center;flex:0 0 auto}
+  .chart-ava img{width:100%;height:100%;object-fit:cover}
+  .chart-ava .fb{font-size:34px;line-height:1}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="sl-header"></div>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Your Shift</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">A full day at the chair.</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Here's today's schedule. Greet each patient, read their chart — <strong class="text-white">watch the allergies and medications</strong> — set the right tray, and keep them comfortable. You're scored appointment by appointment, just like a real day.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6">
+    <div class="flex items-center justify-between mb-2">
+      <div class="font-semibold text-navy-900 text-sm">Patients seen today</div>
+      <div class="text-sm text-slate-500"><span id="seen">0</span> of <span id="total">0</span></div>
+    </div>
+    <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="bar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all" style="width:0%"></div></div>
+  </div>
+
+  <!-- Schedule overview -->
+  <div id="schedule">
+    <h2 class="display text-xl font-bold text-navy-900 mt-8 mb-3">Today's schedule</h2>
+    <div id="apptList" class="space-y-2"></div>
+    <button id="startShift" class="mt-5 w-full sm:w-auto rounded-xl bg-teal-600 text-white font-bold px-6 py-3 hover:bg-teal-700 transition">Clock in &amp; start your shift →</button>
+  </div>
+
+  <!-- Active appointment (banner + scenario) -->
+  <div id="appt" class="hidden">
+    <div id="banner" class="mt-2"></div>
+    <div id="apptRunner" class="mt-4"></div>
+  </div>
+
+  <!-- End-of-day report -->
+  <div id="report" class="hidden"></div>
+</main>
+
+<div id="sl-footer"></div>
+
+<script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/store.js"></script>
+<script src="/assets/skills-lab/ui.js"></script>
+<script src="/assets/skills-lab/data/virtual-office.js"></script>
+<script src="/assets/skills-lab/scenario-player.js"></script>
+<script>
+(function () {
+  'use strict';
+  var U = window.SL_UI, esc = U.escapeHTML, VO = window.SL_VO_DATA, SC = window.SL_SCENARIO;
+  document.getElementById('sl-header').innerHTML = U.headerHTML('');
+  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+
+  var SHIFT = VO.DAY_SHIFT;
+  document.getElementById('total').textContent = SHIFT.length;
+
+  var schedule = document.getElementById('schedule');
+  var apptList = document.getElementById('apptList');
+  var apptWrap = document.getElementById('appt');
+  var banner = document.getElementById('banner');
+  var runner = document.getElementById('apptRunner');
+  var report = document.getElementById('report');
+
+  var idx = 0, results = [];
+
+  function patientOf(a) { return a.patientId ? VO.PATIENT_BY_ID[a.patientId] : null; }
+
+  function renderSchedule() {
+    apptList.innerHTML = SHIFT.map(function (a, i) {
+      var p = patientOf(a);
+      return '<div class="flex items-center gap-3 bg-white rounded-xl border border-slate-100 p-3">' +
+        '<div class="text-sm font-mono font-semibold text-slate-500 w-14 shrink-0">' + esc(a.time) + '</div>' +
+        '<div class="text-2xl shrink-0">' + a.icon + '</div>' +
+        '<div class="min-w-0"><div class="font-semibold text-navy-900">' + esc(a.title) + '</div>' +
+        '<div class="text-xs text-slate-500 truncate">' + (p ? esc(p.name) + ' · ' + esc(p.reason) : 'Office task') + '</div></div>' +
+        '<div class="ml-auto text-xs font-semibold ' + (results[i] != null ? 'text-emerald-600' : 'text-slate-300') + '">' + (results[i] != null ? results[i] + '%' : '') + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function bannerHTML(p) {
+    if (!p) return '';
+    var allergies = (p.allergies || []).filter(function (x) { return x && x.toLowerCase() !== 'none reported'; });
+    var alert = allergies.length
+      ? '<span class="inline-flex items-center gap-1 text-[11px] font-bold text-rose-700 bg-rose-100 border border-rose-200 px-2 py-0.5 rounded-full">⚠ Allergy: ' + allergies.map(esc).join(', ') + '</span>'
+      : '<span class="text-[11px] text-slate-400">No known allergies</span>';
+    var meds = (p.meds || []).length ? p.meds.map(esc).join(', ') : 'None';
+    return '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex items-start gap-4">' +
+      '<div class="chart-ava"><img src="' + p.photo + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + (p.emoji || '🧑') + '</span></div>' +
+      '<div class="min-w-0 flex-1">' +
+      '<div class="flex items-center gap-2 flex-wrap"><span class="display text-lg font-bold text-navy-900">' + esc(p.name) + '</span><span class="text-sm text-slate-400">· age ' + p.age + '</span></div>' +
+      '<div class="text-sm text-slate-600 mt-0.5">' + esc(p.reason) + '</div>' +
+      '<div class="mt-2 flex flex-wrap items-center gap-2">' + alert +
+      '<span class="text-[11px] text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">Meds: ' + meds + '</span></div>' +
+      '</div></div>';
+  }
+
+  function startShift() {
+    schedule.classList.add('hidden');
+    report.classList.add('hidden');
+    apptWrap.classList.remove('hidden');
+    idx = 0; results = [];
+    runAppt();
+  }
+
+  function paintProgress() {
+    var seen = results.filter(function (r) { return r != null; }).length;
+    document.getElementById('seen').textContent = seen;
+    document.getElementById('bar').style.width = (seen / SHIFT.length * 100) + '%';
+  }
+
+  function runAppt() {
+    var a = SHIFT[idx];
+    var p = patientOf(a);
+    banner.innerHTML = (p ? '<div class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">' + esc(a.time) + ' · Now seeing</div>' + bannerHTML(p) : '<div class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">' + esc(a.time) + ' · ' + esc(a.title) + '</div>');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    SC.run({
+      mount: runner,
+      scenario: a,
+      onExit: endShiftEarly, exitLabel: 'End shift',
+      onFinish: function (res) {
+        results[idx] = res.score;
+        paintProgress();
+        var next = document.createElement('button');
+        next.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition';
+        next.textContent = (idx + 1 < SHIFT.length) ? 'Next patient →' : 'End of day →';
+        next.addEventListener('click', function () {
+          if (idx + 1 < SHIFT.length) { idx++; runAppt(); }
+          else showReport();
+        });
+        res.ctas.insertBefore(next, res.ctas.firstChild);
+      }
+    });
+  }
+
+  function endShiftEarly() {
+    apptWrap.classList.add('hidden');
+    schedule.classList.remove('hidden');
+    renderSchedule(); paintProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showReport() {
+    apptWrap.classList.add('hidden');
+    report.classList.remove('hidden');
+    var done = results.filter(function (r) { return r != null; });
+    var avg = done.length ? Math.round(done.reduce(function (s, r) { return s + r; }, 0) / done.length) : 0;
+    report.innerHTML =
+      '<div class="sl-fade">' +
+      '<div class="rounded-2xl bg-gradient-to-br from-teal-700 to-cyan-700 text-white p-6 sm:p-8 shadow-xl text-center">' +
+      '<div class="text-5xl">🏁</div>' +
+      '<h2 class="display text-2xl sm:text-3xl font-bold mt-2">Shift complete!</h2>' +
+      '<p class="text-teal-100 mt-1">You saw ' + done.length + ' patients today and averaged <strong>' + avg + '%</strong>.</p></div>' +
+      '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mt-5">' +
+      '<div class="text-xs font-bold uppercase tracking-wide text-slate-500 mb-2">How your day went</div>' +
+      '<div class="space-y-2">' + SHIFT.map(function (a, i) {
+        var p = patientOf(a); var r = results[i];
+        var col = r == null ? 'text-slate-300' : r >= 80 ? 'text-emerald-600' : r >= 50 ? 'text-amber-600' : 'text-rose-600';
+        return '<div class="flex items-center gap-3 text-sm"><span class="font-mono text-slate-400 w-14">' + esc(a.time) + '</span>' +
+          '<span class="text-lg">' + a.icon + '</span><span class="flex-1 min-w-0 truncate text-navy-900">' + esc(a.title) + (p ? ' — ' + esc(p.name) : '') + '</span>' +
+          '<span class="font-bold ' + col + '">' + (r == null ? '—' : r + '%') + '</span></div>';
+      }).join('') + '</div></div>' +
+      '<div class="mt-6 flex flex-wrap items-center gap-3">' +
+      '<a href="/skills-lab" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition inline-block">See your First Day Ready Score →</a>' +
+      '<button id="againShift" class="rounded-xl bg-white border border-slate-200 text-navy-900 font-semibold px-5 py-2.5 text-sm hover:border-teal-300 transition">Work another shift</button>' +
+      '</div></div>';
+    document.getElementById('againShift').addEventListener('click', startShift);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  document.getElementById('startShift').addEventListener('click', startShift);
+  renderSchedule();
+  paintProgress();
+})();
+</script>
+</body>
+</html>

@@ -1,21 +1,6 @@
-# Secrets / credentials — never commit these
+.vercel
+node_modules
+.DS_Store
 .env
 .env.*
-*.pem
-*.key
-service-account*.json
-.vercel/
-
-# OS / editor cruft
-.DS_Store
-Thumbs.db
-*.swp
-.idea/
-.vscode/
-
-# Dependencies / build output
-node_modules/
-package-lock.json
-dist/
-build/
-.next/
+*.log

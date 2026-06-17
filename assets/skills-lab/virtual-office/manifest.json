@@ -1,0 +1,44 @@
+{
+  "note": "Realistic images for the Skills Lab Virtual Office. Drop files here matching these exact names and they replace the emoji fallbacks automatically. Suggested sizes in parentheses. Every consumer uses onerror fallback, so missing files never break the page.",
+  "base": "/assets/skills-lab/virtual-office/",
+  "scenes": [
+    { "file": "office-map.png", "size": "1600x1000", "desc": "Top-down / isometric floor plan of the office" },
+    { "file": "operatory.png", "size": "1600x1000", "desc": "Realistic operatory scene" },
+    { "file": "sterilization.png", "size": "1600x1000", "desc": "Sterilization room with contaminated -> clean zones" }
+  ],
+  "patients": [
+    { "file": "patient-01.png", "size": "800x800", "for": "Maria Alvarez" },
+    { "file": "patient-02.png", "size": "800x800", "for": "Darnell Carter" },
+    { "file": "patient-03.png", "size": "800x800", "for": "Joyce Bennett" },
+    { "file": "patient-04.png", "size": "800x800", "for": "Tyler Nguyen" },
+    { "file": "patient-05.png", "size": "800x800", "for": "Priya Patel" },
+    { "file": "patient-06.png", "size": "800x800", "for": "Frank Russo" },
+    { "file": "patient-07.png", "size": "800x800", "for": "Emma Wright" },
+    { "file": "patient-08.png", "size": "800x800", "for": "Gloria Sims" }
+  ],
+  "staff": [
+    { "file": "staff-dentist.png", "size": "800x800", "for": "Dr. Williams" },
+    { "file": "staff-assistant.png", "size": "800x800", "for": "Assistant (you)" },
+    { "file": "staff-hygienist.png", "size": "800x800", "for": "Hygienist" },
+    { "file": "staff-frontdesk.png", "size": "800x800", "for": "Front desk" }
+  ],
+  "trays": [
+    { "file": "tray-exam.png", "size": "1200x800" },
+    { "file": "tray-restorative.png", "size": "1200x800" },
+    { "file": "tray-crownprep.png", "size": "1200x800" },
+    { "file": "tray-crownseat.png", "size": "1200x800" },
+    { "file": "tray-extraction.png", "size": "1200x800" },
+    { "file": "tray-endo.png", "size": "1200x800" },
+    { "file": "tray-impression.png", "size": "1200x800" },
+    { "file": "tray-hygiene.png", "size": "1200x800" }
+  ],
+  "instruments": [
+    "instr-mirror.png", "instr-explorer.png", "instr-cotton-pliers.png", "instr-periodontal-probe.png",
+    "instr-spoon-excavator.png", "instr-condenser.png", "instr-carver.png", "instr-scaler.png",
+    "instr-forceps.png", "instr-elevator.png", "instr-scissors.png", "instr-hemostat.png",
+    "instr-impression-tray.png", "instr-curing-light.png", "instr-high-speed-handpiece.png",
+    "instr-low-speed-handpiece.png", "instr-air-water-syringe.png", "instr-saliva-ejector.png",
+    "instr-hve-tip.png", "instr-matrix-band.png"
+  ],
+  "instrument_size": "600x600 on white"
+}
