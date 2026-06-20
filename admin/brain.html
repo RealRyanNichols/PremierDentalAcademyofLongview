@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Brain – PDA — Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{font-family:'Inter',system-ui,sans-serif;color:#0f172a}.display{font-family:'Fraunces',serif}</style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <img src="/assets/logo-mark.png" alt="PDA" width="28" height="28" class="w-7 h-7 rounded" />
+      <span>PDA Admin</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin/leads" class="text-slate-600 hover:text-teal-700">Leads</a>
+      <a href="/admin/students" class="text-slate-600 hover:text-teal-700">Students</a>
+      <button id="signout" class="text-rose-600 hover:underline">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">🔒</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to view the Brain.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Sign in →</a>
+</div>
+
+<main id="view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Brain – PDA</p>
+      <h1 class="display text-3xl font-bold">Tool activity &amp; captured data</h1>
+      <p class="text-slate-600 text-sm mt-1">Every input visitors give our interactive tools and the answers they get back. Rows with contact info also land in <a href="/admin/leads" class="text-teal-700 underline">Leads</a>.</p>
+    </div>
+    <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold text-sm px-4 py-2 rounded-lg">↻ Refresh</button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Total uses</div><div id="s-total" class="text-2xl font-bold text-slate-900 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">With contact</div><div id="s-contact" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Shared</div><div id="s-shared" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">This week</div><div id="s-week" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+  </div>
+
+  <div id="filters" class="flex flex-wrap gap-2 mb-4 text-sm"></div>
+
+  <div id="list" class="space-y-3"></div>
+  <div id="empty" class="hidden text-center text-slate-500 py-12">No tool activity yet. As people use the blog tools, their inputs &amp; results show up here.</div>
+</main>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const TOOL_LABEL = { paycalc: '💰 Pay-Raise Calc', budget: '🧮 Career Budget', quiz: '✅ Fit Quiz' };
+  const kv = (o) => { try { o = (typeof o === 'string') ? JSON.parse(o) : (o || {}); } catch (e) { o = {}; }
+    return Object.keys(o).map(k => '<span class="inline-block bg-slate-100 rounded px-1.5 py-0.5 mr-1 mb-1 text-[11px]"><b>' + esc(k) + ':</b> ' + esc(typeof o[k] === 'object' ? JSON.stringify(o[k]) : o[k]) + '</span>').join(''); };
+
+  let rows = [], filter = 'all';
+  async function loadData() {
+    const { data, error } = await sb.from('brain_events').select('*').order('created_at', { ascending: false }).limit(500);
+    if (error) { alert('Load failed: ' + error.message); return; }
+    rows = data || [];
+    document.getElementById('s-total').textContent = rows.length;
+    document.getElementById('s-contact').textContent = rows.filter(r => r.contact_email || r.contact_phone).length;
+    document.getElementById('s-shared').textContent = rows.filter(r => r.shared_to).length;
+    const weekAgo = Date.now() - 7 * 864e5;
+    document.getElementById('s-week').textContent = rows.filter(r => new Date(r.created_at).getTime() > weekAgo).length;
+    const tools = [...new Set(rows.map(r => r.tool))];
+    document.getElementById('filters').innerHTML =
+      ['all', ...tools].map(t => `<button data-f="${esc(t)}" class="bf px-3 py-1.5 rounded-lg ${t === filter ? 'bg-slate-900 text-white' : 'bg-white border border-slate-300'}">${t === 'all' ? 'All' : esc(TOOL_LABEL[t] || t)}</button>`).join('');
+    document.querySelectorAll('.bf').forEach(b => b.onclick = () => { filter = b.getAttribute('data-f'); loadData(); });
+    render();
+  }
+  function render() {
+    const list = document.getElementById('list');
+    const shown = rows.filter(r => filter === 'all' || r.tool === filter);
+    document.getElementById('empty').classList.toggle('hidden', shown.length > 0);
+    list.innerHTML = shown.map(r => {
+      const when = new Date(r.created_at).toLocaleString();
+      const contact = (r.contact_name || r.contact_email || r.contact_phone)
+        ? '<div class="text-sm mt-2 bg-teal-50 border border-teal-200 rounded px-2 py-1">👤 <b>' + esc(r.contact_name || '') + '</b> ' + esc(r.contact_email || '') + ' ' + esc(r.contact_phone || '') + '</div>' : '';
+      return '<div class="bg-white rounded-xl border border-slate-200 p-4">'
+        + '<div class="flex items-center gap-2 flex-wrap"><span class="text-[10px] uppercase tracking-wider font-bold bg-cyan-100 text-cyan-800 px-2 py-0.5 rounded-full">' + esc(TOOL_LABEL[r.tool] || r.tool) + '</span>'
+        + (r.shared_to ? '<span class="text-[10px] font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">shared · ' + esc(r.shared_to) + '</span>' : '')
+        + '<span class="text-xs text-slate-400 ml-auto">' + esc(when) + '</span></div>'
+        + '<div class="text-[11px] text-slate-400 mt-1">' + esc(r.page || '') + '</div>'
+        + '<div class="mt-2"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Inputs</div><div class="mt-1">' + kv(r.inputs) + '</div></div>'
+        + '<div class="mt-2"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Outputs</div><div class="mt-1">' + kv(r.outputs) + '</div></div>'
+        + contact + '</div>';
+    }).join('');
+  }
+  document.getElementById('refresh').onclick = loadData;
+  await loadData();
+})();
+</script>
+</body>
+</html>
