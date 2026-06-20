@@ -375,6 +375,9 @@
   // and pulls real seat counts (no fabricated numbers).
   function injectUrgencyBar() {
     var path = location.pathname.toLowerCase().replace(/\/$/, '');
+    // Homepage already leads with its own amber "Next cohort starts… / N days
+    // left" banner — don't stack a second cohort countdown on top of it.
+    if (path === '' || path === '/index.html') return;
     if (/^\/(admin|login|logout|enroll|enroll-success|night-class)/.test(path)) return;
     try { if (sessionStorage.getItem('pda.urgency.x') === '1') return; } catch (e) {}
     var URL_BASE = 'https://lmbsuwslsycukynzpzik.supabase.co/rest/v1';
