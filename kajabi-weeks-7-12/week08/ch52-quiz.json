@@ -1,0 +1,74 @@
+[
+  {
+    "question": "A removable partial denture (RPD) is indicated when a patient:",
+    "choices": ["Has no remaining natural teeth in the arch", "Still has some natural teeth but missing teeth that cannot be restored with a fixed bridge", "Needs a single crown", "Requires only a provisional restoration"],
+    "correctIndex": 1,
+    "rationale": "An RPD restores missing teeth in an arch that still has natural teeth, especially when spaces are too large for a fixed bridge or there are no suitable posterior abutments. A complete denture is used for an edentulous arch."
+  },
+  {
+    "question": "Which component of an RPD grips the abutment teeth to hold the prosthesis in place?",
+    "choices": ["Major connector", "Rest", "Clasp (retainer)", "Denture base"],
+    "correctIndex": 2,
+    "rationale": "Clasps (retainers) are the arms that engage the abutment teeth for retention. Rests direct forces and prevent settling, and the major connector joins the two sides of the framework."
+  },
+  {
+    "question": "The purpose of a rest on an RPD is to:",
+    "choices": ["Color-match the gingiva", "Direct chewing forces down the long axis of the abutment and prevent the RPD from sinking into the tissue", "Provide the only retention", "Replace the missing tooth"],
+    "correctIndex": 1,
+    "rationale": "A rest sits on a prepared seat in the abutment tooth and transmits occlusal forces along the tooth's long axis, preventing the partial from impinging on the soft tissue."
+  },
+  {
+    "question": "A natural tooth that supports and retains a removable partial denture is called the:",
+    "choices": ["Pontic", "Abutment", "Connector", "Residual ridge"],
+    "correctIndex": 1,
+    "rationale": "An abutment is the natural tooth that provides support and retention for the partial denture through rests and clasps."
+  },
+  {
+    "question": "A complete (full) denture is supported primarily by:",
+    "choices": ["Remaining natural teeth", "Dental implants only", "The residual ridge and supporting tissues", "Adjacent abutment crowns"],
+    "correctIndex": 2,
+    "rationale": "A complete denture rests on and is supported by the residual ridge and surrounding soft tissues, since no natural teeth remain in the arch."
+  },
+  {
+    "question": "An immediate denture is best described as a denture that is:",
+    "choices": ["Placed years after the teeth are removed", "Placed the same day the remaining teeth are extracted", "Cemented permanently", "Supported only by implants"],
+    "correctIndex": 1,
+    "rationale": "An immediate denture is inserted on the same day the remaining teeth are extracted so the patient is never without teeth; it later requires relining as the ridge heals and resorbs."
+  },
+  {
+    "question": "Compared with porcelain denture teeth, acrylic resin denture teeth generally:",
+    "choices": ["Are more brittle and noisier", "Bond to the resin base and are quieter and gentler on opposing teeth", "Cannot be used in dentures", "Are heavier and more wear-resistant"],
+    "correctIndex": 1,
+    "rationale": "Acrylic teeth chemically bond to the acrylic base, are quieter, and are gentler on opposing dentition. Porcelain teeth are more wear-resistant but brittle and can be noisy."
+  },
+  {
+    "question": "During which appointment are denture teeth set in wax so the dentist and patient can verify occlusion, shade, and esthetics before processing?",
+    "choices": ["Final impression appointment", "Jaw relation record appointment", "Try-in (wax setup) appointment", "Delivery appointment"],
+    "correctIndex": 2,
+    "rationale": "At the try-in, the teeth are arranged in wax so fit, occlusion, midline, shade, and esthetics can be evaluated and approved before the denture is finalized."
+  },
+  {
+    "question": "Why do complete dentures sometimes require a reline after a period of use?",
+    "choices": ["The acrylic dissolves", "The residual ridge resorbs and changes shape over time", "The teeth grow back", "The clasps loosen"],
+    "correctIndex": 1,
+    "rationale": "After teeth are removed, the residual ridge continues to resorb and change shape, so the tissue surface of the denture must be relined (or rebased) to refit the ridge."
+  },
+  {
+    "question": "What should the assistant teach a patient about inserting a removable prosthesis?",
+    "choices": ["Bite it firmly into place", "Seat it gently with the fingers rather than biting it in", "Force it in with a tongue blade", "Leave it loose and let it settle"],
+    "correctIndex": 1,
+    "rationale": "Patients should insert and remove the prosthesis with their fingers; biting it into place can bend or distort the clasps and damage the appliance."
+  },
+  {
+    "question": "Which home-care instruction is appropriate for a denture patient?",
+    "choices": ["Clean with abrasive toothpaste and a stiff brush", "Clean over a folded towel or basin of water with a denture brush and cleaner", "Soak the denture in very hot water", "Never remove the denture"],
+    "correctIndex": 1,
+    "rationale": "Dentures should be cleaned over water or a towel (to prevent breakage if dropped) using a denture brush and appropriate cleaner, not abrasive toothpaste, and are typically removed at night unless the dentist directs otherwise."
+  },
+  {
+    "question": "A patient with a new removable partial denture should be reminded to:",
+    "choices": ["Stop brushing the remaining natural teeth", "Keep the remaining natural teeth and abutments meticulously clean to prevent decay", "Wear the partial only while sleeping", "Adjust the clasps at home if it feels loose"],
+    "correctIndex": 1,
+    "rationale": "Partial-denture patients must keep their remaining teeth and abutments very clean, because plaque retained around clasps increases the risk of decay and gum disease. Patients should not self-adjust the appliance."
+  }
+]
