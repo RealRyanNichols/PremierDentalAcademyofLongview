@@ -1,0 +1,123 @@
+[
+  {
+    "question": "Why is it helpful to treat your job search like a project rather than a single action?",
+    "choices": [
+      "It guarantees a higher starting salary",
+      "It keeps you organized with materials, weekly goals, and a log so applications and follow-ups don't fall through the cracks",
+      "It lets you skip preparing a resume",
+      "It means you only have to apply to one office"
+    ],
+    "correctIndex": 1,
+    "rationale": "A structured search with ready materials, weekly goals, and a tracking log helps you apply consistently and follow up on time, which is what produces results."
+  },
+  {
+    "question": "Which of the following is NOT a common place to find dental-assistant job openings?",
+    "choices": [
+      "Online job boards and dental-specific listings",
+      "Dental temp and staffing agencies",
+      "Your school and externship site",
+      "A patient's dental insurance card"
+    ],
+    "correctIndex": 3,
+    "rationale": "Job boards, staffing agencies, and your school/externship are common sources of leads. An insurance card is patient billing information, not a job source."
+  },
+  {
+    "question": "Why is an externship often described as 'an extended job interview'?",
+    "choices": [
+      "It pays more than a regular job",
+      "The office observes your punctuality, skills, and attitude and may hire you or refer you elsewhere",
+      "It replaces the need for any certifications",
+      "It is required by every job board"
+    ],
+    "correctIndex": 1,
+    "rationale": "During an externship the office sees how you actually work, so a strong impression can lead directly to an offer or a referral."
+  },
+  {
+    "question": "What best describes the professional image expected of a dental assistant?",
+    "choices": [
+      "Trendy, eye-catching outfits to stand out",
+      "Clean, conservative appearance with clear, warm communication and a dependable attitude",
+      "Casual clothing since the work is behind the scenes",
+      "Heavy jewelry and long nails to look polished"
+    ],
+    "correctIndex": 1,
+    "rationale": "Patient-facing healthcare roles call for clean, conservative grooming plus reliable, professional communication; long nails and heavy jewelry also conflict with infection control."
+  },
+  {
+    "question": "What does networking primarily involve?",
+    "choices": [
+      "Only submitting online applications",
+      "Building honest professional relationships that can lead to job leads and referrals",
+      "Posting your resume on social media and waiting",
+      "Avoiding contact with classmates and instructors"
+    ],
+    "correctIndex": 1,
+    "rationale": "Most jobs are filled through people; telling instructors, classmates, and externship contacts you are looking opens doors that postings alone do not."
+  },
+  {
+    "question": "When applying to a specific office, what is the best practice?",
+    "choices": [
+      "Send the exact same generic resume everywhere with no changes",
+      "Tailor your resume and cover note to match the posting and lead with the skills the office wants",
+      "Leave out your certifications to keep it short",
+      "Ignore the application instructions and apply your own way"
+    ],
+    "correctIndex": 1,
+    "rationale": "Tailoring your materials to the posting and following the requested format shows attention to detail and highlights the skills the employer is seeking."
+  },
+  {
+    "question": "Which item belongs in a ready-to-go 'job-search kit'?",
+    "choices": [
+      "A copy of your radiology certification and AHA BLS CPR card",
+      "A list of patients you have treated",
+      "Other applicants' resumes",
+      "The office's internal scheduling password"
+    ],
+    "correctIndex": 0,
+    "rationale": "An updated resume, copies of your certifications and CPR card, and a reference list are appropriate, employer-relevant materials to keep ready."
+  },
+  {
+    "question": "After an interview, what is a good follow-up practice?",
+    "choices": [
+      "Call the office several times a day until you hear back",
+      "Send a brief thank-you message within about 24 hours restating your interest",
+      "Wait several weeks before any contact",
+      "Do nothing, since following up looks desperate"
+    ],
+    "correctIndex": 1,
+    "rationale": "A prompt, brief thank-you message shows professionalism and initiative; repeated daily calls are excessive and counterproductive."
+  },
+  {
+    "question": "Why is proofreading your resume and application important?",
+    "choices": [
+      "It is required by federal law",
+      "Spelling and grammar errors can suggest carelessness with detail, which matters in clinical work",
+      "It makes the resume longer",
+      "It changes your level of certification"
+    ],
+    "correctIndex": 1,
+    "rationale": "Clinical work demands attention to detail; errors in your materials can lead an employer to question how careful you will be at chairside."
+  },
+  {
+    "question": "How should a newer assistant frame limited experience to an employer?",
+    "choices": [
+      "Hide that they are new and exaggerate past jobs",
+      "Show a positive, coachable attitude and emphasize willingness to learn quickly",
+      "Refuse to discuss experience at all",
+      "Claim years of experience they do not have"
+    ],
+    "correctIndex": 1,
+    "rationale": "Honesty plus a coachable, eager-to-learn attitude reassures employers; fabricating experience is dishonest and risks the offer."
+  },
+  {
+    "question": "What is an appropriate way to follow up a few days after submitting an application?",
+    "choices": [
+      "Show up unannounced for a long visit during patient hours",
+      "Politely call or stop in to confirm the application was received and reaffirm interest",
+      "Email the office every hour",
+      "Ask the office to remove other candidates"
+    ],
+    "correctIndex": 1,
+    "rationale": "A single, polite confirmation of receipt that reaffirms your interest shows initiative without being intrusive."
+  }
+]
