@@ -17,7 +17,7 @@
 //            standing setting per Amanda). Logging happens regardless.
 //
 // PRICING (single source of truth — do NOT drift):
-//   In-Person $1,997 · Online $997 · $200 min down, build-your-own plan.
+//   In-Person $1,997 · Online $397 · $200 min down, build-your-own plan.
 //
 // Auth: ?secret= must equal SECRET below (matches the live Quo subscription).
 
@@ -31,7 +31,7 @@ const SITE_URL = "https://premierdentalacademyoflongview.com";
 const PDA_DIGITS = "9039136444"; // our Quo number, used to pick the "other" party
 
 const PRICE_IN_PERSON = 1997;
-const PRICE_ONLINE = 997;
+const PRICE_ONLINE = 397;
 const MIN_DOWN = 200;
 
 const json = (o: unknown, s = 200) =>
@@ -46,13 +46,17 @@ function isAfterHours(now = new Date()): boolean {
 function digits10(p: string): string { return (p || "").replace(/\D/g, "").slice(-10); }
 
 // ── Sona / free-text field extraction ──
+// Common words the name patterns can falsely catch ("This is my test" → "my").
+const NAME_STOPWORDS = new Set(["my","the","a","an","this","that","just","here","interested","looking","trying","calling","texting","wondering","hoping","ready","still","very","really","also","not","your","our","good","doing","going","gonna","wanting","need","available","free","able","sorry","yes","no","ok","okay"]);
 function extractInfo(text: string): { email?: string; firstName?: string } {
   const emailMatch = text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/);
   const email = emailMatch ? emailMatch[0].toLowerCase() : undefined;
   const nameMatch =
     text.match(/\b(?:my name is|this is|i am|i'?m|name'?s|caller(?:'s)? name(?: is)?)\s+([A-Z][a-z]{1,25})\b/i) ||
     text.match(/^([A-Z][a-z]{1,25})\s+(?:here|texting|reaching out|called|calling)/i);
-  const firstName = nameMatch ? nameMatch[1].replace(/^./, (c) => c.toUpperCase()) : undefined;
+  let firstName = nameMatch ? nameMatch[1] : undefined;
+  if (firstName && NAME_STOPWORDS.has(firstName.toLowerCase())) firstName = undefined;
+  if (firstName) firstName = firstName.replace(/^./, (c) => c.toUpperCase());
   return { email, firstName };
 }
 

@@ -73,10 +73,13 @@ portal gate + lead grading. Nothing here stores secrets in the repo.
     happens regardless of the switch.
   - **Endpoint:** `…/quo-inbound-webhook?secret=pda-quo-2026` (matches the live
     Quo subscription).
-  - **Re-add the text subscription (Quo side):** in the Quo/OpenPhone dashboard
-    (or API), re-enable the **`message.received`** event to this webhook URL.
-    Confirm `QUO_AUTOREPLY_ENABLED=off` so texts are logged but never
-    auto-answered.
+  - **Webhooks configured (live, via the OpenPhone API):** all four point at the
+    endpoint above and are `enabled` on number `+19039136444` (`PNhV3szhHa`):
+    `message.received`, `call.completed`, `call.summary.completed`,
+    `call.transcript.completed`. `QUO_AUTOREPLY_ENABLED=off`, so texts are logged
+    but never auto-answered. Manage them via the OpenPhone Webhooks API
+    (`GET/POST/DELETE https://api.openphone.com/v1/webhooks*`) using
+    `app_secrets.QUO_API_KEY`.
 
 ---
 
