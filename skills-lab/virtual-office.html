@@ -14,6 +14,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
@@ -53,6 +54,11 @@ tailwind.config = { theme: { extend: {
   .legend-chip .num{display:grid;place-items:center;width:20px;height:20px;border-radius:9999px;background:#0d9488;color:#fff;font-size:11px;font-weight:800}
   .legend-chip.done .num{background:#16a34a}
   .legend-chip.done{border-color:#bbf7d0;background:#f0fdf4}
+  .legend-chip.locked .num{background:#f59e0b}
+  .legend-chip.locked::after{content:'🔒';font-size:.72rem;line-height:1}
+  .hot.locked{background:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.55)}
+  .hot.locked::after{border-color:#fde68a}
+  .hot.hot--hover{transform:translate(-50%,-50%) scale(1.22)}
   .fade-in{animation:fadeIn .28s ease both}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   /* In-scene speaker nameplate */
   .vo-speaker{position:absolute;left:10px;top:10px;z-index:7;display:flex;align-items:center;gap:.5rem;
@@ -75,6 +81,9 @@ tailwind.config = { theme: { extend: {
     <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Step into a real operatory.</h1>
     <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base"><strong class="text-white">Drag to look around the room</strong> in 3D — just like standing in it on your first day. Tap any glowing marker to learn what it is, take a <strong class="text-white">guided visit with Dr. Williams</strong>, or set up your tray.</p>
   </div>
+
+  <!-- Preview gate strip (filled by JS when the visitor is not a signed-in student) -->
+  <div id="voPreviewStrip"></div>
 
   <!-- Guided visit with Dr. Williams -->
   <div class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl shadow p-5 sm:p-6 mt-6">
@@ -147,6 +156,77 @@ tailwind.config = { theme: { extend: {
   document.getElementById('sl-header').innerHTML = U.headerHTML('office');
   document.getElementById('sl-footer').innerHTML = U.footerHTML();
 
+  // ===== Access gate: signed-in = student (full) · everyone else = preview =====
+  // Same proven session check the chairside/practice tools use: ANY signed-in
+  // user gets full access; non-students get a look-around preview that sells it.
+  var SUPA_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SUPA_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var FREE = { dentist: true, patient: true };   // stations anyone can open in preview
+  var ACCESS = 'preview';                         // 'preview' | 'student'
+  function isStudent() { return ACCESS === 'student'; }
+  function isLocked(id) { return ACCESS !== 'student' && !FREE[id]; }
+
+  function renderPreviewStrip() {
+    var el = document.getElementById('voPreviewStrip');
+    if (!el) return;
+    if (ACCESS === 'student') { el.innerHTML = ''; return; }
+    el.innerHTML =
+      '<div class="mt-4 flex flex-wrap items-center gap-3 rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4">' +
+      '<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">Preview</span>' +
+      '<span class="text-sm text-amber-900 flex-1 min-w-[220px]">You\'re exploring a free preview — look around the operatory and open 2 stations. <strong>Enroll or sign in</strong> to unlock all 8 stations, the guided visits with Dr. Williams, and the tray challenge.</span>' +
+      '<a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">Enroll to unlock &rarr;</a>' +
+      '<a href="/login" class="text-sm font-semibold text-amber-800 hover:text-amber-900 underline">Sign in</a>' +
+      '</div>';
+  }
+
+  function enrollCardHTML(title, body) {
+    return '<div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-5 sm:p-6 text-center">' +
+      '<div class="text-4xl">&#128274;</div>' +
+      '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-1">' + esc(title) + '</h2>' +
+      '<p class="text-slate-600 mt-1 text-sm max-w-md mx-auto">' + esc(body) + '</p>' +
+      '<div class="mt-4 flex flex-wrap items-center justify-center gap-3">' +
+      '<a href="/enroll" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 text-sm">Enroll to unlock &rarr;</a>' +
+      '<a href="/login" class="rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90">I\'m a student &mdash; sign in</a>' +
+      '</div></div>';
+  }
+
+  function openLocked(id) {
+    var s = STATIONS[id] || {};
+    trayMount.classList.add('hidden'); trayMount.innerHTML = '';
+    panel.innerHTML = enrollCardHTML(
+      (s.name || 'This station') + ' is for enrolled students',
+      'You\'re in preview mode. Enroll at Premier Dental Academy to unlock this station, the guided visits, and the tray challenge — and to save your First Day Ready Score.');
+    panel.classList.remove('hidden'); panel.classList.add('fade-in');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function applyAccess() {
+    renderPreviewStrip();
+    document.querySelectorAll('[data-legend]').forEach(function (c) {
+      c.classList.toggle('locked', isLocked(c.dataset.legend));
+    });
+    if (window.PDA_VO_repaintLocks) window.PDA_VO_repaintLocks(isLocked);
+  }
+
+  function voBoot() {
+    applyAccess();
+    (async function () {
+      var session = null;
+      try {
+        if (window.supabase && window.supabase.createClient) {
+          var sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+          var r = await sb.auth.getSession();
+          session = r && r.data ? r.data.session : null;
+        }
+      } catch (e) {}
+      if (!session && window.PDA && window.PDA.getSession) {
+        try { session = await window.PDA.getSession(); } catch (e) {}
+      }
+      ACCESS = session ? 'student' : 'preview';
+      applyAccess();
+    })();
+  }
+
   // ---- Station content (what it is / your job / first-day tip) ----
   var STATIONS = {
     dentist:  { icon:'🧑‍⚕️', name:'The dentist', short:'The dentist', what:'The provider you assist. They diagnose and treat — you keep everything moving so they can focus on the patient.',
@@ -193,6 +273,7 @@ tailwind.config = { theme: { extend: {
 
   function openStation(id) {
     var s = STATIONS[id]; if (!s) return;
+    if (isLocked(id)) { return openLocked(id); }
     trayMount.classList.add('hidden'); trayMount.innerHTML = '';
     var done = !!explored()[id];
     var actionBtn = '';
@@ -245,6 +326,14 @@ tailwind.config = { theme: { extend: {
       reviewLesson:'Crown Procedure Tray Setup' }
   ];
   function startTray() {
+    if (!isStudent()) {
+      panel.classList.add('hidden');
+      trayMount.classList.remove('hidden');
+      trayMount.innerHTML = enrollCardHTML('The tray challenge is for enrolled students',
+        'Set up real procedure trays when you enroll. Look around the operatory free, then enroll to unlock the tray challenge and every station.');
+      trayMount.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
     panel.classList.add('hidden');
     trayMount.classList.remove('hidden');
     trayMount.innerHTML = '<div class="mb-3"><h2 class="display text-xl sm:text-2xl font-bold text-navy-900">Set up your tray</h2><p class="text-slate-500 text-sm">Pick the right instruments — just like prepping a room before the dentist sits down.</p></div><div id="trayQuiz"></div>';
@@ -269,7 +358,8 @@ tailwind.config = { theme: { extend: {
   });
 
   // Expose for the 3D module
-  window.PDA_VO = { STATIONS: STATIONS, KEYS: KEYS, openStation: openStation, explored: explored };
+  window.PDA_VO = { STATIONS: STATIONS, KEYS: KEYS, openStation: openStation, explored: explored,
+    access: function () { return ACCESS; }, isLocked: isLocked };
 
   // Safety net: if the 3D module never takes over (e.g. CDN blocked), don't hang the spinner.
   setTimeout(function () {
@@ -282,6 +372,7 @@ tailwind.config = { theme: { extend: {
   }, 12000);
 
   paintProgress();
+  voBoot();
 })();
 </script>
 
@@ -319,7 +410,24 @@ tailwind.config = { theme: { extend: {
       '<div class="rl">' + (p.role ? esc(p.role) + ' · ' : '') + 'asking…</div></div>';
   }
 
+  function previewGate() {
+    pickerWrap.classList.add('hidden');
+    startBtn.textContent = 'Choose a visit →';
+    mount.classList.remove('hidden');
+    mount.innerHTML =
+      '<div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6 text-center">' +
+      '<div class="text-4xl">🔒</div>' +
+      '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-1">Guided visits are for enrolled students</h2>' +
+      '<p class="text-slate-600 mt-1 text-sm max-w-md mx-auto">Dr. Williams’ guided appointments unlock when you enroll. Explore the operatory free, then enroll to take the full visit and credit the skills to your passport.</p>' +
+      '<div class="mt-4 flex flex-wrap items-center justify-center gap-3">' +
+      '<a href="/enroll" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 text-sm">Enroll to unlock →</a>' +
+      '<a href="/login" class="rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90">Sign in</a>' +
+      '</div></div>';
+    mount.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
   function startVisit(id) {
+    if (window.PDA_VO && window.PDA_VO.access && window.PDA_VO.access() !== 'student') { return previewGate(); }
     var scenario = VO.SCENARIO_BY_ID[id];
     if (!scenario) return;
     pickerWrap.classList.add('hidden');
@@ -354,6 +462,7 @@ tailwind.config = { theme: { extend: {
   }
 
   startBtn.addEventListener('click', function () {
+    if (window.PDA_VO && window.PDA_VO.access && window.PDA_VO.access() !== 'student') { return previewGate(); }
     var open = !pickerWrap.classList.contains('hidden');
     if (open) { pickerWrap.classList.add('hidden'); startBtn.textContent = 'Choose a visit →'; }
     else { renderPicker(); pickerWrap.classList.remove('hidden'); startBtn.textContent = 'Hide visits'; }
@@ -389,9 +498,15 @@ function failSoft(msg) {
 try {
   // ---- Renderer ----
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  // DESKTOP LAG FIX: the scene is static, so bake shadows ONCE instead of every
+  // frame. The big desktop canvas was re-rendering two 2048px shadow maps per
+  // frame (mobile's smaller canvas hid the cost). Orbiting moves the camera, not
+  // the geometry/lights, so a one-time bake stays correct at every angle.
+  renderer.shadowMap.autoUpdate = false;
+  renderer.shadowMap.needsUpdate = true;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -426,7 +541,7 @@ try {
   const sun = new THREE.DirectionalLight(0xfff4e2, 2.2);
   sun.position.set(-5, 6.5, 3.5);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.mapSize.set(1024, 1024);
   sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 30;
   sun.shadow.camera.left = -7; sun.shadow.camera.right = 7;
   sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
@@ -436,7 +551,7 @@ try {
   const opSpot = new THREE.SpotLight(0xfff6df, 45, 9, 0.6, 0.45, 1.6);
   opSpot.position.set(0, 2.55, -0.45);
   opSpot.target.position.set(0, 0.85, -0.7);
-  opSpot.castShadow = true;
+  opSpot.castShadow = false;          // one shadow-casting light is plenty; saves a full pass
   scene.add(opSpot); scene.add(opSpot.target);
 
   // ---- Material + geometry helpers ----
@@ -576,6 +691,39 @@ try {
   mesh(cyl(0.1, 0.1, 0.2, 20), M({ color: 0xe2e8f0, roughness: 0.4 }), -2.3, 1.45, -0.42);
   mesh(cyl(0.06, 0.08, 0.2, 20), M({ color: 0xcbd5e1, roughness: 0.4 }), -2.15, 1.4, -0.34, { rz: Math.PI / 2.2 });
 
+  // ---- Extra realism props (static decor; nearly free thanks to baked shadows) ----
+  // Door on the left wall
+  mesh(box(0.08, 2.5, 1.0), M({ color: 0xe8eef0, roughness: 0.9 }), -3.96, 1.25, 1.6);
+  mesh(box(0.06, 2.4, 0.9), M({ color: 0xf4f8f9, roughness: 0.9 }), -3.9, 1.25, 1.6);
+  mesh(cyl(0.03, 0.03, 0.12, 12), mChrome, -3.84, 1.15, 1.2, { rx: Math.PI / 2 });
+  // Baseboards
+  mesh(box(11, 0.12, 0.04), M({ color: 0xcdd6d8, roughness: 0.8 }), 0, 0.06, -2.98);
+  mesh(box(0.04, 0.12, 9), M({ color: 0xcdd6d8, roughness: 0.8 }), -3.98, 0.06, 0);
+  // Sharps container (red) + glove-box dispensers on the counter
+  mesh(box(0.22, 0.26, 0.18), M({ color: 0xdc2626, roughness: 0.6 }), 0.7, 1.06, -2.66);
+  mesh(box(0.2, 0.12, 0.14), M({ color: 0x2563eb, roughness: 0.7 }), 1.15, 1.0, -2.64);
+  mesh(box(0.2, 0.12, 0.14), M({ color: 0x059669, roughness: 0.7 }), 1.4, 1.0, -2.64);
+  mesh(box(0.2, 0.12, 0.14), M({ color: 0x7c3aed, roughness: 0.7 }), 1.65, 1.0, -2.64);
+  // Wall clock on the back wall
+  mesh(cyl(0.18, 0.18, 0.04, 28), mWhite, -1.1, 2.55, -2.95, { rx: Math.PI / 2 });
+  mesh(cyl(0.16, 0.16, 0.02, 28), M({ color: 0xf8fafc, roughness: 0.5 }), -1.1, 2.55, -2.92, { rx: Math.PI / 2 });
+  mesh(box(0.015, 0.1, 0.01), mDark, -1.1, 2.59, -2.9);
+  mesh(box(0.08, 0.015, 0.01), mDark, -1.07, 2.55, -2.9);
+  // Framed diploma on the left wall
+  mesh(box(0.04, 0.5, 0.66), M({ color: 0x8a6d3b, roughness: 0.6 }), -3.97, 2.2, -1.2);
+  mesh(box(0.02, 0.4, 0.56), mWhite, -3.93, 2.2, -1.2);
+  // Corner plant
+  mesh(cyl(0.16, 0.12, 0.3, 18), M({ color: 0x475569, roughness: 0.7 }), -3.4, 0.15, 2.4);
+  mesh(new THREE.SphereGeometry(0.28, 16, 14), M({ color: 0x2f8f5b, roughness: 0.9 }), -3.4, 0.5, 2.4);
+  mesh(new THREE.SphereGeometry(0.2, 16, 14), M({ color: 0x37a169, roughness: 0.9 }), -3.2, 0.62, 2.5);
+  // Two recessed ceiling light panels (emissive)
+  [-1.4, 1.4].forEach(function (px) {
+    var p = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.5), M({ color: 0xffffff, emissive: 0xf1f7ff, emissiveIntensity: 0.8, roughness: 1 }));
+    p.rotation.x = Math.PI / 2; p.position.set(px, 3.38, 0.4); scene.add(p);
+  });
+  // Water cup on the delivery unit
+  mesh(cyl(0.04, 0.035, 0.09, 16), M({ color: 0xdbeafe, roughness: 0.4 }), 1.2, 1.06, 0.18);
+
   // ===== Hotspot anchors (3D world points the pins track) =====
   const anchors = {
     dentist:  new THREE.Vector3(0, 1.45, -2.0),
@@ -606,6 +754,61 @@ try {
     pinEls.forEach(function (p) { p.classList.toggle('done', !!e[p.dataset.st]); });
   };
   if (VO.explored) window.PDA_VO_repaintPins(VO.explored());
+
+  // ---- Tap the REAL equipment: invisible pick proxies + hover ring + fly-to ----
+  const pickable = [];
+  Object.keys(anchors).forEach(function (k) {
+    const proxy = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
+    proxy.position.copy(anchors[k]); proxy.userData.station = k; scene.add(proxy); pickable.push(proxy);
+  });
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.028, 12, 40),
+    new THREE.MeshBasicMaterial({ color: 0x14b8a6 }));
+  ring.visible = false; scene.add(ring);
+
+  const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2();
+  let downX = 0, downY = 0, downT = 0, dragging = false;
+  function ndcFrom(e) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+    ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+  }
+  function pickStation() {
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(pickable, false);
+    return hit.length ? hit[0].object.userData.station : null;
+  }
+  function setHover(k) {
+    renderer.domElement.style.cursor = k ? 'pointer' : '';
+    if (k && anchors[k]) { ring.position.copy(anchors[k]); ring.visible = true; } else { ring.visible = false; }
+    pinEls.forEach(function (p) { p.classList.toggle('hot--hover', p.dataset.st === k); });
+  }
+  // Fly-to: glide the camera in to frame whatever you tapped
+  let fly = null;
+  function flyTo(a) {
+    if (!a) return; controls.autoRotate = false;
+    const dir = camera.position.clone().sub(controls.target); dir.y = Math.max(dir.y, 1.1); dir.normalize();
+    fly = { pos: a.clone().add(dir.multiplyScalar(3.4)), tgt: a.clone(), n: 0 };
+  }
+  renderer.domElement.addEventListener('pointerdown', function (e) { downX = e.clientX; downY = e.clientY; downT = Date.now(); dragging = false; });
+  renderer.domElement.addEventListener('pointermove', function (e) {
+    if (e.buttons && (Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) > 8)) dragging = true;
+    ndcFrom(e); setHover(pickStation());
+  });
+  renderer.domElement.addEventListener('pointerup', function (e) {
+    if (dragging || (Date.now() - downT) > 500) return;
+    ndcFrom(e); const k = pickStation();
+    if (k) { VO.openStation(k); flyTo(anchors[k]); }
+  });
+  renderer.domElement.addEventListener('pointerleave', function () { setHover(null); });
+  // Tapping an HTML pin should also glide the camera over
+  pinEls.forEach(function (p) { p.addEventListener('click', function () { flyTo(anchors[p.dataset.st]); }); });
+
+  // Lock styling for pins (amber + 🔒) in preview mode
+  window.PDA_VO_repaintLocks = function (locked) {
+    pinEls.forEach(function (p) { p.classList.toggle('locked', !!(locked && locked(p.dataset.st))); });
+  };
+  if (VO.isLocked) window.PDA_VO_repaintLocks(VO.isLocked);
 
   const tmp = new THREE.Vector3();
   function updatePins() {
@@ -641,7 +844,17 @@ try {
 
   // ---- Render loop ----
   renderer.setAnimationLoop(function () {
+    if (fly) {
+      camera.position.lerp(fly.pos, 0.12);
+      controls.target.lerp(fly.tgt, 0.12);
+      if (++fly.n > 45 || camera.position.distanceTo(fly.pos) < 0.04) fly = null;
+    }
     controls.update();
+    if (ring.visible) {
+      ring.lookAt(camera.position);
+      const s = 1 + Math.sin(performance.now() * 0.005) * 0.08;
+      ring.scale.set(s, s, s);
+    }
     updatePins();
     renderer.render(scene, camera);
   });
