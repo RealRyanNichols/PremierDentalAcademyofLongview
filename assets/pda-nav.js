@@ -24,26 +24,26 @@
       <a href="/blog"      data-nav-link class="hover:text-teal-700">Blog</a>
       <a href="/salary"    data-nav-link class="hover:text-teal-700">Salary</a>
       <a href="/about"     data-nav-link class="hover:text-teal-700">About</a>
+      <a href="/contact"   data-nav-link class="hover:text-teal-700">Contact</a>
       <div class="relative">
-        <button id="pda-more-btn" type="button" aria-expanded="false" class="inline-flex items-center gap-1 hover:text-teal-700">Resources <span class="text-[10px] leading-none">▼</span></button>
-        <div id="pda-more-menu" hidden class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-1.5 w-60 z-50 text-slate-700">
-          <a href="/tools/practice-exam" class="block px-4 py-2 hover:bg-slate-50 font-semibold text-teal-700">📝 Free practice exam</a>
-          <a href="/tools/flashcards"    class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
-          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">📄 Resume builder</a>
-          <a href="/tools/how-to-chart"  class="block px-4 py-2 hover:bg-slate-50">How to chart (tutorial)</a>
-          <div class="border-t border-slate-100 my-1"></div>
-          <a href="/apply"           class="block px-4 py-2 hover:bg-slate-50 font-semibold">📅 Book a campus tour</a>
-          <a href="/contact"         class="block px-4 py-2 hover:bg-slate-50">Contact</a>
+        <button id="pda-more-btn" type="button" aria-expanded="false" class="inline-flex items-center gap-1 hover:text-teal-700">Free tools <span class="text-[10px] leading-none">▼</span></button>
+        <div id="pda-more-menu" hidden class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
+          <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">Free study tools</p>
+          <a href="/tools/practice-exam"  class="block px-4 py-2 hover:bg-slate-50">Practice exam</a>
+          <a href="/tools/flashcards"     class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
+          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
+          <a href="/tools/how-to-chart"   class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
+          <div class="border-t border-slate-100 my-2"></div>
+          <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">More</p>
           <a href="/graduates"       class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
           <a href="/hiring-partners" class="block px-4 py-2 hover:bg-slate-50">For dental offices</a>
+          <a href="/teach"           class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
         </div>
       </div>
-      <a href="/teach" data-nav-link class="text-amber-600 hover:text-amber-700 font-semibold">Teach</a>
     </div>
     <div class="flex items-center gap-3 shrink-0">
       <a id="pda-nav-auth"  href="/login"     data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
-      <a id="pda-nav-admin" href="/admin"     class="hidden items-center gap-1 bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold px-3 py-2 rounded-lg shadow-sm">🛠 Admin</a>
-      <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-medium text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
+      <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-semibold text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
       <a href="/enroll" id="pda-nav-enroll" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
       <button id="pda-nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="pda-nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
@@ -56,30 +56,32 @@
   const MENU_HTML = `
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
   <div class="px-5 py-4 flex flex-col">
-    <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Programs</a>
-    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Calendar</a>
-    <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Blog</a>
-    <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Salary</a>
-    <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">About</a>
-    <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Contact</a>
+    <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
+    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
+    <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Blog</a>
+    <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Salary</a>
+    <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">About</a>
+    <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Contact</a>
 
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-4">Free study tools</p>
-    <a href="/tools/practice-exam" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-teal-700">📝 Free practice exam</a>
-    <a href="/tools/flashcards"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
-    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">📄 Resume builder</a>
-    <a href="/tools/how-to-chart"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Free study tools</p>
+    <a href="/tools/practice-exam"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Practice exam</a>
+    <a href="/tools/flashcards"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
+    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
+    <a href="/tools/how-to-chart"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
 
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mb-1 mt-4">More</p>
-    <a href="/apply"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">📅 Book a campus tour</a>
-    <a href="/graduates" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">More</p>
+    <a href="/graduates"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
     <a href="/hiring-partners" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
-    <a href="/teach"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-amber-600">Teach with us →</a>
-    <a id="pda-mobile-auth"  href="/login"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Sign in</a>
-    <a id="pda-mobile-admin" href="/admin"     class="hidden py-2.5 px-1 border-b border-slate-100 text-base font-bold text-slate-900">🛠 Admin dashboard →</a>
-    <a id="pda-mobile-dash"  href="/dashboard" data-nav-link class="hidden py-2.5 px-1 border-b border-slate-100 text-base text-teal-700 font-semibold">Go to my dashboard →</a>
+    <a href="/teach"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Teach with us</a>
 
-    <a href="/enroll" id="pda-mobile-enroll" class="mt-5 block bg-amber-500 hover:bg-amber-600 text-white text-center text-lg font-semibold px-6 py-3.5 rounded-lg shadow">Enroll →</a>
-    <a href="tel:+19039136444" class="mt-3 mb-2 block text-center text-sm text-slate-500">or call (903) 913-6444</a>
+    <div class="mt-6 pt-4 border-t border-slate-200">
+      <a id="pda-mobile-dash" href="/dashboard" data-nav-link class="hidden mb-2 py-2 px-1 text-base font-semibold text-teal-700">My dashboard →</a>
+      <a href="/enroll" id="pda-mobile-enroll" class="block bg-amber-500 hover:bg-amber-600 text-white text-center text-base font-semibold px-6 py-3 rounded-lg shadow">Enroll →</a>
+      <div class="flex items-center justify-between mt-3 px-1">
+        <a id="pda-mobile-auth" href="/login" data-nav-link class="text-sm font-medium text-slate-600 hover:text-teal-700">Sign in</a>
+        <a href="tel:+19039136444" class="text-sm text-slate-500">📞 (903) 913-6444</a>
+      </div>
+    </div>
   </div>
 </div>`;
 
@@ -229,19 +231,14 @@
 
       // Owner/admin: surface a prominent Admin link in the nav on every page,
       // and point the existing Dashboard link at the admin dashboard too.
+      // One admin entry point: the existing Dashboard link becomes "Admin".
       if (isAdmin) {
-        const adminD = document.getElementById('pda-nav-admin');
-        const adminM = document.getElementById('pda-mobile-admin');
-        if (adminD) { adminD.classList.remove('hidden'); adminD.classList.add('inline-flex'); }
-        if (adminM) { adminM.classList.remove('hidden'); adminM.classList.add('block'); }
-        if (desktopDash) desktopDash.href = '/admin';
-        if (mobileDash) { mobileDash.href = '/admin'; mobileDash.textContent = 'Go to admin dashboard →'; }
+        if (desktopDash) { desktopDash.href = '/admin'; desktopDash.textContent = 'Admin'; }
+        if (mobileDash)  { mobileDash.href = '/admin'; mobileDash.textContent = 'Admin dashboard →'; }
       }
 
       if (paid) {
-        document.querySelectorAll('#pda-more-menu a[href="/tools/practice-exam"], #pda-mobile-menu a[href="/tools/practice-exam"]')
-          .forEach(a => { a.textContent = '📝 Practice exam'; });
-        document.querySelectorAll('#pda-mobile-menu p')
+        document.querySelectorAll('#pda-more-menu p, #pda-mobile-menu p')
           .forEach(p => { if (/free study tools/i.test(p.textContent)) p.textContent = 'Study tools'; });
         // Inline display:none beats the Tailwind "hidden sm:inline-flex" class.
         ['pda-nav-enroll', 'pda-mobile-enroll'].forEach(id => {
