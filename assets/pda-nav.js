@@ -397,7 +397,7 @@
       bar.id = 'pda-urgency-bar';
       bar.style.cssText = 'background:#001a3d;color:#fff;font:600 13px/1.3 Inter,system-ui,sans-serif;padding:8px 12px;text-align:center';
       bar.innerHTML = '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">' +
-        '<span>🌙 <b style="color:#fbbf24">RDA class ' + when + '</b>' + seat + '</span>' +
+        '<span><b style="color:#fbbf24">RDA class ' + when + '</b>' + seat + '</span>' +
         '<a href="/night-class" style="background:#fbbf24;color:#001a3d;padding:4px 12px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Reserve a seat →</a>' +
         '<a href="tel:+19039136444" style="color:#fff;text-decoration:underline;white-space:nowrap">or call (903) 913-6444</a>' +
         '<button type="button" aria-label="Dismiss" id="pda-urgency-x" style="background:transparent;color:#94a3b8;border:0;font-size:16px;cursor:pointer;line-height:1">×</button>' +
