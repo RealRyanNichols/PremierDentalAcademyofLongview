@@ -88,8 +88,12 @@
       competencies:['room_turnover','room_lines','ic_surface','ster_monitor'],
       steps:[
         { speaker:'narrator', category:'Morning Setup', type:'choose',
-          prompt:'You arrive 30 minutes early. Before touching any operatory surfaces, the FIRST thing you do is:',
-          options:['Perform hand hygiene and don PPE','Pull up the day\'s schedule','Sit down in the assistant\'s chair','Switch on the overhead light'],
+          prompt:'You arrive 30 minutes early. The FIRST thing you do to plan the day is:',
+          options:['Pull up the day\'s schedule','Sit down and wait for the first patient','Guess what procedures are coming','Set up a crown tray just in case'],
+          answer:0, explanation:'Reading the schedule first tells you the setups, materials and x-rays each appointment needs, so you can prep ahead and the provider never waits. Anticipation is the assistant\'s superpower.' },
+        { speaker:'narrator', category:'Morning Setup', type:'choose',
+          prompt:'Now, before you touch any operatory surfaces, you:',
+          options:['Perform hand hygiene and don PPE','Switch on the overhead light','Sit down in the assistant\'s chair','Start flushing waterlines bare-handed'],
           answer:0, explanation:'Hand hygiene and PPE come before handling anything — clean hands and barriers protect you and every patient all day.' },
         { speaker:'narrator', category:'Morning Setup', type:'choose',
           prompt:'The waterlines sat stagnant overnight. Before attaching handpieces you should:',
@@ -106,11 +110,7 @@
         { speaker:'dentist', category:'Morning Setup', type:'multi',
           prompt:'"First up is a new-patient exam. Set the tray." Select every instrument a basic exam tray needs.',
           options:['Mouth mirror','Explorer','Cotton (college) pliers','Surgical forceps','Amalgam carrier'],
-          answer:[0,1,2], explanation:'Basic exam = mirror + explorer + cotton pliers. Forceps and a carrier belong to surgical and restorative trays.' },
-        { speaker:'dentist', category:'Morning Setup', type:'choose',
-          prompt:'"Glance at the schedule before they arrive." The point of reading it first is to:',
-          options:['Anticipate the setups, materials and x-rays each appointment needs','Find out when lunch is','Memorize every patient\'s last name','There\'s no real reason'],
-          answer:0, explanation:'Reading the schedule lets you pre-set trays and materials so the provider is never waiting. Anticipation is the assistant\'s superpower.' }
+          answer:[0,1,2], explanation:'Basic exam = mirror + explorer + cotton pliers. Forceps and a carrier belong to surgical and restorative trays.' }
       ]
     },
     {
@@ -122,6 +122,10 @@
           prompt:'"We\'re prepping #19 for a crown. Beyond the basic setup, what do I need on this tray?" Select all that apply.',
           options:['High-speed handpiece with a diamond bur','Retraction cord & placement instrument','Impression tray & material (or a scanner)','A biological spore strip','A rubber prophy cup'],
           answer:[0,1,2], explanation:'A crown prep cuts the tooth (diamond bur), exposes the margin (cord) and captures it (impression/scan). Spore strips and prophy cups belong elsewhere.' },
+        { speaker:'narrator', category:'Crown Prep', type:'choose',
+          prompt:'You seat Maria and take her vitals before treatment. Her blood pressure reads 178/104. You:',
+          options:['Flag it to Dr. Williams before proceeding — that\'s high enough to reconsider elective treatment today','Ignore it and start the prep','Write it down but say nothing','Keep re-taking it until it reads lower'],
+          answer:0, explanation:'Taking and recording blood pressure is part of seating every patient. A hypertensive reading like 178/104 should be flagged to the dentist before elective treatment — stress and anesthetic can push it higher.' },
         { speaker:'patient', category:'Crown Prep', type:'choose',
           prompt:'Maria looks tense: "Is this going to hurt? I really hate needles." The best response is:',
           options:['"Dr. Williams will get the area completely numb first, and I\'ll be right here with you the whole time."','"Probably, but it\'s quick."','"Don\'t worry about it."','Ignore her and prep the tray.'],
