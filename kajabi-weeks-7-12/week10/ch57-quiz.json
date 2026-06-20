@@ -1,0 +1,123 @@
+[
+  {
+    "question": "According to the American Academy of Pediatric Dentistry, when should a child's first dental visit occur?",
+    "choices": [
+      "By age 5 or when starting kindergarten",
+      "By the eruption of the first tooth or by the first birthday, whichever is first",
+      "Only when the child has a complaint of pain",
+      "After all primary teeth have erupted"
+    ],
+    "correctIndex": 1,
+    "rationale": "The first visit is recommended by the eruption of the first tooth or by the first birthday, whichever comes first, to establish a dental home and educate caregivers early."
+  },
+  {
+    "question": "Why is it important to preserve primary teeth rather than ignore decay because 'they fall out anyway'?",
+    "choices": [
+      "Primary teeth contain permanent enamel",
+      "They hold space for permanent teeth and support chewing, speech, and development",
+      "Primary teeth never develop caries",
+      "They are stronger than permanent teeth"
+    ],
+    "correctIndex": 1,
+    "rationale": "Primary teeth maintain space for permanent successors and support function and facial development; premature loss can cause space loss and crowding."
+  },
+  {
+    "question": "The behavior guidance technique of explaining a procedure, demonstrating it, then performing it is called:",
+    "choices": [
+      "Voice control",
+      "Modeling",
+      "Tell-show-do",
+      "Distraction"
+    ],
+    "correctIndex": 2,
+    "rationale": "Tell-show-do explains the procedure in simple words, shows the child what will happen, then performs it, reducing fear of the unknown."
+  },
+  {
+    "question": "A pulpotomy involves removal of:",
+    "choices": [
+      "The entire tooth",
+      "The coronal pulp while preserving the healthy radicular pulp",
+      "All pulp from the crown and the canals",
+      "Only the enamel surface"
+    ],
+    "correctIndex": 1,
+    "rationale": "A pulpotomy removes the coronal (crown) portion of the pulp while preserving healthy radicular (root) pulp, often followed by a stainless steel crown."
+  },
+  {
+    "question": "A 4-year-old has a primary molar restored after pulp therapy and needs durable, full coverage. The restoration of choice is typically a:",
+    "choices": [
+      "Porcelain veneer",
+      "Stainless steel crown",
+      "Gold inlay",
+      "Composite sealant"
+    ],
+    "correctIndex": 1,
+    "rationale": "A prefabricated stainless steel crown is the durable, full-coverage restoration commonly used for primary teeth with extensive decay or after pulp therapy."
+  },
+  {
+    "question": "The stage of development in which both primary and permanent teeth are present is the:",
+    "choices": [
+      "Primary dentition",
+      "Permanent dentition",
+      "Mixed dentition",
+      "Edentulous stage"
+    ],
+    "correctIndex": 2,
+    "rationale": "The mixed dentition (about ages 6 to 12) is the period when both primary and permanent teeth are present in the mouth."
+  },
+  {
+    "question": "A permanent tooth has been knocked out (avulsed). The correct immediate handling is to:",
+    "choices": [
+      "Scrub the root clean and wrap the tooth in a dry tissue",
+      "Hold it by the crown, keep it moist in milk or saline, and seek care immediately",
+      "Place it in ice water for 24 hours before treatment",
+      "Discard it because permanent teeth cannot be reimplanted"
+    ],
+    "correctIndex": 1,
+    "rationale": "An avulsed permanent tooth should be handled by the crown, not the root, kept moist in an appropriate medium such as milk or saline, and treated as soon as possible."
+  },
+  {
+    "question": "An appliance placed to hold space after the early loss of a primary tooth is a:",
+    "choices": [
+      "Space maintainer",
+      "Night guard",
+      "Retainer",
+      "Sealant"
+    ],
+    "correctIndex": 0,
+    "rationale": "A space maintainer preserves the space left by an early-lost primary tooth so the permanent successor can erupt into proper position."
+  },
+  {
+    "question": "Putting a child to bed with a bottle of milk or juice is associated with:",
+    "choices": [
+      "Improved sleep and no dental effects",
+      "Early childhood caries",
+      "Faster eruption of permanent teeth",
+      "Stronger enamel"
+    ],
+    "correctIndex": 1,
+    "rationale": "Frequent or prolonged exposure to sugary liquids, as with a bedtime bottle, is a major cause of early childhood caries."
+  },
+  {
+    "question": "Which finding should raise the dental team's concern for possible child abuse or neglect?",
+    "choices": [
+      "A single small cavity in one molar",
+      "Mild gingivitis from plaque buildup",
+      "Injuries inconsistent with the explanation, or untreated rampant decay",
+      "Normal exfoliation of a primary tooth"
+    ],
+    "correctIndex": 2,
+    "rationale": "Injuries that do not match the given explanation, bruises in various stages of healing, and untreated rampant decay (dental neglect) are warning signs the team must recognize and report."
+  },
+  {
+    "question": "Dental professionals' legal obligation regarding suspected child abuse is best described as:",
+    "choices": [
+      "They may report only if the parent agrees",
+      "They are mandated reporters under applicable law",
+      "They are prohibited from reporting to protect patient privacy",
+      "Reporting is optional and discouraged"
+    ],
+    "correctIndex": 1,
+    "rationale": "Dental professionals are mandated reporters of suspected child abuse or neglect; the specific agency and procedure are set by state law."
+  }
+]
