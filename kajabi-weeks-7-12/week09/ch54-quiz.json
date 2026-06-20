@@ -1,0 +1,134 @@
+[
+  {
+    "question": "Endodontics is primarily concerned with the diagnosis and treatment of diseases of the:",
+    "choices": [
+      "Gingiva and periodontal ligament",
+      "Dental pulp and periapical tissues",
+      "Enamel and dentin only",
+      "Salivary glands"
+    ],
+    "correctIndex": 1,
+    "rationale": "Endodontics focuses on the dental pulp and the tissues surrounding the root apex (periapical tissues)."
+  },
+  {
+    "question": "Which is the most common cause of pulpal damage?",
+    "choices": [
+      "Bacterial invasion through caries, cracks, or leaking restorations",
+      "Cold weather",
+      "Brushing too softly",
+      "Fluoride treatments"
+    ],
+    "correctIndex": 0,
+    "rationale": "Bacteria reaching the pulp—most often through deep caries—are the leading cause of pulpal disease."
+  },
+  {
+    "question": "A patient reports brief sensitivity to cold that disappears as soon as the stimulus is removed. This best describes:",
+    "choices": [
+      "Irreversible pulpitis",
+      "Pulp necrosis",
+      "Reversible pulpitis",
+      "Periapical abscess"
+    ],
+    "correctIndex": 2,
+    "rationale": "Reversible pulpitis produces mild, short-lived symptoms that resolve when the irritant is removed; the pulp can recover."
+  },
+  {
+    "question": "Lingering or spontaneous pain indicating the pulp cannot recover describes:",
+    "choices": [
+      "Reversible pulpitis",
+      "Irreversible pulpitis",
+      "Healthy pulp",
+      "Hyperdontia"
+    ],
+    "correctIndex": 1,
+    "rationale": "Irreversible pulpitis features lingering or spontaneous pain and requires root canal therapy or extraction."
+  },
+  {
+    "question": "Which test uses a small electrical stimulus to determine whether the pulp responds?",
+    "choices": [
+      "Percussion test",
+      "Palpation test",
+      "Electric pulp test (EPT)",
+      "Mobility test"
+    ],
+    "correctIndex": 2,
+    "rationale": "The electric pulp test applies a mild electrical current to assess pulp vitality/response."
+  },
+  {
+    "question": "What is the standard method for isolating a tooth during root canal therapy?",
+    "choices": [
+      "Cotton rolls only",
+      "A dental dam",
+      "High-volume suction alone",
+      "Gauze packing"
+    ],
+    "correctIndex": 1,
+    "rationale": "The dental dam isolates the tooth, keeping the field dry, clean, and aseptic—standard of care for endodontics."
+  },
+  {
+    "question": "The rubber-like material most commonly used to fill (obturate) cleaned root canals is:",
+    "choices": [
+      "Amalgam",
+      "Gutta-percha",
+      "Composite resin",
+      "Zinc oxide powder"
+    ],
+    "correctIndex": 1,
+    "rationale": "Gutta-percha, used with a sealer, is the standard core material for obturating root canals."
+  },
+  {
+    "question": "What is the purpose of determining the working length during root canal therapy?",
+    "choices": [
+      "To select the crown shade",
+      "To measure the canal length from a reference point to the apex so instrumentation stays within the canal",
+      "To decide the anesthetic dose",
+      "To choose the dental dam clamp"
+    ],
+    "correctIndex": 1,
+    "rationale": "Working length establishes how far instruments and filling should extend—to the apex but not beyond—measured with files/radiographs or an apex locator."
+  },
+  {
+    "question": "Which irrigant is commonly used to disinfect and flush debris from the canal system, and requires careful handling?",
+    "choices": [
+      "Sodium hypochlorite",
+      "Plain saline only",
+      "Distilled water only",
+      "Glycerin"
+    ],
+    "correctIndex": 0,
+    "rationale": "Sodium hypochlorite is an effective endodontic irrigant but is caustic and must be handled carefully to protect the patient."
+  },
+  {
+    "question": "An apicoectomy is best described as:",
+    "choices": [
+      "Removal of only the coronal pulp",
+      "Surgical removal of the root apex and surrounding infected tissue",
+      "Placement of a dental dam",
+      "Complete extraction of the tooth"
+    ],
+    "correctIndex": 1,
+    "rationale": "An apicoectomy surgically removes the root tip and infected periapical tissue when conventional treatment is insufficient."
+  },
+  {
+    "question": "A pulpotomy, common in primary teeth, involves:",
+    "choices": [
+      "Removing the entire pulp from chamber and canals",
+      "Removing only the coronal (chamber) pulp while preserving vital root pulp",
+      "Filling the canal with gutta-percha",
+      "Extracting the affected tooth"
+    ],
+    "correctIndex": 1,
+    "rationale": "A pulpotomy removes the coronal pulp and preserves the remaining vital radicular (root) pulp."
+  },
+  {
+    "question": "Why does a posterior tooth often need a crown after root canal therapy?",
+    "choices": [
+      "To change its color",
+      "Because the tooth becomes more brittle and prone to fracture and the crown protects it",
+      "Because crowns are required by law for all root canals",
+      "To make the tooth taste better"
+    ],
+    "correctIndex": 1,
+    "rationale": "An endodontically treated posterior tooth is weaker and at greater risk of fracture, so a crown is placed for protection."
+  }
+]

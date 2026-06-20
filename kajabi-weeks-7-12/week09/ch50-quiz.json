@@ -1,0 +1,134 @@
+[
+  {
+    "question": "What distinguishes a fixed prosthesis from a removable prosthesis?",
+    "choices": [
+      "A fixed prosthesis is cemented or bonded in place and cannot be removed by the patient",
+      "A fixed prosthesis is always made of gold",
+      "A fixed prosthesis is only used on anterior teeth",
+      "A fixed prosthesis is fabricated in a single appointment"
+    ],
+    "correctIndex": 0,
+    "rationale": "Fixed prostheses are permanently cemented or bonded and are removed only by the dentist, whereas removable prostheses can be taken out by the patient."
+  },
+  {
+    "question": "In a fixed bridge, the artificial tooth that replaces the missing natural tooth is called the:",
+    "choices": [
+      "Abutment",
+      "Pontic",
+      "Retainer",
+      "Connector"
+    ],
+    "correctIndex": 1,
+    "rationale": "The pontic is the artificial replacement tooth. The abutment is the supporting tooth, the retainer covers the abutment, and the connector joins them."
+  },
+  {
+    "question": "Which natural tooth supports a fixed bridge?",
+    "choices": [
+      "The pontic",
+      "The connector",
+      "The abutment",
+      "The veneer"
+    ],
+    "correctIndex": 2,
+    "rationale": "The abutment is the natural tooth (or implant) that supports the bridge by carrying the retainers."
+  },
+  {
+    "question": "What is the primary difference between an inlay and an onlay?",
+    "choices": [
+      "An inlay covers the entire crown; an onlay covers only the facial surface",
+      "An inlay fits within the cavity walls without covering cusps; an onlay extends over one or more cusps",
+      "An inlay is metal-free; an onlay is always metal",
+      "There is no difference; the terms are interchangeable"
+    ],
+    "correctIndex": 1,
+    "rationale": "An inlay sits within the prepared walls without cusp coverage, while an onlay extends over one or more cusps for added protection."
+  },
+  {
+    "question": "A patient wants to improve the appearance of slightly discolored, well-aligned upper front teeth with minimal tooth reduction. Which restoration is most appropriate?",
+    "choices": [
+      "Full gold crowns",
+      "Porcelain veneers",
+      "A fixed bridge",
+      "Onlays"
+    ],
+    "correctIndex": 1,
+    "rationale": "Veneers are thin esthetic facings bonded to anterior teeth, ideal for improving color and shape with conservative tooth reduction."
+  },
+  {
+    "question": "Why should tooth shade be selected early in the preparation appointment?",
+    "choices": [
+      "Because anesthesia changes tooth color",
+      "Because teeth dehydrate during the procedure and appear lighter, leading to a mismatched shade",
+      "Because the lab requires it within five minutes",
+      "Because retraction cord darkens the teeth"
+    ],
+    "correctIndex": 1,
+    "rationale": "Dehydrated teeth look lighter than normal, so shade is taken early—while teeth are hydrated—to ensure an accurate match."
+  },
+  {
+    "question": "What is the main purpose of a provisional (temporary) restoration?",
+    "choices": [
+      "To serve as the permanent restoration",
+      "To protect the prepared tooth and maintain space, occlusion, and esthetics until the final restoration is delivered",
+      "To replace the need for an impression",
+      "To strengthen the abutment permanently"
+    ],
+    "correctIndex": 1,
+    "rationale": "Provisionals protect the prep, maintain position and bite, keep gingiva healthy, and preserve esthetics between appointments."
+  },
+  {
+    "question": "Which restorative material combines a metal substructure with a porcelain veneer for both strength and esthetics?",
+    "choices": [
+      "All-ceramic crown",
+      "Cast gold crown",
+      "Porcelain-fused-to-metal (PFM) crown",
+      "Composite veneer"
+    ],
+    "correctIndex": 2,
+    "rationale": "PFM restorations use a metal coping for strength covered with porcelain for esthetics."
+  },
+  {
+    "question": "Why is gingival retraction performed before taking a final impression for a crown?",
+    "choices": [
+      "To numb the gingiva",
+      "To displace the gingival tissue and expose the preparation margins for an accurate impression",
+      "To cement the provisional",
+      "To select the shade"
+    ],
+    "correctIndex": 1,
+    "rationale": "Retraction displaces gingival tissue so the margins of the preparation are visible and captured accurately in the impression."
+  },
+  {
+    "question": "During the cementation appointment, what step occurs immediately before seating the final restoration permanently?",
+    "choices": [
+      "Taking the final impression",
+      "Trying in the restoration to verify fit, margins, contacts, occlusion, and shade",
+      "Fabricating the provisional",
+      "Selecting the shade for the first time"
+    ],
+    "correctIndex": 1,
+    "rationale": "A try-in confirms the restoration fits and functions correctly before it is permanently cemented or bonded."
+  },
+  {
+    "question": "After cementing a crown, why is it critical to remove all excess cement, especially below the gumline?",
+    "choices": [
+      "Excess cement improves retention",
+      "Retained subgingival cement is a common cause of gingival inflammation",
+      "Cement changes the shade of the crown",
+      "It is not necessary to remove excess cement"
+    ],
+    "correctIndex": 1,
+    "rationale": "Residual cement, particularly subgingival, irritates tissue and can cause inflammation, so thorough cleanup is essential."
+  },
+  {
+    "question": "Which technology allows certain indirect restorations to be designed and milled in a single office visit?",
+    "choices": [
+      "PFM layering",
+      "CAD/CAM",
+      "Retraction cord",
+      "Bite registration"
+    ],
+    "correctIndex": 1,
+    "rationale": "CAD/CAM systems can digitally design and mill restorations chairside, enabling same-visit delivery."
+  }
+]
