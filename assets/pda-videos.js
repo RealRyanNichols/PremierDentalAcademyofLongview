@@ -17,8 +17,7 @@
   'use strict';
 
   var VIDEOS = [
-    { type: 'drive', id: '1VfFurV4vRM0LEaaOP8Jo3KxND855sL2v', title: 'A message from Premier Dental Academy' },
-    { type: 'drive', id: '1qFRyl8MC5qhBfLS1XaUOVxKGm1qqF0w2', title: 'Inside Premier Dental Academy' }
+    { type: 'drive', id: '1VfFurV4vRM0LEaaOP8Jo3KxND855sL2v', title: 'A message from Premier Dental Academy' }
   ];
 
   function esc(s) {
