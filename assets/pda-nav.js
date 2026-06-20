@@ -22,7 +22,6 @@
       <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
       <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
       <a href="/blog"      data-nav-link class="hover:text-teal-700">Blog</a>
-      <a href="/feed"      data-nav-link class="hover:text-teal-700">Feed</a>
       <a href="/salary"    data-nav-link class="hover:text-teal-700">Salary</a>
       <a href="/about"     data-nav-link class="hover:text-teal-700">About</a>
       <div class="relative">
@@ -60,7 +59,6 @@
     <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Programs</a>
     <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Calendar</a>
     <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Blog</a>
-    <a href="/feed"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Feed</a>
     <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Salary</a>
     <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">About</a>
     <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-slate-900">Contact</a>
