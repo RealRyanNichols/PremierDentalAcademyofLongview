@@ -15,6 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/skills-lab/access.js"></script>
 <script>
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
@@ -210,21 +211,11 @@ tailwind.config = { theme: { extend: {
 
   function voBoot() {
     applyAccess();
-    (async function () {
-      var session = null;
-      try {
-        if (window.supabase && window.supabase.createClient) {
-          var sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
-          var r = await sb.auth.getSession();
-          session = r && r.data ? r.data.session : null;
-        }
-      } catch (e) {}
-      if (!session && window.PDA && window.PDA.getSession) {
-        try { session = await window.PDA.getSession(); } catch (e) {}
-      }
-      ACCESS = session ? 'student' : 'preview';
+    // Paid (enrolled student / admin) = full; everyone else = preview.
+    (window.PDA_ACCESS ? window.PDA_ACCESS.get() : Promise.resolve('preview')).then(function (access) {
+      ACCESS = access;
       applyAccess();
-    })();
+    });
   }
 
   // ---- Station content (what it is / your job / first-day tip) ----
