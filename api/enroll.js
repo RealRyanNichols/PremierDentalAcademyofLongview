@@ -86,11 +86,13 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
 
   // Per Amanda: every installment is a CLEAN round number — no "change."
   //   Weekly  → $160 every week
-  //   Monthly → $400 first month, then $600 each subsequent month
+  //   Monthly → $640 every month
+  // At the $200 minimum down on $1,997 tuition both cadences land on the SAME
+  // plan total: $200 + $1,920 = $2,120 (weekly = 12 × $160, monthly = 3 × $640).
   // Count rounds UP so total scheduled ≥ remaining. Order base_price will
   // be set to the schedule total so Square charges exactly these amounts.
-  const FIRST = { weekly: 16000, monthly: 40000 };
-  const NEXT  = { weekly: 16000, monthly: 60000 };
+  const FIRST = { weekly: 16000, monthly: 64000 };
+  const NEXT  = { weekly: 16000, monthly: 64000 };
   let amounts;
   if (cadence === 'weekly' || cadence === 'monthly') {
     amounts = [FIRST[cadence]];

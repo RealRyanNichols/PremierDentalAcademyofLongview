@@ -506,12 +506,14 @@ function computeSchedule() {
 
   // Per Amanda: every installment is a CLEAN round number — no "change."
   //   Weekly  → $160 every week
-  //   Monthly → $400 first month, then $600 each subsequent month
-  // The schedule rounds UP, so the sum of installments is ≥ remaining (the
-  // plan student may pay slightly more than paid-in-full — that's Amanda's
-  // "you pay more for choosing the payment plan" pricing).
-  const FIRST_PER = { weekly: 16000, monthly: 40000 };
-  const NEXT_PER  = { weekly: 16000, monthly: 60000 };
+  //   Monthly → $640 every month
+  // At the $200 minimum down on $1,997 tuition both cadences land on the SAME
+  // plan total: $200 + $1,920 = $2,120 (weekly = 12 × $160, monthly = 3 × $640).
+  // The schedule rounds UP, so the sum of installments is ≥ the remaining
+  // balance — that's Amanda's "you pay more for choosing the payment plan"
+  // pricing (vs. $1,997 paid in full).
+  const FIRST_PER = { weekly: 16000, monthly: 64000 };
+  const NEXT_PER  = { weekly: 16000, monthly: 64000 };
   let amounts;
   if (cadence === 'weekly' || cadence === 'monthly') {
     amounts = [FIRST_PER[cadence]];
@@ -542,7 +544,7 @@ function computeSchedule() {
   out.count = count;
   out.amounts = amounts;
   out.per = amounts[amounts.length - 1];           // last installment (the recurring one)
-  out.firstAmount = amounts[0];                    // first installment ($400 monthly, $160 weekly)
+  out.firstAmount = amounts[0];                    // first installment ($640 monthly, $160 weekly)
   out.lastAmount = amounts[amounts.length - 1];
   out.totalCharged = totalCharged;                 // sum of installments
   out.totalAll = down + totalCharged;              // grand total the student pays
@@ -571,7 +573,7 @@ function renderSummary() {
     desc.textContent  = 'Paid in full today';
     final.textContent = '—';
   } else if (s.valid) {
-    // Build a "$400 + 3 × $600" / "12 × $160" style label from the amounts.
+    // Build a "3 × $640" / "12 × $160" style label from the amounts.
     const amounts = s.amounts || [];
     const first = amounts[0];
     const rest = amounts.slice(1);
