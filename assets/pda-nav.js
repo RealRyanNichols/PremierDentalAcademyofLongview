@@ -12,34 +12,34 @@
 //      auto-closes, viewport resize auto-closes back to desktop layout.
 (function () {
   const NAV_HTML = `
-<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+<nav aria-label="Primary" class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900 shrink-0">
       <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
       <span class="text-base sm:text-lg hidden sm:inline">Premier Dental Academy</span>
     </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
-      <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
-      <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
-      <a href="/blog"      data-nav-link class="hover:text-teal-700">Blog</a>
-      <a href="/salary"    data-nav-link class="hover:text-teal-700">Salary</a>
-      <a href="/about"     data-nav-link class="hover:text-teal-700">About</a>
-      <a href="/contact"   data-nav-link class="hover:text-teal-700">Contact</a>
+    <div class="hidden md:flex items-center gap-3 lg:gap-5 text-[13px] lg:text-sm font-medium text-slate-700">
+      <a href="/#programs"           data-nav-link class="hover:text-teal-700">Programs</a>
+      <a href="/calendar"            data-nav-link class="hover:text-teal-700">Calendar</a>
+      <a href="/salary"              data-nav-link class="hover:text-teal-700">Salary</a>
+      <a href="/skills-lab"          data-nav-link class="hover:text-teal-700">Skills Lab</a>
+      <a href="/tools/practice-exam" data-nav-link class="hover:text-teal-700">Practice Exam</a>
+      <a href="/employers"           data-nav-link class="hover:text-teal-700">Employers</a>
+      <a href="/blog"                data-nav-link class="hover:text-teal-700">Blog</a>
+      <a href="/about"               data-nav-link class="hover:text-teal-700">About</a>
+      <a href="/contact"             data-nav-link class="hover:text-teal-700">Contact</a>
       <div class="relative">
-        <button id="pda-more-btn" type="button" aria-expanded="false" class="inline-flex items-center gap-1 hover:text-teal-700">Free tools <span class="text-[10px] leading-none">▼</span></button>
-        <div id="pda-more-menu" hidden class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
+        <button id="pda-more-btn" type="button" aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">More <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
+        <div id="pda-more-menu" hidden role="menu" class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
           <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">Free study tools</p>
-          <a href="/tools/practice-exam"  class="block px-4 py-2 hover:bg-slate-50">Practice exam</a>
           <a href="/tools/flashcards"     class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
-          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/tools/how-to-chart"   class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
+          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
           <a href="/skills-lab/abbreviations" class="block px-4 py-2 hover:bg-slate-50">Charting abbreviations</a>
           <div class="border-t border-slate-100 my-2"></div>
-          <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">More</p>
-          <a href="/graduates"       class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
-          <a href="/employers" class="block px-4 py-2 hover:bg-slate-50">For dental offices</a>
-          <a href="/teach"           class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
+          <a href="/graduates" class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
+          <a href="/teach"     class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
         </div>
       </div>
     </div>
@@ -58,24 +58,23 @@
   const MENU_HTML = `
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
   <div class="px-5 py-4 flex flex-col">
-    <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
-    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
-    <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Blog</a>
-    <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Salary</a>
-    <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">About</a>
-    <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Contact</a>
+    <a href="/#programs"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
+    <a href="/calendar"            data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
+    <a href="/salary"              data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Salary</a>
+    <a href="/skills-lab"          data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Skills Lab</a>
+    <a href="/tools/practice-exam" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Practice Exam</a>
+    <a href="/employers"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Employers</a>
+    <a href="/blog"                data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Blog</a>
+    <a href="/about"               data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">About</a>
+    <a href="/contact"             data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Contact</a>
 
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Free study tools</p>
-    <a href="/tools/practice-exam"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Practice exam</a>
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">More free tools</p>
     <a href="/tools/flashcards"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
-    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
     <a href="/tools/how-to-chart"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
+    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
     <a href="/skills-lab/instruments"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Instrument library</a>
     <a href="/skills-lab/abbreviations" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Charting abbreviations</a>
-
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">More</p>
     <a href="/graduates"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
-    <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
     <a href="/teach"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Teach with us</a>
 
     <div class="mt-6 pt-4 border-t border-slate-200">
@@ -90,6 +89,10 @@
 </div>`;
 
   function init() {
+    // Ensure the business-facts source of truth is loaded (footer + other scripts read it).
+    if (!window.PDA_FACTS) { var __sf = document.createElement('script'); __sf.src = '/assets/site-facts.js'; document.head.appendChild(__sf); }
+    // Load the analytics layer so every [data-event] element is tracked site-wide (safe no-op without a provider).
+    if (!window.PDA || !window.PDA.track) { var __an = document.createElement('script'); __an.src = '/assets/pda-analytics.js'; document.head.appendChild(__an); }
     // Remove any pre-existing inline mobile menus from before this script existed.
     document.querySelectorAll('#mobile-menu, #pda-mobile-menu').forEach(el => el.remove());
 
@@ -107,6 +110,9 @@
     menuWrap.innerHTML = MENU_HTML.trim();
     const newMenu = menuWrap.firstElementChild;
     newNav.after(newMenu);
+
+    // Unified footer (replaces any per-page footer) — reads window.PDA_FACTS.
+    renderFooter();
 
     // ── Sticky mobile Call / Apply bar ──────────────────────────────
     // High-intent local-search visitors arrive on a phone; keep "Call" and
@@ -410,6 +416,78 @@
 
   // (Removed: the dormant "$1,500 pay-in-full" special offer bar. It was never
   // invoked and advertised an ended special, so it's been deleted.)
+
+  // ───────────── Shared site footer ─────────────
+  // One consistent footer for every public marketing page. Reads business facts
+  // from window.PDA_FACTS when present; the literals below are only a fallback so
+  // the footer is always correct even if site-facts.js hasn't loaded yet.
+  function footerHTML() {
+    var F = (typeof window !== 'undefined' && window.PDA_FACTS) ? window.PDA_FACTS : {};
+    var name   = F.academyName || 'Premier Dental Academy of Longview';
+    var addr   = (F.address && F.address.full) || '2800 Gilmer Rd, Suite 106, Longview, TX 75604';
+    var phoneD = (F.phone && F.phone.display) || '(903) 913-6444';
+    var phoneH = (F.phone && F.phone.href) || 'tel:+19039136444';
+    var email  = F.email || 'hello@premierdentalacademyoflongview.com';
+    var year   = new Date().getFullYear();
+    return `
+<footer class="bg-slate-900 text-slate-300 mt-16">
+  <div class="max-w-7xl mx-auto px-6 py-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-4 text-sm">
+    <div>
+      <div class="flex items-center gap-2 text-white font-bold">
+        <img src="/assets/logo-mark.png" alt="" width="32" height="32" class="w-8 h-8 rounded-lg" />
+        <span>Premier Dental Academy</span>
+      </div>
+      <p class="mt-3 leading-relaxed text-slate-400">${name}<br>${addr}</p>
+      <p class="mt-3"><a href="${phoneH}" class="text-teal-300 hover:text-teal-200 font-semibold">${phoneD}</a></p>
+      <p><a href="mailto:${email}" class="text-teal-300 hover:text-teal-200 break-all">${email}</a></p>
+    </div>
+    <nav aria-label="Programs" class="space-y-2">
+      <p class="text-white font-semibold">Programs</p>
+      <a href="/enroll?plan=in-person" class="block hover:text-white">In-person (Longview)</a>
+      <a href="/enroll?plan=online" class="block hover:text-white">Online</a>
+      <a href="/calendar" class="block hover:text-white">Class calendar</a>
+      <a href="/apply" class="block hover:text-white">Apply free</a>
+      <a href="/salary" class="block hover:text-white">Salary calculator</a>
+    </nav>
+    <nav aria-label="Free trainers" class="space-y-2">
+      <p class="text-white font-semibold">Free trainers</p>
+      <a href="/tools/practice-exam" class="block hover:text-white">Practice exam</a>
+      <a href="/skills-lab" class="block hover:text-white">Skills Lab</a>
+      <a href="/tools/practice-pro" class="block hover:text-white">Practice Pro</a>
+      <a href="/tools/chairside" class="block hover:text-white">ChairSide</a>
+      <a href="/tools/flashcards" class="block hover:text-white">Flashcards</a>
+    </nav>
+    <nav aria-label="More" class="space-y-2">
+      <p class="text-white font-semibold">More</p>
+      <a href="/employers" class="block hover:text-white">For dental offices</a>
+      <a href="/graduates" class="block hover:text-white">Our graduates</a>
+      <a href="/about" class="block hover:text-white">About Amanda</a>
+      <a href="/contact" class="block hover:text-white">Contact</a>
+      <a href="/blog" class="block hover:text-white">Blog</a>
+    </nav>
+  </div>
+  <div class="border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-6 py-5 flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between text-xs text-slate-400">
+      <p>© ${year} ${name}. All rights reserved.</p>
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+        <a href="/privacy" class="hover:text-white">Privacy</a>
+        <a href="/terms" class="hover:text-white">Terms</a>
+        <span class="text-slate-500">Trainers use fictional data only. No real PHI.</span>
+      </div>
+    </div>
+  </div>
+</footer>`;
+  }
+
+  function renderFooter() {
+    if (document.getElementById('pda-footer')) return;
+    var existing = document.querySelector('footer');
+    var wrap = document.createElement('div');
+    wrap.innerHTML = footerHTML().trim();
+    var el = wrap.firstElementChild;
+    el.id = 'pda-footer';
+    if (existing) existing.replaceWith(el); else document.body.appendChild(el);
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
