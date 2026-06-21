@@ -18,28 +18,31 @@
       <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
       <span class="text-base sm:text-lg hidden sm:inline">Premier Dental Academy</span>
     </a>
-    <div class="hidden md:flex items-center gap-3 lg:gap-5 text-[13px] lg:text-sm font-medium text-slate-700">
-      <a href="/#programs"           data-nav-link class="hover:text-teal-700">Programs</a>
-      <a href="/calendar"            data-nav-link class="hover:text-teal-700">Calendar</a>
-      <a href="/salary"              data-nav-link class="hover:text-teal-700">Salary</a>
-      <a href="/skills-lab"          data-nav-link class="hover:text-teal-700">Skills Lab</a>
-      <a href="/tools/practice-exam" data-nav-link class="hover:text-teal-700">Practice Exam</a>
-      <a href="/employers"           data-nav-link class="hover:text-teal-700">Employers</a>
-      <a href="/blog"                data-nav-link class="hover:text-teal-700">Blog</a>
-      <a href="/about"               data-nav-link class="hover:text-teal-700">About</a>
-      <a href="/contact"             data-nav-link class="hover:text-teal-700">Contact</a>
-      <div class="relative">
-        <button id="pda-more-btn" type="button" aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">More <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
-        <div id="pda-more-menu" hidden role="menu" class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
-          <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">Free study tools</p>
-          <a href="/tools/flashcards"     class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
-          <a href="/study-guide"          class="block px-4 py-2 hover:bg-slate-50">Exam study guide</a>
-          <a href="/tools/how-to-chart"   class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
-          <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
+    <div class="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-slate-700">
+      <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
+      <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
+      <div class="pda-dd relative">
+        <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Free tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
+        <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
+          <a href="/tools/practice-exam"      class="block px-4 py-2 hover:bg-slate-50">Practice exam</a>
+          <a href="/skills-lab"               class="block px-4 py-2 hover:bg-slate-50">Skills Lab</a>
+          <a href="/tools/flashcards"         class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
+          <a href="/study-guide"              class="block px-4 py-2 hover:bg-slate-50">Exam study guide</a>
+          <a href="/tools/how-to-chart"       class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
+          <a href="/tools/resume-builder"     class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
           <a href="/skills-lab/abbreviations" class="block px-4 py-2 hover:bg-slate-50">Charting abbreviations</a>
-          <div class="border-t border-slate-100 my-2"></div>
+        </div>
+      </div>
+      <a href="/employers" data-nav-link class="hover:text-teal-700">For offices</a>
+      <div class="pda-dd relative">
+        <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">About <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
+        <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-56 z-50 text-slate-700">
+          <a href="/about"     class="block px-4 py-2 hover:bg-slate-50">About Amanda</a>
           <a href="/graduates" class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
+          <a href="/salary"    class="block px-4 py-2 hover:bg-slate-50">Salary calculator</a>
+          <a href="/blog"      class="block px-4 py-2 hover:bg-slate-50">Blog</a>
+          <a href="/contact"   class="block px-4 py-2 hover:bg-slate-50">Contact</a>
           <a href="/teach"     class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
         </div>
       </div>
@@ -59,24 +62,27 @@
   const MENU_HTML = `
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
   <div class="px-5 py-4 flex flex-col">
-    <a href="/#programs"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
-    <a href="/calendar"            data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
-    <a href="/salary"              data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Salary</a>
-    <a href="/skills-lab"          data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Skills Lab</a>
-    <a href="/tools/practice-exam" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Practice Exam</a>
-    <a href="/employers"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Employers</a>
-    <a href="/blog"                data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Blog</a>
-    <a href="/about"               data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">About</a>
-    <a href="/contact"             data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Contact</a>
+    <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
+    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
+    <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">For offices</a>
 
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">More free tools</p>
-    <a href="/tools/flashcards"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
-    <a href="/tools/how-to-chart"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
-    <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Free tools</p>
+    <a href="/tools/practice-exam"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Practice exam</a>
+    <a href="/skills-lab"               data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Skills Lab</a>
+    <a href="/tools/flashcards"         data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
+    <a href="/study-guide"              data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Exam study guide</a>
+    <a href="/tools/how-to-chart"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
+    <a href="/tools/resume-builder"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
     <a href="/skills-lab/instruments"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Instrument library</a>
     <a href="/skills-lab/abbreviations" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Charting abbreviations</a>
-    <a href="/graduates"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
-    <a href="/teach"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Teach with us</a>
+
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">About PDA</p>
+    <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">About Amanda</a>
+    <a href="/graduates" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
+    <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Salary calculator</a>
+    <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Blog</a>
+    <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Contact</a>
+    <a href="/teach"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Teach with us</a>
 
     <div class="mt-6 pt-4 border-t border-slate-200">
       <a id="pda-mobile-dash" href="/dashboard" data-nav-link class="hidden mb-2 py-2 px-1 text-base font-semibold text-teal-700">My dashboard →</a>
@@ -150,21 +156,29 @@
       }
     });
 
-    // Desktop "Resources" dropdown wiring.
-    const moreBtn = document.getElementById('pda-more-btn');
-    const moreMenu = document.getElementById('pda-more-menu');
-    if (moreBtn && moreMenu) {
-      const closeMore = () => { moreMenu.hidden = true; moreBtn.setAttribute('aria-expanded', 'false'); };
-      moreBtn.addEventListener('click', (e) => {
+    // Desktop dropdown wiring — supports multiple .pda-dd menus (Free tools, About).
+    const dropdowns = Array.from(document.querySelectorAll('.pda-dd'));
+    const closeAllDropdowns = () => dropdowns.forEach((dd) => {
+      const m = dd.querySelector('[data-dd-menu]'); const b = dd.querySelector('[data-dd-btn]');
+      if (m) m.hidden = true; if (b) b.setAttribute('aria-expanded', 'false');
+    });
+    dropdowns.forEach((dd) => {
+      const btn = dd.querySelector('[data-dd-btn]');
+      const menu = dd.querySelector('[data-dd-menu]');
+      if (!btn || !menu) return;
+      btn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const willOpen = moreMenu.hidden;
-        moreMenu.hidden = !willOpen;
-        moreBtn.setAttribute('aria-expanded', String(willOpen));
+        const willOpen = menu.hidden;
+        closeAllDropdowns();
+        menu.hidden = !willOpen;
+        btn.setAttribute('aria-expanded', String(willOpen));
       });
+    });
+    if (dropdowns.length) {
       document.addEventListener('click', (e) => {
-        if (!moreMenu.hidden && !moreMenu.contains(e.target) && e.target !== moreBtn) closeMore();
+        if (!dropdowns.some((dd) => dd.contains(e.target))) closeAllDropdowns();
       });
-      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMore(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAllDropdowns(); });
     }
 
     // Hamburger wiring.
