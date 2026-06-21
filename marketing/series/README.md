@@ -32,14 +32,23 @@ button, a link to an interactive website tool, "call/text Amanda" CTAs, and a sh
 | 6 | `day-06-tooth-chart.html` | Chart teeth like a pro — try our free trainer | Practice Pro / how-to-chart | Enroll |
 | 7 | `day-07-day-in-the-life.html` | What's a day really like as a dental assistant? | Skills Lab | Enroll |
 | 8 | `day-08-practice-exam.html` | Think you could pass the dental-assistant exam? Try it free | Practice Exam | Enroll |
-| 9 | _(to build)_ | East Texas offices are hiring — and they call us | /graduates | Enroll |
-| 10 | _(to build)_ | Build your dental-assistant résumé free (15 min) | /tools/resume-builder | Enroll |
-| 11 | _(to build)_ | Veteran or qualify for funding? You may train for $0 | /apply | Apply for funding |
-| 12 | _(to build)_ | Evening classes in Longview — keep your job | /night-class | Enroll (in-person) |
-| 13 | _(to build)_ | No experience? No degree? The honest answer. | FAQ → /enroll | Enroll |
-| 14 | _(to build)_ | Seats are filling for our next class — let's talk | /enroll | Call/Text + Enroll |
+| 9 | `day-09-offices-hiring.html` | East Texas offices are hiring — and they call us | /graduates | Enroll |
+| 10 | `day-10-resume-builder.html` | Build your dental-assistant résumé free | /tools/resume-builder | Enroll |
+| 11 | `day-11-funding.html` | Veteran or qualify for funding? You may train for $0 | /apply | Apply for funding |
+| 12 | `day-12-evening-classes.html` | Evening classes in Longview — keep your job | /night-class | Enroll (in-person) |
+| 13 | `day-13-no-experience-faq.html` | No experience? No degree? The honest answer. | FAQ → /enroll | Enroll |
+| 14 | `day-14-last-call.html` | Seats are filling for our next class — let's talk | /enroll | Call/Text + Enroll |
 
-Days 1–8 are built (covers the next week). Days 9–14 are planned — ask Claude to generate them.
+**All 14 days are built and ready to schedule.**
+
+## Built for CLICKS (not opens)
+Apple Mail Privacy Protection auto-loads tracking pixels, so **open rates are unreliable**
+— optimize for **clicks**, which still predict sales. Every email therefore carries lots of
+click targets: a **quick-links bar** under the header (Free tools · Class dates · What
+you'll earn · Apply), a **"more to explore" row** above the footer (practice exam ·
+tooth-chart trainer · résumé builder · graduates · enroll), the buy buttons, the featured
+tool, the share row, and tap-to-call/text. ~12+ links per email. When reviewing Kajabi
+stats during the test, **track click-through rate, not open rate.**
 
 ## Rules these emails follow (keep it this way)
 - **Real only:** no fabricated stats, names, testimonials, grad counts, or salary numbers.
