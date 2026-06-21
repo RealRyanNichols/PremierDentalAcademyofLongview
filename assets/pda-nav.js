@@ -33,10 +33,12 @@
           <a href="/tools/flashcards"     class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
           <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/tools/how-to-chart"   class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
+          <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
+          <a href="/skills-lab/abbreviations" class="block px-4 py-2 hover:bg-slate-50">Charting abbreviations</a>
           <div class="border-t border-slate-100 my-2"></div>
           <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">More</p>
           <a href="/graduates"       class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
-          <a href="/hiring-partners" class="block px-4 py-2 hover:bg-slate-50">For dental offices</a>
+          <a href="/employers" class="block px-4 py-2 hover:bg-slate-50">For dental offices</a>
           <a href="/teach"           class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
         </div>
       </div>
@@ -68,10 +70,12 @@
     <a href="/tools/flashcards"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
     <a href="/tools/resume-builder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
     <a href="/tools/how-to-chart"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
+    <a href="/skills-lab/instruments"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Instrument library</a>
+    <a href="/skills-lab/abbreviations" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Charting abbreviations</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">More</p>
     <a href="/graduates"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
-    <a href="/hiring-partners" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
+    <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">For dental offices</a>
     <a href="/teach"           data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Teach with us</a>
 
     <div class="mt-6 pt-4 border-t border-slate-200">
