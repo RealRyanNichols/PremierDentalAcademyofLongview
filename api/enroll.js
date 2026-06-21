@@ -73,6 +73,33 @@ function addDays(isoDate, days) {
   return d.toISOString().slice(0, 10);
 }
 
+// Add whole calendar months keeping the SAME day-of-month, CLAMPED to the last
+// day of the target month so a late start date can never overflow into the next
+// month. The first Friday on/after a buyer-chosen start can fall on the 29th–
+// 31st, and e.g. Jan 31 + 1 month must become Feb 28/29 — not Mar 2/3. Built at
+// UTC noon so DST/UTC rollover can never bump the result onto an adjacent day.
+function addMonths(isoDate, months) {
+  const d = new Date(isoDate + 'T12:00:00Z');
+  const targetDom = d.getUTCDate();
+  d.setUTCDate(1);                              // park on the 1st before shifting months
+  d.setUTCMonth(d.getUTCMonth() + months);
+  const lastDom = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(targetDom, lastDom));   // clamp (e.g. 31 → 28/29/30)
+  return d.toISOString().slice(0, 10);
+}
+
+// First Friday ON OR AFTER the given date. getUTCDay(): 0=Sun … 5=Fri … 6=Sat.
+// Owner rule: every payment must land on a Friday. The first installment is the
+// first Friday on/after the class start (the date the buyer picked to start
+// paying), then weekly steps stay on Friday and monthly steps keep that
+// Friday's day-of-month. Built at UTC noon to avoid any timezone off-by-one.
+function firstFridayOnOrAfter(isoDate) {
+  const d = new Date(isoDate + 'T12:00:00Z');
+  const delta = (5 - d.getUTCDay() + 7) % 7; // days forward to reach Friday
+  d.setUTCDate(d.getUTCDate() + delta);
+  return d.toISOString().slice(0, 10);
+}
+
 function diffDays(aIso, bIso) {
   const a = new Date(aIso + 'T00:00:00Z').getTime();
   const b = new Date(bIso + 'T00:00:00Z').getTime();
@@ -81,7 +108,16 @@ function diffDays(aIso, bIso) {
 
 function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate }) {
   const stepDays = cadence === 'daily' ? 1 : cadence === 'weekly' ? 7 : 30;
-  const window = diffDays(firstPaymentDate, classEndDate);
+  // Owner rule: payments fall on FRIDAYS. The first installment is the first
+  // Friday on/after the chosen start date. Weekly steps +7 days (stays Friday);
+  // monthly steps to the SAME day-of-month one/two months later (only the first
+  // is guaranteed a Friday, the rest match that day-of-month). For weekly/monthly
+  // we anchor the whole schedule to firstFriday instead of the raw start date —
+  // that's the fix for the old Saturday dates.
+  const firstFriday = (cadence === 'weekly' || cadence === 'monthly')
+    ? firstFridayOnOrAfter(firstPaymentDate)
+    : firstPaymentDate;
+  const window = diffDays(firstFriday, classEndDate);
   if (window < 0) throw new Error('First payment date is after class ends.');
 
   // Per Amanda: every installment is a CLEAN round number — no "change."
@@ -114,7 +150,18 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
   }
 
   const count = amounts.length;
-  const dates = Array.from({ length: count }, (_, i) => addDays(firstPaymentDate, i * stepDays));
+  // Build due dates on Fridays:
+  //   weekly  → firstFriday, +7d, +14d, … (each remains a Friday)
+  //   monthly → firstFriday, then same day-of-month +1 month, +2 months, …
+  //   daily   → legacy: flat day steps from the raw start date.
+  let dates;
+  if (cadence === 'monthly') {
+    dates = Array.from({ length: count }, (_, i) => addMonths(firstFriday, i));
+  } else if (cadence === 'weekly') {
+    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * 7));
+  } else {
+    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * stepDays));
+  }
   const last = dates[count - 1];
   if (diffDays(last, classEndDate) < 0) {
     throw new Error(`A ${cadence} plan starting ${firstPaymentDate} can't finish by class end (${classEndDate}). Pick an earlier start date or increase your down payment.`);

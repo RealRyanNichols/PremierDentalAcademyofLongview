@@ -65,6 +65,10 @@ tailwind.config = { theme: { extend: {
       <div class="flex flex-col sm:flex-row gap-3">
         <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
         <div class="flex items-center gap-2">
+          <label for="diff" class="text-sm text-slate-500">Level</label>
+          <select id="diff" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
+        </div>
+        <div class="flex items-center gap-2">
           <label for="len" class="text-sm text-slate-500">Questions</label>
           <select id="len" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
             <option value="5">5</option><option value="8" selected>8</option><option value="10">10</option><option value="0">All</option>
@@ -73,6 +77,7 @@ tailwind.config = { theme: { extend: {
         <button id="start" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-700 transition shadow-sm">Start practice</button>
       </div>
       <div id="chips" class="mt-4 flex flex-wrap gap-2"></div>
+      <div id="diffChips" class="mt-3 flex flex-wrap gap-2"></div>
     </div>
 
     <!-- Mode cards (drive engagement) -->
@@ -113,6 +118,9 @@ tailwind.config = { theme: { extend: {
   var picker = document.getElementById('picker');
   var quiz = document.getElementById('quiz');
   var catSel = document.getElementById('cat');
+  var diffSel = document.getElementById('diff');
+  var ALL_DIFF = '__all__';
+  function diffLabel(d) { return d.charAt(0).toUpperCase() + d.slice(1); }   // 'beginner' -> 'Beginner'
 
   function refreshStats() {
     var m = U.computeMetrics();
@@ -134,6 +142,21 @@ tailwind.config = { theme: { extend: {
     '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-navy-900 text-white hover:opacity-90 transition" data-cat="__mixed__">Mixed practice</button>' +
     D.QUIZ_CATEGORIES.map(function (cat) {
       return '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-cat="' + U.escapeHTML(cat) + '">' + U.escapeHTML(cat) + '</button>';
+    }).join('');
+
+  // Difficulty dropdown (All levels + each level, with live counts) + chips
+  var optAll = document.createElement('option');
+  optAll.value = ALL_DIFF; optAll.textContent = 'All levels';
+  diffSel.appendChild(optAll);
+  (D.QUIZ_DIFFICULTIES || []).forEach(function (d) {
+    var n = D.QUIZ_BANK.filter(function (q) { return q.difficulty === d; }).length;
+    var o = document.createElement('option'); o.value = d; o.textContent = diffLabel(d) + ' (' + n + ')';
+    diffSel.appendChild(o);
+  });
+  document.getElementById('diffChips').innerHTML =
+    '<button class="diffChip text-xs font-semibold px-3 py-1.5 rounded-full bg-teal-600 text-white hover:opacity-90 transition" data-diff="' + ALL_DIFF + '">All levels</button>' +
+    (D.QUIZ_DIFFICULTIES || []).map(function (d) {
+      return '<button class="diffChip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-diff="' + U.escapeHTML(d) + '">' + U.escapeHTML(diffLabel(d)) + '</button>';
     }).join('');
 
   function applyPreviewUI() {
@@ -159,19 +182,25 @@ tailwind.config = { theme: { extend: {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  function startQuiz(catValue) {
+  function startQuiz(catValue, diffValue) {
     var cat = catValue || catSel.value;
+    var diff = diffValue || diffSel.value || ALL_DIFF;
     var len = parseInt(document.getElementById('len').value, 10);
     if (PREVIEW) len = PREVIEW_LIMIT;   // non-payers: short sample only
     var pool = (cat === '__mixed__') ? D.QUIZ_BANK.slice() : D.QUIZ_BANK.filter(function (q) { return q.category === cat; });
+    if (diff !== ALL_DIFF) {
+      var byDiff = pool.filter(function (q) { return q.difficulty === diff; });
+      if (byDiff.length) pool = byDiff;   // only narrow when the level has questions, so a combo never goes empty
+    }
     pool = U.shuffle(pool);
     if (len > 0) pool = pool.slice(0, len);
     picker.classList.add('hidden');
     quiz.classList.remove('hidden'); quiz.classList.add('fade-in');
+    var label = (cat === '__mixed__' ? 'Mixed practice' : cat) + (diff !== ALL_DIFF ? ' · ' + diffLabel(diff) : '');
     window.SL_QUIZ.run({
       mount: quiz,
       questions: pool,
-      category: cat === '__mixed__' ? 'Mixed practice' : cat,
+      category: label,
       onFinish: function () { refreshStats(); },
       onRetake: backToPicker
     });
@@ -182,18 +211,25 @@ tailwind.config = { theme: { extend: {
   Array.prototype.slice.call(document.querySelectorAll('.chip')).forEach(function (c) {
     c.addEventListener('click', function () { catSel.value = c.dataset.cat; startQuiz(c.dataset.cat); });
   });
+  // Difficulty chips just sync the dropdown; they don't auto-start (let the student pick a category too).
+  Array.prototype.slice.call(document.querySelectorAll('.diffChip')).forEach(function (c) {
+    c.addEventListener('click', function () { diffSel.value = c.dataset.diff; });
+  });
   Array.prototype.slice.call(document.querySelectorAll('[data-quick]')).forEach(function (b) {
     b.addEventListener('click', function () { catSel.value = b.dataset.quick; startQuiz(b.dataset.quick); });
   });
 
   // Resolve paid status, then apply the preview limit + handle deep links.
-  var qp = new URLSearchParams(location.search).get('cat');
+  var params = new URLSearchParams(location.search);
+  var qp = params.get('cat');
+  var dp = params.get('diff');
+  if (dp && (D.QUIZ_DIFFICULTIES || []).indexOf(dp) !== -1) diffSel.value = dp;
   refreshStats();
   applyPreviewUI();
   (window.PDA_ACCESS ? window.PDA_ACCESS.get() : Promise.resolve('preview')).then(function (access) {
     PREVIEW = (access !== 'student');
     applyPreviewUI();
-    if (qp && (qp === '__mixed__' || D.QUIZ_CATEGORIES.indexOf(qp) !== -1)) { catSel.value = qp; startQuiz(qp); }
+    if (qp && (qp === '__mixed__' || D.QUIZ_CATEGORIES.indexOf(qp) !== -1)) { catSel.value = qp; startQuiz(qp, diffSel.value); }
   });
 })();
 </script>

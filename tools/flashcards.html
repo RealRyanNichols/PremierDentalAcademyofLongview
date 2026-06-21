@@ -347,6 +347,59 @@
     { id:'pm-fdo-01', topic:'Insurance & Front Office', q:"What's the difference between PPO and HMO dental insurance?", a:"PPO (Preferred Provider Organization): patient can see any dentist, but pays less in-network. HMO (Health Maintenance Org): patient must use an assigned in-network dentist; usually lower premiums but less flexibility." },
     { id:'pm-fdo-02', topic:'Insurance & Front Office', q:"What's a UCR fee?", a:"Usual, Customary, and Reasonable — the average fee insurance companies use to calculate reimbursement in a given geographic area. If your office's fee is above UCR, the patient covers the difference (if out-of-network)." },
     { id:'pm-fdo-03', topic:'Insurance & Front Office', q:"What's the recare interval most insurances cover for prophy?", a:"Two cleanings per year (every 6 months). Periodontal maintenance is typically quarterly (every 3 months) and covered separately under D4910." },
+
+    // ── Charting Abbreviations (clinical shorthand used on charts, routing slips & schedules) ──
+    // Surfaces / directional
+    { id:'abbr-m',    topic:'Charting Abbreviations', q:"M", a:"Mesial — the tooth surface toward the midline of the dental arch." },
+    { id:'abbr-d',    topic:'Charting Abbreviations', q:"D", a:"Distal — the tooth surface away from the midline of the dental arch." },
+    { id:'abbr-i',    topic:'Charting Abbreviations', q:"I", a:"Incisal — the biting edge of an anterior tooth (incisors and canines)." },
+    { id:'abbr-o',    topic:'Charting Abbreviations', q:"O", a:"Occlusal — the chewing surface of a posterior tooth (premolars and molars)." },
+    { id:'abbr-f',    topic:'Charting Abbreviations', q:"F", a:"Facial — the surface toward the lips or cheek (the outer side of the tooth)." },
+    { id:'abbr-b',    topic:'Charting Abbreviations', q:"B", a:"Buccal — the surface toward the cheek (the facial surface of posterior teeth)." },
+    { id:'abbr-l',    topic:'Charting Abbreviations', q:"L", a:"Lingual — the surface toward the tongue (the inner side of the tooth)." },
+    // Quadrants / areas
+    { id:'abbr-quad', topic:'Charting Abbreviations', q:"Quad", a:"Quadrant — one of the four sections of the mouth (UR, UL, LL, LR)." },
+    { id:'abbr-ur',   topic:'Charting Abbreviations', q:"UR", a:"Upper Right — the maxillary right quadrant." },
+    { id:'abbr-ul',   topic:'Charting Abbreviations', q:"UL", a:"Upper Left — the maxillary left quadrant." },
+    { id:'abbr-ll',   topic:'Charting Abbreviations', q:"LL", a:"Lower Left — the mandibular left quadrant." },
+    { id:'abbr-lr',   topic:'Charting Abbreviations', q:"LR", a:"Lower Right — the mandibular right quadrant." },
+    // Materials / restorations
+    { id:'abbr-comp', topic:'Charting Abbreviations', q:"C or COMP", a:"Composite — a tooth-colored resin filling material." },
+    { id:'abbr-amal', topic:'Charting Abbreviations', q:"AM or AMAL", a:"Amalgam — a silver-colored metal filling material." },
+    { id:'abbr-crbr', topic:'Charting Abbreviations', q:"CR/BR", a:"Crown & Bridge — fixed restorations that cap a tooth (crown) or span a gap (bridge)." },
+    { id:'abbr-fgc',  topic:'Charting Abbreviations', q:"FGC", a:"Full Gold Crown — a crown made entirely of gold alloy." },
+    { id:'abbr-pfm',  topic:'Charting Abbreviations', q:"PFM", a:"Porcelain Fused to Metal — a crown with a metal substructure covered in tooth-colored porcelain." },
+    { id:'abbr-pvc',  topic:'Charting Abbreviations', q:"PVC", a:"Porcelain Veneer Crown — a crown faced with porcelain for esthetics." },
+    { id:'abbr-ssc',  topic:'Charting Abbreviations', q:"SSC", a:"Stainless Steel Crown — a prefabricated metal crown, often used on primary (baby) teeth." },
+    { id:'abbr-bu',   topic:'Charting Abbreviations', q:"BU", a:"Buildup — restorative material added to rebuild a tooth and support a crown." },
+    { id:'abbr-pnc',  topic:'Charting Abbreviations', q:"PNC", a:"Post and Core — a post placed in the root canal plus a core buildup to retain a crown." },
+    { id:'abbr-s',    topic:'Charting Abbreviations', q:"S", a:"Sealant — a protective resin coating placed in the pits and fissures to prevent decay." },
+    // Procedures
+    { id:'abbr-rct',  topic:'Charting Abbreviations', q:"RCT", a:"Root Canal Treatment — endodontic therapy that removes infected pulp and fills the canal." },
+    { id:'abbr-srp',  topic:'Charting Abbreviations', q:"SRP", a:"Scaling and Root Planing — a deep cleaning below the gumline to treat periodontal disease." },
+    { id:'abbr-ext',  topic:'Charting Abbreviations', q:"EXT", a:"Extraction — removal of a tooth." },
+    { id:'abbr-px',   topic:'Charting Abbreviations', q:"PX", a:"Prophy (prophylaxis) — a routine professional cleaning." },
+    { id:'abbr-fl',   topic:'Charting Abbreviations', q:"FL or FL2", a:"Fluoride — a topical fluoride treatment to strengthen enamel and prevent decay." },
+    { id:'abbr-imp',  topic:'Charting Abbreviations', q:"IMP", a:"Impression — a negative mold of the teeth/arch used to make models or appliances." },
+    { id:'abbr-tx',   topic:'Charting Abbreviations', q:"TX", a:"Treatment — care provided to the patient (also seen as 'Tx')." },
+    // Conditions / diagnoses
+    { id:'abbr-ta',   topic:'Charting Abbreviations', q:"TA", a:"Toothache — pain in or around a tooth." },
+    { id:'abbr-ds',   topic:'Charting Abbreviations', q:"DS", a:"Dry Socket — painful loss of the blood clot after an extraction (alveolar osteitis)." },
+    { id:'abbr-abs',  topic:'Charting Abbreviations', q:"ABS", a:"Abscess — a localized collection of pus from a bacterial infection." },
+    // Radiographs
+    { id:'abbr-fmx',  topic:'Charting Abbreviations', q:"FMX", a:"Full Mouth Series — a complete set of intraoral x-rays of all teeth." },
+    { id:'abbr-bwx',  topic:'Charting Abbreviations', q:"BWX or BW", a:"Bitewing X-ray — shows the crowns of upper and lower teeth to check for interproximal decay." },
+    { id:'abbr-pano', topic:'Charting Abbreviations', q:"PANO", a:"Panoramic X-ray — a single wide image of the entire upper and lower jaws." },
+    // Scheduling / admin
+    { id:'abbr-np',   topic:'Charting Abbreviations', q:"NP", a:"New Patient — a patient being seen at the practice for the first time." },
+    { id:'abbr-rs',   topic:'Charting Abbreviations', q:"RS", a:"Reschedule — moving an appointment to a different date or time." },
+    { id:'abbr-ca',   topic:'Charting Abbreviations', q:"CA", a:"Cancel — a canceled appointment." },
+    { id:'abbr-ba',   topic:'Charting Abbreviations', q:"BA", a:"Broken Appointment — an appointment the patient missed or canceled with short notice." },
+    { id:'abbr-ns',   topic:'Charting Abbreviations', q:"NS", a:"No-Show — the patient did not arrive for a scheduled appointment." },
+    // Sedation
+    { id:'abbr-n2o',  topic:'Charting Abbreviations', q:"N2O", a:"Nitrous Oxide — inhalation conscious sedation ('laughing gas') to relax the patient." },
+    // Tooth classification
+    { id:'abbr-v',    topic:'Charting Abbreviations', q:"V", a:"Class V (five) — a cavity or restoration in the gingival third (facial or lingual) of any tooth." },
   ];
 
   // Build topic dropdown

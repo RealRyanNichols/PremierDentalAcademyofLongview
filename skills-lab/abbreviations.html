@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Charting Abbreviations — Skills Lab | Premier Dental Academy</title>
+<meta name="description" content="A clean, scannable reference of the dental charting and clinical abbreviations you'll use every day — surfaces, quadrants, materials, procedures, conditions, x-rays and scheduling shorthand. Study them, then drill them in the flashcards.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/abbreviations">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .abbr-key{font-variant-ligatures:none}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="sl-header"></div>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Reference</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Dental Charting Abbreviations</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">The shorthand you'll read and write on charts, routing slips and the schedule every day. Learn what each one means here, then drill them until they're automatic in the flashcards.</p>
+    <div class="mt-4 flex flex-wrap gap-2">
+      <a href="/tools/flashcards" class="inline-block rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 text-sm transition">Drill these in flashcards →</a>
+      <a href="/skills-lab/quizzes" class="inline-block rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 text-sm transition">Test yourself in the Quiz Hub →</a>
+    </div>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600">
+    <span class="font-semibold text-navy-900">Jump to:</span>
+    <a href="#surfaces" class="text-teal-700 hover:text-teal-800 font-semibold">Surfaces</a>
+    <a href="#quadrants" class="text-teal-700 hover:text-teal-800 font-semibold">Quadrants</a>
+    <a href="#materials" class="text-teal-700 hover:text-teal-800 font-semibold">Materials</a>
+    <a href="#procedures" class="text-teal-700 hover:text-teal-800 font-semibold">Procedures</a>
+    <a href="#conditions" class="text-teal-700 hover:text-teal-800 font-semibold">Conditions</a>
+    <a href="#radiographs" class="text-teal-700 hover:text-teal-800 font-semibold">X-rays</a>
+    <a href="#scheduling" class="text-teal-700 hover:text-teal-800 font-semibold">Scheduling</a>
+    <a href="#other" class="text-teal-700 hover:text-teal-800 font-semibold">Sedation &amp; classes</a>
+  </div>
+
+  <div id="groups" class="mt-6 space-y-8"></div>
+
+  <a href="/tools/flashcards" class="mt-8 block bg-gradient-to-br from-teal-700 to-cyan-800 text-white rounded-2xl p-6 text-center hover:-translate-y-0.5 transition shadow">
+    <div class="text-2xl">🃏</div>
+    <div class="display text-xl font-bold mt-1">Ready to memorize them? Open the Charting Abbreviations flashcard deck →</div>
+    <div class="text-teal-100 text-sm mt-1">Front = the abbreviation, back = what it means. Mark each one mastered as it sticks.</div>
+  </a>
+</main>
+
+<div id="sl-footer"></div>
+
+<script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/store.js"></script>
+<script src="/assets/skills-lab/ui.js"></script>
+<script>
+(function () {
+  'use strict';
+  var U = window.SL_UI, esc = U.escapeHTML;
+  document.getElementById('sl-header').innerHTML = U.headerHTML('');
+  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+
+  // Grouped reference data. note = a short clarifying line shown under the meaning.
+  var GROUPS = [
+    {
+      id: 'surfaces', icon: '🦷', title: 'Surfaces & directional',
+      blurb: 'Where on the tooth — used together (e.g. "MOD") to describe a cavity or filling.',
+      items: [
+        { a: 'M', m: 'Mesial', note: 'Toward the midline of the arch.' },
+        { a: 'D', m: 'Distal', note: 'Away from the midline of the arch.' },
+        { a: 'I', m: 'Incisal', note: 'The biting edge of a front tooth.' },
+        { a: 'O', m: 'Occlusal', note: 'The chewing surface of a back tooth.' },
+        { a: 'F', m: 'Facial', note: 'Toward the lips/cheek (outer side).' },
+        { a: 'B', m: 'Buccal', note: 'Toward the cheek (facial side of back teeth).' },
+        { a: 'L', m: 'Lingual', note: 'Toward the tongue (inner side).' }
+      ]
+    },
+    {
+      id: 'quadrants', icon: '🔲', title: 'Quadrants & areas',
+      blurb: 'The four sections of the mouth, viewed from the patient.',
+      items: [
+        { a: 'Quad', m: 'Quadrant', note: 'One of the four sections of the mouth.' },
+        { a: 'UR', m: 'Upper Right', note: 'Maxillary right quadrant.' },
+        { a: 'UL', m: 'Upper Left', note: 'Maxillary left quadrant.' },
+        { a: 'LL', m: 'Lower Left', note: 'Mandibular left quadrant.' },
+        { a: 'LR', m: 'Lower Right', note: 'Mandibular right quadrant.' }
+      ]
+    },
+    {
+      id: 'materials', icon: '🛠️', title: 'Materials & restorations',
+      blurb: 'What the tooth is restored with — fillings, crowns and more.',
+      items: [
+        { a: 'C / COMP', m: 'Composite', note: 'Tooth-colored resin filling.' },
+        { a: 'AM / AMAL', m: 'Amalgam', note: 'Silver-colored metal filling.' },
+        { a: 'CR/BR', m: 'Crown & Bridge', note: 'Cap on a tooth (crown) or span across a gap (bridge).' },
+        { a: 'FGC', m: 'Full Gold Crown', note: 'Crown made entirely of gold alloy.' },
+        { a: 'PFM', m: 'Porcelain Fused to Metal', note: 'Metal substructure under tooth-colored porcelain.' },
+        { a: 'PVC', m: 'Porcelain Veneer Crown', note: 'Crown faced with porcelain for esthetics.' },
+        { a: 'SSC', m: 'Stainless Steel Crown', note: 'Prefab metal crown, often used on baby teeth.' },
+        { a: 'BU', m: 'Buildup', note: 'Material added to rebuild a tooth to support a crown.' },
+        { a: 'PNC', m: 'Post and Core', note: 'Post in the canal plus a core to retain a crown.' },
+        { a: 'S', m: 'Sealant', note: 'Protective coating in the pits and grooves.' }
+      ]
+    },
+    {
+      id: 'procedures', icon: '🪥', title: 'Procedures',
+      blurb: 'What was done — or what is planned.',
+      items: [
+        { a: 'RCT', m: 'Root Canal Treatment', note: 'Removes infected pulp and fills the canal.' },
+        { a: 'SRP', m: 'Scaling and Root Planing', note: 'Deep cleaning below the gumline.' },
+        { a: 'EXT', m: 'Extraction', note: 'Removal of a tooth.' },
+        { a: 'PX', m: 'Prophy (prophylaxis)', note: 'A routine cleaning.' },
+        { a: 'FL / FL2', m: 'Fluoride', note: 'Topical fluoride treatment.' },
+        { a: 'IMP', m: 'Impression', note: 'A mold of the teeth used to make models or appliances.' },
+        { a: 'TX', m: 'Treatment', note: 'Care provided to the patient (also "Tx").' }
+      ]
+    },
+    {
+      id: 'conditions', icon: '⚠️', title: 'Conditions & diagnoses',
+      blurb: "What's wrong — chief complaints and findings.",
+      items: [
+        { a: 'TA', m: 'Toothache', note: 'Pain in or around a tooth.' },
+        { a: 'DS', m: 'Dry Socket', note: 'Lost blood clot after an extraction (alveolar osteitis).' },
+        { a: 'ABS', m: 'Abscess', note: 'A localized pocket of pus from infection.' }
+      ]
+    },
+    {
+      id: 'radiographs', icon: '🩻', title: 'Radiographs (x-rays)',
+      blurb: 'The image types you take and chart.',
+      items: [
+        { a: 'FMX', m: 'Full Mouth Series', note: 'A complete set of x-rays of all teeth.' },
+        { a: 'BWX / BW', m: 'Bitewing X-ray', note: 'Checks for decay between the back teeth.' },
+        { a: 'PANO', m: 'Panoramic X-ray', note: 'One wide image of the entire upper and lower jaws.' }
+      ]
+    },
+    {
+      id: 'scheduling', icon: '📅', title: 'Scheduling & admin',
+      blurb: 'Front-desk and schedule shorthand.',
+      items: [
+        { a: 'NP', m: 'New Patient', note: 'First visit to the practice.' },
+        { a: 'RS', m: 'Reschedule', note: 'Move the appointment to another time.' },
+        { a: 'CA', m: 'Cancel', note: 'A canceled appointment.' },
+        { a: 'BA', m: 'Broken Appointment', note: 'Missed or canceled on short notice.' },
+        { a: 'NS', m: 'No-Show', note: 'Patient did not arrive.' }
+      ]
+    },
+    {
+      id: 'other', icon: '💨', title: 'Sedation & tooth classification',
+      blurb: 'A couple more you will see on charts.',
+      items: [
+        { a: 'N2O', m: 'Nitrous Oxide', note: 'Inhalation conscious sedation ("laughing gas").' },
+        { a: 'V', m: 'Class V (five)', note: 'A cavity in the gingival third of any tooth.' }
+      ]
+    }
+  ];
+
+  var html = GROUPS.map(function (g) {
+    var rows = g.items.map(function (it) {
+      return '<div class="rounded-xl border border-slate-100 bg-slate-50/60 p-3 sm:p-4 flex flex-col">' +
+        '<div class="abbr-key display text-lg sm:text-xl font-bold text-teal-700 leading-none">' + esc(it.a) + '</div>' +
+        '<div class="font-semibold text-navy-900 text-sm mt-1.5">' + esc(it.m) + '</div>' +
+        (it.note ? '<div class="text-xs text-slate-500 mt-0.5 leading-snug">' + esc(it.note) + '</div>' : '') +
+        '</div>';
+    }).join('');
+    return '<section id="' + g.id + '" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-6 sl-fade scroll-mt-24">' +
+      '<div class="flex items-start gap-3">' +
+      '<span class="text-2xl select-none" aria-hidden="true">' + g.icon + '</span>' +
+      '<div><h2 class="display text-xl font-bold text-navy-900">' + esc(g.title) + '</h2>' +
+      '<p class="text-slate-500 text-sm mt-0.5">' + esc(g.blurb) + '</p></div></div>' +
+      '<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5 mt-4">' + rows + '</div>' +
+      '</section>';
+  }).join('');
+
+  document.getElementById('groups').innerHTML = html;
+})();
+</script>
+</body>
+</html>

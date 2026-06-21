@@ -41,39 +41,113 @@
   /* ---- Instruments (library + tray builder) ---- */
   function ins(id, name, usedFor, emoji) { return { id:id, name:name, usedFor:usedFor, image:IMG+'instr-' + id + '.png', emoji:emoji }; }
   var INSTRUMENTS = [
-    ins('mirror','Mouth mirror','Indirect vision, retraction, reflecting light','🪞'),
+    /* --- Mirrors, probes & hand instruments --- */
+    ins('mirror','Mouth mirror (x2)','Indirect vision, retraction of cheek/tongue, and reflecting light onto the field','🪞'),
     ins('explorer','Explorer','Detecting caries, calculus & checking margins by feel','🪡'),
-    ins('cotton-pliers','Cotton (college) pliers','Carrying & placing cotton, small items','🤏'),
+    ins('explorer-probe','Explorer / perio-probe combo','Double-ended instrument: explorer end checks decay & margins, probe end measures sulcus depth','🪡'),
+    ins('cotton-pliers','Cotton (college) pliers (x2)','Carrying & placing cotton, pellets and other small items in the mouth','🤏'),
     ins('periodontal-probe','Periodontal probe','Measuring sulcus/pocket depth in millimeters','📏'),
     ins('spoon-excavator','Spoon excavator','Removing soft decay & temporary material','🥄'),
-    ins('condenser','Condenser (plugger)','Packing/condensing restorative material','🔨'),
+    ins('condenser','Condenser (plugger)','Packing/condensing restorative material into the prep','🔨'),
     ins('carver','Carver','Carving anatomy into a restoration','🔪'),
     ins('scaler','Scaler','Removing supragingival calculus','⛏️'),
-    ins('forceps','Extraction forceps','Grasping & removing a tooth','🦷'),
-    ins('elevator','Elevator','Loosening a tooth from the socket','🔧'),
-    ins('scissors','Surgical scissors','Cutting suture & cord','✂️'),
-    ins('hemostat','Hemostat','Grasping & holding tissue/items securely','🗜️'),
-    ins('impression-tray','Impression tray','Holding impression material to capture the arch','🍽️'),
-    ins('curing-light','Curing light','Light-curing bonded composite','🔦'),
-    ins('high-speed-handpiece','High-speed handpiece','Cutting tooth/old restorations (with water)','🌀'),
-    ins('low-speed-handpiece','Low-speed handpiece','Polishing, caries removal, lab work','🌀'),
-    ins('air-water-syringe','Air-water syringe','Rinsing & drying the field','💨'),
-    ins('saliva-ejector','Saliva ejector','Low-volume continuous suction','💧'),
-    ins('hve-tip','HVE tip','High-volume evacuation — keeps the field dry & clear','🌬️'),
-    ins('matrix-band','Matrix band & retainer','Recreating the wall of a tooth for a filling','➰')
+    /* --- Suction & air-water --- */
+    ins('high-speed-handpiece','High-speed handpiece','Cutting tooth/old restorations and crown preps (with water spray)','🌀'),
+    ins('low-speed-handpiece','Low-speed handpiece','Polishing, slow caries removal, lab and finishing work','🌀'),
+    ins('air-water-syringe','Air-water syringe tip','Rinsing & drying the field with air, water or spray','💨'),
+    ins('saliva-ejector','Saliva ejector','Low-volume continuous suction to remove pooled saliva','💧'),
+    ins('hve-tip','HVE (high-volume evacuator) tip','High-volume evacuation — keeps the field dry, clear and aerosol-controlled','🌬️'),
+    ins('surgical-suction','Surgical suction tip','Narrow-bore surgical suction for blood and debris at an extraction/surgical site','🩸'),
+    /* --- Isolation & disposables --- */
+    ins('gauze','2x2 gauze','Wiping instruments, isolation, packing the socket and applying bite pressure','🧻'),
+    ins('cotton-rolls','Cotton rolls','Isolating the tooth and absorbing saliva to keep the field dry','🧵'),
+    ins('dri-aids','Dri-aids (dry angles)','Triangular pads placed over the parotid duct to block saliva and keep the cheek dry','🔺'),
+    ins('cotton-pellets','Cotton pellets','Drying the prep, applying or blotting medicaments and cement','⚪'),
+    /* --- Restorative materials & accessories --- */
+    ins('matrix-band','Matrix band & retainer (Tofflemire)','Recreating the missing wall of a tooth so a filling can be packed','➰'),
+    ins('articulating-paper','Articulating paper & holder','Marking high spots so the bite (occlusion) can be checked & adjusted','🟦'),
+    ins('anesthetic-syringe','Anesthetic syringe','Aspirating dental syringe the dentist uses to deliver local anesthetic','💉'),
+    ins('etch','Etchant','Phosphoric-acid gel that micro-roughens enamel/dentin for bonding','🧪'),
+    ins('bond','Bonding agent','Resin adhesive that bonds composite to the etched tooth','🧴'),
+    ins('composite','Composite','Tooth-colored resin restorative material placed and light-cured in increments','🦷'),
+    ins('flowable-composite','Flowable composite','Thin, flowable resin used as a liner or in small/hard-to-reach areas','💧'),
+    ins('shade-guide','Shade guide','Tabbed guide for matching restoration color to the patient\'s teeth','🎨'),
+    ins('curing-light','Curing light','Blue light that light-cures bonded composite and resin cement','🔦'),
+    /* --- Crown & bridge / impressions --- */
+    ins('cb-scissors','Crown & bridge scissors','Trimming crowns, matrix bands, cord and retraction material','✂️'),
+    ins('retraction-cord','Retraction cord','Gingival cord packed in the sulcus to expose the margin & control fluid','🧶'),
+    ins('cord-packer','Cord packer','Serrated instrument that seats retraction cord into the sulcus','〰️'),
+    ins('ferric-sulfate','Ferric sulfate','Hemostatic agent that controls minor gingival bleeding before impressions','🩹'),
+    ins('heavy-body','Heavy body impression material','Thick tray material that forms the bulk of a crown/bridge impression','🟪'),
+    ins('light-body','Light body impression material','Thin wash material syringed around the prep to capture fine margin detail','🟦'),
+    ins('bite-registration','Bite registration material','Fast-set material that records how the upper & lower teeth bite together','🟨'),
+    ins('temp-crown-material','Temporary crown material','Resin used to fabricate a provisional crown that protects the prep','👑'),
+    ins('impression-tray','Impression tray','Holds impression material to capture the arch (or seat a provisional)','🍽️'),
+    ins('floss','Dental floss','Checking & clearing interproximal contacts and cement; retrieving cord','🧵'),
+    ins('cement','Cement','Luting cement used to seat a crown, provisional or final restoration','🪣'),
+    /* --- Endodontic (root canal) --- */
+    ins('endo-explorer','Endo explorer (DG16)','Sharp double-ended explorer for locating canal orifices','🪡'),
+    ins('dental-dam','Dental dam','Thin sheet that isolates the tooth and protects the airway during endo','🟩'),
+    ins('dam-frame','Dental dam frame','Frame that holds the dam stretched and out of the working field','🖼️'),
+    ins('dam-punch','Dental dam punch','Punches holes in the dam to fit over the tooth/teeth being isolated','🕳️'),
+    ins('dam-clamp','Dental dam clamps','Metal clamps that anchor the dam to the tooth being treated','🗜️'),
+    ins('endo-files','Endo files','Tapered files that clean, shape and enlarge the root canal','📍'),
+    ins('barbed-broach','Barbed broach','Disposable barbed instrument that removes pulp tissue from the canal','🪝'),
+    ins('apex-locator','Apex locator','Electronic device that measures canal working length to the root apex','📟'),
+    ins('endo-measuring-block','Endo measuring block','Block/ruler for setting and measuring file working lengths','📐'),
+    ins('rubber-stoppers','Rubber stoppers','Silicone stops set on files to mark the working length','🛑'),
+    ins('irrigation-syringe','Irrigation syringe','Syringe (often with sodium hypochlorite) to disinfect & flush the canal','💉'),
+    ins('paper-points','Paper points','Absorbent paper cones used to dry the canal before filling','🔻'),
+    ins('gutta-percha','Gutta-percha','Rubbery cones used to obturate (fill & seal) the cleaned canal','📏'),
+    ins('root-canal-sealer','Root canal sealer','Cement that seals gutta-percha to the canal walls','🧴'),
+    ins('endo-plugger','Endo plugger','Condenses/compacts gutta-percha into the canal','🔨'),
+    ins('glick','Glick #1','Double-ended endo instrument for placing & shaping temporaries and gutta-percha','🔧'),
+    ins('cavit','Cavit / IRM (temporary)','Temporary filling material that seals the access between endo visits','🩹'),
+    /* --- Surgical / extraction --- */
+    ins('forceps','Extraction forceps','Grasping & removing a tooth from the socket','🦷'),
+    ins('elevator','Periosteal elevator','Reflecting & lifting the gum tissue (periosteum) off the bone for access','🔧'),
+    ins('cheek-retractor','Cheek retractor','Holds the cheeks and lips back for access and visibility','🪝'),
+    ins('rongeurs','Rongeurs','Plier-like instrument that trims and removes sharp bone edges','🦴'),
+    ins('bone-file','Bone file','Smooths rough bone margins after an extraction','📁'),
+    ins('hemostat','Hemostat','Grasping & holding tissue, suture or items securely','🗜️'),
+    ins('scissors','Surgical scissors','Cutting suture, cord and soft tissue','✂️'),
+    ins('sutures','Sutures','Stitches that close the surgical site to aid healing','🪡'),
+    ins('surgical-curette','Surgical curette','Scooping granulation tissue & debris from the extraction socket','🥄')
   ];
   var INSTRUMENT_BY_ID = {}; INSTRUMENTS.forEach(function (i) { INSTRUMENT_BY_ID[i.id] = i; });
 
-  /* ---- Trays (procedure → required instruments) ---- */
+  /* ---- Trays (procedure → required instruments) ----
+     BASELINE (every procedure except extraction): high-speed handpiece,
+     low-speed handpiece, HVE tip, saliva ejector, air-water syringe tip,
+     2x2 gauze, cotton rolls, dri-aids. Extraction uses its own baseline
+     (gauze, air-water syringe, surgical suction). "x2" items (mirrors,
+     cotton pliers) are a single instrument id; the builder grades by id. */
   var TRAYS = [
     { id:'exam',       procedure:'Basic Exam',          image:IMG+'tray-exam.png',       requiredInstrumentIds:['mirror','explorer','cotton-pliers','periodontal-probe'] },
-    { id:'restorative',procedure:'Restorative Filling', image:IMG+'tray-restorative.png',requiredInstrumentIds:['mirror','explorer','cotton-pliers','spoon-excavator','condenser','carver','matrix-band','curing-light'] },
-    { id:'crownprep',  procedure:'Crown Preparation',   image:IMG+'tray-crownprep.png',  requiredInstrumentIds:['mirror','explorer','cotton-pliers','high-speed-handpiece','spoon-excavator','impression-tray'] },
-    { id:'crownseat',  procedure:'Crown Seat / Cementation', image:IMG+'tray-crownseat.png', requiredInstrumentIds:['mirror','explorer','cotton-pliers','condenser','scaler'] },
-    { id:'extraction', procedure:'Simple Extraction',   image:IMG+'tray-extraction.png', requiredInstrumentIds:['mirror','cotton-pliers','elevator','forceps','hemostat'] },
-    { id:'endo',       procedure:'Root Canal (Endo)',   image:IMG+'tray-endo.png',       requiredInstrumentIds:['mirror','explorer','cotton-pliers','spoon-excavator','low-speed-handpiece'] },
-    { id:'impression', procedure:'Impression',          image:IMG+'tray-impression.png', requiredInstrumentIds:['mirror','cotton-pliers','impression-tray','air-water-syringe'] },
-    { id:'hygiene',    procedure:'Hygiene / Cleaning',  image:IMG+'tray-hygiene.png',    requiredInstrumentIds:['mirror','explorer','periodontal-probe','scaler'] }
+    { id:'restorative',procedure:'Restorative Filling', image:IMG+'tray-restorative.png',requiredInstrumentIds:[
+      // baseline
+      'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
+      // restorative
+      'mirror','explorer-probe','spoon-excavator','cotton-pliers','condenser','matrix-band','articulating-paper','anesthetic-syringe',
+      'etch','bond','curing-light','composite','flowable-composite','shade-guide'] },
+    { id:'crown',      procedure:'Crown',               image:IMG+'tray-crownprep.png',  requiredInstrumentIds:[
+      // baseline
+      'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
+      // crown
+      'mirror','explorer-probe','spoon-excavator','cotton-pliers','condenser','cb-scissors','retraction-cord','cord-packer','ferric-sulfate',
+      'articulating-paper','anesthetic-syringe','heavy-body','light-body','bite-registration','temp-crown-material','impression-tray',
+      'floss','cement','curing-light','shade-guide','cotton-pellets'] },
+    { id:'endo',       procedure:'Root Canal (Endo)',   image:IMG+'tray-endo.png',       requiredInstrumentIds:[
+      // baseline
+      'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
+      // endo
+      'mirror','endo-explorer','dental-dam','dam-frame','dam-punch','dam-clamp','endo-files','barbed-broach','apex-locator',
+      'endo-measuring-block','rubber-stoppers','irrigation-syringe','paper-points','gutta-percha','root-canal-sealer','endo-plugger','glick','cavit'] },
+    { id:'extraction', procedure:'Simple Extraction',   image:IMG+'tray-extraction.png', requiredInstrumentIds:[
+      // extraction baseline
+      'gauze','air-water-syringe','surgical-suction',
+      // extraction
+      'cheek-retractor','rongeurs','bone-file','elevator','forceps','hemostat','scissors','sutures','surgical-curette'] }
   ];
 
   /* ====================================================================

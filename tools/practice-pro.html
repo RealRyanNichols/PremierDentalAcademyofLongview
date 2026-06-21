@@ -2279,9 +2279,12 @@
   function renderTooth(num, marks, isUpper) {
     // 5-surface SQUARE crown (y3-53) + anatomy-sized root(s) below (y52-87).
     // Molars biggest (2 roots), bicuspids 2 roots just under molars, canine
-    // longest single, incisors single sized like a bicuspid. Mandibular arch
-    // flips vertically. Text (SSC, sealant S) is drawn outside the flip so it
-    // always reads upright. Surface hit zones keep click-to-mark working.
+    // longest single, incisors single sized like a bicuspid. The MAXILLARY arch
+    // flips vertically (so its roots point UP/buccal, away from the midline);
+    // the mandibular arch is un-flipped (its roots stay DOWN/buccal). See the
+    // `flip` assignment below for the full orientation rationale. Text (SSC,
+    // sealant S) is drawn outside the flip so it always reads upright. Surface
+    // hit zones keep click-to-mark working.
     const m = marks || {};
     const center = isAnterior(num) ? 'I' : 'O';
     const baseZones = {
@@ -2349,12 +2352,21 @@
                   : '<path d="M36 28 L12 28 M19 22 L12 28 L19 34" stroke="' + wCol + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'; }
     if (frac) ov += '<path d="M31 8 L23 30 L29 30 L21 52 L37 26 L30 26 Z" fill="' + statusColor(frac.status) + '" stroke="#fff" stroke-width="0.6" stroke-linejoin="round" pointer-events="none"/>';
 
-    const ty = isUpper ? 33 : 64;
+    const ty = isUpper ? 64 : 33;
     let txt = '';
     if (wType === 'ssc') txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="' + wCol + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>';
     if (seal) txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="800" fill="' + statusColor(seal.status) + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>';
 
-    const flip = isUpper ? '' : 'transform="translate(0,88) scale(1,-1)"';
+    // Roots point OUTWARD from the chart's horizontal centerline (the midline
+    // between the arches): maxillary roots UP / crown DOWN toward the midline;
+    // mandibular roots DOWN / crown UP toward the midline. The base drawing has
+    // crown-up (box y3-53) / root-down (y52-87), so we FLIP the MAXILLARY arch
+    // (crown to the bottom = toward midline, root to the top = buccal/outward)
+    // and leave the MANDIBULAR arch un-flipped (root stays at the bottom =
+    // buccal/outward, crown at the top = toward midline). The `ty` text offset
+    // above tracks the crown box: maxillary crown now sits at the bottom (ty=64),
+    // mandibular crown at the top (ty=33).
+    const flip = isUpper ? 'transform="translate(0,88) scale(1,-1)"' : '';
     return '' +
       '<div class="tooth flex flex-col items-center" data-tooth="' + num + '" title="#' + num + ' — ' + toothLabel(num) + '">' +
         '<svg viewBox="0 0 56 88" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">' +
