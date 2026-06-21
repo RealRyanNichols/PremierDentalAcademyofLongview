@@ -9,6 +9,7 @@
     "check:analytics": "node scripts/check-analytics.mjs",
     "check:seo": "node scripts/check-seo.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
-    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs"
+    "check:sitemap": "node scripts/check-sitemap.mjs",
+    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs"
   }
 }
