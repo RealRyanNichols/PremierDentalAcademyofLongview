@@ -91,6 +91,8 @@
     { href: '/skills-lab#transcript', label: 'Transcript', key: 'transcript' }
   ];
   function headerHTML(active) {
+    // Fire a tool_start once analytics is available (pda-analytics loads deferred).
+    try { setTimeout(function () { if (window.PDA && window.PDA.track) window.PDA.track('tool_start', { tool: active || 'skills-lab' }); }, 600); } catch (e) {}
     return '' +
       '<style>.sl-subnav{display:flex;gap:.25rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}.sl-subnav::-webkit-scrollbar{display:none}.sl-subnav>a{flex:0 0 auto;white-space:nowrap}</style>' +
       '<header class="bg-navy-900 text-white">' +
@@ -102,7 +104,8 @@
       '    </a>' +
       '    <nav class="ml-auto flex items-center gap-1 sm:gap-3 text-sm">' +
       '      <a href="https://www.premierdentalacademyoflongview.com/" class="px-2 sm:px-3 py-1.5 rounded-lg text-slate-300 hover:text-white hover:bg-white/10 transition whitespace-nowrap">&larr; Main site</a>' +
-      '      <a href="/employers" class="px-2 sm:px-3 py-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition whitespace-nowrap">For Dental Offices</a>' +
+      '      <a href="/employers" data-event="employer_click" class="hidden sm:inline-flex px-3 py-1.5 rounded-lg bg-white/10 text-white hover:bg-white/20 transition whitespace-nowrap">For Dental Offices</a>' +
+      '      <a href="/enroll" data-event="enroll_click" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold transition whitespace-nowrap">Enroll</a>' +
       '    </nav>' +
       '  </div>' +
       '  <div class="border-t border-white/10"><div class="max-w-6xl mx-auto px-2 sm:px-6 flex gap-1 overflow-x-auto sl-subnav">' +
@@ -115,7 +118,16 @@
       '</header>';
   }
   function footerHTML() {
-    return '<footer class="border-t border-slate-200 mt-10 py-6 text-center text-xs text-slate-400">' +
+    return '' +
+      '<div class="mt-10 border-t border-slate-200 bg-white"><div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 text-center">' +
+      '<div class="display text-xl font-bold text-navy-900">Ready to make it official?</div>' +
+      '<p class="text-slate-500 text-sm mt-1">The Skills Lab is your practice ground — our program turns it into a credential and a job.</p>' +
+      '<div class="mt-4 flex flex-wrap gap-2 justify-center">' +
+      '<a href="/apply" data-event="apply_click" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 text-sm transition">Apply free &rarr;</a>' +
+      '<a href="/enroll" data-event="enroll_click" class="rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold px-5 py-2.5 text-sm transition">See enrollment</a>' +
+      '<a href="/tools/practice-exam" data-event="practice_exam_click" class="rounded-xl border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 text-sm transition">Free practice exam</a>' +
+      '</div></div></div>' +
+      '<footer class="border-t border-slate-200 py-6 text-center text-xs text-slate-400">' +
       'Premier Dental Academy of Longview &middot; Skills Lab &middot; Your progress is saved on this device.</footer>';
   }
 
