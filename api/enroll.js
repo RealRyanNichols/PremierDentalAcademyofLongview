@@ -73,14 +73,18 @@ function addDays(isoDate, days) {
   return d.toISOString().slice(0, 10);
 }
 
-// Add whole calendar months keeping the SAME day-of-month. Built at UTC noon so
-// DST/UTC rollover can never bump the result onto the previous/next day. We do
-// NOT clamp short months here because our monthly plan only steps +1 and +2
-// months from a first-Friday date (1st–7th of the month), which always exists
-// in every later month — so no Feb-30 style overflow is possible.
+// Add whole calendar months keeping the SAME day-of-month, CLAMPED to the last
+// day of the target month so a late start date can never overflow into the next
+// month. The first Friday on/after a buyer-chosen start can fall on the 29th–
+// 31st, and e.g. Jan 31 + 1 month must become Feb 28/29 — not Mar 2/3. Built at
+// UTC noon so DST/UTC rollover can never bump the result onto an adjacent day.
 function addMonths(isoDate, months) {
   const d = new Date(isoDate + 'T12:00:00Z');
+  const targetDom = d.getUTCDate();
+  d.setUTCDate(1);                              // park on the 1st before shifting months
   d.setUTCMonth(d.getUTCMonth() + months);
+  const lastDom = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(targetDom, lastDom));   // clamp (e.g. 31 → 28/29/30)
   return d.toISOString().slice(0, 10);
 }
 
