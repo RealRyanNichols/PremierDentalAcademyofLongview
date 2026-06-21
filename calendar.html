@@ -130,7 +130,7 @@
   </div>
 
   <!-- Online = start any time. Slim secondary banner. -->
-  <a href="/enroll?plan=online" class="mb-8 sm:mb-10 flex items-center gap-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-md transition relative">
+  <a href="/enroll?plan=online" data-event="enroll_click" class="mb-8 sm:mb-10 flex items-center gap-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-md transition relative">
     <span class="absolute -top-2 left-3 bg-amber-400 text-rose-900 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full animate-pulse">🔥 Limited time</span>
     <span class="text-xl shrink-0">💻</span>
     <span class="flex-1 min-w-0"><strong>Online program — $397 one-time</strong> <span class="line-through opacity-70 text-sm">$997</span> · Start any day. No class schedule.</span>
@@ -146,8 +146,9 @@
     <h2 class="display text-2xl sm:text-3xl font-bold">Don't see a date that fits?</h2>
     <p class="mt-2 text-base">Call Amanda — she'll get you on the next list.</p>
     <div class="mt-5 flex flex-wrap gap-3 justify-center">
-      <a href="tel:+19039136444" class="bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold px-5 py-2.5 rounded-lg">📞 (903) 913-6444</a>
-      <a href="/apply" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-5 py-2.5 rounded-lg">Apply free →</a>
+      <a href="tel:+19039136444" data-event="call_click" class="bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold px-5 py-2.5 rounded-lg">📞 (903) 913-6444</a>
+      <a href="/waitlist" data-event="waitlist_click" class="bg-slate-900/10 hover:bg-slate-900/20 text-slate-900 font-bold px-5 py-2.5 rounded-lg border border-slate-900/20">Join the waitlist</a>
+      <a href="/apply" data-event="apply_click" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-5 py-2.5 rounded-lg">Apply free →</a>
     </div>
   </div>
 </main>
@@ -192,8 +193,8 @@ function cardHTML(c) {
   const end     = c.end_date ? fmtShort(c.end_date) : 'TBD';
   const daysLabel = daysOut === 0 ? 'starts today' : daysOut === 1 ? 'starts tomorrow' : `${daysOut} days away`;
   const cta = seats.full
-    ? `<a href="/apply" class="flex-1 text-center bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-sm">Join waitlist</a>`
-    : `<a href="/enroll?cohort=${c.id}" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-lg text-sm">Reserve seat →</a>`;
+    ? `<a href="/waitlist" data-event="waitlist_click" class="flex-1 text-center bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-sm">Join waitlist</a>`
+    : `<a href="/enroll?cohort=${c.id}" data-event="enroll_click" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-lg text-sm">Reserve seat →</a>`;
 
   const cardModifier = seats.full ? 'full' : seats.urgent ? 'urgent' : '';
 
@@ -253,7 +254,7 @@ function cardHTML(c) {
       </div>
       <div class="mt-4 flex gap-2">
         ${cta}
-        <a href="tel:+19039136444" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm" aria-label="Call PDA">📞</a>
+        <a href="tel:+19039136444" data-event="call_click" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm" aria-label="Call PDA">📞</a>
       </div>
     </div>
   </div>`;
