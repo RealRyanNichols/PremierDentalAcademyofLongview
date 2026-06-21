@@ -132,7 +132,8 @@
 
 <script>
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  let sb = null;
+  try { if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'); } catch (e) {}
 
   // ── Live urgency from the real next cohort ──
   try {
@@ -166,10 +167,10 @@
 
   // ── Save-my-seat form ──
   const form = document.getElementById('seat-form');
-  form.addEventListener('submit', async (e) => {
+  if (form) form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = form.querySelector('button[type=submit]');
-    btn.disabled = true; btn.textContent = 'Saving…';
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
     const fd = new FormData(form);
     const lead = {
       first_name: fd.get('first_name'),
@@ -178,10 +179,27 @@
       message: 'Night-class lead · interest: ' + (fd.get('fit') || 'unspecified'),
       source: 'night-class',
     };
-    try { await sb.from('leads').insert(lead); } catch (e) {}
-    try { window.pda && window.pda.track && window.pda.track('night_class_lead'); } catch (e) {}
+    let saved = false;
+    if (sb) {
+      try {
+        const { error } = await sb.from('leads').insert(lead);
+        saved = !error;
+        if (error) console.error('[night-class] insert error:', error.message);
+      } catch (err) { console.error('[night-class] insert threw:', err); }
+    }
+    if (!saved) {
+      // Never lose a lead — stash locally as a backup if the DB write failed.
+      try {
+        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+        existing.push({ ...lead, created_at: new Date().toISOString() });
+        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
+      } catch (e) {}
+    }
+    // Was window.pda (lowercase) — the global is window.PDA, so this never fired.
+    try { if (window.PDA && window.PDA.track) window.PDA.track('night_class_lead', { program: lead.interest_path, saved: saved }); } catch (e) {}
     form.classList.add('hidden');
-    document.getElementById('seat-done').classList.remove('hidden');
+    const done = document.getElementById('seat-done');
+    if (done) done.classList.remove('hidden');
   });
 })();
 </script>

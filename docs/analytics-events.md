@@ -30,7 +30,8 @@ const attr = window.PDA.attribution(); // { utm_source, utm_medium, ..., referre
 `practice_exam_start` · `practice_exam_complete` · `practice_exam_lead_submit` ·
 `study_guide_submit` · `salary_calculator_used` · `salary_email_submit` · `skill_lab_open` ·
 `tool_start` · `tool_complete` · `employer_request_submit` · `graduate_transcript_print` ·
-`blog_cta_click` · `location_page_cta_click` · `enroll_plan_selected` · `apply_instead_click`
+`blog_cta_click` · `location_page_cta_click` · `enroll_plan_selected` · `apply_instead_click` ·
+`night_class_lead` · `course_completion`
 
 ### Revenue funnel (enroll.html)
 - `begin_checkout` — fires when a buyer submits the payment form (card about to be charged).
