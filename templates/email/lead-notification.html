@@ -1,0 +1,23 @@
+<!-- New-lead notification → Amanda. Placeholders: {{first_name}} {{last_name}}
+     {{email}} {{phone}} {{interest_path}} {{message}} {{source}} {{created_at}}.
+     Canonical copy; the lead-notify edge function inlines a matching version. -->
+<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#0f172a">
+  <div style="background:#0d9488;color:#fff;padding:18px 24px;border-radius:12px 12px 0 0">
+    <h1 style="margin:0;font-size:18px">🦷 New lead — {{first_name}} {{last_name}}</h1>
+    <p style="margin:4px 0 0;font-size:13px;opacity:.9">via {{source}} · {{created_at}}</p>
+  </div>
+  <div style="border:1px solid #e2e8f0;border-top:0;border-radius:0 0 12px 12px;padding:24px">
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr><td style="padding:6px 0;color:#64748b;width:120px">Name</td><td style="padding:6px 0;font-weight:600">{{first_name}} {{last_name}}</td></tr>
+      <tr><td style="padding:6px 0;color:#64748b">Phone</td><td style="padding:6px 0"><a href="tel:{{phone}}" style="color:#0d9488;font-weight:600">{{phone}}</a></td></tr>
+      <tr><td style="padding:6px 0;color:#64748b">Email</td><td style="padding:6px 0"><a href="mailto:{{email}}" style="color:#0d9488">{{email}}</a></td></tr>
+      <tr><td style="padding:6px 0;color:#64748b">Interest</td><td style="padding:6px 0">{{interest_path}}</td></tr>
+      <tr><td style="padding:6px 0;color:#64748b;vertical-align:top">Details</td><td style="padding:6px 0;color:#334155">{{message}}</td></tr>
+    </table>
+    <div style="margin-top:20px;text-align:center">
+      <a href="tel:{{phone}}" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">📞 Call now</a>
+      <a href="https://www.premierdentalacademyoflongview.com/admin/leads" style="display:inline-block;background:#0f172a;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">Open in admin</a>
+    </div>
+    <p style="margin:18px 0 0;font-size:12px;color:#94a3b8;text-align:center">Tip: leads convert best when you reach out within the first hour.</p>
+  </div>
+</div>
