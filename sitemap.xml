@@ -4,6 +4,9 @@
   <url><loc>https://premierdentalacademyoflongview.com/about</loc><priority>0.8</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/enroll</loc><priority>0.9</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/apply</loc><priority>0.9</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/waitlist</loc><priority>0.6</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/tour</loc><priority>0.7</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/study-guide</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/contact</loc><priority>0.7</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/calendar</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/classes</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
@@ -13,6 +16,8 @@
   <url><loc>https://premierdentalacademyoflongview.com/become-a-dental-assistant-in-texas</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-tyler-tx</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/hiring-partners</loc><priority>0.7</priority></url>
+  <url><loc>https://premierdentalacademyoflongview.com/employers</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/employers/request-graduate</loc><priority>0.5</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/teach</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog/how-to-pass-the-rda-exam-study-plan</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
