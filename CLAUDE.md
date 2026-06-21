@@ -99,6 +99,30 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 - After any deploy, confirm these return HTTP 200:
   /, /night-class, /dashboard, /login, /enroll, /api/enroll, /admin.
 
+## Dev quality gates (2026 site upgrade)
+`npm test` runs five static validators (no build step) — run before every push:
+- `check:facts` — business facts in `assets/site-facts.js` (`window.PDA_FACTS`); fails on
+  blank facts, warns on owner-confirmation items (`docs/known-decisions-needed.md`).
+- `check:links` — internal links resolve (cleanUrls-aware).
+- `check:analytics` — `assets/pda-analytics.js` loads + is no-op safe.
+- `check:seo` — every indexable page has static title/description/canonical + OG.
+- `check:a11y` — `<html lang>`, viewport, `<img alt>`, single `<h1>`.
+
+Shared client modules (auto-loaded site-wide by `assets/pda-nav.js`):
+- `pda-nav.js` — canonical nav + shared footer; also loads site-facts & analytics.
+- `pda-analytics.js` — `window.PDA.track()` + UTM attribution; auto-fires on any
+  `[data-event]` element. Event names + provider setup: `docs/analytics-events.md`.
+- `site-facts.js` — single source of truth for name/address/phone/pricing/length.
+
+Lead capture: `/apply`, `/waitlist`, `/tour`, `/study-guide`,
+`/employers/request-graduate`, and the practice-exam unlock all insert into `public.leads`
+(anon key, public INSERT RLS) with a honeypot + UTM attribution folded into the
+admin-visible `message`. New-lead emails are built but OFF until deployed —
+`docs/lead-email-runbook.md`. Full pre-launch checklist: `docs/launch-qa.md`.
+
+NOTE: hosting/CI is on GitHub now (PRs auto-deploy via Vercel); the GitLab notes above
+are historical.
+
 ## To continue building
 Describe what you want. This file is your memory: read the repo, propose a short
 plan, then make focused changes that follow the rules above.
