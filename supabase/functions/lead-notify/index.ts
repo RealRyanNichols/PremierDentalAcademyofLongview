@@ -1,28 +1,41 @@
-// lead-notify — emails Amanda a new-lead alert and sends the applicant an
-// autoresponder, via Resend. Source-of-truth templates live in
-// templates/email/lead-notification.html and applicant-autoresponder.html;
-// the inline copies below must be kept in sync with them.
+// lead-notify — fires on a new public.leads insert (via the notify_new_lead trigger,
+// pg_net). Emails Amanda a new-lead alert and sends genuine prospects an autoresponder,
+// via Resend. Deployed + wired live (see db/migrations + docs/lead-email-runbook.md).
 //
-// ⚠️ NOT DEPLOYED YET. To turn it on, follow docs/lead-email-runbook.md
-// (deploy the function, ensure RESEND_API_KEY is set, and add a Supabase
-// Database Webhook on INSERT into public.leads pointing at this function).
+// Auth: requires ?secret=<LEAD_NOTIFY_SECRET> (from public.app_secrets). verify_jwt is off
+// because the Postgres trigger calls it server-side via pg_net, not with a user JWT.
+// Secrets (public.app_secrets): RESEND_API_KEY, LEAD_NOTIFY_SECRET.
+// Platform-provided: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
 //
-// Trigger payload: a Supabase Database Webhook sends { type, table, record, ... }.
-// It also accepts a plain lead object for manual testing.
+// Routing rules:
+//   - Quo leads (source contains "quo") are skipped — the Quo webhook already notifies.
+//   - Admin alert → Amanda for every other lead.
+//   - Applicant autoresponder → only genuine prospects with an email (NOT employer leads,
+//     whose copy would be wrong).
 
-import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from "npm:@supabase/supabase-js@2";
 
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const RESEND_FROM_ENV = Deno.env.get("RESEND_API_KEY");
 const FROM = "Amanda at Premier Dental Academy <hello@premierdentalacademyoflongview.com>";
-const ADMIN_EMAIL = "hello@premierdentalacademyoflongview.com"; // where new-lead alerts go
+const ADMIN_EMAIL = "hello@premierdentalacademyoflongview.com";
 const ADMIN_LEADS_URL = "https://www.premierdentalacademyoflongview.com/admin/leads";
 
-function esc(s: unknown): string {
-  return String(s ?? "").replace(/[&<>"]/g, (c) =>
-    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+const json = (o: unknown, s = 200) =>
+  new Response(JSON.stringify(o), { status: s, headers: { "content-type": "application/json" } });
+const esc = (x: unknown) =>
+  String(x ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
+function safeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) return false;
+  let o = 0;
+  for (let i = 0; i < a.length; i++) o |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return o === 0;
 }
 
 function notifyHtml(l: Record<string, unknown>): string {
-  const name = `${esc(l.first_name)} ${esc(l.last_name)}`.trim();
+  const name = (esc(l.first_name) + " " + esc(l.last_name)).trim();
   return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#0f172a">
   <div style="background:#0d9488;color:#fff;padding:18px 24px;border-radius:12px 12px 0 0">
     <h1 style="margin:0;font-size:18px">🦷 New lead — ${name}</h1>
@@ -33,7 +46,7 @@ function notifyHtml(l: Record<string, unknown>): string {
       <tr><td style="padding:6px 0;color:#64748b;width:120px">Phone</td><td style="padding:6px 0"><a href="tel:${esc(l.phone)}" style="color:#0d9488;font-weight:600">${esc(l.phone)}</a></td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Email</td><td style="padding:6px 0"><a href="mailto:${esc(l.email)}" style="color:#0d9488">${esc(l.email)}</a></td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Interest</td><td style="padding:6px 0">${esc(l.interest_path)}</td></tr>
-      <tr><td style="padding:6px 0;color:#64748b;vertical-align:top">Details</td><td style="padding:6px 0;color:#334155">${esc(l.message)}</td></tr>
+      <tr><td style="padding:6px 0;color:#64748b;vertical-align:top">Details</td><td style="padding:6px 0;color:#334155;white-space:pre-wrap">${esc(l.message)}</td></tr>
     </table>
     <div style="margin-top:20px;text-align:center">
       <a href="tel:${esc(l.phone)}" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">📞 Call now</a>
@@ -51,7 +64,7 @@ function autoresponderHtml(firstName: string): string {
   </div>
   <div style="border:1px solid #e2e8f0;border-radius:14px;padding:28px 26px;margin:8px">
     <h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 12px">Thanks, ${fn} — we've got you. 🎉</h1>
-    <p style="font-size:15px;line-height:1.6;color:#334155;margin:0 0 14px">I'm Amanda, the founder of Premier Dental Academy of Longview. Someone from our team will personally call you within <strong>1 business day</strong> — no payment or commitment required.</p>
+    <p style="font-size:15px;line-height:1.6;color:#334155;margin:0 0 14px">I'm Amanda, the founder of Premier Dental Academy of Longview. Someone from our team will personally reach out within <strong>1 business day</strong> — no payment or commitment required.</p>
     <div style="text-align:center;margin:0 0 18px">
       <a href="https://www.premierdentalacademyoflongview.com/tools/practice-exam" style="display:inline-block;background:#0d9488;color:#fff;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;margin:4px">Try the free practice exam →</a>
     </div>
@@ -61,39 +74,55 @@ function autoresponderHtml(firstName: string): string {
 </div>`;
 }
 
-async function sendEmail(apiKey: string, to: string, subject: string, html: string) {
-  const res = await fetch("https://api.resend.com/emails", {
+async function sendEmail(apiKey: string, to: string, subject: string, html: string): Promise<boolean> {
+  const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
-    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+    headers: { Authorization: "Bearer " + apiKey, "content-type": "application/json" },
     body: JSON.stringify({ from: FROM, to, subject, html }),
   });
-  if (!res.ok) console.error("[lead-notify] Resend error:", res.status, await res.text());
-  return res.ok;
+  if (!r.ok) console.error("[lead-notify] Resend error", r.status, await r.text());
+  return r.ok;
 }
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   try {
-    const apiKey = Deno.env.get("RESEND_API_KEY");
-    if (!apiKey) return new Response("missing RESEND_API_KEY", { status: 500 });
+    const url = new URL(req.url);
+    const sb = createClient(SUPABASE_URL, SERVICE_KEY);
+    const { data: rows } = await sb.from("app_secrets").select("key,value").in("key", ["RESEND_API_KEY", "LEAD_NOTIFY_SECRET"]);
+    const cfg: Record<string, string> = {};
+    (rows || []).forEach((r: { key: string; value: string }) => (cfg[r.key] = r.value));
+
+    const SECRET = cfg["LEAD_NOTIFY_SECRET"] || "";
+    const provided = url.searchParams.get("secret") || req.headers.get("x-lead-secret") || "";
+    if (!SECRET || !safeEqual(provided, SECRET)) return json({ error: "unauthorized" }, 401);
+
+    const apiKey = cfg["RESEND_API_KEY"] || RESEND_FROM_ENV || "";
+    if (!apiKey) return json({ error: "missing RESEND_API_KEY" }, 200);
 
     const body = await req.json().catch(() => ({}));
-    const lead = (body.record ?? body) as Record<string, unknown>;
-    if (!lead || (!lead.email && !lead.phone)) return new Response("no lead", { status: 200 });
+    const lead = (body && (body as Record<string, unknown>).record) ? (body as Record<string, unknown>).record as Record<string, unknown> : body as Record<string, unknown>;
+    if (!lead || (!lead.email && !lead.phone)) return json({ skipped: "no contact info" }, 200);
 
-    // Notify Amanda. Never block on the autoresponder.
+    const src = String(lead.source || "").toLowerCase();
+    const interest = String(lead.interest_path || "").toLowerCase();
+    if (src.includes("quo")) return json({ skipped: "quo notifies separately" }, 200);
+    const isEmployer = src.includes("employer") || interest.includes("employer");
+
+    // Admin alert for every non-Quo lead.
     await sendEmail(apiKey, ADMIN_EMAIL,
-      `New lead: ${esc(lead.first_name)} ${esc(lead.last_name)} (${esc(lead.source)})`,
+      "New lead: " + esc(lead.first_name) + " " + esc(lead.last_name) + " (" + esc(lead.source) + ")",
       notifyHtml(lead));
 
-    // Autoresponder to the applicant (only if they gave an email).
-    if (lead.email) {
-      await sendEmail(apiKey, String(lead.email),
+    // Applicant autoresponder — genuine prospects only (employer copy would be wrong).
+    let sentAuto = false;
+    if (lead.email && !isEmployer) {
+      sentAuto = await sendEmail(apiKey, String(lead.email),
         "We got your application — Premier Dental Academy of Longview",
-        autoresponderHtml(String(lead.first_name ?? "")));
+        autoresponderHtml(String(lead.first_name || "")));
     }
-    return new Response("ok", { status: 200 });
+    return json({ ok: true, admin: true, autoresponder: sentAuto }, 200);
   } catch (e) {
     console.error("[lead-notify] threw:", e);
-    return new Response("error", { status: 200 }); // never retry-storm the pipeline
+    return json({ error: "caught" }, 200); // never retry-storm the pipeline
   }
 });
