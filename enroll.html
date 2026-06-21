@@ -641,6 +641,10 @@ async function initSquare() {
 
 async function pickPlan(plan) {
   state.plan = plan;
+  // Funnel: which plan the buyer selected (the step between landing and checkout).
+  try {
+    if (window.PDA && window.PDA.track) window.PDA.track('enroll_plan_selected', { plan: plan });
+  } catch (e) {}
   document.getElementById('co-plan-name').textContent = PLAN_DEFS[plan].name;
   document.getElementById('checkout').hidden = false;
   // Online is a $397 one-time payment with no class schedule — hide the
