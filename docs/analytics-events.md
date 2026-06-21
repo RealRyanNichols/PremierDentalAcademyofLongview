@@ -26,11 +26,23 @@ const attr = window.PDA.attribution(); // { utm_source, utm_medium, ..., referre
 
 ## Standard event names
 `page_view` · `apply_click` · `application_submit` · `waitlist_submit` · `tour_submit` ·
-`call_click` · `email_click` · `enroll_click` · `checkout_start` · `practice_exam_start` ·
-`practice_exam_complete` · `practice_exam_lead_submit` · `study_guide_submit` ·
-`salary_calculator_used` · `salary_email_submit` · `skill_lab_open` · `tool_start` ·
-`tool_complete` · `employer_request_submit` · `graduate_transcript_print` ·
-`blog_cta_click` · `location_page_cta_click` · `enroll_plan_selected` · `apply_instead_click`
+`call_click` · `email_click` · `enroll_click` · `begin_checkout` · `purchase` ·
+`practice_exam_start` · `practice_exam_complete` · `practice_exam_lead_submit` ·
+`study_guide_submit` · `salary_calculator_used` · `salary_email_submit` · `skill_lab_open` ·
+`tool_start` · `tool_complete` · `employer_request_submit` · `graduate_transcript_print` ·
+`blog_cta_click` · `location_page_cta_click` · `enroll_plan_selected` · `apply_instead_click` ·
+`night_class_lead` · `course_completion`
+
+### Revenue funnel (enroll.html)
+- `begin_checkout` — fires when a buyer submits the payment form (card about to be charged).
+  Props: `plan`, `downCents`, `cadence`, `cohort`.
+- `purchase` — fires on a **confirmed** successful charge, just before the redirect to
+  `/enroll-success`. Props: `plan`, `value` (USD total), `currency`, `downCents`,
+  `remainingCents`, `cohort`. Both `begin_checkout` and `purchase` are GA4/Meta **standard
+  ecommerce** event names, so providers treat `purchase` as a conversion automatically.
+  The `purchase` call is wrapped in try/catch — it can never throw after a charge.
+- `tool_start` — fires from the student dashboard's tool CTAs (Practice Pro, ChairSide,
+  Flashcards, Practice Exam, Skills Lab stations). The tool is identified by the link href.
 
 ## Lead attribution (UTM)
 - On every page load, `utm_source/medium/campaign/content/term` from the URL are saved to

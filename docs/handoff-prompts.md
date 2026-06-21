@@ -7,41 +7,40 @@ self-contained.
 
 ---
 
-## Prompt 1 — Verify & polish the student dashboard (needs a logged-in session)
+## Prompt 1 — Verify the student dashboard in a browser (the code fix is DONE)
+
+**The nav conflict + tracking were fixed in code (see "What was already done" below).** This
+prompt is now just a logged-in VISUAL verification — the only part that genuinely needs a
+real browser session. If it all looks right, there's nothing to change.
 
 ```
 You're working on the Premier Dental Academy of Longview site (static HTML + Tailwind +
-Supabase, hosted on Vercel; repo branch claude/nifty-babbage-qzf2ay). Log in as a STUDENT
-at https://www.premierdentalacademyoflongview.com/login (use a real student account or have
-Amanda seed one) and open /dashboard. Then verify and fix the student hub:
+Supabase, hosted on Vercel; repo branch claude/nifty-babbage-qzf2ay). The student-dashboard
+nav conflict was already FIXED in code: assets/pda-nav.js now honors a data-pda-keep
+attribute (it skips replacing the nav + skips the prospect chrome, but still loads analytics
+and renders the shared footer), and dashboard.html's student <nav> carries data-pda-keep.
+Tool CTAs on the dashboard now have data-event="tool_start". Your job is to log in as a
+STUDENT at https://www.premierdentalacademyoflongview.com/login (use a real student account
+or have Amanda seed one), open /dashboard, and VERIFY it renders correctly:
 
-CONTEXT / KNOWN ISSUE: dashboard.html ships its own student top-bar as the page's first
-<nav> (avatar menu, Dashboard/Practice Pro/ChairSide/Flashcards/Support, sign-out). But
-assets/pda-nav.js REPLACES the first <nav> on every page with the marketing nav. So on the
-dashboard, the student bar may be getting swapped for the prospect nav (Programs/Calendar/
-Free tools/Enroll…). The dashboard JS was just null-guarded so it no longer crashes either
-way — but the right UX is undecided.
+1. Confirm the STUDENT top-bar renders (logo, Dashboard/Practice Pro/ChairSide/Flashcards/
+   Support, avatar circle) — NOT the marketing nav (Programs/Calendar/Free tools/Enroll).
+   Open the dev console and confirm zero errors.
+2. Click the avatar → dropdown opens (name/email, Account settings, Get help, Sign out).
+   Click "Sign out" → lands on /logout and the session clears. (These were dead before the
+   fix because the nav was being swapped out; confirm they now work.)
+3. Confirm the "Admin dashboard" link in the avatar dropdown shows ONLY for admins.
+4. Confirm the rest of the hub populates: the Kajabi "My courses" library loads
+   (kajabi-my-courses edge function), the stat tiles (actions/patients/streak) and the
+   achievement level show real values, and the feedback widget mounts.
+5. Confirm the shared dark footer now appears at the bottom of /dashboard (Programs / Free
+   trainers / More / Privacy / Terms), and that the mobile "Apply now" bar + exit-intent
+   modal do NOT appear on the dashboard.
+6. Only if you find a defect: fix it, run `npm test` (must stay green: facts, links,
+   analytics, seo, a11y, sitemap), commit as Ryan Nichols
+   <hello@premierdentalacademyoflongview.com>, PR, and squash-merge to main.
 
-DO:
-1. Confirm what actually renders on /dashboard: the custom student bar, or the marketing nav?
-   Open dev console and check for errors.
-2. Decide the intended nav for logged-in students and make it consistent. Recommended: keep
-   the purpose-built STUDENT bar on /dashboard (Dashboard, the trainers, Support, avatar/
-   sign-out) and do NOT show the prospect marketing nav there. Implement by either:
-     (a) giving pda-nav.js a "skip replacement" rule (e.g. honor a data-pda-keep attribute on
-         the existing <nav>, and skip injecting the marketing mobile menu/CTA bar there), or
-     (b) removing pda-nav.js from dashboard.html and giving it its own footer/analytics include.
-   Whichever keeps the student bar intact AND still loads analytics (pda-analytics.js).
-3. Verify the rest of the hub works logged in: avatar dropdown opens, Sign out → /logout,
-   admin link shows only for admins, the Kajabi "My courses" library loads (kajabi-my-courses
-   edge function), the stat tiles (actions/patients/streak) and achievement level populate,
-   and the feedback widget mounts.
-4. Add data-event tracking to the dashboard's primary tool CTAs (e.g. data-event="tool_start"
-   with the tool name) so engagement is captured by the analytics layer.
-5. Run `npm test` (must stay green: facts, links, analytics, seo, a11y, sitemap), commit as
-   Ryan Nichols <hello@premierdentalacademyoflongview.com>, PR, and squash-merge to main.
-
-Report what rendered before/after and exactly what you changed.
+Report what rendered and whether anything needed changing.
 ```
 
 ---
@@ -78,8 +77,21 @@ run `npm test` (must stay green), commit as Ryan Nichols
 
 ---
 
-### Status of these items in the headless work
-- The dashboard JS was hardened (null-guards) so it can't crash — but the nav-strategy + the
-  logged-in verification are in Prompt 1.
+### What was already done (headless) for Prompt 1
+- **Nav conflict fixed.** `assets/pda-nav.js` now honors a `data-pda-keep` attribute on a
+  page's `<nav>`: it skips replacing that nav and skips injecting the prospect chrome
+  (marketing nav, mobile menu, Call/Apply bar, urgency bar, exit-intent), but STILL loads
+  analytics + site-facts and renders the shared footer. `dashboard.html`'s student `<nav>`
+  now carries `data-pda-keep`.
+- **This also restored two dead controls.** Because the student bar was previously being
+  swapped out, the avatar dropdown and Sign-out button had nothing to bind to (their JS was
+  null-guarded, so it silently no-op'd). With the bar preserved, they work again.
+- **Tracking added.** The dashboard's primary tool CTAs (hero buttons + the "Continue
+  learning" grid + the Skills Lab grid) now carry `data-event="tool_start"`; the analytics
+  layer auto-captures the tool from each link's href.
+- **The dashboard also gained the shared footer** (it previously had none).
+- Remaining in Prompt 1 = a logged-in BROWSER spot-check only.
+
+### Status of Prompt 2
 - No business facts were invented. They remain flagged in `assets/site-facts.js`
   (`check:facts` warnings) and `docs/known-decisions-needed.md` until confirmed via Prompt 2.

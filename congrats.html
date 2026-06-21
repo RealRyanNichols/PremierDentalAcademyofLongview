@@ -148,10 +148,13 @@
     root.appendChild(s);
   }
 
-  // Log the completion for analytics (best-effort)
-  if (window.pda?.track) {
-    window.pda.track('course_completion', { course: courseName, student: studentName });
-  }
+  // Log the completion for analytics (best-effort).
+  // Was window.pda (lowercase) — the global is window.PDA, so this never fired.
+  try {
+    if (window.PDA && window.PDA.track) {
+      window.PDA.track('course_completion', { course: courseName, student: studentName });
+    }
+  } catch (e) {}
 })();
 </script>
 </body>

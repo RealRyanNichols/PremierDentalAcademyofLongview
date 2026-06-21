@@ -1,19 +1,20 @@
 /* ============================================================================
    SKILLS LAB · STORE (the single seam to swap for a real backend)
    ----------------------------------------------------------------------------
-   All student reads/writes go through window.SL_STORE. Backed by localStorage
-   today; to move to Supabase, replace get()/set() (and the typed accessors)
-   with Supabase reads/writes — every page keeps working unchanged.
+   All student reads/writes go through window.SL_STORE. localStorage is the
+   synchronous, offline-friendly source of truth the UI reads.
+
+   Cross-device sync is layered on top by assets/skills-lab/sync.js (loaded on
+   every Skills Lab page): for a SIGNED-IN student it merges this localStorage
+   state with their `skills_lab_progress` row in Supabase and writes through on
+   every change. It hooks localStorage.setItem, so this store needs no changes —
+   keep writing to localStorage and sync.js handles the backend.
 
    localStorage shape (keys prefixed "pda_skillslab_"):
      student       -> { name, gradDate }
      attempts      -> QuizAttempt[]                 (most recent last)
      competencies  -> { [skillId]: { status, date, reflection, note } }
-
-   // TODO (Supabase project lmbsuwslsycukynzpzik): suggested tables
-   //   students      (id, name, grad_date, device_id, updated_at)
-   //   quiz_attempts (id, student_id, date, category, score, correct, total, by_category jsonb)
-   //   competencies  (id, student_id, skill_id, status, date, reflection, note, verified_by)
+   Backed by: skills_lab_progress (db/migrations/20260621_skills_lab_progress.sql).
    ============================================================================ */
 (function () {
   'use strict';

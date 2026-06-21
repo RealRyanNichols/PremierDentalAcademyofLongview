@@ -473,6 +473,7 @@ tailwind.config = {
 </footer>
 
 <script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/sync.js"></script>
 <!-- ====================================================================
      APPLICATION SCRIPT
      ==================================================================== -->
@@ -507,12 +508,11 @@ tailwind.config = {
      pda_skillslab_attempts      -> QuizAttempt[]   (most recent last)
      pda_skillslab_competencies  -> { [skillId]: Competency }
 
-   // TODO: swap localStorage for Supabase — table suggestions:
-   //   students       (id, name, grad_date, device_id, updated_at)
-   //   quiz_attempts  (id, student_id, date, category, score, correct, total, by_category jsonb)
-   //   competencies   (id, student_id, skill_id, status, date, reflection, note, verified_by)
-   // The store abstraction below is the single seam to replace: point get()/set()
-   // at Supabase reads/writes (or a thin REST layer) and the UI keeps working.
+   Cross-device sync is implemented by assets/skills-lab/sync.js (loaded below):
+   for a signed-in student it merges this localStorage state with their
+   skills_lab_progress row in Supabase and writes through on every change. It
+   hooks localStorage.setItem, so this inline store needs no changes; on hydrate
+   it fires a window "sl-sync:hydrated" event and init() repaints the views.
    ============================================================================ */
 
 /* ---------- tiny store abstraction (swappable for a backend) ---------- */
@@ -1236,6 +1236,16 @@ $('#printBtn').addEventListener('click', () => window.print());
   renderDashboard();
   // Pre-build quiz home so the bank count shows even before visiting the tab
   renderQuizHome();
+
+  // Cross-device sync (assets/skills-lab/sync.js): when a signed-in student's
+  // saved progress is pulled from Supabase and merged into localStorage, repaint
+  // every view so it shows immediately — no reload needed. Each render is guarded
+  // so a not-yet-built tab panel can never break the refresh.
+  window.addEventListener('sl-sync:hydrated', () => {
+    [renderDashboard, renderQuizHome, renderPassport, renderTranscript].forEach(fn => {
+      try { fn(); } catch (e) {}
+    });
+  });
 })();
 </script>
 </body>

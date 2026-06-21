@@ -641,6 +641,10 @@ async function initSquare() {
 
 async function pickPlan(plan) {
   state.plan = plan;
+  // Funnel: which plan the buyer selected (the step between landing and checkout).
+  try {
+    if (window.PDA && window.PDA.track) window.PDA.track('enroll_plan_selected', { plan: plan });
+  } catch (e) {}
   document.getElementById('co-plan-name').textContent = PLAN_DEFS[plan].name;
   document.getElementById('checkout').hidden = false;
   // Online is a $397 one-time payment with no class schedule — hide the
@@ -683,6 +687,15 @@ async function submit() {
 
   btn.disabled = true;
   btn.textContent = 'Processing… DO NOT close this tab.';
+
+  // Funnel: a payment attempt has started (card is about to be tokenized and
+  // charged). Wrapped so analytics can never interfere with checkout.
+  try {
+    if (window.PDA && window.PDA.track) window.PDA.track('begin_checkout', {
+      plan: state.plan, downCents: s.down, cadence: s.cadence,
+      cohort: state.cohort?.name || null,
+    });
+  } catch (e) {}
 
   let tokenRes;
   try {
@@ -727,6 +740,20 @@ async function submit() {
       // Success path. Note: out.warning may be set if the down-payment
       // succeeded but the recurring-invoice creation failed — the success
       // page surfaces the warning so the student isn't confused.
+      //
+      // Revenue event — the single most valuable conversion on the site. Uses
+      // the server's authoritative amounts. Wrapped in try/catch so it can NEVER
+      // throw after a successful charge (see the rule above).
+      try {
+        if (window.PDA && window.PDA.track) window.PDA.track('purchase', {
+          plan: out.plan,
+          value: (Number(out.totalCents) || 0) / 100,
+          currency: 'USD',
+          downCents: out.downCents,
+          remainingCents: out.remainingCents,
+          cohort: state.cohort?.name || null,
+        });
+      } catch (e) {}
       const params = new URLSearchParams({
         plan: out.plan,
         total: out.totalCents,

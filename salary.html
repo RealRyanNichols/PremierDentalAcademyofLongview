@@ -273,8 +273,23 @@ function recalc() {
   else interp.innerHTML = `Right at the East Texas median.`;
 }
 
+// Fire salary_calculator_used once, on the first real user interaction (not the
+// programmatic recalc() below), so it's an engagement signal — not per keystroke.
+let __pdaCalcTracked = false;
+function trackCalcOnce() {
+  if (__pdaCalcTracked) return;
+  __pdaCalcTracked = true;
+  try {
+    if (window.PDA && window.PDA.track) window.PDA.track('salary_calculator_used', {
+      role: document.getElementById('role').value,
+      city: document.getElementById('city').value,
+    });
+  } catch (e) {}
+}
 ['role','city','years','bilingual','software'].forEach(id => {
-  document.getElementById(id).addEventListener('input', recalc);
+  const el = document.getElementById(id);
+  el.addEventListener('input', recalc);
+  el.addEventListener('input', trackCalcOnce);
 });
 recalc();
 
@@ -287,13 +302,16 @@ recalc();
     const email = new FormData(form).get('email');
     const role = document.getElementById('role').value;
     const city = document.getElementById('city').value;
+    let saved = false;
     try {
       const { error } = await sb.from('subscribers').insert({
         email, source: 'salary-calculator',
         tags: ['salary-calculator', role, city].filter(Boolean),
       });
+      saved = !error;
       if (error) console.error('[salary] subscribe error:', error.message);
     } catch (e) { console.error('[salary] subscribe threw:', e); }
+    try { if (window.PDA && window.PDA.track) window.PDA.track('salary_email_submit', { role: role, city: city, saved: saved }); } catch (e) {}
     form.classList.add('hidden');
     document.getElementById('save-success').classList.remove('hidden');
   };
