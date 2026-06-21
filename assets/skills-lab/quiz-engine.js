@@ -7,10 +7,15 @@
    shows a retake. Supports types: mc, multi, tf, scenario, image, missing
    (and any single-correct or multi-correct variant).
 
-     SL_QUIZ.run({ mount, questions, category, onFinish, onRetake })
+     SL_QUIZ.run({ mount, questions, category, difficulty, onFinish, onRetake })
 
    Each question: { id, category, type, prompt, options[], answer, explanation,
-                    reviewLesson, placeholder? }
+                    reviewLesson, difficulty?, placeholder? }
+
+   `difficulty` (optional) narrows the pool to questions of that level before
+   running — e.g. 'beginner' | 'intermediate' | 'advanced' | 'expert'. Omit it
+   (or pass a falsy/"all" value) to use the questions exactly as given. The
+   filter is a no-op if no question matches, so a quiz set is never empty.
    ============================================================================ */
 (function () {
   'use strict';
@@ -37,8 +42,13 @@
     var mount = opts.mount;
     var questions = opts.questions || [];
     var category = opts.category || 'Practice';
+    var difficulty = opts.difficulty || null;   // optional level filter ('beginner'...'expert')
     var onFinish = opts.onFinish || function () {};
     var onRetake = opts.onRetake || null;
+    if (difficulty && difficulty !== 'all' && difficulty !== '__all__') {
+      var leveled = questions.filter(function (q) { return q.difficulty === difficulty; });
+      if (leveled.length) questions = leveled;   // never narrow to an empty set
+    }
     if (!mount || !questions.length) { if (mount) mount.innerHTML = '<p class="text-sm text-slate-500">No questions available.</p>'; return; }
 
     var state = { idx: 0, answers: {} };
