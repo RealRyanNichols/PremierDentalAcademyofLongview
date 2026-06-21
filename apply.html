@@ -85,6 +85,11 @@
   <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
     <form id="apply-form" class="space-y-5">
 
+      <!-- Honeypot: hidden from humans; bots fill it and are silently dropped. -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden">
+        <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
       <fieldset>
         <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">About you</legend>
         <div class="grid sm:grid-cols-2 gap-4">
@@ -197,17 +202,34 @@
   const success = document.getElementById('apply-success');
   const btn = document.getElementById('submit-btn');
 
+  // Lightweight lead attribution — works whether or not the analytics layer has loaded.
+  function attribution() {
+    var a = {};
+    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
+    try {
+      var p = new URLSearchParams(location.search);
+      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
+    } catch (e) {}
+    try { if (!a.referrer) a.referrer = document.referrer || ''; } catch (e) {}
+    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; })
+      .map(function (k) { return k + '=' + a[k]; });
+    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
+  }
+
   form.onsubmit = async (e) => {
     e.preventDefault();
+    const fd = new FormData(form);
+    // Honeypot tripped → pretend success, save nothing.
+    if ((fd.get('company') || '').trim()) { location.href = '/thank-you'; return; }
     btn.disabled = true;
     btn.textContent = 'Submitting…';
-    const fd = new FormData(form);
     const details = [
       fd.get('city')       ? `City: ${fd.get('city')}` : '',
       fd.get('age')        ? `Age: ${fd.get('age')}` : '',
       fd.get('source')     ? `Heard via: ${fd.get('source')}` : '',
       fd.get('start_when') ? `Start: ${fd.get('start_when')}` : '',
       fd.get('notes')      ? `Notes: ${fd.get('notes')}` : '',
+      attribution(),
     ].filter(Boolean).join(' · ');
     const lead = {
       first_name: fd.get('first_name'),
@@ -235,6 +257,7 @@
         localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
       } catch(e){}
     }
+    try { if (window.PDA && window.PDA.track) window.PDA.track('application_submit', { program: lead.interest_path, saved: saved }); } catch (e) {}
     // Redirect to the thank-you page (a backup is stashed locally if the save failed).
     location.href = '/thank-you';
   };

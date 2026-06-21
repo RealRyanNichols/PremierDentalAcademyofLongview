@@ -447,6 +447,8 @@
       <a href="/enroll?plan=online" class="block hover:text-white">Online</a>
       <a href="/calendar" class="block hover:text-white">Class calendar</a>
       <a href="/apply" class="block hover:text-white">Apply free</a>
+      <a href="/tour" class="block hover:text-white">Schedule a tour</a>
+      <a href="/waitlist" class="block hover:text-white">Join the waitlist</a>
       <a href="/salary" class="block hover:text-white">Salary calculator</a>
     </nav>
     <nav aria-label="Free trainers" class="space-y-2">

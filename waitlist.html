@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Join the Waitlist | Premier Dental Academy of Longview</title>
+  <meta name="description" content="The next RDA cohort at Premier Dental Academy of Longview filling up? Join the waitlist and we'll call you the moment a seat opens — no payment required." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/waitlist" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/waitlist" />
+  <meta property="og:title" content="Join the Waitlist | Premier Dental Academy of Longview" />
+  <meta property="og:description" content="Join the RDA cohort waitlist — we'll call you the moment a seat opens." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+</head>
+<body class="bg-gradient-to-br from-slate-50 to-cyan-50/40 min-h-screen">
+
+<main class="max-w-2xl mx-auto px-6 py-12">
+
+  <div class="text-center mb-10">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Waitlist</p>
+    <h1 class="display text-4xl font-bold mt-2">Class full? <span class="gradient-text">Hold your spot.</span></h1>
+    <p class="text-slate-600 mt-3">Seats are limited and our in-person cohorts fill fast. Add your name and we'll call you the second a seat opens — and give you first pick of the next start date. No payment required.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
+    <form id="waitlist-form" class="space-y-5">
+
+      <!-- Honeypot: hidden from humans; bots fill it and are silently dropped. -->
+      <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden">
+        <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-sm font-medium">First name *</span>
+          <input name="first_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Last name *</span>
+          <input name="last_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Email *</span>
+          <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Phone *</span>
+          <input name="phone" type="tel" required placeholder="(903) 913-6444" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+        </label>
+      </div>
+
+      <label class="block">
+        <span class="text-sm font-medium">Which program?</span>
+        <select name="program" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+          <option>Not sure yet — help me decide</option>
+          <option>In-Person (Longview)</option>
+          <option>Online</option>
+        </select>
+      </label>
+
+      <label class="block">
+        <span class="text-sm font-medium">How soon do you want to start?</span>
+        <select name="timeline" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+          <option>As soon as a seat opens</option>
+          <option>Within 1–3 months</option>
+          <option>Within 3–6 months</option>
+          <option>Just keeping me posted</option>
+        </select>
+      </label>
+
+      <div class="flex items-start gap-2 text-sm text-slate-600">
+        <input id="consent" name="consent" type="checkbox" required class="mt-0.5 accent-teal-600" />
+        <label for="consent">I understand PDA will contact me by phone and email when a seat opens. I can opt out anytime.</label>
+      </div>
+
+      <button type="submit" id="submit-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 rounded-lg shadow-md transition">
+        Add me to the waitlist →
+      </button>
+      <p class="text-xs text-slate-500 text-center">No payment required · We'll call the moment a seat opens · 100% no obligation</p>
+    </form>
+
+    <div id="waitlist-success" class="hidden text-center py-8">
+      <div class="text-6xl mb-3">✅</div>
+      <h2 class="display text-3xl font-bold text-slate-900">You're on the list.</h2>
+      <p class="text-slate-600 mt-3 max-w-md mx-auto">We'll reach out the moment a seat opens — usually well before the next cohort fills. Want to get a head start? Try a free trainer while you wait.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-6">
+        <a href="/tools/practice-exam" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg">Free practice exam →</a>
+        <a href="/calendar" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">See the calendar</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-8 text-xs text-slate-500">
+    <span>🔒 Your info is kept private. We never share it.</span>
+    <span class="mx-2">·</span>
+    <span>📞 Prefer to call? (903) 913-6444</span>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  let sb = null;
+  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {} }
+
+  const form = document.getElementById('waitlist-form');
+  const success = document.getElementById('waitlist-success');
+  const btn = document.getElementById('submit-btn');
+
+  function attribution() {
+    var a = {};
+    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
+    try {
+      var p = new URLSearchParams(location.search);
+      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
+    } catch (e) {}
+    try { if (!a.referrer) a.referrer = document.referrer || ''; } catch (e) {}
+    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
+    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
+  }
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    if ((fd.get('company') || '').trim()) { form.classList.add('hidden'); success.classList.remove('hidden'); return; }
+    btn.disabled = true; btn.textContent = 'Adding you…';
+    const details = [
+      'Waitlist request',
+      fd.get('timeline') ? `When: ${fd.get('timeline')}` : '',
+      attribution(),
+    ].filter(Boolean).join(' · ');
+    const lead = {
+      first_name: fd.get('first_name'),
+      last_name: fd.get('last_name'),
+      email: fd.get('email'),
+      phone: fd.get('phone'),
+      interest_path: fd.get('program') || null,
+      message: details,
+      source: 'waitlist.html',
+    };
+    let saved = false;
+    if (sb) {
+      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[waitlist]', error.message); }
+      catch (err) { console.error('[waitlist] threw', err); }
+    }
+    if (!saved) {
+      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push({ ...lead, created_at: new Date().toISOString() }); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e) {}
+    }
+    try { if (window.PDA && window.PDA.track) window.PDA.track('waitlist_submit', { program: lead.interest_path, saved: saved }); } catch (e) {}
+    form.classList.add('hidden');
+    success.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+})();
+</script>
+</body>
+</html>

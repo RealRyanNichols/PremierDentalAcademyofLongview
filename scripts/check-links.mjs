@@ -19,7 +19,7 @@ function walk(dir) {
 }
 
 // Marketing email fragments use absolute https URLs and aren't web routes; skip scanning them.
-const SKIP_DIRS = ["marketing/"];
+const SKIP_DIRS = ["marketing/", "templates/"];
 
 function routeExists(route) {
   let r = route.split("#")[0].split("?")[0];
