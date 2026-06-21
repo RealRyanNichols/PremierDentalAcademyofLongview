@@ -33,6 +33,7 @@
         <div id="pda-more-menu" hidden role="menu" class="absolute right-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
           <p class="px-4 pb-1 text-[11px] uppercase tracking-widest text-slate-400 font-semibold">Free study tools</p>
           <a href="/tools/flashcards"     class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
+          <a href="/study-guide"          class="block px-4 py-2 hover:bg-slate-50">Exam study guide</a>
           <a href="/tools/how-to-chart"   class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
           <a href="/tools/resume-builder" class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
@@ -458,6 +459,7 @@
       <a href="/tools/practice-pro" class="block hover:text-white">Practice Pro</a>
       <a href="/tools/chairside" class="block hover:text-white">ChairSide</a>
       <a href="/tools/flashcards" class="block hover:text-white">Flashcards</a>
+      <a href="/study-guide" class="block hover:text-white">Study guide</a>
     </nav>
     <nav aria-label="More" class="space-y-2">
       <p class="text-white font-semibold">More</p>
