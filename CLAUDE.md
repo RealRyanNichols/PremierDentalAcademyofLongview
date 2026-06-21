@@ -62,6 +62,27 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
   until Ryan provides a REAL Square/Stripe $200-deposit checkout link for the
   $1,497 offer. Do not wire a placeholder payment link live.
 
+## Active marketing: daily email list test (June 2026)
+- Amanda is running a list test: ONE email/day to the ENTIRE Kajabi list at 6:30 PM CT,
+  started Monday the week of June 15, to see if CLICK-THROUGH and sales pick up. May
+  extend to 2–4 weeks. Optimize for CLICKS, not opens (Apple Mail Privacy Protection
+  makes open rates unreliable).
+- Email bodies live in `marketing/series/day-01..28-*.html` — paste each into a Kajabi
+  broadcast "Custom Code" block. Subjects + calendar in `marketing/series/README.md`.
+  Each is inline-styled and click-loaded (quick-links bar + "more to explore" row + buy
+  buttons + tool links + share + tap-to-call/text).
+- Sending/scheduling is a KAJABI ADMIN action done inside Kajabi by Amanda or a
+  browser-capable assistant. THIS repo/agent has NO Kajabi login or send API — it
+  CANNOT send broadcasts or read open/click stats. Build the email files here; hand off
+  the sending.
+
+## Online course is missing weeks 6–12 (June 2026)
+- The Kajabi ONLINE RDA course is missing modules 6–12; the IN-PERSON course has all 12
+  built. They must mirror (same 12 modules listed on the homepage). Fastest fix = CLONE
+  the in-person lessons into the online product (in-person 6–12 are confirmed built).
+- Full handoff/runbook: `docs/HANDOFF-kajabi-online-course-buildout.md`. This is a
+  Kajabi-admin job; the repo/agent cannot do it (no Kajabi access).
+
 ## Migration status (June 2026)
 - Moved off a SUSPENDED personal GitHub repo onto this GitLab repo
   `RealRyanNichols/premier-dental-academy` (default branch `main`).

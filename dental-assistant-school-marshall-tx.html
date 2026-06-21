@@ -11,6 +11,11 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
@@ -68,40 +73,108 @@
 
   <article class="space-y-9">
     <section>
+      <p class="text-slate-700 leading-relaxed">If you live in Marshall, you can start a real dental career without leaving East Texas behind. Through Premier Dental Academy of Longview, Marshall-area folks can train hands-on at our Longview campus — with evening options that work around a day job — or go 100% online and learn from home. Same curriculum either way, same instructors who pick up the phone, and the same goal: getting you trained and working as a Registered Dental Assistant.</p>
+    </section>
+
+    <section>
+      <h2 class="display text-2xl font-bold">What a dental assistant actually does</h2>
+      <p class="text-slate-600 mt-2 leading-relaxed">A dental assistant is the dentist's right hand and the patient's calming presence. It's a hands-on, people-facing job with a real rhythm to the day. A typical shift looks something like this:</p>
+      <ul class="mt-3 space-y-2 text-slate-700 text-sm">
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">•</span> Setting up treatment rooms and sterilizing instruments between patients</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">•</span> Seating patients, taking health histories, and helping them feel at ease</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">•</span> Handing instruments and assisting chairside during fillings, crowns, and cleanings</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">•</span> Taking dental X-rays and charting what the dentist finds in the office software</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">•</span> Explaining home-care instructions and helping schedule the next visit at the front desk</li>
+      </ul>
+      <p class="text-slate-600 mt-3 leading-relaxed">No two days are exactly alike, and you're on your feet helping people the whole time. It's steady, indoor, daytime work that's in demand in just about every town with a dental office — Marshall included.</p>
+    </section>
+
+    <section>
+      <h2 class="display text-2xl font-bold">Two ways to train from Marshall</h2>
+      <div class="grid sm:grid-cols-2 gap-4 mt-4">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="font-bold text-slate-900 text-lg">In-Person · Longview campus</div>
+          <p class="text-slate-600 mt-2 text-sm leading-relaxed">Hands-on chairside hours at 2800 Gilmer Rd, a manageable commute from Marshall. Evening options are available so you can keep your day job while you train.</p>
+          <ul class="mt-3 space-y-1 text-slate-700 text-sm">
+            <li><strong>$200 down</strong> to get started</li>
+            <li><strong>$1,997 total</strong> tuition</li>
+            <li>Simple weekly or monthly payments on the balance</li>
+          </ul>
+          <a href="/enroll?plan=in-person" class="mt-4 inline-block text-center bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2.5 rounded-lg">Enroll In-Person →</a>
+        </div>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
+          <div class="font-bold text-slate-900 text-lg">Online · 100% from home</div>
+          <p class="text-slate-600 mt-2 text-sm leading-relaxed">The same curriculum, self-paced, with no commute at all. A great fit for Marshall students juggling work, kids, or a busy schedule.</p>
+          <ul class="mt-3 space-y-1 text-slate-700 text-sm">
+            <li><strong>$397</strong> total</li>
+            <li>Self-paced — start anytime</li>
+            <li>Same lessons and skill-building as in-person</li>
+          </ul>
+          <a href="/enroll?plan=online" class="mt-4 inline-block text-center bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2.5 rounded-lg">Enroll Online →</a>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="display text-2xl font-bold">What you'll learn</h2>
+      <p class="text-slate-600 mt-2 leading-relaxed">The whole point is to walk into an interview already able to do the job. You'll build the core skills offices look for:</p>
+      <ul class="mt-3 space-y-2 text-slate-700 text-sm">
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Charting</strong> — reading and recording tooth-by-tooth findings the way the dentist expects</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Radiology basics</strong> — the fundamentals of taking and handling dental X-rays safely</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Chairside assisting</strong> — instruments, trays, suction, and four-handed dentistry</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Front-office software</strong> — scheduling, patient records, and practice-management tools</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Infection control</strong> — sterilization, PPE, and keeping every room safe</li>
+      </ul>
+      <p class="text-slate-600 mt-3 leading-relaxed">Want a feel for it before you enroll? Our free <a href="/skills-lab" class="text-teal-700 underline">Skills Lab</a> and the <a href="/tools/practice-pro" class="text-teal-700 underline">Practice Pro</a> charting trainer let you try the real work hands-on, right now, at no cost.</p>
+    </section>
+
+    <section>
+      <h2 class="display text-2xl font-bold">Pay &amp; funding</h2>
+      <p class="text-slate-600 mt-2 leading-relaxed">We keep it simple and affordable. In-person training is <strong>$200 down</strong> and <strong>$1,997 total</strong>, with easy weekly or monthly payments on the rest. Online is a flat <strong>$397</strong>. Some students may qualify for workforce funding or veteran benefits to help cover the cost — we can't promise anything, but we're glad to point you in the right direction. <a href="/apply" class="text-teal-700 underline">Start your free application</a> and we'll talk through what fits your situation. Curious about pay? See our <a href="/salary" class="text-teal-700 underline">East Texas dental assistant pay info</a>.</p>
+    </section>
+
+    <section>
       <h2 class="display text-2xl font-bold">Why Marshall students choose PDA</h2>
       <ul class="mt-3 space-y-2 text-slate-700 text-sm">
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Real software practice</strong> before day one — the #1 thing dental offices hire for.</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Local hiring relationships</strong> across East Texas — see <a href="/graduates" class="text-teal-700 underline">our graduates</a>.</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Lower tuition</strong> — Online $397 / In-Person $1,997, $200 down, funding accepted.</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Fast</strong> — ~12 weeks, then state courses + TSBDE registration.</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Real software practice</strong> before day one — the kind of hands-on prep dental offices hire for.</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Rooted in East Texas</strong> — see <a href="/graduates" class="text-teal-700 underline">our graduates</a>.</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Affordable tuition</strong> — Online $397 / In-Person $1,997, $200 down.</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Trained in months, not years</strong>, then on to state courses + TSBDE registration.</li>
       </ul>
     </section>
+
     <section>
       <h2 class="display text-2xl font-bold">Getting here from Marshall</h2>
-      <p class="text-slate-600 mt-2">Our campus is at <strong>2800 Gilmer Rd, Suite 106, Longview, TX 75604</strong> — about 25 miles and 25–30 minutes from Marshall via I-20 west. Students also commute from Hallsville, Waskom, Scottsville, and Elysian Fields.</p>
+      <p class="text-slate-600 mt-2">Our campus is at <strong>2800 Gilmer Rd, Suite 106, Longview, TX 75604</strong> — a manageable commute from Marshall, and an easy trip for students from Hallsville, Waskom, Scottsville, and Elysian Fields. Prefer not to drive? The online option lets you train from home.</p>
       <a href="https://maps.google.com/?q=2800+Gilmer+Rd+Suite+106+Longview+TX+75604" target="_blank" rel="noopener" class="inline-block mt-3 text-teal-700 underline text-sm">Get directions →</a>
     </section>
+
     <section>
       <h2 class="display text-2xl font-bold">New to dental assisting?</h2>
-      <p class="text-slate-600 mt-2">Start with our plain-English guide: <a href="/become-a-dental-assistant-in-texas" class="text-teal-700 underline">How to become a dental assistant in Texas</a> — requirements, training, registration, cost and timeline. Curious what you'll earn? Try the <a href="/salary" class="text-teal-700 underline">East Texas dental assistant salary calculator</a>.</p>
+      <p class="text-slate-600 mt-2">Start with our plain-English guide: <a href="/become-a-dental-assistant-in-texas" class="text-teal-700 underline">How to become a dental assistant in Texas</a> — requirements, training, registration, cost and timeline. Curious what you'll earn? See our <a href="/salary" class="text-teal-700 underline">East Texas dental assistant pay info</a>.</p>
     </section>
+
     <section>
       <h2 class="display text-2xl font-bold mb-4">Marshall-area FAQs</h2>
       <div class="space-y-3">
-        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">Is there a dental assistant school in Marshall, TX?</summary><p class="text-slate-600 mt-2 text-sm">Premier Dental Academy is in Longview, about 25 miles (25–30 minutes) from Marshall via I-20 west, and students commute from Marshall every cohort. We also offer a fully online RDA program so Marshall students can train from home.</p></details>
-        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">How far is Premier Dental Academy from Marshall?</summary><p class="text-slate-600 mt-2 text-sm">Roughly 25 miles — about a 25–30 minute drive (I-20 west) to our campus at 2800 Gilmer Rd, Suite 106, Longview, TX. An online option is available if you'd rather not commute.</p></details>
-        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">How much does dental assistant school near Marshall cost?</summary><p class="text-slate-600 mt-2 text-sm">Premier Dental Academy's Online program is $397 (limited time) and In-Person is $1,997, with $200-down payment plans and funding options (TWC, GI Bill, WIOA) — far less than national programs.</p></details>
+        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">Do I need experience or a college degree?</summary><p class="text-slate-600 mt-2 text-sm">No. You don't need any prior experience or a degree to start. We teach you everything from the ground up — most of our students are brand new to dental.</p></details>
+        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">How long does it take?</summary><p class="text-slate-600 mt-2 text-sm">It's measured in months, not years. You move at a steady pace through the training, then complete the required state courses and register with the Texas State Board of Dental Examiners.</p></details>
+        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">Can I train from Marshall online?</summary><p class="text-slate-600 mt-2 text-sm">Yes. Our online program is 100% from home, self-paced, and covers the same curriculum as in-person — perfect if the commute or your schedule makes driving in tough.</p></details>
+        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">Is there a campus near me?</summary><p class="text-slate-600 mt-2 text-sm">Yes — our Longview campus serves the Marshall area and is a manageable commute, with evening options. Plenty of Marshall-area students make the trip, and the online path is always there if you'd rather stay home.</p></details>
+        <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold cursor-pointer">How much does it cost?</summary><p class="text-slate-600 mt-2 text-sm">In-person is $200 down and $1,997 total, with simple weekly or monthly payments. Online is a flat $397. You may qualify for workforce funding or veteran benefits — ask us when you <a href="/apply" class="text-teal-700 underline">apply</a>.</p></details>
       </div>
     </section>
   </article>
 
   <section class="mt-12 bg-gradient-to-br from-teal-700 to-cyan-800 text-white rounded-3xl p-8 text-center">
     <h2 class="display text-3xl font-bold">Start training from Marshall</h2>
-    <p class="text-teal-50 mt-2 max-w-xl mx-auto">In-person in Longview or online from home — pick what fits and we'll help you land the job.</p>
+    <p class="text-teal-50 mt-2 max-w-xl mx-auto">In-person in Longview or online from home — pick what fits and we'll help you get going. Not sure yet? Call or text Amanda and just ask.</p>
     <div class="mt-6 flex flex-wrap gap-3 justify-center">
-      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-lg shadow">Enroll now →</a>
+      <a href="/enroll?plan=in-person" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-lg shadow">Enroll In-Person →</a>
+      <a href="/enroll?plan=online" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-lg shadow">Enroll Online →</a>
+      <a href="/apply" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">Start free application</a>
       <a href="/calendar" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">See class dates</a>
-      <a href="tel:+19039136444" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">📞 (903) 913-6444</a>
+      <a href="tel:+19039136444" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">📞 Call or text Amanda — (903) 913-6444</a>
     </div>
   </section>
 </main>

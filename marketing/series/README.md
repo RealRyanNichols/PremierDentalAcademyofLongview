@@ -39,7 +39,25 @@ button, a link to an interactive website tool, "call/text Amanda" CTAs, and a sh
 | 13 | `day-13-no-experience-faq.html` | No experience? No degree? The honest answer. | FAQ → /enroll | Enroll |
 | 14 | `day-14-last-call.html` | Seats are filling for our next class — let's talk | /enroll | Call/Text + Enroll |
 
-**All 14 days are built and ready to schedule.**
+### Days 15–28 (extends the test to ~4 weeks)
+| Day | File | Subject line | Featured tool / link |
+|----|------|--------------|----------------------|
+| 15 | `day-15-graduate-success.html` | Where our graduates are now | /graduates |
+| 16 | `day-16-day-shift-sim.html` | Run a full day at a dental office — free simulator | /skills-lab/day-shift |
+| 17 | `day-17-why-pda.html` | Why students choose Premier Dental Academy | /about |
+| 18 | `day-18-split-pay.html` | Split it into easy payments — Klarna, Afterpay, Affirm | /enroll |
+| 19 | `day-19-how-to-chart.html` | New to tooth charting? Start here — free | /tools/how-to-chart |
+| 20 | `day-20-front-desk.html` | Run a real dental front desk — practice free | /tools/practice-pro |
+| 21 | `day-21-flashcards.html` | Master dental terms in 10 minutes a day (free) | /tools/flashcards |
+| 22 | `day-22-employers-hire.html` | Why East Texas offices hire our graduates | /employers |
+| 23 | `day-23-night-class.html` | Train at night, keep your paycheck | /night-class |
+| 24 | `day-24-how-long-faq.html` | How long does it take to become a dental assistant? | /classes |
+| 25 | `day-25-radiology.html` | Dental X-rays made simple — test yourself free | /skills-lab/quizzes |
+| 26 | `day-26-chairside.html` | Chairside assisting: try the SmartDoc trainer free | /tools/chairside |
+| 27 | `day-27-funding-veterans.html` | You may be able to train for $0 — here's how | /apply |
+| 28 | `day-28-enroll-now.html` | Ready? Let's get you enrolled | /calendar |
+
+**All 28 days are built** — enough to run the full 2–4 week test.
 
 ## Built for CLICKS (not opens)
 Apple Mail Privacy Protection auto-loads tracking pixels, so **open rates are unreliable**
