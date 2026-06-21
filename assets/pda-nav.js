@@ -91,6 +91,8 @@
   function init() {
     // Ensure the business-facts source of truth is loaded (footer + other scripts read it).
     if (!window.PDA_FACTS) { var __sf = document.createElement('script'); __sf.src = '/assets/site-facts.js'; document.head.appendChild(__sf); }
+    // Load the analytics layer so every [data-event] element is tracked site-wide (safe no-op without a provider).
+    if (!window.PDA || !window.PDA.track) { var __an = document.createElement('script'); __an.src = '/assets/pda-analytics.js'; document.head.appendChild(__an); }
     // Remove any pre-existing inline mobile menus from before this script existed.
     document.querySelectorAll('#mobile-menu, #pda-mobile-menu').forEach(el => el.remove());
 
