@@ -1,0 +1,123 @@
+[
+  {
+    "question": "What is the primary purpose of a cavity liner?",
+    "choices": [
+      "To provide bulk that rebuilds the contour of the tooth",
+      "To protect the deepest dentin near the pulp in a thin film",
+      "To permanently cement a crown",
+      "To whiten the surrounding enamel"
+    ],
+    "correctIndex": 1,
+    "rationale": "A liner is applied as a thin layer over the deepest portion of the preparation to protect the pulp; it is not meant to provide structural bulk."
+  },
+  {
+    "question": "Which material is classically used as a liner in the deepest part of a deep preparation because it is antibacterial and stimulates reparative dentin?",
+    "choices": [
+      "Cavity varnish",
+      "Zinc phosphate",
+      "Calcium hydroxide",
+      "Phosphoric acid etchant"
+    ],
+    "correctIndex": 2,
+    "rationale": "Calcium hydroxide is highly alkaline, making it antibacterial, and it stimulates the pulp to form reparative dentin."
+  },
+  {
+    "question": "Why is a cement base especially important under an amalgam restoration in a deep preparation?",
+    "choices": [
+      "Amalgam dissolves in saliva without a base",
+      "Metallic restorations conduct temperature readily, so the base provides thermal insulation",
+      "A base makes the amalgam set faster",
+      "Amalgam cannot be condensed without a base"
+    ],
+    "correctIndex": 1,
+    "rationale": "Metals transmit hot and cold easily; a base insulates the pulp from temperature changes conducted through the metallic restoration."
+  },
+  {
+    "question": "Which factor most directly determines how much pulpal protection a tooth needs?",
+    "choices": [
+      "The patient's age",
+      "The shade of the final restoration",
+      "The remaining dentin thickness over the pulp",
+      "The brand of curing light used"
+    ],
+    "correctIndex": 2,
+    "rationale": "Remaining dentin thickness indicates how much natural insulation remains; deeper preparations with less dentin need more protection."
+  },
+  {
+    "question": "A dentist is placing a composite restoration. Which protective material should NOT be used because it interferes with bonding?",
+    "choices": [
+      "Resin-modified glass ionomer liner",
+      "Cavity varnish",
+      "Calcium hydroxide liner",
+      "Light-cured bonding agent"
+    ],
+    "correctIndex": 1,
+    "rationale": "Cavity varnish seals tubules but blocks adhesion of composite and resin cements, so it is not used with those materials."
+  },
+  {
+    "question": "In a total-etch (etch-and-rinse) technique, what is applied first to enamel and dentin?",
+    "choices": [
+      "Adhesive resin",
+      "Phosphoric acid etchant",
+      "Glass ionomer base",
+      "Primer only"
+    ],
+    "correctIndex": 1,
+    "rationale": "In total-etch, phosphoric acid (about 35-37%) is applied first to condition enamel and dentin, then rinsed away before priming and bonding."
+  },
+  {
+    "question": "What is the main difference between a self-etch and a total-etch bonding system?",
+    "choices": [
+      "Self-etch uses an acidic primer that etches and primes together, with no separate rinse step",
+      "Self-etch does not require light curing",
+      "Self-etch can only be used on enamel",
+      "Self-etch eliminates the need for any adhesive resin"
+    ],
+    "correctIndex": 0,
+    "rationale": "Self-etch systems combine etching and priming in an acidic primer, removing the separate acid-rinse step of total-etch."
+  },
+  {
+    "question": "When bonding with a total-etch system, how should the dentin surface be left before applying primer?",
+    "choices": [
+      "Completely dry and desiccated",
+      "Slightly moist so the collagen does not collapse",
+      "Coated with saliva",
+      "Covered with varnish"
+    ],
+    "correctIndex": 1,
+    "rationale": "Wet bonding keeps the exposed collagen network from collapsing, allowing the resin to infiltrate; over-drying dentin reduces bond strength."
+  },
+  {
+    "question": "Which property makes glass ionomer materials useful as liners and bases?",
+    "choices": [
+      "They chemically bond to tooth structure and release fluoride",
+      "They are the strongest material for cementing crowns",
+      "They are radiolucent and invisible on X-rays",
+      "They require no mixing of any kind"
+    ],
+    "correctIndex": 0,
+    "rationale": "Glass ionomers bond chemically to tooth structure and release fluoride over time, helping protect against recurrent decay."
+  },
+  {
+    "question": "What does the term microleakage describe?",
+    "choices": [
+      "A crack in the curing light",
+      "Seepage of fluids and bacteria between the restoration and tooth at the margins",
+      "Excess water in the dental unit waterline",
+      "Leakage of etchant from its bottle"
+    ],
+    "correctIndex": 1,
+    "rationale": "Microleakage is the passage of fluids and bacteria along the restoration-tooth interface, which protective materials and bonding aim to prevent."
+  },
+  {
+    "question": "Why must etchant and bonding agent bottles be capped immediately after use?",
+    "choices": [
+      "They are expensive and evaporate money",
+      "Bonding resins are light- and air-sensitive and can degrade if left open",
+      "They freeze at room temperature",
+      "Capping makes them set faster"
+    ],
+    "correctIndex": 1,
+    "rationale": "Bonding resins are sensitive to light and air; leaving bottles open can cause premature polymerization or solvent loss, weakening the material."
+  }
+]

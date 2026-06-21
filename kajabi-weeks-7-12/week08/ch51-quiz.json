@@ -1,0 +1,74 @@
+[
+  {
+    "question": "What is the primary purpose of a provisional restoration?",
+    "choices": ["To permanently restore the tooth", "To protect the prepared tooth and maintain its position until the final restoration is placed", "To whiten the tooth", "To take the final impression"],
+    "correctIndex": 1,
+    "rationale": "A provisional protects the exposed preparation, maintains tooth position and occlusion, supports esthetics and gingival health, and keeps the patient comfortable until the definitive restoration is cemented."
+  },
+  {
+    "question": "If a prepared tooth is left without a provisional, a likely problem is that:",
+    "choices": ["The tooth will whiten", "Adjacent and opposing teeth may drift or supra-erupt so the final restoration will not seat", "The impression will be more accurate", "The pulp will be strengthened"],
+    "correctIndex": 1,
+    "rationale": "Without a provisional, neighboring teeth can shift and the opposing tooth can supra-erupt, closing the space so the laboratory-made restoration no longer fits."
+  },
+  {
+    "question": "In the preoperative matrix technique, when should the matrix (impression) be taken?",
+    "choices": ["After the tooth is prepared", "Before the tooth is prepared", "After temporary cementation", "At the seating appointment"],
+    "correctIndex": 1,
+    "rationale": "The matrix must be captured before preparation so it records the tooth's original anatomy, which is then reproduced in the provisional after the tooth is reduced."
+  },
+  {
+    "question": "Which preformed crown is tooth-colored and typically used for anterior provisional coverage?",
+    "choices": ["Stainless steel crown", "Aluminum shell", "Polycarbonate crown", "Tin-silver shell"],
+    "correctIndex": 2,
+    "rationale": "Polycarbonate crowns are tooth-colored preformed shells used for anterior provisionals. Metal shells and stainless steel crowns are used for posterior teeth."
+  },
+  {
+    "question": "A common advantage of bis-acryl (composite-based) provisional resin over traditional acrylic is that it:",
+    "choices": ["Costs much less per unit", "Produces less heat and odor and is dispensed by automix gun", "Cannot be polished", "Requires no trimming"],
+    "correctIndex": 1,
+    "rationale": "Bis-acryl resins are convenient automix materials that generate less exothermic heat and odor and finish well. Acrylic is often more economical but produces more heat and a stronger odor."
+  },
+  {
+    "question": "Why is occlusion checked with articulating paper after placing a provisional?",
+    "choices": ["To improve the color match", "Because a high provisional causes pain and can fracture", "To strengthen the temporary cement", "To verify the shade"],
+    "correctIndex": 1,
+    "rationale": "A provisional that is high in occlusion causes discomfort, soreness, and can fracture or dislodge. Articulating paper identifies premature contacts so they can be adjusted."
+  },
+  {
+    "question": "Which type of cement is used to retain a provisional restoration?",
+    "choices": ["Permanent resin cement", "Glass ionomer luting cement for crowns", "Temporary (provisional) cement, often ZOE-based", "Pit-and-fissure sealant"],
+    "correctIndex": 2,
+    "rationale": "Temporary cement (commonly zinc oxide eugenol-based or a non-eugenol formulation) retains the provisional while still allowing easy removal at the seating visit."
+  },
+  {
+    "question": "When the final restoration will be bonded with resin cement, the assistant should choose which temporary cement, and why?",
+    "choices": ["A eugenol-containing cement, because it strengthens bonding", "A non-eugenol temporary cement, because residual eugenol can interfere with resin bonding", "Any cement, because it makes no difference", "Permanent cement, to save a step"],
+    "correctIndex": 1,
+    "rationale": "Eugenol can inhibit the polymerization of resin cement, so a non-eugenol temporary cement is preferred when the definitive restoration will be resin-bonded."
+  },
+  {
+    "question": "After cementing a provisional, why is it important to remove all excess cement from the sulcus?",
+    "choices": ["To improve the shade", "To prevent gingival inflammation and irritation", "To increase retention", "To speed the set of the cement"],
+    "correctIndex": 1,
+    "rationale": "Residual cement in the gingival sulcus irritates the tissue and causes inflammation, which can compromise gingival health and the final impression and seating."
+  },
+  {
+    "question": "When fabricating an acrylic provisional, the assistant may remove and reseat it during setting primarily to:",
+    "choices": ["Add more shade", "Dissipate exothermic heat and prevent lock-on over undercuts", "Speed the laboratory turnaround", "Strengthen the marginal fit"],
+    "correctIndex": 1,
+    "rationale": "Acrylic resins are exothermic; removing and reseating (or using cool water) dissipates heat to protect the tooth and prevents the material from locking onto undercuts as it sets."
+  },
+  {
+    "question": "Which of the following is a criterion for an acceptable provisional restoration?",
+    "choices": ["Open contacts so food can pass freely", "Accurate margins, proper contacts and contours, and harmonious occlusion", "A rough surface for retention", "Permanent, non-removable cementation"],
+    "correctIndex": 1,
+    "rationale": "A quality provisional has well-fitting margins, correct contacts and contours, balanced occlusion, and a polished surface, and it is retained yet removable for the seating appointment."
+  },
+  {
+    "question": "Appropriate post-placement instructions for a patient with a new provisional include:",
+    "choices": ["Chew sticky and hard foods on that side to test it", "Avoid sticky/hard foods, chew on the other side, and call if it comes off", "Brush only that area aggressively", "Leave the provisional off overnight"],
+    "correctIndex": 1,
+    "rationale": "Patients should avoid sticky and hard foods that can dislodge the provisional, chew on the opposite side, expect possible sensitivity, and call the office if the temporary comes off."
+  }
+]

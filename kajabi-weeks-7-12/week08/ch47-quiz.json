@@ -1,0 +1,74 @@
+[
+  {
+    "question": "Dental gypsum products are all forms of which compound?",
+    "choices": ["Calcium phosphate", "Calcium sulfate hemihydrate", "Sodium alginate", "Zinc oxide"],
+    "correctIndex": 1,
+    "rationale": "Gypsum products are calcium sulfate hemihydrate; when mixed with water they react back to the dihydrate and harden. The differences among them come from particle shape and porosity."
+  },
+  {
+    "question": "Which gypsum product is the strongest and most appropriate for fabricating dies for crowns and bridges?",
+    "choices": ["Model plaster (Type II)", "Dental stone (Type III)", "Die stone / high-strength stone (Type IV)", "Boxing wax"],
+    "correctIndex": 2,
+    "rationale": "Type IV die stone is very strong and abrasion-resistant, making it ideal for dies and crown-and-bridge working casts. Plaster is weakest, and stone is intermediate."
+  },
+  {
+    "question": "Compared with dental stone, model plaster requires:",
+    "choices": ["Less water and produces a stronger cast", "More water and produces a weaker cast", "The same water but sets faster", "No water at all"],
+    "correctIndex": 1,
+    "rationale": "Plaster is more porous and requires more water, which produces a weaker, less dense set. Less water generally yields a stronger gypsum cast."
+  },
+  {
+    "question": "An assistant adds too much water when mixing dental stone. The likely result is:",
+    "choices": ["A stronger, denser cast", "A weaker cast with a slower set", "A faster set with no change in strength", "Immediate setting before pouring"],
+    "correctIndex": 1,
+    "rationale": "Excess water weakens the cast and slows the set. Correct water-to-powder ratio is essential for strength and dimensional accuracy."
+  },
+  {
+    "question": "What is the recommended order when combining gypsum components?",
+    "choices": ["Add water to the powder gradually", "Add powder to pre-measured water", "Mix both dry then add water", "Pour them simultaneously"],
+    "correctIndex": 1,
+    "rationale": "Adding powder to pre-measured water produces a smoother, less bubble-prone mix and helps maintain an accurate water-to-powder ratio."
+  },
+  {
+    "question": "When pouring an impression with gypsum, you should:",
+    "choices": ["Pour all at once into the center", "Vibrate small increments in from one corner", "Avoid vibration to prevent bubbles", "Pour while the impression is still wet with saliva"],
+    "correctIndex": 1,
+    "rationale": "Flowing small increments in from one corner with gentle vibration chases trapped air ahead of the material, producing a bubble-free, accurate cast."
+  },
+  {
+    "question": "Why should you wait for the gypsum to reach final set before separating the cast from the impression?",
+    "choices": ["To let the disinfectant work", "To prevent fracturing or chipping the teeth of the cast", "So the wax can be added", "To allow the tray adhesive to release"],
+    "correctIndex": 1,
+    "rationale": "Separating too early, before final set, can break or chip the teeth off the cast, ruining its accuracy. Final set typically takes roughly 45–60 minutes."
+  },
+  {
+    "question": "Which wax is used to form a wall around an impression to create a base before pouring gypsum?",
+    "choices": ["Sticky wax", "Utility wax", "Boxing wax", "Inlay casting wax"],
+    "correctIndex": 2,
+    "rationale": "Boxing wax forms a containing wall around an impression so gypsum can be poured to create a base. Utility wax extends tray borders, sticky wax joins pieces, and inlay wax forms patterns."
+  },
+  {
+    "question": "Utility wax is most commonly used to:",
+    "choices": ["Temporarily join two appliance pieces", "Extend or build up tray borders for patient comfort", "Form a casting pattern", "Record the patient's bite"],
+    "correctIndex": 1,
+    "rationale": "Utility wax (rope/beading wax) is used to extend or cushion tray borders for comfort and adaptation. Sticky wax joins pieces, and bite wax records occlusion."
+  },
+  {
+    "question": "The primary purpose of a custom impression tray is to:",
+    "choices": ["Lower material cost for preliminary impressions", "Provide an even, controlled thickness of material for an accurate final impression", "Eliminate the need for a model", "Speed up gypsum setting"],
+    "correctIndex": 1,
+    "rationale": "A custom tray is fabricated on a diagnostic cast to fit a specific patient, providing uniform material thickness and improving the accuracy of a final impression."
+  },
+  {
+    "question": "When fabricating a custom tray, a spacer is placed on the cast in order to:",
+    "choices": ["Strengthen the tray material", "Create room for the impression material", "Mark the tray border", "Add a handle"],
+    "correctIndex": 1,
+    "rationale": "A spacer creates space between the tray and the teeth so there is room for an even layer of impression material when the tray is used."
+  },
+  {
+    "question": "Dental waxes warp easily mainly because they have:",
+    "choices": ["A very low melting point only", "A high coefficient of thermal expansion", "No reaction to heat", "A chemical bond with gypsum"],
+    "correctIndex": 1,
+    "rationale": "Waxes have a high coefficient of thermal expansion and contraction, so they distort with temperature changes. Wax records should be handled carefully and poured promptly."
+  }
+]

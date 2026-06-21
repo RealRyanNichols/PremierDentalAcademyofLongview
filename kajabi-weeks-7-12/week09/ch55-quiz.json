@@ -1,0 +1,134 @@
+[
+  {
+    "question": "Which structures make up the periodontium?",
+    "choices": [
+      "Enamel, dentin, pulp, and cementum",
+      "Gingiva, periodontal ligament, cementum, and alveolar bone",
+      "Crown, root, and pulp chamber",
+      "Salivary glands and tongue"
+    ],
+    "correctIndex": 1,
+    "rationale": "The periodontium—the supporting structures of the teeth—consists of the gingiva, periodontal ligament, cementum, and alveolar bone."
+  },
+  {
+    "question": "What is the primary cause of periodontal disease?",
+    "choices": [
+      "Dental biofilm (plaque)",
+      "Eating cold foods",
+      "Excessive fluoride",
+      "Brushing with a soft toothbrush"
+    ],
+    "correctIndex": 0,
+    "rationale": "Dental biofilm (plaque), a bacterial film on the teeth, is the primary cause of periodontal disease."
+  },
+  {
+    "question": "Hardened, mineralized plaque on the teeth is called:",
+    "choices": [
+      "Cementum",
+      "Calculus (tartar)",
+      "Gutta-percha",
+      "Sealant"
+    ],
+    "correctIndex": 1,
+    "rationale": "When plaque mineralizes it forms calculus, also known as tartar, which harbors bacteria and irritates tissue."
+  },
+  {
+    "question": "The key difference between gingivitis and periodontitis is that periodontitis:",
+    "choices": [
+      "Causes no bleeding",
+      "Involves loss of attachment and destruction of alveolar bone",
+      "Only affects children",
+      "Is always reversible with brushing"
+    ],
+    "correctIndex": 1,
+    "rationale": "Periodontitis extends beyond the gingiva, causing attachment loss and bone destruction, whereas gingivitis is limited to reversible gingival inflammation."
+  },
+  {
+    "question": "Which statement about gingivitis is correct?",
+    "choices": [
+      "It always results in tooth loss",
+      "It is generally reversible with improved plaque control and professional cleaning",
+      "It involves irreversible bone loss",
+      "It cannot be detected clinically"
+    ],
+    "correctIndex": 1,
+    "rationale": "Gingivitis is inflammation without attachment or bone loss and is typically reversible with good plaque control and cleaning."
+  },
+  {
+    "question": "Which instrument is used to measure the depth of the gingival sulcus or periodontal pocket?",
+    "choices": [
+      "Periodontal probe",
+      "Spreader",
+      "Barbed broach",
+      "Apex locator"
+    ],
+    "correctIndex": 0,
+    "rationale": "A calibrated periodontal probe measures sulcus/pocket depths, which are recorded on the periodontal chart."
+  },
+  {
+    "question": "Bleeding on probing is most commonly an indicator of:",
+    "choices": [
+      "Healthy tissue",
+      "Inflammation",
+      "Tooth whitening",
+      "Enamel demineralization only"
+    ],
+    "correctIndex": 1,
+    "rationale": "Bleeding when the sulcus is probed indicates inflammation of the periodontal tissues."
+  },
+  {
+    "question": "Scaling and root planing (SRP) is best described as:",
+    "choices": [
+      "A surgical removal of gingiva",
+      "Nonsurgical deep cleaning that removes plaque and calculus below the gumline and smooths root surfaces",
+      "A routine cleaning above the gumline only",
+      "Placement of a crown"
+    ],
+    "correctIndex": 1,
+    "rationale": "SRP is a nonsurgical 'deep cleaning' that removes subgingival deposits and smooths root surfaces."
+  },
+  {
+    "question": "A patient with controlled diabetes who smokes is at increased risk for periodontal disease. These are examples of:",
+    "choices": [
+      "Protective factors",
+      "Risk factors",
+      "Treatment options",
+      "Periodontal instruments"
+    ],
+    "correctIndex": 1,
+    "rationale": "Diabetes and tobacco use are recognized risk factors that increase susceptibility to and severity of periodontal disease."
+  },
+  {
+    "question": "Which procedure involves reflecting the gingiva to access roots and bone for cleaning and reshaping, then suturing it back?",
+    "choices": [
+      "Prophylaxis",
+      "Flap (osseous) surgery",
+      "Electric pulp testing",
+      "Veneer placement"
+    ],
+    "correctIndex": 1,
+    "rationale": "Flap/osseous surgery reflects the gingival tissue to access and treat root surfaces and bone, then the flap is sutured back."
+  },
+  {
+    "question": "After active periodontal treatment, more frequent recall cleanings to keep the disease controlled are called:",
+    "choices": [
+      "Periodontal maintenance",
+      "Gingivectomy",
+      "Apicoectomy",
+      "Obturation"
+    ],
+    "correctIndex": 0,
+    "rationale": "Periodontal maintenance refers to the ongoing, more frequent recall visits used to control disease after active therapy."
+  },
+  {
+    "question": "Why is patient education considered one of the most important tools in periodontics?",
+    "choices": [
+      "Because home plaque control is essential for treatment success",
+      "Because it eliminates the need for probing",
+      "Because it whitens the teeth",
+      "Because it replaces scaling and root planing"
+    ],
+    "correctIndex": 0,
+    "rationale": "Professional treatment cannot succeed without daily home plaque removal, so patient education and home care are critical."
+  }
+]

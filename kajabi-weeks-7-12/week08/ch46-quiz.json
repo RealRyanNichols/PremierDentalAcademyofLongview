@@ -1,0 +1,74 @@
+[
+  {
+    "question": "Which classification best describes alginate impression material?",
+    "choices": ["Reversible, elastic hydrocolloid", "Irreversible, elastic hydrocolloid", "Irreversible, inelastic material", "Reversible, inelastic material"],
+    "correctIndex": 1,
+    "rationale": "Alginate sets by an irreversible chemical gelation reaction and is elastic, so it can be drawn over minor undercuts and rebound. It is the most common preliminary impression material."
+  },
+  {
+    "question": "A preliminary impression is most appropriately used for which of the following?",
+    "choices": ["Fabricating a final crown casting", "Recording fine margins for a fixed bridge", "Making diagnostic study models and custom trays", "Cementing a permanent restoration"],
+    "correctIndex": 2,
+    "rationale": "Preliminary impressions produce diagnostic casts, study models, opposing models, and are used to fabricate custom trays and provisionals. Fine final detail requires a final (master) impression."
+  },
+  {
+    "question": "Polyvinyl siloxane (PVS) is widely used for final impressions primarily because it offers:",
+    "choices": ["The lowest cost of all materials", "Excellent accuracy and dimensional stability", "The ability to be reused multiple times after setting", "No need for a tray adhesive"],
+    "correctIndex": 1,
+    "rationale": "PVS (addition silicone) is valued for its high accuracy, dimensional stability, and tear resistance, and it can be poured multiple times. It is not the cheapest material and still benefits from tray adhesive."
+  },
+  {
+    "question": "An assistant mixes alginate but the impression sets faster than expected. The most likely cause is:",
+    "choices": ["The water was too cold", "Too little powder was used", "The water was warmer than recommended", "The tray was not perforated"],
+    "correctIndex": 2,
+    "rationale": "Warmer water accelerates the alginate set, while cooler water slows it. Controlling water temperature is a practical way to manage working time."
+  },
+  {
+    "question": "Syneresis in a hydrocolloid impression refers to:",
+    "choices": ["Absorption of water causing swelling", "Loss of water causing shrinkage", "An increase in viscosity during mixing", "The bonding of material to the tray"],
+    "correctIndex": 1,
+    "rationale": "Syneresis is the weeping/loss of water that causes a hydrocolloid to shrink and distort. Imbibition is the opposite — water absorption causing swelling."
+  },
+  {
+    "question": "Why should an alginate impression be poured promptly, generally within about 10–15 minutes?",
+    "choices": ["The material becomes too hard to pour", "It will distort due to syneresis and imbibition", "The tray adhesive degrades quickly", "It begins to bond chemically to enamel"],
+    "correctIndex": 1,
+    "rationale": "Alginate is dimensionally unstable; if not poured promptly (or stored in 100% humidity), it loses or gains water and distorts, ruining the cast's accuracy."
+  },
+  {
+    "question": "Which material is INELASTIC and therefore cannot be withdrawn over undercuts without fracturing?",
+    "choices": ["Polyether", "Zinc oxide eugenol paste", "Polyvinyl siloxane", "Irreversible hydrocolloid"],
+    "correctIndex": 1,
+    "rationale": "Zinc oxide eugenol is an inelastic material used for edentulous ridges with no undercuts. Polyether, PVS, and alginate are all elastic."
+  },
+  {
+    "question": "A low-viscosity (light-body) wash material is used during a two-step PVS impression to:",
+    "choices": ["Provide bulk and hydraulic pressure", "Capture fine detail at the preparation margins", "Border-mold the tray", "Act as the tray adhesive"],
+    "correctIndex": 1,
+    "rationale": "Light-body (low-viscosity) wash flows into fine detail such as preparation margins, while heavy-body or putty provides bulk and hydraulic force to push the wash into place."
+  },
+  {
+    "question": "When handling unset polyvinyl siloxane, the assistant should avoid:",
+    "choices": ["Vinyl gloves", "Nitrile gloves", "Latex gloves and certain sulfur-containing materials", "An automix dispensing gun"],
+    "correctIndex": 2,
+    "rationale": "Latex gloves and some sulfur/retraction chemicals can inhibit the set of addition silicone (PVS). Vinyl or nitrile gloves are preferred, and automix guns are an acceptable delivery method."
+  },
+  {
+    "question": "What is the main purpose of perforations in a stock impression tray?",
+    "choices": ["To reduce the weight of the tray", "To allow the material to lock into the tray so it does not pull away on removal", "To let excess material escape so the impression is thinner", "To improve patient comfort"],
+    "correctIndex": 1,
+    "rationale": "Perforations (along with tray adhesive) mechanically retain the impression material in the tray so it is not distorted or pulled away from the tray during removal."
+  },
+  {
+    "question": "Polyether is an excellent final impression material but a notable limitation is that it:",
+    "choices": ["Cannot record fine detail", "Is very stiff when set, making removal over deep undercuts difficult", "Sets too slowly to be practical", "Cannot be used in a moist field"],
+    "correctIndex": 1,
+    "rationale": "Polyether is accurate and hydrophilic (good in moist fields) but becomes quite rigid when set, which can make removal difficult over deep undercuts, and it can absorb water if stored wet."
+  },
+  {
+    "question": "A custom impression tray is preferred over a stock tray when the clinician needs:",
+    "choices": ["A faster, lower-cost option for a quick study model", "A precise, uniform thickness of material for an accurate final impression", "A tray that requires no adhesive", "A disposable tray for a single screening"],
+    "correctIndex": 1,
+    "rationale": "Custom trays are fabricated on a diagnostic cast to provide an even, controlled material thickness and precise fit, improving final-impression accuracy. Stock trays are quicker and cheaper for preliminary work."
+  }
+]
