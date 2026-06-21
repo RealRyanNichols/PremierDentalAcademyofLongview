@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "check:facts": "node scripts/check-facts.mjs",
-    "test": "node scripts/check-facts.mjs"
+    "check:links": "node scripts/check-links.mjs",
+    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs"
   }
 }
