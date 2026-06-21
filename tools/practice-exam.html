@@ -175,6 +175,7 @@
       <p class="text-slate-600 text-sm mt-2">It's 100% free — just tell us who we're helping so we can send your results and study tips. No spam, unsubscribe anytime.</p>
     </div>
     <form id="unlock-form" class="mt-5 space-y-3">
+      <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><input name="company" type="text" tabindex="-1" autocomplete="off" /></div>
       <input name="name" type="text" required placeholder="Your name" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
       <input name="email" type="email" placeholder="you@email.com" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
       <input name="phone" type="tel" placeholder="Cell phone (so we can text your results)" class="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
@@ -313,6 +314,7 @@
   function begin(list, opts) {
     opts = opts || {};
     examMode = !!opts.timed;
+    try { if (window.PDA && window.PDA.track) window.PDA.track('practice_exam_start', { mode: examMode ? 'timed' : 'practice' }); } catch (e) {}
     quiz = list; idx = 0; answers = new Array(list.length).fill(null);
     $('q-total').textContent = list.length;
     stopTimer();
@@ -397,6 +399,7 @@
     });
     const pct = Math.round(correct / quiz.length * 100);
     saveAttempt(currentMode, pct, correct, quiz.length, byTopic);
+    try { if (window.PDA && window.PDA.track) window.PDA.track('practice_exam_complete', { score: pct, mode: currentMode }); } catch (e) {}
     $('score-pct').textContent = pct + '%';
     $('score-correct').textContent = correct;
     $('score-total').textContent = quiz.length;
@@ -537,15 +540,27 @@
     const err = $('unlock-err');
     if (!name) { err.textContent = 'Please enter your name.'; err.classList.remove('hidden'); return; }
     if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.classList.remove('hidden'); return; }
+    // Honeypot: bots fill the hidden field → close silently, save nothing.
+    if ((fd.get('company') || '').trim()) { modal.classList.add('hidden'); return; }
     err.classList.add('hidden');
     const btn = $('unlock-submit'); btn.disabled = true; btn.textContent = 'Starting…';
+
+    // Lead attribution (analytics layer, with a localStorage fallback).
+    let attrMsg = '';
+    try {
+      let a = {};
+      try { a = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e0) {}
+      const parts = Object.keys(a).filter(k => k !== '_ts' && a[k]).map(k => k + '=' + a[k]);
+      if (parts.length) attrMsg = 'Attribution: ' + parts.join(', ');
+    } catch (e0) {}
 
     // Capture as a real lead (lands in /admin/leads), plus the email list.
     const lead = {
       first_name: name.split(' ')[0] || '',
       last_name: name.split(' ').slice(1).join(' '),
       email: email || null, phone: phone || null,
-      interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam'
+      interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam',
+      message: attrMsg || null
     };
     let saved = false;
     if (sb) {
@@ -556,6 +571,7 @@
     if (!saved) {
       try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e4) {}
     }
+    try { if (window.PDA && window.PDA.track) window.PDA.track('practice_exam_lead_submit', { hasEmail: !!email, hasPhone: !!phone, saved: saved }); } catch (e6) {}
     try { localStorage.setItem(LS_UNLOCK, '1'); localStorage.setItem('pda.examLead', JSON.stringify({ name: name, email: email, phone: phone })); } catch (e5) {}
 
     modal.classList.add('hidden');
