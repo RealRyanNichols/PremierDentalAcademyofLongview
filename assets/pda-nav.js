@@ -105,6 +105,18 @@
 
     // Replace the first <nav>, or prepend a fresh one if the page has none.
     const existingNav = document.querySelector('nav');
+
+    // Opt-out: a page that ships its own auth-aware nav (e.g. /dashboard's student
+    // bar with the avatar menu + sign-out) marks it with data-pda-keep. Analytics
+    // and site-facts already loaded above, so render the shared footer for
+    // consistency, then bail before injecting the PROSPECT chrome (marketing nav,
+    // mobile menu, Call/Apply bar, urgency bar, exit-intent) — none of which
+    // belongs on a logged-in app page.
+    if (existingNav && existingNav.hasAttribute('data-pda-keep')) {
+      renderFooter();
+      return;
+    }
+
     const navWrap = document.createElement('div');
     navWrap.innerHTML = NAV_HTML.trim();
     const newNav = navWrap.firstElementChild;
