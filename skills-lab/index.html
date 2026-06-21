@@ -51,6 +51,7 @@ tailwind.config = {
     @page{size:Letter;margin:0.6in}
     body{background:#fff!important}
     .no-print{display:none!important}
+    #pda-footer,#pda-cta-bar,#pda-urgency-bar,nav[aria-label="Primary"]{display:none!important}
     #panel-transcript{display:block!important}
     .panel{display:none!important}
     #panel-transcript.panel{display:block!important}
@@ -60,6 +61,7 @@ tailwind.config = {
   }
 </style>
   <script defer src="/_vercel/speed-insights/script.js"></script>
+<script src="/assets/pda-nav.js" defer></script>
 </head>
 <body class="min-h-screen">
 
@@ -107,42 +109,42 @@ tailwind.config = {
 
     <!-- Train at the chair — top CTAs into the hands-on tools -->
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-      <a href="/skills-lab/virtual-office" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-teal-700 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/virtual-office" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-teal-700 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🪑</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">New · 3D</span>
         <div class="display text-xl font-bold mt-2">Step into the Virtual Office</div>
         <p class="text-cyan-50 text-sm mt-1 max-w-xs">Walk around a real 3D operatory. Meet the dentist, tap every instrument, set up your tray.</p>
         <span class="inline-flex items-center gap-1 mt-3 font-semibold text-sm">Look around the room <span class="group-hover:translate-x-0.5 transition">→</span></span>
       </a>
-      <a href="/skills-lab/procedures" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/procedures" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🦿</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">New</span>
         <div class="display text-xl font-bold mt-2">Run a real procedure</div>
         <p class="text-teal-50 text-sm mt-1 max-w-xs">Crown prep, fillings, extractions, sterilization — make the next right call at every step.</p>
         <span class="inline-flex items-center gap-1 mt-3 font-semibold text-sm">Start a procedure <span class="group-hover:translate-x-0.5 transition">→</span></span>
       </a>
-      <a href="/skills-lab/day-shift" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/day-shift" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🗓️</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">New</span>
         <div class="display text-xl font-bold mt-2">Work a full shift</div>
         <p class="text-amber-50 text-sm mt-1 max-w-xs">A schedule of real patients — read charts, catch allergies, score your day.</p>
         <span class="inline-flex items-center gap-1 mt-3 font-semibold text-sm">Start your shift <span class="group-hover:translate-x-0.5 transition">→</span></span>
       </a>
-      <a href="/skills-lab/tray-builder" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/tray-builder" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-600 to-emerald-700 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🧰</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">Tray setup</span>
         <div class="display text-xl font-bold mt-2">Build the tray</div>
         <p class="text-emerald-50 text-sm mt-1 max-w-xs">Set up the correct tray for each procedure — restorative, crown, root canal, extraction.</p>
         <span class="inline-flex items-center gap-1 mt-3 font-semibold text-sm">Build a tray <span class="group-hover:translate-x-0.5 transition">→</span></span>
       </a>
-      <a href="/skills-lab/instruments" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-navy-900 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/instruments" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-700 to-navy-900 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🔧</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">Reference</span>
         <div class="display text-xl font-bold mt-2">Instrument Library</div>
         <p class="text-slate-200 text-sm mt-1 max-w-xs">Every instrument and what it's for — your chairside reference.</p>
         <span class="inline-flex items-center gap-1 mt-3 font-semibold text-sm">Browse instruments <span class="group-hover:translate-x-0.5 transition">→</span></span>
       </a>
-      <a href="/skills-lab/abbreviations" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 text-white p-5 shadow-sm hover:shadow-lg transition">
+      <a href="/skills-lab/abbreviations" data-event="skill_lab_open" class="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 text-white p-5 shadow-sm hover:shadow-lg transition">
         <span class="absolute -right-4 -bottom-4 text-7xl opacity-20 group-hover:opacity-30 transition">🔤</span>
         <span class="inline-block text-[11px] font-bold uppercase tracking-wide bg-white/20 rounded-full px-2 py-0.5">Reference</span>
         <div class="display text-xl font-bold mt-2">Charting Abbreviations</div>
@@ -270,7 +272,7 @@ tailwind.config = {
       </div>
       <div class="text-sm text-slate-500"><span id="qBankCount">0</span> questions in the bank</div>
     </div>
-    <a href="/skills-lab/quizzes" class="mt-4 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 text-white p-4 shadow-sm hover:shadow-md transition group">
+    <a href="/skills-lab/quizzes" data-event="skill_lab_open" class="mt-4 flex items-center gap-3 rounded-2xl bg-gradient-to-br from-teal-600 to-cyan-600 text-white p-4 shadow-sm hover:shadow-md transition group">
       <span class="text-2xl">&#9889;</span>
       <span class="flex-1"><span class="font-bold block">New &mdash; the full Quiz Hub</span><span class="text-teal-50 text-sm">Bigger bank, quick-start drills (x-ray errors, scenarios), and a cleaner runner. Open it &rarr;</span></span>
       <span class="opacity-80 group-hover:translate-x-0.5 transition">&rarr;</span>
