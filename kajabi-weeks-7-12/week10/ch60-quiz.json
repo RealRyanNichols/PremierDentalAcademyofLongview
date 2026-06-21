@@ -1,0 +1,134 @@
+[
+  {
+    "question": "Malocclusion is best defined as:",
+    "choices": [
+      "A type of gum disease",
+      "Any deviation from normal occlusion",
+      "The loss of all permanent teeth",
+      "A cavity on the chewing surface"
+    ],
+    "correctIndex": 1,
+    "rationale": "Malocclusion is any deviation from normal occlusion, the way maxillary and mandibular teeth contact when the jaws close."
+  },
+  {
+    "question": "Angle's classification of occlusion is based on the relationship of the:",
+    "choices": [
+      "Maxillary and mandibular canines",
+      "Maxillary and mandibular first molars",
+      "Central incisors only",
+      "Wisdom teeth"
+    ],
+    "correctIndex": 1,
+    "rationale": "Angle's classification describes occlusion based on the relationship of the maxillary and mandibular first molars."
+  },
+  {
+    "question": "A patient whose lower jaw is positioned forward, producing an 'underbite' appearance, would most likely be classified as:",
+    "choices": [
+      "Class I",
+      "Class II",
+      "Class III",
+      "Edentulous"
+    ],
+    "correctIndex": 2,
+    "rationale": "In Class III malocclusion the mandible is positioned mesially (forward) relative to the maxilla, often appearing as an underbite."
+  },
+  {
+    "question": "Which classification has a normal molar relationship even though individual teeth may be crowded or rotated?",
+    "choices": [
+      "Class I",
+      "Class II",
+      "Class III",
+      "Class IV"
+    ],
+    "correctIndex": 0,
+    "rationale": "Class I has a normal front-to-back molar relationship; the bite is correct even if individual teeth are crowded or rotated."
+  },
+  {
+    "question": "The wire that runs through the brackets and applies controlled force to move teeth is the:",
+    "choices": [
+      "Ligature",
+      "Separator",
+      "Archwire",
+      "Band"
+    ],
+    "correctIndex": 2,
+    "rationale": "The archwire passes through the brackets and delivers controlled forces that move the teeth."
+  },
+  {
+    "question": "A separator (spacer) is used to:",
+    "choices": [
+      "Hold the archwire in the bracket",
+      "Create space between teeth before bands are seated",
+      "Whiten the teeth during treatment",
+      "Replace a missing tooth"
+    ],
+    "correctIndex": 1,
+    "rationale": "Separators are placed between teeth to create the space needed before orthodontic bands can be seated."
+  },
+  {
+    "question": "Why is the retention phase (wearing a retainer) important after active orthodontic treatment?",
+    "choices": [
+      "It whitens the teeth",
+      "Teeth tend to relapse toward their original positions without retention",
+      "It removes plaque automatically",
+      "It is required only for adults"
+    ],
+    "correctIndex": 1,
+    "rationale": "After active treatment teeth tend to relapse toward their original positions, so retainers hold them in their new positions."
+  },
+  {
+    "question": "A radiograph used specifically to analyze skeletal and dental relationships in orthodontics is the:",
+    "choices": [
+      "Bitewing",
+      "Periapical",
+      "Cephalometric radiograph",
+      "Occlusal film of the palate"
+    ],
+    "correctIndex": 2,
+    "rationale": "A cephalometric (ceph) radiograph is used in orthodontics to analyze skeletal and dental relationships for diagnosis and planning."
+  },
+  {
+    "question": "An orthodontic patient is at increased risk for white-spot decalcification primarily because:",
+    "choices": [
+      "Braces make teeth grow faster",
+      "Appliances trap food and plaque, making cleaning harder",
+      "Archwires release acid onto the enamel",
+      "Fluoride cannot be used during treatment"
+    ],
+    "correctIndex": 1,
+    "rationale": "Brackets and wires trap food and plaque and make brushing harder, raising the risk of decay and white-spot decalcification."
+  },
+  {
+    "question": "Which dietary advice is appropriate for a patient with fixed braces?",
+    "choices": [
+      "Eat more hard candy to strengthen teeth",
+      "Avoid hard, sticky, and chewy foods that can damage appliances",
+      "Chew ice frequently to clean the brackets",
+      "Avoid all fluoride products"
+    ],
+    "correctIndex": 1,
+    "rationale": "Hard, sticky, and chewy foods can break or dislodge brackets and wires, so patients are advised to avoid them."
+  },
+  {
+    "question": "A patient reports soreness one day after an adjustment. The most appropriate response is to:",
+    "choices": [
+      "Tell them to stop wearing the appliance",
+      "Reassure them that soreness after adjustments is normal and usually temporary",
+      "Schedule an immediate extraction",
+      "Remove all brackets"
+    ],
+    "correctIndex": 1,
+    "rationale": "Soreness following an adjustment is a normal, usually temporary response as the teeth begin to move, and patients should be reassured."
+  },
+  {
+    "question": "The horizontal projection of the maxillary anterior teeth over the mandibular anterior teeth is called:",
+    "choices": [
+      "Overbite",
+      "Overjet",
+      "Crossbite",
+      "Open bite"
+    ],
+    "correctIndex": 1,
+    "rationale": "Overjet is the horizontal projection of the upper front teeth over the lower, whereas overbite refers to the vertical overlap."
+  }
+]

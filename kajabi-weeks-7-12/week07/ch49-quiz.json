@@ -1,0 +1,134 @@
+[
+  {
+    "question": "What is the primary purpose of a matrix system?",
+    "choices": [
+      "To anesthetize the tooth",
+      "To temporarily replace a missing proximal wall so material can be packed against a solid surface",
+      "To polish the final restoration",
+      "To etch the enamel"
+    ],
+    "correctIndex": 1,
+    "rationale": "A matrix provides the temporary missing wall for a proximal restoration, allowing the material to be confined and contoured properly."
+  },
+  {
+    "question": "For which classification of restoration is a matrix typically required?",
+    "choices": [
+      "Class I (occlusal pit only)",
+      "Class V (cervical, no proximal involvement)",
+      "Class II (posterior proximal)",
+      "A simple sealant"
+    ],
+    "correctIndex": 2,
+    "rationale": "Class II restorations involve proximal surfaces where a wall is missing, so a matrix is needed; classes such as III and IV also require one."
+  },
+  {
+    "question": "Which component of the Tofflemire system holds and tightens the metal band?",
+    "choices": [
+      "The wedge",
+      "The Tofflemire retainer",
+      "The separating ring",
+      "The Mylar strip"
+    ],
+    "correctIndex": 1,
+    "rationale": "The Tofflemire retainer is the mechanical body that locks, sizes, and tightens the matrix band around the tooth."
+  },
+  {
+    "question": "When forming the matrix band loop, which edge should be positioned toward the gingiva?",
+    "choices": [
+      "The wider circumference",
+      "The smaller circumference",
+      "Either edge, it does not matter",
+      "The occlusal edge"
+    ],
+    "correctIndex": 1,
+    "rationale": "The smaller circumference of the teardrop loop is the gingival edge so the band hugs the tooth at the gum line."
+  },
+  {
+    "question": "On which surface should the Tofflemire retainer typically be positioned?",
+    "choices": [
+      "Lingual surface",
+      "Occlusal surface",
+      "Buccal (facial) surface",
+      "Inside the preparation"
+    ],
+    "correctIndex": 2,
+    "rationale": "The retainer is placed on the buccal surface so it does not interfere with the tongue and is easy to remove."
+  },
+  {
+    "question": "What are the main functions of a wedge in matrix placement?",
+    "choices": [
+      "To cure the composite and whiten the tooth",
+      "To adapt the band at the gingival margin, hold it in place, and slightly separate the teeth",
+      "To anesthetize the gingiva",
+      "To replace the retainer"
+    ],
+    "correctIndex": 1,
+    "rationale": "The wedge adapts the band at the gingival margin to prevent overhangs, holds the band, and provides slight separation for a tight contact."
+  },
+  {
+    "question": "From which embrasure is a wedge usually inserted?",
+    "choices": [
+      "The smaller embrasure",
+      "The occlusal embrasure",
+      "The larger embrasure (often the lingual)",
+      "Directly through the contact point"
+    ],
+    "correctIndex": 2,
+    "rationale": "The wedge is inserted from the larger embrasure, commonly the lingual, into the gingival embrasure to seat firmly."
+  },
+  {
+    "question": "What problem results when a matrix is poorly adapted at the gingival margin?",
+    "choices": [
+      "An overhang that harbors plaque and irritates the gingiva",
+      "A whiter restoration",
+      "Faster curing of composite",
+      "Stronger amalgam"
+    ],
+    "correctIndex": 0,
+    "rationale": "Poor gingival adaptation allows excess material to extend past the margin, creating an overhang that traps plaque and irritates tissue."
+  },
+  {
+    "question": "Why are sectional matrix systems popular for posterior composite restorations?",
+    "choices": [
+      "They are cheaper than any other system",
+      "The precontoured band and separating ring help create a tight, anatomic proximal contact",
+      "They eliminate the need for light curing",
+      "They do not require a wedge ever"
+    ],
+    "correctIndex": 1,
+    "rationale": "Sectional systems use a precontoured band and a separating ring that tooth-separates and shapes a tight, anatomic contact, often hard to achieve with a full band."
+  },
+  {
+    "question": "Which matrix is used for anterior (Class III/IV) composite restorations and why?",
+    "choices": [
+      "A stainless steel Tofflemire band, because it is strongest",
+      "A clear plastic (Mylar) strip, because the curing light passes through it",
+      "A separating ring alone, because it self-cures",
+      "No matrix is ever used anteriorly"
+    ],
+    "correctIndex": 1,
+    "rationale": "A transparent Mylar strip lets the curing light reach the composite through the matrix, making it ideal for anterior composite restorations."
+  },
+  {
+    "question": "Why might an assistant burnish the matrix band against the adjacent tooth before material placement?",
+    "choices": [
+      "To clean the band",
+      "To help form a positive proximal contact",
+      "To make the band easier to remove",
+      "To cure the band"
+    ],
+    "correctIndex": 1,
+    "rationale": "Burnishing the band toward the adjacent tooth helps create a proper, tight proximal contact in the finished restoration."
+  },
+  {
+    "question": "What is the correct general sequence for removing a Tofflemire matrix after placement of the restoration?",
+    "choices": [
+      "Remove the wedge first, then yank the band and retainer together",
+      "Loosen the retainer and slide it off, then gently remove the band, then the wedge",
+      "Pull everything off at once quickly",
+      "Leave the band in place permanently"
+    ],
+    "correctIndex": 1,
+    "rationale": "Loosening and removing the retainer first, then the band, then the wedge protects the new restoration from being fractured during removal."
+  }
+]

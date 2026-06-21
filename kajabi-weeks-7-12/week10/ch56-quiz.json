@@ -1,0 +1,123 @@
+[
+  {
+    "question": "Why does the oral surgery setting require surgical asepsis rather than only medical asepsis?",
+    "choices": [
+      "Surgery is faster when sterile technique is used",
+      "Surgical procedures break the protective mucosal barrier, creating a pathway for infection",
+      "Sterile gloves are less expensive than exam gloves",
+      "Medical asepsis is only used in pediatric dentistry"
+    ],
+    "correctIndex": 1,
+    "rationale": "Because surgery breaches the protective barrier of the oral mucosa, the standard rises to surgical (sterile) asepsis to eliminate all microorganisms and prevent infection of deeper tissues."
+  },
+  {
+    "question": "What is the primary function of a dental elevator during an extraction?",
+    "choices": [
+      "To grasp and lift the tooth out of the socket",
+      "To suture the soft tissue after removal",
+      "To luxate (loosen) the tooth from the periodontal ligament and bone",
+      "To irrigate the surgical site"
+    ],
+    "correctIndex": 2,
+    "rationale": "Elevators luxate the tooth, loosening it from the periodontal ligament and surrounding bone so forceps can remove it."
+  },
+  {
+    "question": "A tooth that cannot fully erupt into its normal position is described as:",
+    "choices": [
+      "Avulsed",
+      "Impacted",
+      "Resorbed",
+      "Luxated"
+    ],
+    "correctIndex": 1,
+    "rationale": "An impacted tooth is one that cannot fully erupt into normal position, commonly seen with third molars."
+  },
+  {
+    "question": "Which instrument is used to clamp tissue or blood vessels and is also used to load and unload a scalpel blade?",
+    "choices": [
+      "Periosteal elevator",
+      "Surgical curette",
+      "Hemostat",
+      "Rongeur"
+    ],
+    "correctIndex": 2,
+    "rationale": "A hemostat is a locking instrument used to clamp tissue or vessels, and it is the safe tool for loading and unloading scalpel blades instead of fingers."
+  },
+  {
+    "question": "A patient returns 3 days after an extraction with severe pain at the surgical site. The most likely complication is:",
+    "choices": [
+      "Alveolar osteitis (dry socket)",
+      "An allergic reaction to gauze",
+      "Normal healing that needs no attention",
+      "A new caries lesion"
+    ],
+    "correctIndex": 0,
+    "rationale": "Alveolar osteitis, or dry socket, is a painful condition arising when the blood clot is lost or fails to form, typically 2 to 4 days after extraction."
+  },
+  {
+    "question": "Which postoperative instruction helps protect the blood clot and prevent dry socket?",
+    "choices": [
+      "Rinse vigorously with hot water on the first day",
+      "Drink frequently through a straw",
+      "Avoid smoking and drinking through a straw",
+      "Chew hard foods on the surgical side"
+    ],
+    "correctIndex": 2,
+    "rationale": "Smoking and the suction created by drinking through a straw can dislodge the clot, so patients are told to avoid both to help prevent dry socket."
+  },
+  {
+    "question": "The narrow suction tip preferred in surgery to keep the field clear of blood and irrigant is the:",
+    "choices": [
+      "High-volume evacuator (HVE)",
+      "Saliva ejector",
+      "Frazier tip",
+      "Air-water syringe"
+    ],
+    "correctIndex": 2,
+    "rationale": "The Frazier tip is a narrow surgical suction tip that keeps the surgical field clear without obstructing the surgeon's view."
+  },
+  {
+    "question": "A suture described as resorbable is one that:",
+    "choices": [
+      "Must always be removed in 5 to 7 days",
+      "Dissolves over time and does not require removal",
+      "Is used only for skin, never oral tissue",
+      "Cannot be used near bone"
+    ],
+    "correctIndex": 1,
+    "rationale": "Resorbable sutures dissolve over time and do not require removal, unlike nonresorbable sutures that are typically removed in about 5 to 7 days."
+  },
+  {
+    "question": "During a sedation case, an instrument falls from the sterile tray onto the floor. What is the correct action?",
+    "choices": [
+      "Pick it up and continue using it to save time",
+      "Wipe it with an alcohol gauze and return it to the tray",
+      "Consider it contaminated and replace it with a sterile instrument",
+      "Hand it to the circulating assistant to rinse"
+    ],
+    "correctIndex": 2,
+    "rationale": "If sterility is in doubt or broken, the item is considered contaminated and must be replaced with a sterile one."
+  },
+  {
+    "question": "Which preoperative step is especially important before a procedure involving sedation?",
+    "choices": [
+      "Confirming the patient followed fasting instructions",
+      "Polishing the teeth",
+      "Taking final impressions",
+      "Applying fluoride varnish"
+    ],
+    "correctIndex": 0,
+    "rationale": "Patients undergoing sedation must follow fasting (NPO) instructions to reduce the risk of aspiration, so confirming compliance is a critical preoperative check."
+  },
+  {
+    "question": "Surgical reshaping and smoothing of the bony ridge, often done to prepare for a denture, is called:",
+    "choices": [
+      "Biopsy",
+      "Alveoloplasty",
+      "Frenectomy",
+      "Orthognathic surgery"
+    ],
+    "correctIndex": 1,
+    "rationale": "Alveoloplasty is the surgical reshaping and smoothing of the alveolar (bony) ridge, frequently performed to ready the ridge for a prosthesis."
+  }
+]

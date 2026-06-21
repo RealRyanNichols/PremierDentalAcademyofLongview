@@ -1,0 +1,123 @@
+[
+  {
+    "question": "What is the primary purpose of a dental sealant?",
+    "choices": [
+      "To whiten the teeth",
+      "To form a physical barrier in pits and fissures to prevent decay",
+      "To replace fluoride entirely",
+      "To restore a tooth that already has a cavity"
+    ],
+    "correctIndex": 1,
+    "rationale": "A sealant flows into and seals the pits and fissures, forming a physical barrier that keeps bacteria and food out and prevents pit-and-fissure caries."
+  },
+  {
+    "question": "Sealants are most beneficial on which teeth and patients?",
+    "choices": [
+      "Anterior teeth in older adults",
+      "Newly erupted, caries-free permanent molars in children and adolescents",
+      "Teeth that already have cavitated decay",
+      "Teeth with existing large restorations"
+    ],
+    "correctIndex": 1,
+    "rationale": "Sealants work best on sound, newly erupted permanent molars in children and adolescents, ideally before decay begins."
+  },
+  {
+    "question": "Which is the single most important factor for sealant retention?",
+    "choices": [
+      "Using the most expensive material",
+      "Keeping the tooth isolated and dry, free of saliva contamination",
+      "Applying a thick layer of sealant",
+      "Sealing the tooth immediately after eating"
+    ],
+    "correctIndex": 1,
+    "rationale": "Moisture or saliva contamination of the etched surface is the leading cause of sealant failure, so isolation and a dry field are critical."
+  },
+  {
+    "question": "Properly etched enamel should appear:",
+    "choices": [
+      "Glossy and wet",
+      "Dark and stained",
+      "Frosty or chalky white",
+      "Yellow and smooth"
+    ],
+    "correctIndex": 2,
+    "rationale": "After etching, rinsing, and drying, properly etched enamel appears frosty or chalky white, indicating a roughened surface ready for bonding."
+  },
+  {
+    "question": "Which sealant material releases fluoride and is more tolerant of moisture?",
+    "choices": [
+      "Resin-based sealant",
+      "Glass ionomer sealant",
+      "Amalgam",
+      "Composite resin filling"
+    ],
+    "correctIndex": 1,
+    "rationale": "Glass ionomer sealants release fluoride and tolerate moisture better, which can help when ideal isolation is difficult, though they are generally less wear-resistant than resin."
+  },
+  {
+    "question": "While applying a resin sealant, saliva contacts the etched enamel before the sealant is placed. What should you do?",
+    "choices": [
+      "Place the sealant anyway to save time",
+      "Dry the tooth and place the sealant without re-etching",
+      "Rinse, re-isolate, and re-etch the surface before placing sealant",
+      "Apply fluoride varnish instead and skip the sealant"
+    ],
+    "correctIndex": 2,
+    "rationale": "Saliva contamination ruins the etched surface, so you must rinse, re-isolate, and re-etch before placing the sealant to ensure proper bonding."
+  },
+  {
+    "question": "Which step comes immediately after applying and curing the sealant?",
+    "choices": [
+      "Etching the enamel",
+      "Cleaning the tooth",
+      "Checking and adjusting the occlusion",
+      "Isolating the tooth"
+    ],
+    "correctIndex": 2,
+    "rationale": "After the sealant is cured and evaluated for coverage, the occlusion is checked with articulating paper and any high spots are adjusted."
+  },
+  {
+    "question": "The acid commonly used to roughen enamel before placing a sealant is:",
+    "choices": [
+      "Sodium fluoride",
+      "Phosphoric acid",
+      "Hydrogen peroxide",
+      "Acetic acid"
+    ],
+    "correctIndex": 1,
+    "rationale": "Phosphoric acid is the typical etchant used to create a microscopically roughened enamel surface for sealant bonding."
+  },
+  {
+    "question": "Sealants primarily protect against caries on which tooth surfaces?",
+    "choices": [
+      "Smooth facial surfaces",
+      "Pit-and-fissure (occlusal) surfaces",
+      "Root surfaces",
+      "Interproximal contacts only"
+    ],
+    "correctIndex": 1,
+    "rationale": "Sealants address pit-and-fissure caries on chewing surfaces; fluoride is what primarily protects the smooth surfaces."
+  },
+  {
+    "question": "A patient with sealants placed two years ago returns for a recall. What is appropriate?",
+    "choices": [
+      "Sealants never need to be checked again",
+      "Evaluate the sealants for retention and integrity and repair or replace as needed",
+      "Remove all sealants because they expire after one year",
+      "Replace them only if the patient requests it"
+    ],
+    "correctIndex": 1,
+    "rationale": "Sealants are evaluated at recall visits; partially lost or worn sealants can be repaired or replaced, and sealed teeth still need routine care."
+  },
+  {
+    "question": "Why do sealants NOT replace the need for fluoride?",
+    "choices": [
+      "Fluoride is only for adults",
+      "Sealants protect pits and fissures, while fluoride protects smooth surfaces",
+      "Sealants and fluoride do the same thing",
+      "Fluoride weakens sealants"
+    ],
+    "correctIndex": 1,
+    "rationale": "Sealants block pit-and-fissure caries, but fluoride is needed to protect the smooth surfaces, so the two are complementary."
+  }
+]

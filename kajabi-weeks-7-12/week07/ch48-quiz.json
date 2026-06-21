@@ -1,0 +1,134 @@
+[
+  {
+    "question": "Which branch of general dentistry is concerned with restoring individual teeth?",
+    "choices": [
+      "Periodontics",
+      "Operative (restorative) dentistry",
+      "Orthodontics",
+      "Endodontics"
+    ],
+    "correctIndex": 1,
+    "rationale": "Operative, or restorative, dentistry deals with restoring the form and function of individual teeth, which is the focus of general practice."
+  },
+  {
+    "question": "What is dental amalgam composed of?",
+    "choices": [
+      "A resin matrix with glass filler particles",
+      "Pure gold and platinum",
+      "An alloy of mercury with silver, tin, copper, and other metals",
+      "Calcium hydroxide and zinc oxide"
+    ],
+    "correctIndex": 2,
+    "rationale": "Amalgam is an alloy of mercury combined with silver, tin, copper, and other metals, giving it strength and durability."
+  },
+  {
+    "question": "Why is amalgam often chosen for posterior restorations?",
+    "choices": [
+      "It is tooth-colored and highly esthetic",
+      "It is strong, wear-resistant, and tolerant of moisture",
+      "It bonds chemically to enamel without etching",
+      "It requires no condensation"
+    ],
+    "correctIndex": 1,
+    "rationale": "Amalgam is strong, wear-resistant, and more forgiving of moisture, making it suitable for load-bearing posterior teeth."
+  },
+  {
+    "question": "A patient needs an esthetic restoration on a front tooth. Which direct material is the best choice?",
+    "choices": [
+      "Amalgam",
+      "Composite resin",
+      "Zinc phosphate cement",
+      "Cavity varnish"
+    ],
+    "correctIndex": 1,
+    "rationale": "Composite resin is tooth-colored and bondable, making it the preferred direct material for esthetic anterior restorations."
+  },
+  {
+    "question": "How is composite resin placed in a preparation?",
+    "choices": [
+      "In a single bulk mass that air-dries",
+      "Triturated in a capsule and condensed",
+      "In increments, each light-cured before the next",
+      "Painted on as a thin varnish"
+    ],
+    "correctIndex": 2,
+    "rationale": "Composite is placed in increments and each layer is light-cured before adding the next to ensure complete polymerization."
+  },
+  {
+    "question": "What is the term for the mechanical mixing of amalgam in a capsule?",
+    "choices": [
+      "Condensation",
+      "Trituration",
+      "Etching",
+      "Burnishing"
+    ],
+    "correctIndex": 1,
+    "rationale": "Trituration is the mechanical mixing of the amalgam alloy and mercury within a sealed capsule."
+  },
+  {
+    "question": "Why should amalgam be triturated only when the dentist is ready to place it?",
+    "choices": [
+      "It is poisonous until mixed",
+      "It has a limited working time and begins to set",
+      "It changes color over time",
+      "The capsule expires instantly"
+    ],
+    "correctIndex": 1,
+    "rationale": "Once triturated, amalgam has a limited working time before it starts to set, so it should be mixed just before placement."
+  },
+  {
+    "question": "What is the primary purpose of the high-volume evacuator (HVE) during a restorative procedure?",
+    "choices": [
+      "To polish the restoration",
+      "To remove water, saliva, and debris and keep the field dry and clear",
+      "To cure composite resin",
+      "To administer anesthetic"
+    ],
+    "correctIndex": 1,
+    "rationale": "The HVE provides suction to keep the operating field dry and free of fluids and debris, improving visibility and isolation."
+  },
+  {
+    "question": "Which of the following is an indirect restoration?",
+    "choices": [
+      "Composite filling",
+      "Amalgam filling",
+      "Crown cemented after fabrication outside the mouth",
+      "Cavity liner"
+    ],
+    "correctIndex": 2,
+    "rationale": "An indirect restoration, such as a crown, is fabricated outside the mouth and then cemented; direct restorations are placed in one visit."
+  },
+  {
+    "question": "What does four-handed dentistry refer to?",
+    "choices": [
+      "Using two dentists on one patient",
+      "A seated operator and assistant working together with efficient instrument transfer",
+      "Performing four procedures in one visit",
+      "Wearing two pairs of gloves"
+    ],
+    "correctIndex": 1,
+    "rationale": "Four-handed dentistry is the coordinated work of a seated dentist and assistant, improving efficiency and reducing appointment time."
+  },
+  {
+    "question": "How should scrap amalgam be handled after a procedure?",
+    "choices": [
+      "Rinsed down the sink drain",
+      "Thrown in the regular trash",
+      "Handled and disposed of as regulated waste",
+      "Reused on the next patient"
+    ],
+    "correctIndex": 2,
+    "rationale": "Amalgam scrap contains mercury and must be managed as regulated waste, never rinsed down the drain or placed in general trash."
+  },
+  {
+    "question": "Why must composite resin be protected from the overhead operatory light before placement is complete?",
+    "choices": [
+      "The light makes it change shade",
+      "The light can begin to cure (polymerize) it prematurely",
+      "The light contaminates it with bacteria",
+      "The light cools it too quickly"
+    ],
+    "correctIndex": 1,
+    "rationale": "Composite cures with light energy, so ambient operatory light can start premature polymerization, shortening working time."
+  }
+]
