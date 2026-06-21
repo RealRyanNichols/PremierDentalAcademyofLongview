@@ -431,10 +431,13 @@
 
   // Top nav identity
   const initials = ((p.first_name?.[0] || p.email?.[0] || '?') + (p.last_name?.[0] || '')).toUpperCase();
-  document.getElementById('avatar-btn').textContent = initials;
-  document.getElementById('dd-name').textContent = (p.first_name || '') + ' ' + (p.last_name || '');
-  document.getElementById('dd-email').textContent = p.email;
-  document.getElementById('user-label').textContent = p.first_name || p.email;
+  // Null-guarded: the student top-bar <nav> can be swapped by the shared nav, so these
+  // elements may be absent — never let identity wiring crash the dashboard render.
+  const setText = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  setText('avatar-btn', initials);
+  setText('dd-name', (p.first_name || '') + ' ' + (p.last_name || ''));
+  setText('dd-email', p.email);
+  setText('user-label', p.first_name || p.email);
   // Admin = the owner email, profiles.is_admin, OR the is_admin claim baked
   // into the JWT (app_metadata). The email + JWT checks survive even if the
   // profile read fails, so the owner is never wrongly shown the student view.
@@ -705,16 +708,20 @@
     }).join('');
   }
 
-  // Avatar dropdown
-  document.getElementById('avatar-btn').onclick = (e) => {
-    e.stopPropagation();
-    document.getElementById('avatar-dropdown').classList.toggle('hidden');
-  };
-  document.addEventListener('click', () => document.getElementById('avatar-dropdown').classList.add('hidden'));
-  document.getElementById('signout-btn').onclick = () => {
-    // Send through the canonical /logout page so storage gets fully cleared.
-    location.href = '/logout?then=home';
-  };
+  // Avatar dropdown (null-guarded — the bar may be swapped by the shared nav)
+  const avatarBtn = document.getElementById('avatar-btn');
+  const avatarDd = document.getElementById('avatar-dropdown');
+  if (avatarBtn && avatarDd) {
+    avatarBtn.onclick = (e) => { e.stopPropagation(); avatarDd.classList.toggle('hidden'); };
+    document.addEventListener('click', () => avatarDd.classList.add('hidden'));
+  }
+  const signoutBtn = document.getElementById('signout-btn');
+  if (signoutBtn) {
+    signoutBtn.onclick = () => {
+      // Send through the canonical /logout page so storage gets fully cleared.
+      location.href = '/logout?then=home';
+    };
+  }
 })();
 </script>
 </body>
