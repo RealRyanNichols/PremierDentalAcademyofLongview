@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Instrument Library — Skills Lab | Premier Dental Academy</title>
+<meta name="description" content="Every dental instrument you'll set up on a tray — mirrors, explorers, handpieces, impression and crown-and-bridge materials, endodontic files and surgical instruments — with a clear, one-line explanation of what each one is for.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/instruments">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .lib-card{display:flex;gap:.7rem;align-items:flex-start;border:1px solid #e2e8f0;background:#fff;border-radius:.8rem;padding:.7rem .8rem}
+  .lib-card .thumb{flex:0 0 auto;width:48px;height:48px;border-radius:.5rem;background:#f1f5f9;display:grid;place-items:center;overflow:hidden}
+  .lib-card .thumb img{width:100%;height:100%;object-fit:contain}
+</style>
+</head>
+<body class="min-h-screen">
+
+<div id="sl-header"></div>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Instrument Library</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Know every instrument before it hits the tray.</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Every instrument you'll lay out for an exam, a filling, a crown, a root canal or an extraction — with a one-line note on what each one does. Learn these and the <a href="/skills-lab/tray-builder" class="underline font-semibold text-white hover:text-teal-200">Tray Builder</a> gets a lot easier.</p>
+  </div>
+
+  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <div class="font-semibold text-navy-900 text-sm">Instruments in the library</div>
+      <div class="text-sm text-slate-500"><span id="instCount">0</span> instruments &amp; materials</div>
+    </div>
+    <a href="/skills-lab/tray-builder" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition">Practice in the Tray Builder →</a>
+  </div>
+
+  <div id="instGrid" class="sl-fade grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-6"></div>
+
+  <p class="text-xs text-slate-400 mt-6">Trays and exact instrument selection vary by office, doctor preference and state scope of practice. This library reflects the setups taught in the Skills Lab.</p>
+
+</main>
+
+<div id="sl-footer"></div>
+
+<script src="/assets/skills-lab/data.js"></script>
+<script src="/assets/skills-lab/store.js"></script>
+<script src="/assets/skills-lab/ui.js"></script>
+<script src="/assets/skills-lab/data/virtual-office.js"></script>
+<script>
+(function () {
+  'use strict';
+  var U = window.SL_UI, esc = U.escapeHTML, VO = window.SL_VO_DATA;
+  document.getElementById('sl-header').innerHTML = U.headerHTML('trays');
+  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+
+  function thumb(item) {
+    var e = item.emoji || '🦷';
+    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none;font-size:22px">' + e + '</span></div>';
+  }
+
+  var INSTRUMENTS = VO.INSTRUMENTS;
+  document.getElementById('instCount').textContent = INSTRUMENTS.length;
+  document.getElementById('instGrid').innerHTML = INSTRUMENTS.map(function (it) {
+    return '<div class="lib-card">' + thumb(it) +
+      '<div class="min-w-0"><div class="font-semibold text-sm text-navy-900">' + esc(it.name) + '</div>' +
+      '<div class="text-xs text-slate-500 mt-0.5">' + esc(it.usedFor) + '</div></div></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

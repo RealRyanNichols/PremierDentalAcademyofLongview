@@ -13,8 +13,8 @@
 
   // tray id -> competencies to credit when built correctly
   var TRAY_COMP = {
-    exam: ['tray_exam'], restorative: ['tray_amalgam'], crownprep: ['tray_amalgam', 'proc_crown'],
-    crownseat: ['tray_amalgam'], extraction: ['proc_extraction'], endo: [], impression: ['imp_alginate'], hygiene: []
+    exam: ['tray_exam'], restorative: ['tray_amalgam'], crown: ['tray_amalgam', 'proc_crown'],
+    extraction: ['proc_extraction'], endo: []
   };
 
   function injectStyles() {
