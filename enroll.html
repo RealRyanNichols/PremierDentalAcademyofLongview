@@ -393,6 +393,13 @@ const state = { plan: null, cohorts: [], cohort: null, card: null, squarePayment
 const fmt = (cents) => '$' + (cents / 100).toLocaleString(undefined, { minimumFractionDigits: cents % 100 ? 2 : 0, maximumFractionDigits: 2 });
 const isoToday = () => new Date().toISOString().slice(0, 10);
 const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+// Add whole calendar months keeping the SAME day-of-month (constructed at local
+// noon so DST can't bump the day). Only used for the monthly plan's +1/+2 month
+// steps from a first-Friday date (always the 1st–7th), so no month-overflow.
+const addMonths = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0,10); };
+// First Friday ON OR AFTER iso. getDay(): 0=Sun … 5=Fri … 6=Sat. Mirrors the
+// server so the buyer's preview shows the EXACT same Friday due dates.
+const firstFridayOnOrAfter = (iso) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + ((5 - d.getDay() + 7) % 7)); return d.toISOString().slice(0,10); };
 const diffDays = (a, b) => Math.round((new Date(b+'T00:00:00') - new Date(a+'T00:00:00')) / 86400000);
 const fmtDate = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
 const cohortEnd = (c) => c.end_date || addDays(c.start_date, 12 * 7);
@@ -501,7 +508,12 @@ function computeSchedule() {
   if (remaining === 0) { out.valid = true; out.count = 0; out.dates = []; return out; }
 
   const step = cadence === 'daily' ? 1 : cadence === 'weekly' ? 7 : 30;
-  const window = diffDays(firstDate, end);
+  // Owner rule: payments fall on FRIDAYS. Anchor weekly/monthly schedules to the
+  // first Friday on/after the chosen start date (matches api/enroll.js exactly).
+  const firstFriday = (cadence === 'weekly' || cadence === 'monthly')
+    ? firstFridayOnOrAfter(firstDate)
+    : firstDate;
+  const window = diffDays(firstFriday, end);
   if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
 
   // Per Amanda: every installment is a CLEAN round number — no "change."
@@ -534,7 +546,19 @@ function computeSchedule() {
     amounts[count - 1] = remaining - per * (count - 1);
   }
   const count = amounts.length;
-  const lastDate = addDays(firstDate, (count - 1) * step);
+  // Friday-based due dates, mirroring api/enroll.js:
+  //   weekly  → firstFriday, +7d each (stays Friday)
+  //   monthly → firstFriday, then same day-of-month +1/+2 months
+  //   daily   → legacy flat day steps from the raw start date
+  let dates;
+  if (cadence === 'monthly') {
+    dates = Array.from({ length: count }, (_, i) => addMonths(firstFriday, i));
+  } else if (cadence === 'weekly') {
+    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * 7));
+  } else {
+    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * step));
+  }
+  const lastDate = dates[count - 1];
   if (diffDays(lastDate, end) < 0) {
     out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
     return out;
@@ -548,7 +572,7 @@ function computeSchedule() {
   out.lastAmount = amounts[amounts.length - 1];
   out.totalCharged = totalCharged;                 // sum of installments
   out.totalAll = down + totalCharged;              // grand total the student pays
-  out.dates = Array.from({ length: count }, (_, i) => addDays(firstDate, i * step));
+  out.dates = dates;                               // Friday-based due dates (see above)
   out.valid = true;
   return out;
 }
