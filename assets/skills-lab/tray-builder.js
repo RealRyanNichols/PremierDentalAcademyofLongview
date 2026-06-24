@@ -37,11 +37,11 @@
   }
 
   function thumb(item) {
-    var e = (item && item.emoji) || '🦷';
+    var fb = (window.SL_ICON_FOR ? SL_ICON_FOR(item) : '<span style="font-size:22px">' + ((item && item.emoji) || '🦷') + '</span>');
     if (item && item.image) {
-      return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none;font-size:22px">' + e + '</span></div>';
+      return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + fb + '</span></div>';
     }
-    return '<div class="thumb"><span style="font-size:22px">' + e + '</span></div>';
+    return '<div class="thumb">' + fb + '</div>';
   }
 
   function doneMap() { return S.get(DONE_KEY, {}); }

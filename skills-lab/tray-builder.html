@@ -76,6 +76,7 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/sync.js"></script>
 <script src="/assets/skills-lab/ui.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
+<script src="/assets/skills-lab/instrument-icons.js"></script>
 <script src="/assets/skills-lab/tray-builder.js"></script>
 <script>
 (function () {
@@ -155,8 +156,8 @@ tailwind.config = { theme: { extend: {
   // ---- Instrument library ----
   var library = document.getElementById('library');
   function thumb(item) {
-    var e = item.emoji || '🦷';
-    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none;font-size:22px">' + e + '</span></div>';
+    var fb = (window.SL_ICON_FOR ? SL_ICON_FOR(item) : '<span style="font-size:22px">' + (item.emoji || '🦷') + '</span>');
+    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + fb + '</span></div>';
   }
   library.innerHTML = VO.INSTRUMENTS.map(function (it) {
     return '<div class="lib-card">' + thumb(it) +
