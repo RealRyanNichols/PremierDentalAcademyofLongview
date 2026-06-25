@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Sign In | Premier Dental Academy of Longview</title>
+<meta name="description" content="Premier Dental Academy student sign in. Access your courses, trainers, and Skills Lab.">
+<link rel="stylesheet" href="assets/pda.css">
+<script defer src="assets/pda.js"></script>
+</head>
+<body data-page="login">
+
+<section style="padding:80px 0">
+  <div class="wrap">
+    <div class="form-card" style="max-width:440px">
+      <div class="center" style="margin-bottom:22px">
+        <div style="width:54px;height:54px;border-radius:14px;background:linear-gradient(150deg,var(--teal-500),var(--teal-700));display:grid;place-items:center;margin:0 auto 14px">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M12 3c-3 0-4 1.4-4 1.4S7 3 5 3.6C2.8 4.3 2.4 7 3.2 10.5c.6 2.6 1.2 5 1.9 7.2.5 1.6 1 2.8 1.9 2.8 1.1 0 1.2-2.4 2-4.4.5-1.3 1-1.9 3-1.9s2.5.6 3 1.9c.8 2 .9 4.4 2 4.4.9 0 1.4-1.2 1.9-2.8.7-2.2 1.3-4.6 1.9-7.2C21.6 7 21.2 4.3 19 3.6 17 3 16 4.4 16 4.4S15 3 12 3z" fill="#fff"/></svg>
+        </div>
+        <h2 style="font-size:24px">Welcome back</h2>
+        <p style="color:var(--slate);font-size:14.5px;margin-top:6px">Sign in to your courses, trainers, and Skills Lab.</p>
+      </div>
+      <form onsubmit="event.preventDefault();this.innerHTML='<p style=\'text-align:center;color:var(--teal-700);font-weight:600;padding:24px 0\'>Connects to your student portal on launch.</p>'">
+        <div class="field"><label>Email</label><input type="email" required placeholder="you@email.com"></div>
+        <div class="field"><label>Password</label><input type="password" required placeholder="••••••••"></div>
+        <button class="btn btn-teal btn-block btn-lg" type="submit">Sign in →</button>
+        <p style="text-align:center;margin-top:14px;font-size:14px"><a href="#" style="color:var(--teal-700);font-weight:600">Forgot password?</a></p>
+      </form>
+      <div style="border-top:1px solid var(--line);margin-top:22px;padding-top:18px;text-align:center">
+        <p style="color:var(--slate);font-size:14.5px">New here? <a href="enroll.html" style="color:var(--teal-700);font-weight:600">Enroll now</a> or <a href="https://www.premierdentalacademyoflongview.com/tools/practice-pro" style="color:var(--teal-700);font-weight:600">try the free preview</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

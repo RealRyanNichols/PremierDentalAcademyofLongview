@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enroll | Premier Dental Academy of Longview</title>
+<meta name="description" content="Enroll in Premier Dental Academy's RDA program. In-person $1,997 ($200 down) or online $397. Klarna, Afterpay, Affirm, Workforce funding and GI Bill accepted.">
+<link rel="stylesheet" href="assets/pda.css">
+<script defer src="assets/pda.js"></script>
+</head>
+<body data-page="enroll">
+
+<section class="page-head">
+  <div class="wrap">
+    <div class="eyebrow light">Enroll</div>
+    <h1>Start your dental-assistant career.</h1>
+    <p>Pick your format, see exactly what you'll pay, and reserve your spot. No payment required to apply.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="hero-split" style="padding:0;color:var(--ink)">
+      <div>
+        <div class="eyebrow">Choose your path</div>
+        <h2 style="font-size:clamp(26px,3.3vw,38px);margin-top:8px">Same program. Same outcome.</h2>
+        <p style="color:var(--slate);font-size:16.5px;margin-top:12px">Drag the slider to size your payments. Both formats include full Practice Pro + ChairSide trainer access and job-placement help.</p>
+        <ul class="checks" style="margin-top:22px">
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> <span><b>Online transfers to In-Person</b> — your tuition is never lost.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> <span><b>Financing built in</b> — Klarna, Afterpay, Affirm at checkout.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> <span><b>Funding accepted</b> — Texas Workforce Solutions, WIOA, GI Bill / veterans.</span></li>
+          <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> <span><b>Secure Square checkout</b> — your payment is protected.</span></li>
+        </ul>
+      </div>
+
+      <div class="enroll-card">
+        <div class="inner" id="pdacalc">
+          <h3>See exactly what you'd pay</h3>
+          <p style="color:var(--slate);font-size:14px;margin-top:4px">Pick a path — no surprises.</p>
+          <div class="plan-pick">
+            <button class="plan-opt active" data-plan="inperson">
+              <span class="k">In person</span><span class="v">$200 <small style="font-size:13px;font-weight:500;color:var(--mute)">down</small></span>
+              <span class="s">$1,997 total • weekly or monthly</span>
+            </button>
+            <button class="plan-opt" data-plan="online">
+              <span class="k">Online</span><span class="v">$397</span>
+              <span class="s">Sale (reg $997) • start today</span>
+            </button>
+          </div>
+          <div id="calcbody">
+            <div class="calc-row"><span>Pay it off</span>
+              <span class="seg"><button id="wk">Weekly</button><button id="mo" class="on">Monthly</button></span>
+            </div>
+            <input type="range" id="term" min="1" max="12" value="6" step="1">
+            <div class="calc-row" style="margin:2px 0 0"><span id="termlbl">6 months</span><span>$1,997 total</span></div>
+            <div class="pay-out">
+              <div><div class="lbl">$200 down today, then</div><div class="big" id="payamt">$300/mo</div></div>
+              <div style="text-align:right"><div class="lbl" id="paycount">6 payments</div></div>
+            </div>
+          </div>
+          <div id="onlinebox" style="display:none">
+            <div class="pay-out"><div><div class="lbl">One-time (reg $997)</div><div class="big">$397</div></div><div style="text-align:right"><div class="lbl">Start tonight</div></div></div>
+          </div>
+          <a class="btn btn-teal btn-block" style="margin-top:16px" href="#start">Continue to enrollment
+            <svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <p class="fineprint">Estimate only. Final terms confirmed at checkout.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="tint">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">How enrollment works</div><h2>Three steps to your seat.</h2></div>
+    <div class="phases" style="grid-template-columns:repeat(3,1fr)">
+      <div class="phase"><div class="num">1</div><h4>Apply (free)</h4><p>Tell us a little about you. Takes two minutes, no payment to apply.</p></div>
+      <div class="phase t"><div class="num">2</div><h4>Pick &amp; pay</h4><p>Choose In-Person or Online, set your plan, and check out securely with Square.</p></div>
+      <div class="phase a"><div class="num">3</div><h4>Start training</h4><p>Get instant trainer access and your cohort details. Online starts any day.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="sec-head"><div class="eyebrow">Reserve your spot</div><h2>Start your enrollment</h2><p>We'll confirm your seat and send your next steps. Or call/text Amanda at (903) 913-6444.</p></div>
+    <form class="form-card" onsubmit="event.preventDefault();this.innerHTML='<div style=\'text-align:center;padding:30px 0\'><div style=\'font-size:40px\'>🦷</div><h3 style=\'margin:10px 0\'>You\'re in motion!</h3><p style=\'color:var(--slate)\'>Amanda will reach out shortly to finish your enrollment. (Demo form — wire to Square/CRM on launch.)</p></div>'">
+      <div class="field"><label>Full name</label><input required placeholder="Your name"></div>
+      <div class="field"><label>Email</label><input type="email" required placeholder="you@email.com"></div>
+      <div class="field"><label>Mobile (for text updates)</label><input type="tel" required placeholder="(903) 555-0123"></div>
+      <div class="field"><label>Which format?</label><select><option>In-Person — $1,997 ($200 down)</option><option>Online — $397</option><option>Not sure yet — help me decide</option></select></div>
+      <div class="field"><label>How soon do you want to start?</label><select><option>As soon as possible</option><option>Next cohort</option><option>Just exploring</option></select></div>
+      <button class="btn btn-amber btn-block btn-lg" type="submit">Reserve my spot →</button>
+      <p class="fineprint">No payment required to apply · Online sale non-refundable but transferable · In-Person pro-rated per TX guidelines</p>
+    </form>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap"><div class="cta-band">
+    <h2>Questions before you enroll?</h2>
+    <p>Talk to a real person. Amanda will walk you through formats, funding, and start dates.</p>
+    <div class="cta-row"><a class="btn btn-amber btn-lg" href="tel:+19039136444">Call (903) 913-6444</a><a class="btn btn-ghost btn-lg" href="contact.html">Send a message</a></div>
+  </div></div>
+</section>
+
+</body>
+</html>
