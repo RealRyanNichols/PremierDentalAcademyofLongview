@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #155e75; }
+    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #f8fafc; }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .seat-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; }
@@ -31,13 +31,12 @@
     .cohort-card.full::before { content: "🚫 Closed"; position: absolute; top: -10px; right: 14px; background: #b91c1c; color: white; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 9999px; }
     @keyframes cardPulse { 0%, 100% { box-shadow: 0 0 0 2px #ef4444, 0 8px 24px -10px rgba(239,68,68,0.55); } 50% { box-shadow: 0 0 0 2px #ef4444, 0 8px 30px 0 rgba(239,68,68,0.85); } }
 
-    .stat-tile { background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.20); border-radius: 1rem; padding: 0.9rem 1rem; text-align: center; }
-    .stat-tile .num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
-    .stat-tile.danger .num { color: #fecaca; }
-    .stat-tile.warn .num { color: #fde68a; }
-    .stat-tile .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-top: 0.35rem; }
+    .stat-tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.9rem 1rem; text-align: center; box-shadow: 0 6px 24px -14px rgba(7,13,31,.3); }
+    .stat-tile .num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height: 1; color: #0f766e; }
+    .stat-tile.danger .num { color: #b91c1c; }
+    .stat-tile.warn .num { color: #b45309; }
+    .stat-tile .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #64748b; margin-top: 0.35rem; }
 
-    .scarcity-banner { background: linear-gradient(90deg, rgba(239,68,68,0.18), rgba(245,158,11,0.18)); border: 1px solid rgba(252,165,165,0.5); }
     .filter-btn[aria-pressed="true"] { background: #0f766e; color: white; }
 
     /* BIG SEAT HERO — the focal element of every cohort card */
@@ -125,18 +124,13 @@
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
   <!-- Page header (navy) -->
-  <section class="bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-2xl mb-8">
-    <div class="max-w-4xl mx-auto px-6 py-14 sm:py-20 text-center">
-      <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold" data-aos="fade-up">In-Person class calendar</p>
-      <h1 class="display text-4xl sm:text-5xl font-semibold mt-3 leading-tight" data-aos="fade-up">Pick your <span class="text-amber-400 italic">start date.</span></h1>
-      <p class="text-slate-300 mt-5 max-w-2xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">These are the <strong class="text-white">real, live start dates</strong> for hands-on training at our Longview campus. Each class seats just 8. Find a date that fits, reserve with <strong class="text-white">$200 down</strong>, and you're in.</p>
-      <div class="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-slate-300" data-aos="fade-up" data-aos-delay="150">
-        <span class="inline-flex items-center gap-2"><span class="text-teal-300">✓</span> About 12 weeks, evening options</span>
-        <span class="inline-flex items-center gap-2"><span class="text-teal-300">✓</span> $200 down, then weekly or monthly</span>
-        <span class="inline-flex items-center gap-2"><span class="text-teal-300">✓</span> Hiring help in East Texas</span>
-      </div>
-      <div class="mt-8" data-aos="fade-up" data-aos-delay="200">
-        <a href="#open-dates" data-event="calendar_see_dates_click" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition">See open dates ↓</a>
+  <section class="bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-3xl mb-10">
+    <div class="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
+      <p class="text-[12.5px] uppercase tracking-[0.18em] text-teal-300 font-bold" data-aos="fade-up">In-person class calendar</p>
+      <h1 class="display text-4xl sm:text-6xl font-semibold mt-4 leading-[1.05]" data-aos="fade-up">Pick your <span class="text-amber-400 italic">start date.</span></h1>
+      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$200 down</strong>.</p>
+      <div class="mt-9" data-aos="fade-up" data-aos-delay="150">
+        <a href="#open-dates" data-event="calendar_see_dates_click" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-lg transition">See open dates ↓</a>
       </div>
     </div>
   </section>
@@ -144,9 +138,9 @@
   <!-- How enrollment works — the sales process, made plain -->
   <section class="mb-10" aria-labelledby="how-it-works">
     <div class="text-center max-w-2xl mx-auto mb-7" data-aos="fade-up">
-      <p class="text-[12px] uppercase tracking-[0.16em] text-cyan-100/80 font-bold">How enrollment works</p>
-      <h2 id="how-it-works" class="display text-3xl sm:text-4xl font-bold text-white mt-2">Three steps from this page to <span class="text-amber-300 italic">your first class.</span></h2>
-      <p class="text-cyan-50/90 mt-3">No application fee, no pressure, and no big lump sum. Here's exactly how it goes.</p>
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">How enrollment works</p>
+      <h2 id="how-it-works" class="display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">Three steps from this page to <span class="text-amber-500 italic">your first class.</span></h2>
+      <p class="text-slate-600 mt-3">No application fee, no pressure, and no big lump sum. Here's exactly how it goes.</p>
     </div>
     <div class="grid md:grid-cols-3 gap-5 relative">
       <div class="step-card" data-aos="fade-up">
@@ -177,24 +171,20 @@
     <div class="stat-tile danger"><div class="num" id="stat-closed">—</div><div class="lbl">Already closed</div></div>
   </div>
 
-  <!-- All-classes scarcity banner -->
-  <div class="scarcity-banner rounded-xl px-4 py-3 mb-6 flex items-start gap-3 text-white text-sm">
-    <span class="text-xl shrink-0">⚠️</span>
-    <span><strong>This is every In-Person cohort we'll run.</strong> Only 8 seats per class — when a date sells out, that's it. Lock yours before someone else does.</span>
-  </div>
-
-  <!-- Online = start any time. Slim secondary banner. -->
-  <a href="/enroll?plan=online" data-event="enroll_click" class="mb-8 sm:mb-10 flex items-center gap-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-md transition relative">
-    <span class="absolute -top-2 left-3 bg-amber-400 text-rose-900 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full animate-pulse">🔥 Limited time</span>
-    <span class="text-xl shrink-0">💻</span>
-    <span class="flex-1 min-w-0"><strong>Online program — $397 one-time</strong> <span class="line-through opacity-70 text-sm">$997</span> · Start any day. No class schedule.</span>
-    <span class="text-xs font-bold uppercase tracking-wider whitespace-nowrap text-white">Enroll →</span>
+  <!-- Online alternative — clean, secondary cross-sell -->
+  <a href="/enroll?plan=online" data-event="enroll_click" class="group mb-10 flex items-center gap-4 bg-white border border-slate-200 hover:border-teal-500 rounded-2xl px-5 py-4 shadow-[0_6px_24px_-14px_rgba(7,13,31,.3)] hover:shadow-[0_18px_50px_-22px_rgba(7,13,31,.4)] transition relative" data-aos="fade-up">
+    <span class="absolute -top-2.5 left-5 bg-amber-400 text-amber-950 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">Limited-time price</span>
+    <span class="text-2xl shrink-0">💻</span>
+    <span class="flex-1 min-w-0 text-slate-800 text-sm sm:text-base">
+      <strong class="text-slate-900">Prefer to learn online?</strong> Same curriculum, start any day — <strong class="text-teal-700">$397</strong> <span class="line-through text-slate-400">$997</span>, one time.
+    </span>
+    <span class="shrink-0 inline-flex items-center gap-1.5 bg-teal-700 group-hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-full transition">Enroll →</span>
   </a>
 
   <!-- What you're seeing — read-the-card legend -->
   <section id="open-dates" class="scroll-mt-24 mb-5" data-aos="fade-up">
-    <h2 class="display text-2xl sm:text-3xl font-bold text-white">Open class dates</h2>
-    <p class="text-cyan-50/90 mt-1 text-sm sm:text-base">Each card below is one real class. The big number is <strong class="text-white">seats left out of 8</strong> — tap <strong class="text-white">Reserve seat</strong> on the date you want.</p>
+    <h2 class="display text-2xl sm:text-3xl font-bold text-slate-900">Open class dates</h2>
+    <p class="text-slate-600 mt-1 text-sm sm:text-base">Each card below is one real class. The big number is <strong class="text-slate-900">seats left out of 8</strong> — tap <strong class="text-slate-900">Reserve seat</strong> on the date you want.</p>
     <div class="mt-3 flex flex-wrap gap-2">
       <span class="card-legend bg-cyan-50 text-cyan-900">Seats open</span>
       <span class="card-legend bg-rose-100 text-rose-800">🔥 Filling fast</span>
@@ -206,14 +196,14 @@
   <!-- Grid of class cards, grouped by month -->
   <div id="months"></div>
 
-  <p id="empty-state" hidden class="text-center text-cyan-50/90 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
+  <p id="empty-state" hidden class="text-center text-slate-600 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
 
   <!-- Reserve walkthrough — schedule a seat step-by-step + reassurance -->
   <section class="mt-14" aria-labelledby="reserve-how">
     <div class="text-center max-w-2xl mx-auto mb-8" data-aos="fade-up">
-      <p class="text-[12px] uppercase tracking-[0.16em] text-cyan-100/80 font-bold">Ready to schedule?</p>
-      <h2 id="reserve-how" class="display text-3xl sm:text-4xl font-bold text-white mt-2">Reserve your seat in about <span class="text-amber-300 italic">60 seconds.</span></h2>
-      <p class="text-cyan-50/90 mt-3">Here's exactly what happens when you tap <strong class="text-white">Reserve seat</strong> on a class above.</p>
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">Ready to schedule?</p>
+      <h2 id="reserve-how" class="display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">Reserve your seat in about <span class="text-amber-500 italic">60 seconds.</span></h2>
+      <p class="text-slate-600 mt-3">Here's exactly what happens when you tap <strong class="text-slate-900">Reserve seat</strong> on a class above.</p>
     </div>
 
     <div class="grid lg:grid-cols-5 gap-6 items-start">
@@ -417,7 +407,7 @@ function render() {
     const section = document.createElement('section');
     section.className = 'mb-10';
     section.innerHTML = `
-      <h2 class="display text-2xl font-bold text-white mb-4">${month} <span class="text-cyan-100/70 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
+      <h2 class="display text-2xl font-bold text-slate-900 mb-4">${month} <span class="text-slate-500 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-3">
         ${classes.map(cardHTML).join('')}
       </div>`;
