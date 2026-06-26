@@ -157,6 +157,86 @@
       <a href="tel:+19039136444" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">📞 Call or text Amanda (903) 913-6444</a>
     </div>
   </section>
+<!-- Payment calculator (redesign) -->
+<section class="bg-white border-y border-slate-200">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+    <div class="text-center max-w-2xl mx-auto mb-8">
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-2">No surprises</p>
+      <h2 class="text-2xl sm:text-3xl font-bold text-slate-900" style="font-family:Fraunces,serif">See exactly what you'll pay</h2>
+      <p class="text-slate-600 mt-3">You don't pay it all at once. Pick a path and watch your real payment update.</p>
+    </div>
+    <div class="grid md:grid-cols-2 gap-6 items-start">
+      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+        <div class="grid grid-cols-2 gap-3" id="pdacalc-plans">
+          <button type="button" data-plan="inperson" class="pdacalc-opt text-left rounded-xl border-2 border-teal-600 bg-teal-50 p-4 ring-4 ring-teal-600/10">
+            <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">In person</div>
+            <div class="text-2xl font-bold text-slate-900" style="font-family:Fraunces,serif">$200 <span class="text-sm font-medium text-slate-500">down</span></div>
+            <div class="text-xs text-slate-600">$1,997 total &middot; weekly or monthly</div>
+          </button>
+          <button type="button" data-plan="online" class="pdacalc-opt text-left rounded-xl border-2 border-slate-200 bg-white p-4">
+            <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">Online</div>
+            <div class="text-2xl font-bold text-slate-900" style="font-family:Fraunces,serif">$397</div>
+            <div class="text-xs text-slate-600">Sale (reg $997) &middot; start today</div>
+          </button>
+        </div>
+        <div id="pdacalc-body" class="mt-5">
+          <div class="flex items-center justify-between text-sm text-slate-600 mb-1">
+            <span>Pay it off</span>
+            <span class="inline-flex bg-slate-200 rounded-full p-1">
+              <button type="button" id="pdacalc-wk" class="px-3 py-1 rounded-full text-xs font-semibold text-slate-600">Weekly</button>
+              <button type="button" id="pdacalc-mo" class="px-3 py-1 rounded-full text-xs font-semibold bg-white text-teal-700 shadow-sm">Monthly</button>
+            </span>
+          </div>
+          <input type="range" id="pdacalc-term" min="1" max="3" value="3" step="1" class="w-full accent-teal-600">
+          <div class="flex items-center justify-between text-sm text-slate-600 mt-1">
+            <span id="pdacalc-termlbl">3 months</span><span>$1,997 total</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="bg-slate-900 text-white rounded-2xl p-6 flex items-end justify-between">
+          <div>
+            <div class="text-sm text-slate-400" id="pdacalc-reslbl">$200 down today, then</div>
+            <div class="text-4xl font-bold text-amber-400" style="font-family:Fraunces,serif" id="pdacalc-amt">$599/mo</div>
+          </div>
+          <div class="text-right text-sm text-slate-400" id="pdacalc-count">3 payments</div>
+        </div>
+        <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot &rarr;</a>
+        <p class="text-center text-xs text-slate-500 mt-3">Paid in full by graduation &mdash; within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding &middot; GI Bill accepted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(function(){
+  var TOTAL=1997,DOWN=200,plan="inperson",mode="monthly";
+  var root=document.getElementById("pdacalc-plans");if(!root)return;
+  var body=document.getElementById("pdacalc-body"),term=document.getElementById("pdacalc-term");
+  var amt=document.getElementById("pdacalc-amt"),cnt=document.getElementById("pdacalc-count"),lbl=document.getElementById("pdacalc-termlbl"),reslbl=document.getElementById("pdacalc-reslbl");
+  var wk=document.getElementById("pdacalc-wk"),mo=document.getElementById("pdacalc-mo");
+  function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
+  function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
+  function render(){
+    if(plan==="online"){reslbl.textContent="One-time (reg $997)";amt.textContent="$397";cnt.textContent="start today";return;}
+    var n=parseInt(term.value,10),per=Math.round((TOTAL-DOWN)/n),u=mode==="weekly"?"wk":"mo";
+    reslbl.textContent="$200 down today, then";amt.textContent="$"+per.toLocaleString()+"/"+u;
+    cnt.textContent=n+" payments";lbl.textContent=n+(mode==="weekly"?" weeks":" months");
+  }
+  root.querySelectorAll(".pdacalc-opt").forEach(function(b){b.addEventListener("click",function(){
+    plan=b.dataset.plan;
+    root.querySelectorAll(".pdacalc-opt").forEach(function(x){
+      var ac=x===b;
+      x.classList.toggle("border-teal-600",ac);x.classList.toggle("bg-teal-50",ac);x.classList.toggle("ring-4",ac);x.classList.toggle("ring-teal-600/10",ac);
+      x.classList.toggle("border-slate-200",!ac);x.classList.toggle("bg-white",!ac);
+    });
+    body.style.display=plan==="online"?"none":"block";render();
+  });});
+  wk.addEventListener("click",function(){mode="weekly";on(wk);off(mo);term.min=4;term.max=12;term.value=12;render();});
+  mo.addEventListener("click",function(){mode="monthly";on(mo);off(wk);term.min=1;term.max=3;term.value=3;render();});
+  term.addEventListener("input",render);render();
+})();
+</script>
+
 </main>
 
 <footer class="bg-slate-900 text-slate-300 py-8 mt-12">
