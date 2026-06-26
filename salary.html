@@ -72,7 +72,7 @@
     </div>
     <div class="flex items-center gap-3">
       <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
-      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Enroll →</a>
     </div>
   </div>
 </nav>
@@ -145,7 +145,7 @@
       </div>
 
       <!-- Output -->
-      <div class="bg-gradient-to-br from-teal-700 to-cyan-900 text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-center">
+      <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 sm:p-8 flex flex-col justify-center">
         <div class="text-xs uppercase tracking-widest text-teal-200 font-semibold">Estimated annual</div>
         <div class="display text-5xl sm:text-6xl font-bold mt-1" id="annual">$42,000</div>
         <div class="text-teal-100 mt-1" id="annualRange">range: $38,000 – $46,000</div>
@@ -185,7 +185,7 @@
       </div>
       <form id="save-form" class="flex gap-2 flex-wrap">
         <input type="email" name="email" required placeholder="you@example.com" class="px-4 py-2.5 border border-slate-300 rounded-lg min-w-[220px]" />
-        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-lg whitespace-nowrap">Email it to me →</button>
+        <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full whitespace-nowrap">Email it to me →</button>
       </form>
     </div>
     <div id="save-success" class="hidden mt-3 text-emerald-700 font-semibold">✓ Sent! Check your inbox.</div>
@@ -216,7 +216,7 @@
 <!-- TODO(owner-confirm): program length shown as ~12 weeks. Source-of-truth conflict (older material says 14 weeks; "14 weeks" not found in repo). Confirm with Amanda/Ryan before changing. Canonical: assets/site-facts.js → programLength.needsOwnerConfirmation -->
     <p class="text-cyan-100 mt-2">12 weeks of training. Free application. 1-business-day response.</p>
     <div class="mt-5 flex flex-wrap gap-3 justify-center">
-      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-full">Apply free →</a>
       <a href="/tools/practice-pro" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">Try the trainer first</a>
     </div>
   </div>

@@ -102,7 +102,7 @@
     </div>
     <div class="flex items-center gap-3">
       <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
-      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg">Enroll →</a>
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full">Enroll →</a>
     </div>
   </div>
 </nav>
@@ -197,7 +197,7 @@ function cardHTML(c) {
   const daysLabel = daysOut === 0 ? 'starts today' : daysOut === 1 ? 'starts tomorrow' : `${daysOut} days away`;
   const cta = seats.full
     ? `<a href="/waitlist" data-event="waitlist_click" class="flex-1 text-center bg-slate-700 hover:bg-slate-800 text-white font-semibold py-2.5 rounded-lg text-sm">Join waitlist</a>`
-    : `<a href="/enroll?cohort=${c.id}" data-event="enroll_click" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-lg text-sm">Reserve seat →</a>`;
+    : `<a href="/enroll?cohort=${c.id}" data-event="enroll_click" class="flex-1 text-center ${seats.urgent ? 'bg-rose-600 hover:bg-rose-700' : 'bg-amber-500 hover:bg-amber-600'} text-white font-semibold py-2.5 rounded-full text-sm">Reserve seat →</a>`;
 
   const cardModifier = seats.full ? 'full' : seats.urgent ? 'urgent' : '';
 

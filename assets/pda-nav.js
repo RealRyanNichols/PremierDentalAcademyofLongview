@@ -50,7 +50,7 @@
     <div class="flex items-center gap-3 shrink-0">
       <a id="pda-nav-auth"  href="/login"     data-nav-link class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
       <a id="pda-nav-dash"  href="/dashboard" data-nav-link class="hidden text-sm font-semibold text-teal-700 hover:text-teal-900 md:inline-flex">Dashboard</a>
-      <a href="/enroll" id="pda-nav-enroll" data-event="enroll_click" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+      <a href="/enroll" id="pda-nav-enroll" data-event="enroll_click" class="hidden sm:inline-flex bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-sm">Enroll →</a>
       <button id="pda-nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" class="md:hidden inline-flex items-center justify-center w-10 h-10 rounded-lg text-slate-700 hover:bg-slate-100">
         <svg id="pda-nav-icon-open"  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
         <svg id="pda-nav-icon-close" hidden xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
@@ -86,7 +86,7 @@
 
     <div class="mt-6 pt-4 border-t border-slate-200">
       <a id="pda-mobile-dash" href="/dashboard" data-nav-link class="hidden mb-2 py-2 px-1 text-base font-semibold text-teal-700">My dashboard →</a>
-      <a href="/enroll" id="pda-mobile-enroll" data-event="enroll_click" class="block bg-amber-500 hover:bg-amber-600 text-white text-center text-base font-semibold px-6 py-3 rounded-lg shadow">Enroll →</a>
+      <a href="/enroll" id="pda-mobile-enroll" data-event="enroll_click" class="block bg-amber-500 hover:bg-amber-600 text-white text-center text-base font-semibold px-6 py-3 rounded-full shadow">Enroll →</a>
       <div class="flex items-center justify-between mt-3 px-1">
         <a id="pda-mobile-auth" href="/login" data-nav-link class="text-sm font-medium text-slate-600 hover:text-teal-700">Sign in</a>
         <a href="tel:+19039136444" class="text-sm text-slate-500">📞 (903) 913-6444</a>
@@ -157,7 +157,7 @@
       bar.style.boxShadow = '0 -4px 16px rgba(15,23,42,.08)';
       bar.innerHTML =
         '<a href="tel:+19039136444" data-event="call_click" style="flex:1" class="inline-flex items-center justify-center gap-1.5 border border-teal-600 text-teal-700 font-semibold rounded-lg py-2.5 text-sm">📞 Call</a>' +
-        '<a href="/apply" data-event="apply_click" style="flex:1.4;box-shadow:0 2px 8px rgba(245,158,11,.35)" class="inline-flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-lg py-2.5 text-sm">Apply now →</a>';
+        '<a href="/apply" data-event="apply_click" style="flex:1.4;box-shadow:0 2px 8px rgba(245,158,11,.35)" class="inline-flex items-center justify-center gap-1.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-full py-2.5 text-sm">Apply now →</a>';
       document.body.appendChild(bar);
       document.body.classList.add('pda-cta-on');
     }
