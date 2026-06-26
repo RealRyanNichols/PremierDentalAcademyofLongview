@@ -57,3 +57,29 @@
 
 /* Crisp, on-brand keyboard focus ring everywhere (accessibility + polish). */
 :focus-visible { outline: 2px solid #0d9488; outline-offset: 2px; border-radius: 4px; }
+
+/* Buttery same-origin page-to-page transitions — newest browser tech; browsers
+   that don't support it simply navigate normally (graceful, zero risk). */
+@view-transition { navigation: auto; }
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Cinematic homepage hero: a living color-mesh slowly drifts behind the headline. */
+  .gradient-hero { position: relative; overflow: hidden; isolation: isolate; }
+  .gradient-hero::before {
+    content: ""; position: absolute; inset: -30%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(28% 36% at 22% 18%, rgba(13,148,136,.22), transparent 60%),
+      radial-gradient(26% 34% at 78% 16%, rgba(8,145,178,.20), transparent 60%),
+      radial-gradient(30% 38% at 60% 96%, rgba(251,191,36,.16), transparent 60%);
+    animation: pdaMesh 18s ease-in-out infinite alternate; will-change: transform;
+  }
+  .gradient-hero > * { position: relative; z-index: 1; }
+  @keyframes pdaMesh {
+    0%   { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+    100% { transform: translate3d(3%, 2%, 0)  scale(1.10); }
+  }
+
+  /* Photos gently zoom on hover, clipped by their rounded frame. */
+  figure[class*="overflow-hidden"] img { transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
+  figure[class*="overflow-hidden"]:hover img { transform: scale(1.06); }
+}
