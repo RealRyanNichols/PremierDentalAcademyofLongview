@@ -56,11 +56,17 @@ tailwind.config = { theme: { extend: {
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-  <div class="text-center">
-    <h1 class="display text-3xl sm:text-4xl font-bold text-navy-900">Request a graduate</h1>
-    <p class="text-slate-600 mt-2 max-w-xl mx-auto">Tell us what your office needs. We'll be in touch within one business day with graduates who fit — no placement fee.</p>
-  </div>
+<main>
+  <!-- Page header (navy) -->
+  <section class="bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white">
+    <div class="max-w-4xl mx-auto px-6 py-14 sm:py-20 text-center">
+      <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold">For East Texas dental offices</p>
+      <h1 class="display text-4xl sm:text-5xl font-semibold mt-3 leading-tight">Request a <span class="text-amber-400 italic">graduate</span></h1>
+      <p class="text-slate-300 mt-5 max-w-2xl mx-auto text-lg">Tell us what your office needs. We'll be in touch within one business day with graduates who fit — no placement fee.</p>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
   <form id="emp-form" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-7 mt-7 space-y-5">
     <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><input name="website" type="text" tabindex="-1" autocomplete="off" /></div>
@@ -124,6 +130,7 @@ tailwind.config = { theme: { extend: {
       <a href="/employers" class="rounded-xl bg-slate-100 text-navy-900 font-semibold px-5 py-2.5 hover:bg-slate-200 transition">Back to For Offices</a>
       <a href="tel:+19039136444" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 hover:bg-teal-700 transition">Call us now</a>
     </div>
+  </div>
   </div>
 </main>
 
