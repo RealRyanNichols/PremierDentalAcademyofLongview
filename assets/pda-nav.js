@@ -108,6 +108,7 @@
     // Premium motion layer (aurora heroes, CTA sheen, gentle Enroll glow) — site-wide,
     // CSS-only, auto-disabled for reduced-motion users. Guarded so it loads once.
     if (!document.querySelector('link[data-pda-polish]')) { var __pl = document.createElement('link'); __pl.rel = 'stylesheet'; __pl.href = '/assets/pda-polish.css'; __pl.setAttribute('data-pda-polish', ''); document.head.appendChild(__pl); }
+    if (!document.querySelector('script[data-pda-polish-js]')) { var __pj = document.createElement('script'); __pj.src = '/assets/pda-polish.js'; __pj.defer = true; __pj.setAttribute('data-pda-polish-js', ''); document.head.appendChild(__pj); }
     // Remove any pre-existing inline mobile menus from before this script existed.
     document.querySelectorAll('#mobile-menu, #pda-mobile-menu').forEach(el => el.remove());
 

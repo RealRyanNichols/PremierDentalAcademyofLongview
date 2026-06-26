@@ -50,4 +50,10 @@
 
   /* ── Cards already lift on hover; add a soft, quick scale so they feel tactile. ── */
   .feature:hover, .lib-card:hover { transform: translateY(-4px) scale(1.012); }
+
+  /* Smooth in-page scrolling (respects reduced-motion via the wrapper). */
+  html { scroll-behavior: smooth; }
 }
+
+/* Crisp, on-brand keyboard focus ring everywhere (accessibility + polish). */
+:focus-visible { outline: 2px solid #0d9488; outline-offset: 2px; border-radius: 4px; }
