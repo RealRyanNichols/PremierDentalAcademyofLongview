@@ -102,6 +102,9 @@
     if (!window.PDA_FACTS) { var __sf = document.createElement('script'); __sf.src = '/assets/site-facts.js'; document.head.appendChild(__sf); }
     // Load the analytics layer so every [data-event] element is tracked site-wide (safe no-op without a provider).
     if (!window.PDA || !window.PDA.track) { var __an = document.createElement('script'); __an.src = '/assets/pda-analytics.js'; document.head.appendChild(__an); }
+    // PWA: link the web app manifest + brand theme-color once, site-wide (guarded so a page may still ship its own).
+    if (!document.querySelector('link[rel="manifest"]')) { var __mf = document.createElement('link'); __mf.rel = 'manifest'; __mf.href = '/site.webmanifest'; document.head.appendChild(__mf); }
+    if (!document.querySelector('meta[name="theme-color"]')) { var __tc = document.createElement('meta'); __tc.name = 'theme-color'; __tc.content = '#0f766e'; document.head.appendChild(__tc); }
     // Remove any pre-existing inline mobile menus from before this script existed.
     document.querySelectorAll('#mobile-menu, #pda-mobile-menu').forEach(el => el.remove());
 
