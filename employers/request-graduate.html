@@ -152,6 +152,8 @@ tailwind.config = { theme: { extend: {
   var form = document.getElementById('emp-form');
   var success = document.getElementById('success');
   var btn = document.getElementById('submit-btn');
+  // If the page is restored from the back/forward cache after a submit, re-enable the button.
+  window.addEventListener('pageshow', function (e) { if (e.persisted && btn) { btn.disabled = false; btn.textContent = 'Send my request'; } });
 
   function attribution() {
     var a = {};
