@@ -12,6 +12,18 @@ You are continuing an approved visual redesign of the Premier Dental Academy of 
 - There's an open **draft PR → main**. Keep pushing to `claude/site-redesign`; the PR + Vercel preview update automatically.
 - Commit as **Ryan Nichols <hello@premierdentalacademyoflongview.com>**. Do NOT tag commits/PRs/code as machine-generated. Run `npm test` (the repo's validators) before every push.
 
+## Design source of truth — Ryan's Figma Make redesign (USE THE FIGMA MCP)
+Ryan built the new look in a **Figma Make** file: **"PDA Website"**, file key **`GYLeJSFvpEZSe2FYOACFu4`** (`https://www.figma.com/make/GYLeJSFvpEZSe2FYOACFu4/PDA-Website`). It's a React + Tailwind + shadcn/ui app. Pull the design with the **Figma Dev Mode MCP** and translate it onto the site:
+1. `get_design_context(fileKey="GYLeJSFvpEZSe2FYOACFu4", nodeId="0:1")` → returns the source-file resource links. Read, in order:
+   - `src/app/App.tsx` — page layout, sections, copy, hierarchy of the new design.
+   - `src/styles/theme.css` — the **color scheme + design tokens** (CSS variables) = the new palette.
+   - `src/styles/fonts.css` — fonts.
+   - `src/app/components/ui/button.tsx`, `card.tsx`, `badge.tsx`, `accordion.tsx`, `input.tsx` — the "cool buttons" + component looks (radii, shadows, variants).
+   - `guidelines/Guidelines.md` — any design notes.
+2. Extract the design language: map `theme.css` tokens → the site's Tailwind config / CSS vars; capture fonts, button/card/badge styles, spacing, section patterns.
+3. **Apply it to the EXISTING static site in Tailwind** — re-skin the real pages to match the Figma look. Do NOT wholesale-replace the static site with the React app: that would drop the live Square `api/enroll.js`, Supabase auth, SEO, and shared `pda-nav.js`. Translate the *look*; keep the working backend.
+4. If anything in Figma conflicts with a guardrail (pricing, phone, the 12-week payment rule), the guardrail wins.
+
 ## How the site is actually built (verified — don't rediscover)
 - Root-level **static HTML**, ~101 pages, no build step. Clean URLs via `vercel.json`.
 - Styling = **Tailwind Play CDN** (`https://cdn.tailwindcss.com`) on each page + Google Fonts (Inter + Fraunces) + small per-page inline `<style>`. The brand is already navy / teal / amber + Fraunces headings.
