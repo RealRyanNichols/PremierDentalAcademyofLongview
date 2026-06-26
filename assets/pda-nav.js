@@ -96,6 +96,8 @@
 </div>`;
 
   function init() {
+    // Redesign style layer (additive: pill CTAs + soft shadow) — loads on every page.
+    if (!document.getElementById('pda-redesign-css')) { var __rc = document.createElement('link'); __rc.id = 'pda-redesign-css'; __rc.rel = 'stylesheet'; __rc.href = '/assets/pda-redesign.css'; document.head.appendChild(__rc); }
     // Ensure the business-facts source of truth is loaded (footer + other scripts read it).
     if (!window.PDA_FACTS) { var __sf = document.createElement('script'); __sf.src = '/assets/site-facts.js'; document.head.appendChild(__sf); }
     // Load the analytics layer so every [data-event] element is tracked site-wide (safe no-op without a provider).

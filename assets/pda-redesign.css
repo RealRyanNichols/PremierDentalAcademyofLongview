@@ -1,0 +1,28 @@
+/* PDA redesign layer — additive only. Loaded on every page via pda-nav.js.
+   Turns the amber/teal CTAs into pill-shaped "cool buttons" with soft shadow
+   + hover lift, matching the approved redesign. Uses [class~=] so it targets
+   only the exact button background tokens (never bg-amber-50 cards, gradients,
+   or hover: variants). */
+
+a[class~="bg-amber-500"], button[class~="bg-amber-500"],
+a[class~="bg-amber-600"], button[class~="bg-amber-600"] {
+  border-radius: 9999px !important;
+  background-image: linear-gradient(180deg, #fbbf24, #f59e0b);
+  box-shadow: 0 10px 24px -10px rgba(245, 158, 11, 0.55);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+a[class~="bg-teal-600"], button[class~="bg-teal-600"],
+a[class~="bg-teal-700"], button[class~="bg-teal-700"] {
+  border-radius: 9999px !important;
+  box-shadow: 0 10px 24px -12px rgba(13, 148, 136, 0.55);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+a[class~="bg-amber-500"]:hover, button[class~="bg-amber-500"]:hover,
+a[class~="bg-amber-600"]:hover, button[class~="bg-amber-600"]:hover,
+a[class~="bg-teal-600"]:hover,  button[class~="bg-teal-600"]:hover,
+a[class~="bg-teal-700"]:hover,  button[class~="bg-teal-700"]:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+}
