@@ -1,0 +1,53 @@
+/* Premier Dental Academy — premium motion layer (progressive enhancement).
+   Tasteful, brand-consistent, GPU-cheap, and FULLY disabled for visitors who
+   prefer reduced motion. Loaded site-wide via pda-nav.js. Pure CSS — nothing
+   here can break a form, a script, or the checkout. Targets redesign elements
+   by their distinctive classes so no page markup has to change. */
+@media (prefers-reduced-motion: no-preference) {
+
+  /* ── Navy hero / page-head + stats bands: a slow, soft "aurora" drifts behind
+        the content so the dark sections feel alive instead of flat. ── */
+  section[class*="0a1226"] { position: relative; overflow: hidden; isolation: isolate; }
+  section[class*="0a1226"]::before {
+    content: ""; position: absolute; inset: -45% -15%; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(38% 48% at 18% 22%, rgba(20,184,166,.20), transparent 62%),
+      radial-gradient(34% 44% at 82% 28%, rgba(245,158,11,.13), transparent 60%),
+      radial-gradient(30% 40% at 60% 92%, rgba(13,148,136,.16), transparent 60%);
+    animation: pdaAurora 16s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  section[class*="0a1226"] > * { position: relative; z-index: 1; }
+  @keyframes pdaAurora {
+    0%   { transform: translate3d(-3%, -2%, 0) scale(1.05); }
+    100% { transform: translate3d(4%, 3%, 0)  scale(1.14); }
+  }
+
+  /* ── Primary amber CTA links: a single light "sheen" sweeps across on hover —
+        draws the eye to the action without looping/distracting. ── */
+  a[class*="bg-amber-500"], a[class*="from-amber-400"], #pda-nav-enroll {
+    position: relative; overflow: hidden; isolation: isolate;
+  }
+  a[class*="bg-amber-500"]::after,
+  a[class*="from-amber-400"]::after,
+  #pda-nav-enroll::after {
+    content: ""; position: absolute; top: 0; bottom: 0; left: -130%; width: 55%; z-index: 2;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.5), transparent);
+    transform: skewX(-18deg); pointer-events: none;
+  }
+  a[class*="bg-amber-500"]:hover::after,
+  a[class*="from-amber-400"]:hover::after,
+  #pda-nav-enroll:hover::after { animation: pdaSheen .85s ease; }
+  @keyframes pdaSheen { from { left: -130%; } to { left: 150%; } }
+
+  /* ── The one CTA that matters most (nav Enroll) gets a slow, gentle glow
+        "breath" so it quietly stays the most magnetic thing on the page. ── */
+  #pda-nav-enroll { animation: pdaBreath 3.8s ease-in-out infinite; }
+  @keyframes pdaBreath {
+    0%, 100% { box-shadow: 0 1px 3px rgba(0,0,0,.10); }
+    50%      { box-shadow: 0 8px 26px -6px rgba(245,158,11,.80); }
+  }
+
+  /* ── Cards already lift on hover; add a soft, quick scale so they feel tactile. ── */
+  .feature:hover, .lib-card:hover { transform: translateY(-4px) scale(1.012); }
+}

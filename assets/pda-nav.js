@@ -105,6 +105,9 @@
     // PWA: link the web app manifest + brand theme-color once, site-wide (guarded so a page may still ship its own).
     if (!document.querySelector('link[rel="manifest"]')) { var __mf = document.createElement('link'); __mf.rel = 'manifest'; __mf.href = '/site.webmanifest'; document.head.appendChild(__mf); }
     if (!document.querySelector('meta[name="theme-color"]')) { var __tc = document.createElement('meta'); __tc.name = 'theme-color'; __tc.content = '#0f766e'; document.head.appendChild(__tc); }
+    // Premium motion layer (aurora heroes, CTA sheen, gentle Enroll glow) — site-wide,
+    // CSS-only, auto-disabled for reduced-motion users. Guarded so it loads once.
+    if (!document.querySelector('link[data-pda-polish]')) { var __pl = document.createElement('link'); __pl.rel = 'stylesheet'; __pl.href = '/assets/pda-polish.css'; __pl.setAttribute('data-pda-polish', ''); document.head.appendChild(__pl); }
     // Remove any pre-existing inline mobile menus from before this script existed.
     document.querySelectorAll('#mobile-menu, #pda-mobile-menu').forEach(el => el.remove());
 
