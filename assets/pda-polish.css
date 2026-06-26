@@ -83,3 +83,41 @@
   figure[class*="overflow-hidden"] img { transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
   figure[class*="overflow-hidden"]:hover img { transform: scale(1.06); }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GLOWING OUTLINE — site-wide. Ryan loved the glowing red outline on the
+   "filling fast" class cards; this generalizes that premium glow to primary
+   actions and feature cards across every page (red stays reserved for real
+   urgency). Static glows are safe for reduced-motion; hover/pulse motion is
+   only added when motion is allowed.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Primary amber CTAs quietly glow on every page so the main action always pops. */
+a[class*="bg-amber-500"], a[class*="from-amber-400"], button[class*="bg-amber-500"] {
+  box-shadow: 0 8px 24px -10px rgba(245,158,11,.65);
+  transition: box-shadow .25s ease, transform .15s ease;
+}
+a[class*="bg-amber-500"]:hover, a[class*="from-amber-400"]:hover, button[class*="bg-amber-500"]:hover {
+  box-shadow: 0 14px 36px -8px rgba(245,158,11,.85);
+}
+
+/* Teal primary CTAs get the same treatment in the brand's cool tone. */
+a[class*="bg-teal-700"], a[class*="bg-teal-600"], button[class*="bg-teal-700"], button[class*="bg-teal-600"] {
+  box-shadow: 0 8px 24px -12px rgba(13,148,136,.6);
+  transition: box-shadow .25s ease, transform .15s ease;
+}
+a[class*="bg-teal-700"]:hover, a[class*="bg-teal-600"]:hover,
+button[class*="bg-teal-700"]:hover, button[class*="bg-teal-600"]:hover {
+  box-shadow: 0 14px 36px -8px rgba(13,148,136,.8);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Feature/tool/step/cohort cards lift with a soft glowing ring on hover —
+     the same "alive" feel as the urgent cards, in calm teal. */
+  .feature, .lib-card, .step-card, .cohort-card, .pda-glow-card {
+    transition: transform .22s ease, box-shadow .32s ease, border-color .22s ease;
+  }
+  .feature:hover, .lib-card:hover, .step-card:hover, .pda-glow-card:hover {
+    box-shadow: 0 0 0 1.5px rgba(13,148,136,.5), 0 22px 55px -24px rgba(13,148,136,.5);
+  }
+}

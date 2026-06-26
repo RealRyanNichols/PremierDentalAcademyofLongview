@@ -12,7 +12,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #f8fafc; }
+    body {
+      font-family: 'Inter', sans-serif; color: #0f172a;
+      background:
+        radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+        radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+        radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+        linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+      background-attachment: fixed;
+    }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .seat-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; }
