@@ -121,3 +121,20 @@ button[class*="bg-teal-700"]:hover, button[class*="bg-teal-600"]:hover {
     box-shadow: 0 0 0 1.5px rgba(13,148,136,.5), 0 22px 55px -24px rgba(13,148,136,.5);
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SOFT BRAND-TINTED PAGE BACKGROUND — opt-in via the `pda-tinted` body class.
+   Content/marketing pages carry the class so they get the same premium tinted
+   background as the homepage and calendar (color, never stark white). The
+   `body.pda-tinted` selector outranks Tailwind's single bg-* utility classes,
+   so it wins no matter the cascade order. App pages (admin, dashboard, tools)
+   simply don't carry the class and keep their own layouts untouched.
+   ───────────────────────────────────────────────────────────────────────── */
+body.pda-tinted {
+  background:
+    radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+    radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+    radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+    linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+  background-attachment: fixed;
+}
