@@ -32,6 +32,9 @@
           <a href="/tools/resource-hub" class="block px-4 py-2 hover:bg-slate-50">Life resources</a>
           <a href="/tools/study-plan" class="block px-4 py-2 hover:bg-slate-50">Study plan</a>
           <a href="/tools/is-it-for-me" class="block px-4 py-2 hover:bg-slate-50">Is this for me?</a>
+          <a href="/tools/first-30-days" class="block px-4 py-2 hover:bg-slate-50">First 30 days</a>
+          <a href="/tools/family-talk" class="block px-4 py-2 hover:bg-slate-50">Talk to family</a>
+          <a href="/tools/savings-starter" class="block px-4 py-2 hover:bg-slate-50">Savings starter</a>
           <a href="/tools/practice-exam"      class="block px-4 py-2 hover:bg-slate-50">Practice exam</a>
           <a href="/skills-lab"               class="block px-4 py-2 hover:bg-slate-50">Skills Lab</a>
           <a href="/tools/flashcards"         class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
@@ -83,6 +86,9 @@
     <a href="/tools/resource-hub" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Life resources</a>
     <a href="/tools/study-plan" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Study plan</a>
     <a href="/tools/is-it-for-me" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Is this for me?</a>
+    <a href="/tools/first-30-days" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">First 30 days</a>
+    <a href="/tools/family-talk" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Talk to family</a>
+    <a href="/tools/savings-starter" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Savings starter</a>
     <a href="/tools/practice-exam"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Practice exam</a>
     <a href="/skills-lab"               data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Skills Lab</a>
     <a href="/tools/flashcards"         data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency-Fund Starter for Dental Assistants | Premier Dental Academy</title>
+<meta name="description" content="A free, honest savings planner — set a small cushion goal and a weekly amount, and see exactly when you'll hit it. Built for new and future dental assistants. No signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/savings-starter">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  input[type=range]{width:100%;accent-color:#0d9488}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Build your <span class="text-amber-400 italic">first cushion.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">A little breathing room changes everything. Pick a goal and what you can set aside each week — we'll show you exactly when you'll get there. Honest math, no fake returns.</p>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid lg:grid-cols-2 gap-6 items-start" id="tool">
+  <div class="space-y-5">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 pda-glow-card">
+      <h2 class="display text-lg font-bold text-navy-900 mb-3">Your goal</h2>
+      <div class="flex items-center justify-between text-sm text-slate-600 mb-1"><span>Cushion goal</span><span id="goalOut" class="font-semibold text-navy-900">$500</span></div>
+      <input type="range" id="goal" min="250" max="3000" value="500" step="50">
+      <div class="flex flex-wrap gap-2 mt-3" id="presets"></div>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 pda-glow-card">
+      <h2 class="display text-lg font-bold text-navy-900 mb-3">What you can set aside</h2>
+      <div class="flex items-center justify-between text-sm text-slate-600 mb-1"><span>Per week</span><span id="weekOut" class="font-semibold text-navy-900">$25/wk</span></div>
+      <input type="range" id="week" min="5" max="150" value="25" step="5">
+      <div class="flex items-center justify-between text-sm text-slate-600 mt-3 mb-1"><span>Starting amount (optional)</span><span id="startOut" class="font-semibold text-navy-900">$0</span></div>
+      <input type="range" id="start" min="0" max="1000" value="0" step="25">
+    </div>
+  </div>
+
+  <div>
+    <div class="bg-navy-900 text-white rounded-2xl p-6">
+      <div class="text-sm text-slate-300">You'll hit your goal in</div>
+      <div class="display text-4xl font-bold text-amber-400 mt-1" id="weeks">20 weeks</div>
+      <div class="text-sm text-slate-300 mt-1" id="byWhen">about 5 months from now</div>
+      <div class="mt-4 h-2.5 bg-white/15 rounded-full overflow-hidden"><div id="bar" class="h-full bg-gradient-to-r from-teal-500 to-amber-400" style="width:0%"></div></div>
+      <p class="text-xs text-slate-400 mt-3" id="tip">Even $25 a week adds up faster than it feels.</p>
+    </div>
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mt-4">
+      <p class="text-sm font-semibold text-navy-900">Want more to set aside?</p>
+      <p class="text-sm text-slate-600 mt-1">See your real take-home pay and find funding so tuition isn't what eats your cushion.</p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <a href="/tools/take-home-pay" class="text-sm font-semibold text-teal-700 hover:text-teal-900 underline">Take-home pay →</a>
+        <a href="/tools/funding-finder" class="text-sm font-semibold text-teal-700 hover:text-teal-900 underline">Get it paid for →</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="max-w-4xl mx-auto px-4 sm:px-6 pb-12">
+  <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 text-center">
+    <h2 class="display text-2xl font-bold">A steady paycheck makes this easy.</h2>
+    <p class="text-teal-50 mt-2 text-sm max-w-xl mx-auto">A dental-assistant career gives you the stable income that makes a real cushion — and everything after it — possible.</p>
+    <a href="/enroll" data-event="enroll_click" class="mt-5 inline-block bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full">Start your path →</a>
+  </div>
+</div>
+
+<script>
+(function(){
+  var goal=document.getElementById('goal'), week=document.getElementById('week'), start=document.getElementById('start');
+  var goalOut=document.getElementById('goalOut'), weekOut=document.getElementById('weekOut'), startOut=document.getElementById('startOut');
+  var weeksEl=document.getElementById('weeks'), byWhen=document.getElementById('byWhen'), bar=document.getElementById('bar'), tip=document.getElementById('tip');
+  var presets=[300,500,1000]; var pEl=document.getElementById('presets');
+  presets.forEach(function(v){
+    var b=document.createElement('button'); b.type='button';
+    b.className='text-xs font-semibold border border-slate-200 rounded-full px-3 py-1.5 hover:border-teal-600';
+    b.textContent='$'+v; b.onclick=function(){ goal.value=v; render(); };
+    pEl.appendChild(b);
+  });
+  function render(){
+    var g=+goal.value, w=+week.value, s=+start.value;
+    goalOut.textContent='$'+g.toLocaleString(); weekOut.textContent='$'+w+'/wk'; startOut.textContent='$'+s.toLocaleString();
+    var remaining=Math.max(0, g-s);
+    var n = w>0 ? Math.ceil(remaining/w) : 0;
+    weeksEl.textContent = remaining===0 ? "You're already there! 🎉" : (n+' week'+(n===1?'':'s'));
+    var months = Math.round(n/4.345*10)/10;
+    byWhen.textContent = remaining===0 ? 'Goal already covered' : ('about '+months+' month'+(months===1?'':'s')+' from now');
+    bar.style.width = Math.min(100, Math.round(s/g*100))+'%';
+    tip.textContent = w>=50 ? 'Strong pace — you\'ll feel this cushion fast.' : 'Even small, steady amounts beat waiting for "extra" money.';
+    try{ if(window.PDA&&window.PDA.track) window.PDA.track('savings_starter_run',{goal:g,perWeek:w,weeks:n}); }catch(e){}
+  }
+  [goal,week,start].forEach(function(el){ el.addEventListener('input', render); });
+  render();
+})();
+</script>
+</body>
+</html>
