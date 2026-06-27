@@ -34,3 +34,35 @@ Source: Amanda voice memos — transcribed. Tools live in the repo at `skills-la
 
 ---
 Status: captured 2026-06-26. To be implemented on branch `claude/site-redesign` (or a tools branch), pushed to the Vercel preview for review.
+
+---
+
+## Virtual Operatory — 3D geometry status (2026-06-27)
+
+DONE in `skills-lab/virtual-office.html` (Three.js scene builder):
+- **Tooth chart on the operatory computer** — the monitor screen now renders a real
+  charting-software tooth chart (two arches, a highlighted tooth #14 MOD, schedule
+  /insurance footer) via a CanvasTexture (`chartTexture()`).
+- **Removed the colorful blocks** — the blue/green/purple counter cubes are now a
+  clean off-white glove-box dispenser rack (S/M/L) with a teal opening lip. Red
+  sharps container kept (realistic).
+
+REMAINING 3D (best implemented against the live Vercel preview — they need visual
+iteration this headless env can't render: WebGL + the three.js CDN aren't available
+locally, so coordinates can't be eyeballed here):
+- **Separate sterilization ROOM.** Today the autoclave sits on the back counter,
+  which contradicts the station copy ("you never sterilize chairside"). Add a small
+  partitioned alcove (e.g., behind the back-right wall, reached past the door) split
+  DIRTY → CLEAN: DIRTY side = ultrasonic cleaner (small box + lid) near a rinse sink;
+  CLEAN side = the autoclave (move the existing autoclave there) + pouch storage.
+  Add a one-way arrow decal. Re-point the `steri` anchor to the new location.
+- **Distinct HVE + saliva-ejector tips.** The two delivery hoses exist; add a wide
+  angled HVE tip and a thinner saliva-ejector tip at the hose ends so they read as
+  the two suction types the copy teaches.
+- **Dental-assistant figure on the patient's LEFT.** A stool exists (currently x≈+1.2,
+  delivery-unit side). Add a seated DA figure (mirror the dentist figure build) on the
+  patient's left and confirm the side on the preview; wire its existing "assistant"
+  duties hotspot to it.
+
+Guardrail: keep `assets/skills-lab/data/virtual-office.js` valid JS; don't change the
+station copy (already approved). Verify each change on the PR #137 preview before merge.

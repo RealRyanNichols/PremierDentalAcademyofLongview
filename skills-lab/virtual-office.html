@@ -594,6 +594,31 @@ try {
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(11, 9), M({ map: tileTexture(), roughness: 0.5, metalness: 0.05 }));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
+  // Charting-software TOOTH CHART drawn onto the operatory computer screen.
+  function chartTexture() {
+    const c = document.createElement('canvas'); c.width = 512; c.height = 320;
+    const g = c.getContext('2d');
+    g.fillStyle = '#0b2236'; g.fillRect(0, 0, 512, 320);
+    g.fillStyle = '#0d9488'; g.fillRect(0, 0, 512, 36);
+    g.fillStyle = '#fff'; g.font = 'bold 18px Inter, Arial'; g.fillText('PATIENT CHART — Tooth #14 · MOD', 14, 25);
+    g.fillStyle = '#7dd3fc'; g.font = '12px Inter, Arial'; g.fillText('Surfaces: M O D · Mark as the dentist calls them', 16, 58);
+    // two arches of teeth (upper + lower), 16 each
+    function arch(cy, label) {
+      g.fillStyle = '#94a3b8'; g.font = '10px Inter, Arial'; g.fillText(label, 16, cy - 22);
+      for (let i = 0; i < 16; i++) {
+        const x = 30 + i * 29, hi = (i === 5); // highlight one tooth (#14-ish)
+        g.fillStyle = hi ? '#f59e0b' : '#e2e8f0';
+        g.beginPath(); g.roundRect(x, cy, 22, 30, 5); g.fill();
+        if (hi) { g.fillStyle = '#7c2d12'; g.font = 'bold 11px Inter'; g.fillText('14', x + 4, cy + 20); }
+      }
+    }
+    if (g.roundRect) { arch(96, 'UPPER'); arch(176, 'LOWER'); }
+    g.fillStyle = '#22d3ee'; g.fillRect(0, 250, 512, 2);
+    g.fillStyle = '#cbd5e1'; g.font = '12px Inter, Arial';
+    g.fillText('Next visit: scheduled  ·  Insurance: verified  ·  Pre-med: none', 16, 278);
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+
   // Walls + ceiling
   const backWall = new THREE.Mesh(new THREE.PlaneGeometry(11, 4.2), M({ color: 0xdfe7e9, roughness: 0.95 }));
   backWall.position.set(0, 2.1, -3); backWall.receiveShadow = true; scene.add(backWall);
@@ -624,7 +649,8 @@ try {
   // monitor (charting computer)
   mesh(box(0.05, 0.42, 0.05), mDark, 1.9, 1.35, -2.74);
   mesh(box(0.72, 0.46, 0.05), mDark, 1.9, 1.62, -2.72);
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.38), M({ color: 0x16324d, emissive: 0x1e466b, emissiveIntensity: 0.7, roughness: 0.4 }));
+  const chartTex = chartTexture();
+  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.38), M({ map: chartTex, emissive: 0xffffff, emissiveMap: chartTex, emissiveIntensity: 0.55, roughness: 0.4 }));
   screen.position.set(1.9, 1.62, -2.69); scene.add(screen);
 
   // ---- Dental chair (head toward -z) ----
@@ -695,11 +721,14 @@ try {
   // Baseboards
   mesh(box(11, 0.12, 0.04), M({ color: 0xcdd6d8, roughness: 0.8 }), 0, 0.06, -2.98);
   mesh(box(0.04, 0.12, 9), M({ color: 0xcdd6d8, roughness: 0.8 }), -3.98, 0.06, 0);
-  // Sharps container (red) + glove-box dispensers on the counter
+  // Sharps container (red, realistic) + a clean glove-box dispenser rack (S/M/L)
   mesh(box(0.22, 0.26, 0.18), M({ color: 0xdc2626, roughness: 0.6 }), 0.7, 1.06, -2.66);
-  mesh(box(0.2, 0.12, 0.14), M({ color: 0x2563eb, roughness: 0.7 }), 1.15, 1.0, -2.64);
-  mesh(box(0.2, 0.12, 0.14), M({ color: 0x059669, roughness: 0.7 }), 1.4, 1.0, -2.64);
-  mesh(box(0.2, 0.12, 0.14), M({ color: 0x7c3aed, roughness: 0.7 }), 1.65, 1.0, -2.64);
+  const mGloveBox = M({ color: 0xeaf1f1, roughness: 0.7 });          // on-brand off-white dispensers
+  const mGloveLip = M({ color: 0x0d9488, roughness: 0.6 });          // teal label lip = the glove opening
+  [1.15, 1.4, 1.65].forEach(function (gx) {
+    mesh(box(0.2, 0.12, 0.14), mGloveBox, gx, 1.0, -2.64);
+    mesh(box(0.16, 0.02, 0.05), mGloveLip, gx, 1.06, -2.57);         // angled front opening
+  });
   // Wall clock on the back wall
   mesh(cyl(0.18, 0.18, 0.04, 28), mWhite, -1.1, 2.55, -2.95, { rx: Math.PI / 2 });
   mesh(cyl(0.16, 0.16, 0.02, 28), M({ color: 0xf8fafc, roughness: 0.5 }), -1.1, 2.55, -2.92, { rx: Math.PI / 2 });
