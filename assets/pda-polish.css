@@ -7,8 +7,8 @@
 
   /* ── Navy hero / page-head + stats bands: a slow, soft "aurora" drifts behind
         the content so the dark sections feel alive instead of flat. ── */
-  section[class*="0a1226"] { position: relative; overflow: hidden; isolation: isolate; }
-  section[class*="0a1226"]::before {
+  [class*="0a1226"] { position: relative; overflow: hidden; isolation: isolate; }
+  [class*="0a1226"]::before {
     content: ""; position: absolute; inset: -45% -15%; z-index: 0; pointer-events: none;
     background:
       radial-gradient(38% 48% at 18% 22%, rgba(20,184,166,.20), transparent 62%),
@@ -17,7 +17,7 @@
     animation: pdaAurora 16s ease-in-out infinite alternate;
     will-change: transform;
   }
-  section[class*="0a1226"] > * { position: relative; z-index: 1; }
+  [class*="0a1226"] > * { position: relative; z-index: 1; }
   @keyframes pdaAurora {
     0%   { transform: translate3d(-3%, -2%, 0) scale(1.05); }
     100% { transform: translate3d(4%, 3%, 0)  scale(1.14); }
@@ -82,4 +82,59 @@
   /* Photos gently zoom on hover, clipped by their rounded frame. */
   figure[class*="overflow-hidden"] img { transition: transform .6s cubic-bezier(.22, 1, .36, 1); }
   figure[class*="overflow-hidden"]:hover img { transform: scale(1.06); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   GLOWING OUTLINE — site-wide. Ryan loved the glowing red outline on the
+   "filling fast" class cards; this generalizes that premium glow to primary
+   actions and feature cards across every page (red stays reserved for real
+   urgency). Static glows are safe for reduced-motion; hover/pulse motion is
+   only added when motion is allowed.
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* Primary amber CTAs quietly glow on every page so the main action always pops. */
+a[class*="bg-amber-500"], a[class*="from-amber-400"], button[class*="bg-amber-500"] {
+  box-shadow: 0 8px 24px -10px rgba(245,158,11,.65);
+  transition: box-shadow .25s ease, transform .15s ease;
+}
+a[class*="bg-amber-500"]:hover, a[class*="from-amber-400"]:hover, button[class*="bg-amber-500"]:hover {
+  box-shadow: 0 14px 36px -8px rgba(245,158,11,.85);
+}
+
+/* Teal primary CTAs get the same treatment in the brand's cool tone. */
+a[class*="bg-teal-700"], a[class*="bg-teal-600"], button[class*="bg-teal-700"], button[class*="bg-teal-600"] {
+  box-shadow: 0 8px 24px -12px rgba(13,148,136,.6);
+  transition: box-shadow .25s ease, transform .15s ease;
+}
+a[class*="bg-teal-700"]:hover, a[class*="bg-teal-600"]:hover,
+button[class*="bg-teal-700"]:hover, button[class*="bg-teal-600"]:hover {
+  box-shadow: 0 14px 36px -8px rgba(13,148,136,.8);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Feature/tool/step/cohort cards lift with a soft glowing ring on hover —
+     the same "alive" feel as the urgent cards, in calm teal. */
+  .feature, .lib-card, .step-card, .cohort-card, .pda-glow-card {
+    transition: transform .22s ease, box-shadow .32s ease, border-color .22s ease;
+  }
+  .feature:hover, .lib-card:hover, .step-card:hover, .pda-glow-card:hover {
+    box-shadow: 0 0 0 1.5px rgba(13,148,136,.5), 0 22px 55px -24px rgba(13,148,136,.5);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   SOFT BRAND-TINTED PAGE BACKGROUND — opt-in via the `pda-tinted` body class.
+   Content/marketing pages carry the class so they get the same premium tinted
+   background as the homepage and calendar (color, never stark white). The
+   `body.pda-tinted` selector outranks Tailwind's single bg-* utility classes,
+   so it wins no matter the cascade order. App pages (admin, dashboard, tools)
+   simply don't carry the class and keep their own layouts untouched.
+   ───────────────────────────────────────────────────────────────────────── */
+body.pda-tinted {
+  background:
+    radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+    radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+    radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+    linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+  background-attachment: fixed;
 }

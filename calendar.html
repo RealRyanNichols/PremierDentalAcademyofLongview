@@ -10,8 +10,17 @@
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', sans-serif; color: #0f172a; background: #155e75; }
+    body {
+      font-family: 'Inter', sans-serif; color: #0f172a;
+      background:
+        radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+        radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+        radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+        linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+      background-attachment: fixed;
+    }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .seat-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.6rem; border-radius: 9999px; }
@@ -30,13 +39,12 @@
     .cohort-card.full::before { content: "🚫 Closed"; position: absolute; top: -10px; right: 14px; background: #b91c1c; color: white; font-size: 10px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 3px 8px; border-radius: 9999px; }
     @keyframes cardPulse { 0%, 100% { box-shadow: 0 0 0 2px #ef4444, 0 8px 24px -10px rgba(239,68,68,0.55); } 50% { box-shadow: 0 0 0 2px #ef4444, 0 8px 30px 0 rgba(239,68,68,0.85); } }
 
-    .stat-tile { background: rgba(255,255,255,0.10); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.20); border-radius: 1rem; padding: 0.9rem 1rem; text-align: center; }
-    .stat-tile .num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height: 1; }
-    .stat-tile.danger .num { color: #fecaca; }
-    .stat-tile.warn .num { color: #fde68a; }
-    .stat-tile .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.75); margin-top: 0.35rem; }
+    .stat-tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.9rem 1rem; text-align: center; box-shadow: 0 6px 24px -14px rgba(7,13,31,.3); }
+    .stat-tile .num { font-family: 'Fraunces', serif; font-size: 2rem; font-weight: 700; line-height: 1; color: #0f766e; }
+    .stat-tile.danger .num { color: #b91c1c; }
+    .stat-tile.warn .num { color: #b45309; }
+    .stat-tile .lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #64748b; margin-top: 0.35rem; }
 
-    .scarcity-banner { background: linear-gradient(90deg, rgba(239,68,68,0.18), rgba(245,158,11,0.18)); border: 1px solid rgba(252,165,165,0.5); }
     .filter-btn[aria-pressed="true"] { background: #0f766e; color: white; }
 
     /* BIG SEAT HERO — the focal element of every cohort card */
@@ -63,6 +71,20 @@
     .seat-hero--normal .seat-bar-fill { background: linear-gradient(90deg, #14b8a6, #f59e0b); }
     .seat-help { font-size: 12px; color: #475569; margin-top: 8px; font-weight: 500; }
     .seat-hero--urgent .seat-help { color: #991b1b; font-weight: 600; }
+
+    /* ── "How it works" step cards (the sales process, made plain) ── */
+    .step-card { position: relative; background: #fff; border-radius: 1.25rem; padding: 1.5rem 1.4rem 1.4rem; box-shadow: 0 6px 24px -12px rgba(7,13,31,.35); border: 1px solid #e2e8f0; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; height: 100%; }
+    .step-card:hover { transform: translateY(-4px); border-color: #0d9488; box-shadow: 0 18px 50px -20px rgba(7,13,31,.45); }
+    .step-num { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; border-radius: 9999px; font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.25rem; color: #fff; background: linear-gradient(135deg, #0d9488, #0f766e); box-shadow: 0 6px 16px -6px rgba(13,148,136,.6); }
+    .step-card.accent .step-num { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #422006; box-shadow: 0 6px 16px -6px rgba(245,158,11,.6); }
+    .step-connect { position: absolute; top: 2.75rem; right: -1.1rem; color: #5eead4; font-size: 1.4rem; line-height: 1; z-index: 2; }
+    @media (max-width: 767px){ .step-connect { display: none; } }
+
+    /* ── Reserve walkthrough (numbered vertical list) ── */
+    .walk-step { display: flex; gap: 1rem; align-items: flex-start; }
+    .walk-dot { flex: none; width: 2.1rem; height: 2.1rem; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: .95rem; color: #fff; background: linear-gradient(135deg, #0d9488, #0f766e); }
+    .walk-line { width: 2px; flex: none; margin: 4px auto 0; background: linear-gradient(#5eead4, rgba(94,234,212,.15)); }
+    .card-legend { display: inline-flex; align-items: center; gap: .4rem; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; padding: .25rem .6rem; border-radius: 9999px; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/seat-mask.js"></script>
@@ -110,11 +132,42 @@
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
   <!-- Page header (navy) -->
-  <section class="bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-2xl mb-8">
-    <div class="max-w-4xl mx-auto px-6 py-14 sm:py-20 text-center">
-      <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold">In-Person calendar</p>
-      <h1 class="display text-4xl sm:text-5xl font-semibold mt-3 leading-tight">Pick your <span class="text-amber-400 italic">start date.</span></h1>
-      <p class="text-slate-300 mt-5 max-w-2xl mx-auto text-lg">Upcoming In-Person cohorts at our Longview campus — dates, schedule, and seats remaining. Tap one to reserve.</p>
+  <section class="bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-3xl mb-10">
+    <div class="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
+      <p class="text-[12.5px] uppercase tracking-[0.18em] text-teal-300 font-bold" data-aos="fade-up">In-person class calendar</p>
+      <h1 class="display text-4xl sm:text-6xl font-semibold mt-4 leading-[1.05]" data-aos="fade-up">Pick your <span class="text-amber-400 italic">start date.</span></h1>
+      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$200 down</strong>.</p>
+      <div class="mt-9" data-aos="fade-up" data-aos-delay="150">
+        <a href="#open-dates" data-event="calendar_see_dates_click" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-lg transition">See open dates ↓</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- How enrollment works — the sales process, made plain -->
+  <section class="mb-10" aria-labelledby="how-it-works">
+    <div class="text-center max-w-2xl mx-auto mb-7" data-aos="fade-up">
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">How enrollment works</p>
+      <h2 id="how-it-works" class="display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">Three steps from this page to <span class="text-amber-500 italic">your first class.</span></h2>
+      <p class="text-slate-600 mt-3">No application fee, no pressure, and no big lump sum. Here's exactly how it goes.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-5 relative">
+      <div class="step-card" data-aos="fade-up">
+        <span class="step-connect hidden md:block">→</span>
+        <span class="step-num">1</span>
+        <h3 class="display text-xl font-bold text-slate-900 mt-4">Pick your start date</h3>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Choose any open class below. Each card shows the schedule, your instructor, and how many of the <strong>8 seats</strong> are still left.</p>
+      </div>
+      <div class="step-card accent" data-aos="fade-up" data-aos-delay="100">
+        <span class="step-connect hidden md:block">→</span>
+        <span class="step-num">2</span>
+        <h3 class="display text-xl font-bold text-slate-900 mt-4">Reserve with $200 down</h3>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Tap <strong>“Reserve seat”</strong> to check out securely. $200 holds your spot — then simple <strong>weekly or monthly</strong> payments. No big lump sum.</p>
+      </div>
+      <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+        <span class="step-num">3</span>
+        <h3 class="display text-xl font-bold text-slate-900 mt-4">Train &amp; get certified</h3>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Join your cohort, train hands-on in about <strong>12 weeks</strong>, finish your Texas RDA requirements, and get our help getting hired locally.</p>
+      </div>
     </div>
   </section>
 
@@ -126,24 +179,85 @@
     <div class="stat-tile danger"><div class="num" id="stat-closed">—</div><div class="lbl">Already closed</div></div>
   </div>
 
-  <!-- All-classes scarcity banner -->
-  <div class="scarcity-banner rounded-xl px-4 py-3 mb-6 flex items-start gap-3 text-white text-sm">
-    <span class="text-xl shrink-0">⚠️</span>
-    <span><strong>This is every In-Person cohort we'll run.</strong> Only 8 seats per class — when a date sells out, that's it. Lock yours before someone else does.</span>
-  </div>
-
-  <!-- Online = start any time. Slim secondary banner. -->
-  <a href="/enroll?plan=online" data-event="enroll_click" class="mb-8 sm:mb-10 flex items-center gap-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-700 hover:to-rose-600 text-white rounded-xl px-4 py-3 text-sm sm:text-base shadow-md transition relative">
-    <span class="absolute -top-2 left-3 bg-amber-400 text-rose-900 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full animate-pulse">🔥 Limited time</span>
-    <span class="text-xl shrink-0">💻</span>
-    <span class="flex-1 min-w-0"><strong>Online program — $397 one-time</strong> <span class="line-through opacity-70 text-sm">$997</span> · Start any day. No class schedule.</span>
-    <span class="text-xs font-bold uppercase tracking-wider whitespace-nowrap text-white">Enroll →</span>
+  <!-- Online alternative — clean, secondary cross-sell -->
+  <a href="/enroll?plan=online" data-event="enroll_click" class="group mb-10 flex items-center gap-4 bg-white border border-slate-200 hover:border-teal-500 rounded-2xl px-5 py-4 shadow-[0_6px_24px_-14px_rgba(7,13,31,.3)] hover:shadow-[0_18px_50px_-22px_rgba(7,13,31,.4)] transition relative pda-glow-card" data-aos="fade-up">
+    <span class="absolute -top-2.5 left-5 bg-amber-400 text-amber-950 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">Limited-time price</span>
+    <span class="text-2xl shrink-0">💻</span>
+    <span class="flex-1 min-w-0 text-slate-800 text-sm sm:text-base">
+      <strong class="text-slate-900">Prefer to learn online?</strong> Same curriculum, start any day — <strong class="text-teal-700">$397</strong> <span class="line-through text-slate-400">$997</span>, one time.
+    </span>
+    <span class="shrink-0 inline-flex items-center gap-1.5 bg-teal-700 group-hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-full transition">Enroll →</span>
   </a>
+
+  <!-- What you're seeing — read-the-card legend -->
+  <section id="open-dates" class="scroll-mt-24 mb-5" data-aos="fade-up">
+    <h2 class="display text-2xl sm:text-3xl font-bold text-slate-900">Open class dates</h2>
+    <p class="text-slate-600 mt-1 text-sm sm:text-base">Each card below is one real class. The big number is <strong class="text-slate-900">seats left out of 8</strong> — tap <strong class="text-slate-900">Reserve seat</strong> on the date you want.</p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <span class="card-legend bg-cyan-50 text-cyan-900">Seats open</span>
+      <span class="card-legend bg-rose-100 text-rose-800">🔥 Filling fast</span>
+      <span class="card-legend bg-rose-100 text-rose-900 border border-rose-300">Last seat</span>
+      <span class="card-legend bg-slate-200 text-slate-700">🚫 Closed — join waitlist</span>
+    </div>
+  </section>
 
   <!-- Grid of class cards, grouped by month -->
   <div id="months"></div>
 
-  <p id="empty-state" hidden class="text-center text-cyan-50/90 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
+  <p id="empty-state" hidden class="text-center text-slate-600 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
+
+  <!-- Reserve walkthrough — schedule a seat step-by-step + reassurance -->
+  <section class="mt-14" aria-labelledby="reserve-how">
+    <div class="text-center max-w-2xl mx-auto mb-8" data-aos="fade-up">
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">Ready to schedule?</p>
+      <h2 id="reserve-how" class="display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">Reserve your seat in about <span class="text-amber-500 italic">60 seconds.</span></h2>
+      <p class="text-slate-600 mt-3">Here's exactly what happens when you tap <strong class="text-slate-900">Reserve seat</strong> on a class above.</p>
+    </div>
+
+    <div class="grid lg:grid-cols-5 gap-6 items-start">
+      <!-- Numbered walkthrough -->
+      <div class="lg:col-span-3 bg-white rounded-2xl p-6 sm:p-8 shadow-[0_10px_40px_-18px_rgba(7,13,31,.5)]" data-aos="fade-up">
+        <ol class="space-y-5">
+          <li class="walk-step">
+            <span class="walk-dot">1</span>
+            <div><p class="font-bold text-slate-900">Pick the date that fits your life</p><p class="text-slate-600 text-sm mt-0.5">Evening options at our Longview campus. Tap <strong>Reserve seat</strong> on the class you want.</p></div>
+          </li>
+          <li class="walk-step">
+            <span class="walk-dot">2</span>
+            <div><p class="font-bold text-slate-900">Pay your $200 deposit securely</p><p class="text-slate-600 text-sm mt-0.5">Checkout runs on Square — encrypted, no account required. That $200 locks your seat in the class.</p></div>
+          </li>
+          <li class="walk-step">
+            <span class="walk-dot">3</span>
+            <div><p class="font-bold text-slate-900">Set up weekly or monthly payments</p><p class="text-slate-600 text-sm mt-0.5">The balance splits into simple payments — finished by graduation. Klarna, Afterpay &amp; Affirm are available too.</p></div>
+          </li>
+          <li class="walk-step">
+            <span class="walk-dot">4</span>
+            <div><p class="font-bold text-slate-900">Get your welcome details</p><p class="text-slate-600 text-sm mt-0.5">You'll get a confirmation with your start date, what to bring, and how to log in to your student tools.</p></div>
+          </li>
+          <li class="walk-step">
+            <span class="walk-dot" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#422006">5</span>
+            <div><p class="font-bold text-slate-900">Show up &amp; start training</p><p class="text-slate-600 text-sm mt-0.5">Hands-on from day one. About 12 weeks later you finish your Texas RDA requirements — and we help you get hired.</p></div>
+          </li>
+        </ol>
+      </div>
+
+      <!-- Reassurance / what's included -->
+      <aside class="lg:col-span-2 bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-2xl p-6 sm:p-7 shadow-[0_10px_40px_-18px_rgba(7,13,31,.6)]" data-aos="fade-up" data-aos-delay="100">
+        <h3 class="display text-xl font-bold">What your seat includes</h3>
+        <ul class="mt-4 space-y-2.5 text-sm text-slate-200">
+          <li class="flex gap-2"><span class="text-teal-300">✓</span> Live, hands-on training in Longview</li>
+          <li class="flex gap-2"><span class="text-teal-300">✓</span> All 12 modules + Texas RDA prep (radiology, jurisprudence, infection control)</li>
+          <li class="flex gap-2"><span class="text-teal-300">✓</span> Our exclusive practice trainers &amp; student tools</li>
+          <li class="flex gap-2"><span class="text-teal-300">✓</span> Hiring help with East Texas offices</li>
+        </ul>
+        <div class="mt-6 border-t border-white/10 pt-5">
+          <p class="text-sm text-slate-300">Not sure which date? Amanda will walk you through it.</p>
+          <a href="tel:+19039136444" data-event="call_click" class="mt-3 inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-full w-full justify-center transition">📞 Call (903) 913-6444</a>
+          <a href="/apply" data-event="apply_click" class="mt-2.5 inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-5 py-2.5 rounded-full w-full justify-center transition border border-white/15">Apply free first →</a>
+        </div>
+      </aside>
+    </div>
+  </section>
 
   <div class="mt-12 bg-gradient-to-br from-amber-500 to-amber-400 rounded-2xl p-6 sm:p-8 text-center text-slate-900">
     <h2 class="display text-2xl sm:text-3xl font-bold">Don't see a date that fits?</h2>
@@ -301,7 +415,7 @@ function render() {
     const section = document.createElement('section');
     section.className = 'mb-10';
     section.innerHTML = `
-      <h2 class="display text-2xl font-bold text-white mb-4">${month} <span class="text-cyan-100/70 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
+      <h2 class="display text-2xl font-bold text-slate-900 mb-4">${month} <span class="text-slate-500 text-base font-normal">— ${classes.length} class${classes.length>1?'es':''}</span></h2>
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-3">
         ${classes.map(cardHTML).join('')}
       </div>`;
@@ -317,7 +431,9 @@ document.addEventListener('click', (ev) => {
   render();
 });
 
-loadCohorts();
+loadCohorts().then(() => { if (window.AOS) AOS.refreshHard(); });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>window.AOS && AOS.init({ duration: 600, once: true, offset: 50 });</script>
 </body>
 </html>

@@ -148,14 +148,23 @@
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
 
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+        radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+        radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+        linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+      background-attachment: fixed;
+    }
     .display { font-family: 'Fraunces', serif; letter-spacing: -0.01em; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .gradient-hero { background:
-      radial-gradient(at 20% 0%, rgba(13, 148, 136, 0.28) 0px, transparent 55%),
-      radial-gradient(at 80% 0%, rgba(8, 145, 178, 0.28) 0px, transparent 55%),
-      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.14) 0px, transparent 55%),
-      #ecfeff;
+    .hero-gradient-text { background: linear-gradient(90deg, #2dd4bf 0%, #38bdf8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-hero { color: #fff; background:
+      radial-gradient(at 18% 0%, rgba(13, 148, 136, 0.34) 0px, transparent 50%),
+      radial-gradient(at 82% 6%, rgba(8, 145, 178, 0.30) 0px, transparent 50%),
+      radial-gradient(at 50% 100%, rgba(251, 191, 36, 0.16) 0px, transparent 55%),
+      linear-gradient(180deg, #0a1226 0%, #070d1f 100%);
     }
     .glow { box-shadow: 0 8px 40px -8px rgba(13, 148, 136, 0.25); }
     .scroll-mt { scroll-margin-top: 80px; }
@@ -196,7 +205,7 @@
   <meta name="twitter:description" content="East Texas RDA training with the only practice management trainers built to teach. Get hired faster — Premier Dental Academy of Longview." />
   <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
 </head>
-<body class="bg-white antialiased">
+<body class="antialiased">
 
 <!-- ───────────── Top alert banner — cohort countdown ───────────── -->
 <div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
@@ -257,25 +266,26 @@
 <section class="gradient-hero">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 grid lg:grid-cols-2 gap-12 items-center">
     <div data-aos="fade-up">
-      <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-slate-900">
+      <p class="text-[12.5px] uppercase tracking-[0.18em] text-teal-300 font-bold mb-4">East Texas RDA training</p>
+      <h1 class="display text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-white">
         Train on the software<br/>
-        <span class="gradient-text">before your first day.</span>
+        <span class="hero-gradient-text">before your first day.</span>
       </h1>
-      <p class="text-lg text-slate-600 mt-5 max-w-xl leading-relaxed">
+      <p class="text-lg text-slate-300 mt-5 max-w-xl leading-relaxed">
         East Texas's only Registered Dental Assistant program where students practice on real-grade practice management software for hundreds of hours — so on day one in any office, you already know what to do.
       </p>
       <div class="mt-7 flex flex-wrap gap-3">
-        <a id="hero-cta-enroll" href="/enroll" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md glow inline-flex items-center gap-2">
+        <a id="hero-cta-enroll" href="/enroll" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-md inline-flex items-center gap-2">
           Enroll now →
         </a>
-        <a id="hero-cta-trainer" href="/tools/practice-pro" data-event="free_preview_click" class="bg-white border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold px-6 py-3 rounded-lg inline-flex items-center gap-2">
+        <a id="hero-cta-trainer" href="/tools/practice-pro" data-event="free_preview_click" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-full inline-flex items-center gap-2 backdrop-blur">
           🔓 Try free preview
         </a>
         <a id="hero-cta-vo" href="/skills-lab/virtual-office" data-event="virtual_office_click" class="bg-white border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold px-6 py-3 rounded-lg inline-flex items-center gap-2">
           🪑 Virtual Dental Office
         </a>
       </div>
-      <div class="mt-6 flex items-center gap-4 text-sm text-slate-500">
+      <div class="mt-6 flex items-center gap-4 text-sm text-slate-300">
         <div class="flex -space-x-2">
           <div class="w-8 h-8 rounded-full bg-teal-500 border-2 border-white grid place-items-center text-white text-xs font-semibold">JM</div>
           <div class="w-8 h-8 rounded-full bg-cyan-600 border-2 border-white grid place-items-center text-white text-xs font-semibold">AC</div>
@@ -330,14 +340,14 @@
           </div>
         </div>
       </div>
-      <div class="text-center text-xs text-slate-500 mt-3">↑ This is a real screen students use every day</div>
+      <div class="text-center text-xs text-slate-300 mt-3">↑ This is a real screen students use every day</div>
     </div>
   </div>
 </section>
 
 <!-- ───────────── By the numbers (live stats) ───────────── -->
 <!-- ───────────── Payment calculator (redesign) ───────────── -->
-<section class="bg-white border-b border-slate-200">
+<section class="border-b border-slate-200/50">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-14 sm:py-16">
     <div class="text-center max-w-2xl mx-auto mb-8" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-2">No surprises</p>
@@ -345,7 +355,7 @@
       <p class="text-slate-600 mt-3">You don't pay it all at once. Pick a path and watch your real payment update.</p>
     </div>
     <div class="grid md:grid-cols-2 gap-6 items-start" data-aos="fade-up">
-      <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-[0_6px_24px_-14px_rgba(7,13,31,.3)]">
         <div class="grid grid-cols-2 gap-3" id="pdacalc-plans">
           <button type="button" data-plan="inperson" class="pdacalc-opt text-left rounded-xl border-2 border-teal-600 bg-teal-50 p-4 ring-4 ring-teal-600/10">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">In person</div>
@@ -417,7 +427,7 @@
 </script>
 
 <!-- ───────────── By the numbers (live stats) ───────────── -->
-<section class="border-y border-slate-200 bg-slate-50/50">
+<section class="border-y border-slate-200/50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10">
     <p class="text-center text-xs uppercase tracking-widest text-slate-500 font-semibold mb-1">PDA by the numbers</p>
     <p class="text-center text-sm sm:text-base text-slate-700 font-medium mb-6 max-w-2xl mx-auto">
@@ -466,7 +476,7 @@
       <h2 class="display text-2xl sm:text-3xl font-bold mt-1">How ready are you for the Texas RDA exam?</h2>
       <p class="text-teal-50 mt-2 max-w-xl">Take our free practice exam — real exam-style questions with instant explanations and a breakdown of exactly which topics to study next.</p>
     </div>
-    <a href="/tools/practice-exam" data-event="practice_exam_click" class="justify-self-start md:justify-self-end bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-4 rounded-xl shadow-lg whitespace-nowrap">Take the free exam →</a>
+    <a href="/tools/practice-exam" data-event="practice_exam_click" class="justify-self-start md:justify-self-end bg-amber-500 hover:bg-amber-600 text-white font-bold text-lg px-8 py-4 rounded-full shadow-lg whitespace-nowrap">Take the free exam →</a>
   </div>
 </section>
 
@@ -495,7 +505,7 @@
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         </ul>
-        <a href="/enroll?plan=in-person" data-event="enroll_click" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">Enroll &amp; pay — In-Person →</a>
+        <a href="/enroll?plan=in-person" data-event="enroll_click" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-full">Enroll &amp; pay — In-Person →</a>
       </div>
 
       <div data-aos="fade-up" data-aos-delay="100" class="bg-white border-2 border-rose-400 rounded-2xl p-8 hover:shadow-xl transition relative">
@@ -521,14 +531,14 @@
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Attend from anywhere in Texas</li>
         </ul>
-        <a href="/enroll?plan=online" data-event="enroll_click" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">Enroll &amp; pay — Online →</a>
+        <a href="/enroll?plan=online" data-event="enroll_click" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-full">Enroll &amp; pay — Online →</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ───────────── Why us / Features ───────────── -->
-<section id="features" class="py-20 sm:py-28 bg-slate-50 scroll-mt">
+<section id="features" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">What sets us apart</p>
@@ -537,32 +547,32 @@
     </div>
 
     <div class="grid md:grid-cols-3 gap-6">
-      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-teal-100 grid place-items-center text-2xl mb-4">🦷</div>
         <h3 class="font-bold text-lg">Anatomical tooth chart</h3>
         <p class="text-sm text-slate-600 mt-2">Each tooth drawn with real cusps, roots, and gingival anatomy. Mark caries, composites, crowns, RCTs, implants, missing teeth — exactly like the software in real offices.</p>
       </div>
-      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-cyan-100 grid place-items-center text-2xl mb-4">📊</div>
         <h3 class="font-bold text-lg">6-point AAP perio chart</h3>
         <p class="text-sm text-slate-600 mt-2">Full pocket depths, bleeding-on-probing, mobility, furcation per tooth. Auto-calculates AAP 2017 stage + grade with clinical interpretation. Nothing on the consumer market does this.</p>
       </div>
-      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-amber-100 grid place-items-center text-2xl mb-4">💊</div>
         <h3 class="font-bold text-lg">Prescription pad with allergy guard</h3>
         <p class="text-sm text-slate-600 mt-2">22-drug dental formulary. Try to prescribe amoxicillin to a penicillin-allergic patient and the app stops you with a red warning — the same safety logic real e-prescribing requires.</p>
       </div>
-      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-rose-100 grid place-items-center text-2xl mb-4">📅</div>
         <h3 class="font-bold text-lg">Drag-drop operatory schedule</h3>
         <p class="text-sm text-slate-600 mt-2">4 operatories, 30-min slots, color-coded by provider. Drag any appointment to reschedule. Text-confirm with a single tap. Built exactly the way the front desk uses it.</p>
       </div>
-      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-emerald-100 grid place-items-center text-2xl mb-4">📝</div>
         <h3 class="font-bold text-lg">SmartDoc clinical notes</h3>
         <p class="text-sm text-slate-600 mt-2">15 ready-to-use note templates (Prophy, Restorative, RCT, Crown Seat, SRP…) with the SOAP framework pre-filled. Saved notes lock for legal compliance with amendment tracking.</p>
       </div>
-      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-7 border border-slate-200 pda-glow-card">
         <div class="w-12 h-12 rounded-xl bg-sky-100 grid place-items-center text-2xl mb-4">💰</div>
         <h3 class="font-bold text-lg">Real insurance workflow</h3>
         <p class="text-sm text-slate-600 mt-2">Generate ADA-format claims, post EOBs, auto-write-off contractual adjustments. Master the insurance side of the practice — the part new RDAs struggle with most.</p>
@@ -712,21 +722,21 @@
       </div>
       <div class="flex flex-col sm:flex-row md:flex-col gap-3 md:justify-self-end shrink-0">
         <a href="/employers" data-event="employer_click" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-7 py-3.5 rounded-full shadow-lg text-center whitespace-nowrap">For dental offices →</a>
-        <a href="tel:+19039136444" data-event="call_click" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-lg text-center whitespace-nowrap">Call (903) 913-6444</a>
+        <a href="tel:+19039136444" data-event="call_click" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-full text-center whitespace-nowrap">Call (903) 913-6444</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- ───────────── Testimonials ───────────── -->
-<section class="py-20 sm:py-28 bg-slate-50">
+<section class="py-20 sm:py-28">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Voices</p>
       <h2 class="display text-3xl sm:text-4xl font-bold mt-2">From students &amp; offices that hire them.</h2>
     </div>
     <div class="grid lg:grid-cols-3 gap-6">
-      <div data-aos="fade-up" class="bg-white rounded-2xl p-6 border border-slate-200">
+      <div data-aos="fade-up" class="bg-white rounded-2xl p-6 border border-slate-200 pda-glow-card">
         <div class="text-amber-500 mb-3">★★★★★</div>
         <p class="text-slate-700 text-sm leading-relaxed">"I walked into my first office and the EagleSoft screen looked exactly like Practice Pro. I felt like I'd already worked there a month. The hiring DDS hired me on the spot."</p>
         <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
@@ -734,7 +744,7 @@
           <div><div class="font-semibold text-sm">Jasmine M.</div><div class="text-xs text-slate-500">RDA · Longview, TX</div></div>
         </div>
       </div>
-      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-6 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-white rounded-2xl p-6 border border-slate-200 pda-glow-card">
         <div class="text-amber-500 mb-3">★★★★★</div>
         <p class="text-slate-700 text-sm leading-relaxed">"Every new hire we get from PDA is ready to chart, ready to schedule, ready to submit claims. They cut our onboarding time in half — easily."</p>
         <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
@@ -742,7 +752,7 @@
           <div><div class="font-semibold text-sm">Dr. Williams</div><div class="text-xs text-slate-500">Owner · Family Dental of Longview</div></div>
         </div>
       </div>
-      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-6 border border-slate-200">
+      <div data-aos="fade-up" data-aos-delay="200" class="bg-white rounded-2xl p-6 border border-slate-200 pda-glow-card">
         <div class="text-amber-500 mb-3">★★★★★</div>
         <p class="text-slate-700 text-sm leading-relaxed">"I was a single mom looking for a career change. PDA's evenings-and-weekends schedule made it actually doable. Twelve weeks later I had a job."</p>
         <div class="flex items-center gap-3 mt-4 pt-4 border-t border-slate-100">
@@ -784,7 +794,7 @@
 </section>
 
 <!-- ───────────── Video ───────────── -->
-<section id="pda-videos-section" class="py-20 sm:py-28 bg-white">
+<section id="pda-videos-section" class="py-20 sm:py-28">
   <div class="max-w-5xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-10" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Watch</p>
@@ -813,7 +823,7 @@
           <li>✓ 25 sample patients</li>
           <li>✓ No signup required</li>
         </ul>
-        <a href="/tools/practice-pro" class="block text-center mt-6 border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold py-2.5 rounded-lg">Open preview</a>
+        <a href="/tools/practice-pro" class="block text-center mt-6 border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold py-2.5 rounded-full">Open preview</a>
       </div>
       <div data-aos="fade-up" data-aos-delay="100" class="bg-white border-2 border-teal-600 rounded-2xl p-6 relative">
         <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">In-Person</span>
@@ -828,7 +838,7 @@
           <li>✓ PDA Certificate of Completion</li>
           <li>✓ Job placement help</li>
         </ul>
-        <a href="/enroll?plan=in-person" class="block text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-lg">Enroll &amp; pay — In-Person →</a>
+        <a href="/enroll?plan=in-person" class="block text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-full">Enroll &amp; pay — In-Person →</a>
       </div>
       <div data-aos="fade-up" data-aos-delay="200" class="bg-white border-2 border-rose-400 rounded-2xl p-6 relative shadow-lg">
         <span class="absolute -top-3 left-6 bg-rose-500 text-white text-xs font-extrabold uppercase tracking-wider px-2 py-1 rounded-full animate-pulse">🔥 Limited time</span>
@@ -851,7 +861,7 @@
           <li>✓ PDA Certificate of Completion</li>
           <li>✓ Job placement help</li>
         </ul>
-        <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-lg shadow-md">Enroll Online — $397 →</a>
+        <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-full shadow-md">Enroll Online — $397 →</a>
       </div>
     </div>
     <p class="text-center text-xs text-slate-500 mt-8">Eligible for Texas Workforce Solutions funding · Veterans benefits accepted · Payment plans available</p>
@@ -865,7 +875,7 @@
 </section>
 
 <!-- ───────────── FAQ ───────────── -->
-<section id="faq" class="py-20 sm:py-28 bg-slate-50 scroll-mt">
+<section id="faq" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-3xl mx-auto px-4 sm:px-6">
     <div class="text-center mb-12" data-aos="fade-up">
       <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">FAQ</p>
@@ -936,7 +946,7 @@
         <p class="text-teal-100 mt-4 max-w-2xl mx-auto text-lg">In 12 weeks you can be a working RDA earning $42k+ in East Texas. The first step is filling out the application.</p>
         <div class="mt-8 flex flex-wrap gap-3 justify-center">
           <a href="/apply" data-event="apply_click" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-7 py-3.5 rounded-full shadow-lg inline-flex items-center gap-2">Apply now →</a>
-          <a href="/tools/practice-pro" data-event="free_preview_click" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-lg backdrop-blur inline-flex items-center gap-2">Try preview first</a>
+          <a href="/tools/practice-pro" data-event="free_preview_click" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-full backdrop-blur inline-flex items-center gap-2">Try preview first</a>
         </div>
         <p class="text-teal-200 text-xs mt-6">No payment required to apply · Online sale non-refundable but transferable · In-Person pro-rated per TX guidelines</p>
         <p class="text-teal-200/70 text-xs mt-2 max-w-xl mx-auto">Earnings vary by employer, experience, and hours; figures reflect East-Texas regional averages and are not a guarantee. See the <a href="/salary" class="underline hover:text-white">salary page</a>.</p>
@@ -954,7 +964,7 @@
     <form id="subscribe-form" class="mt-5 flex flex-wrap gap-2 max-w-md mx-auto justify-center">
       <input type="email" name="email" required placeholder="you@example.com"
         class="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
-      <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg shadow-sm whitespace-nowrap">Subscribe →</button>
+      <button type="submit" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full shadow-sm whitespace-nowrap">Subscribe →</button>
     </form>
     <div id="subscribe-success" class="hidden mt-4 text-emerald-700 font-semibold">✓ You're on the list. See you in your inbox.</div>
     <div id="subscribe-error" class="hidden mt-4 text-rose-700"></div>

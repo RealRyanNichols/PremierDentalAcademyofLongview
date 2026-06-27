@@ -14,8 +14,9 @@
   <style>body{font-family:Inter,sans-serif;color:#0f172a}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="bg-slate-50 min-h-screen pda-tinted">
 
 <nav class="bg-slate-900 text-white">
   <div class="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
@@ -41,7 +42,7 @@
     <div class="text-5xl mb-3">🔐</div>
     <h1 class="display text-2xl font-bold">Staff access only</h1>
     <p class="text-slate-600 mt-2">Sign in with your PDA admin account to review instructor applications.</p>
-    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
   </div>
 
   <div id="view" class="hidden">
@@ -61,7 +62,7 @@
           <option value="declined">Declined</option>
         </select>
         <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
-        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export CSV</button>
+        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Export CSV</button>
       </div>
     </div>
 
@@ -88,7 +89,7 @@
     <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
     <div class="flex justify-between items-center mt-3">
       <span id="sms-status" class="text-xs text-slate-500"></span>
-      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-lg text-sm">Send →</button>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
     </div>
   </div>
 </div>
@@ -115,7 +116,7 @@
       <div class="text-5xl mb-3">🚫</div>
       <h1 class="display text-2xl font-bold">Staff access only</h1>
       <p class="text-slate-600 mt-2">Your account isn't authorized. Ask Amanda to grant admin status.</p>
-      <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Back to dashboard →</a>`;
+      <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Back to dashboard →</a>`;
     return;
   }
 

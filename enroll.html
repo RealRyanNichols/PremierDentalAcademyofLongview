@@ -13,7 +13,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <style>
-    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; background: #155e75; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif; color: #0f172a;
+      background:
+        radial-gradient(1100px 520px at 12% -8%, rgba(13,148,136,.16), transparent 60%),
+        radial-gradient(1000px 520px at 100% 2%, rgba(8,145,178,.14), transparent 58%),
+        radial-gradient(900px 600px at 55% 108%, rgba(245,158,11,.08), transparent 60%),
+        linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
+      background-attachment: fixed;
+    }
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     #card-container { min-height: 90px; }
@@ -120,18 +128,18 @@
     </div>
     <div class="flex items-center gap-3">
       <a href="/login" class="hidden md:inline-flex text-sm font-medium text-slate-700 hover:text-teal-700">Sign in</a>
-      <a href="/enroll" class="bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-lg">Enroll →</a>
+      <a href="/enroll" class="bg-teal-700 hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-full">Enroll →</a>
     </div>
   </div>
 </nav>
 
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
 
-  <div class="text-center mb-10 text-white">
-    <p class="text-[12.5px] uppercase tracking-[0.16em] text-cyan-200 font-bold">Enroll</p>
+  <div class="text-center mb-10 text-white bg-gradient-to-b from-[#0a1226] to-[#070d1f] rounded-3xl px-6 py-12 sm:py-16">
+    <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold">Enroll</p>
     <h1 class="display text-4xl sm:text-5xl font-semibold mt-2">Pick your <span class="text-amber-400 italic">format</span>.</h1>
-    <p class="text-cyan-50/90 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
-    <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-5 text-sm text-cyan-50/90">
+    <p class="text-slate-300 mt-3 max-w-2xl mx-auto">Same curriculum, same instructors, same certificate. Choose how you want to attend.</p>
+    <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 mt-5 text-sm text-slate-300">
       <span class="inline-flex items-center gap-1.5">🔒 Secure checkout via Square</span>
       <span class="inline-flex items-center gap-1.5">🎓 406+ graduates</span>
       <span class="inline-flex items-center gap-1.5">💼 85%+ job placement</span>
@@ -156,7 +164,7 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement help with East Texas offices</li>
       </ul>
       <button type="button" data-action="pick-plan" data-plan="in-person"
-        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">
+        class="block w-full text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-full">
         Choose In-Person →
       </button>
     </div>
@@ -184,7 +192,7 @@
         <strong>Non-refundable at this price.</strong> You're getting tools worth thousands at a fraction of the cost. If Online isn't right for you, we'll <strong>transfer your full payment</strong> as credit toward the In-Person program — your money is never lost.
       </div>
       <button type="button" data-action="pick-plan" data-plan="online"
-        class="block w-full text-center mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-lg shadow-md">
+        class="block w-full text-center mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-full shadow-md">
         Lock In Online — $397 →
       </button>
     </div>
@@ -200,7 +208,7 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> WIOA workforce funding</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum, Online or In-Person</li>
       </ul>
-      <a href="/apply" class="block text-center mt-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-lg">
+      <a href="/apply" class="block text-center mt-6 bg-slate-900 hover:bg-slate-800 text-white font-semibold py-3 rounded-full">
         Apply for funding →
       </a>
       <p class="text-xs text-slate-500 text-center mt-2">We'll help you navigate funding eligibility</p>
@@ -348,29 +356,29 @@
   </section>
 
   <!-- Pay-over-time / financing -->
-  <div class="bg-white/10 border border-white/20 rounded-2xl max-w-3xl mx-auto mt-10 p-5 text-center">
-    <p class="font-semibold text-white">💳 Want to pay over time?</p>
-    <p class="text-cyan-50/90 text-sm mt-1 max-w-xl mx-auto">Our <strong>In-Person plan</strong> lets you put a deposit down and pay the rest in scheduled installments. You can also split tuition with a buy-now-pay-later service:</p>
+  <div class="bg-white border border-slate-200 shadow-[0_10px_40px_-18px_rgba(7,13,31,.4)] rounded-2xl max-w-3xl mx-auto mt-10 p-5 text-center">
+    <p class="font-semibold text-slate-900">💳 Want to pay over time?</p>
+    <p class="text-slate-600 text-sm mt-1 max-w-xl mx-auto">Our <strong>In-Person plan</strong> lets you put a deposit down and pay the rest in scheduled installments. You can also split tuition with a buy-now-pay-later service:</p>
     <div class="flex flex-wrap items-center justify-center gap-2 mt-3">
-      <a href="https://www.klarna.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Klarna</a>
-      <a href="https://www.afterpay.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Afterpay</a>
-      <a href="https://www.affirm.com" target="_blank" rel="noopener" class="bg-white/90 hover:bg-white text-slate-800 font-semibold text-sm px-4 py-2 rounded-lg">Affirm</a>
+      <a href="https://www.klarna.com" target="_blank" rel="noopener" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm px-4 py-2 rounded-full">Klarna</a>
+      <a href="https://www.afterpay.com" target="_blank" rel="noopener" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm px-4 py-2 rounded-full">Afterpay</a>
+      <a href="https://www.affirm.com" target="_blank" rel="noopener" class="bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold text-sm px-4 py-2 rounded-full">Affirm</a>
     </div>
-    <p class="text-cyan-100/80 text-xs mt-3">Buy-now-pay-later is offered by these third parties, subject to their approval and terms. Questions about a plan? Call (903) 913-6444.</p>
+    <p class="text-slate-500 text-xs mt-3">Buy-now-pay-later is offered by these third parties, subject to their approval and terms. Questions about a plan? Call (903) 913-6444.</p>
   </div>
 
-  <div class="text-center mt-10 text-sm text-cyan-50/90 max-w-2xl mx-auto">
-    <p class="font-semibold text-white">Refund &amp; transfer policy</p>
+  <div class="text-center mt-10 text-sm text-slate-600 max-w-2xl mx-auto">
+    <p class="font-semibold text-slate-900">Refund &amp; transfer policy</p>
     <p class="mt-1"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.</p>
     <p class="mt-1"><strong>In-Person ($1,997):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing; refunds process within 30 days.</p>
   </div>
 
-  <div class="text-center mt-6 text-xs text-cyan-100/80">
+  <div class="text-center mt-6 text-xs text-slate-500">
     <span>🔒 Secure checkout via Square</span>
     <span class="mx-2">·</span>
     <span>📞 Questions? (903) 913-6444</span>
     <span class="mx-2">·</span>
-    <a href="/apply" class="text-cyan-200 hover:text-white hover:underline">Not ready to pay? Apply first →</a>
+    <a href="/apply" class="text-teal-700 hover:text-teal-900 hover:underline">Not ready to pay? Apply first →</a>
   </div>
 </main>
 

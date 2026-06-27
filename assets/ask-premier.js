@@ -66,8 +66,12 @@
       reply: 'Our campus is at **2800 Gilmer Rd, Suite 106, Longview, TX 75604**. Drop-ins welcome during business hours; tours by appointment.',
       cta: { label: 'Get directions →', href: 'https://maps.google.com/?q=2800+Gilmer+Rd+Suite+106+Longview+TX+75604' } },
 
+    { match: /\b(text|sms|message me|chat now|right now|instant)\b/i,
+      reply: 'Want a real person right now? **Text us at (903) 913-6444** and Amanda\'s team replies fast — usually within minutes during business hours.',
+      cta: { label: '📲 Text (903) 913-6444', href: 'sms:+19039136444' } },
+
     { match: /\b(phone|call|number)\b/i,
-      reply: 'Call us at **(903) 913-6444** — Mon–Fri, 9am–6pm CT.',
+      reply: 'Call us at **(903) 913-6444** — Mon–Fri, 9am–6pm CT. Prefer texting? We answer those fast too.',
       cta: { label: '📞 Call now', href: 'tel:+19039136444' } },
 
     { match: /\b(email|contact|message|reach)\b/i,
@@ -150,15 +154,28 @@
       transform: translateY(20px) scale(.96); opacity: 0; pointer-events: none; transition: all .2s ease-out; }
     .ap-panel.open { transform: none; opacity: 1; pointer-events: auto; }
 
-    .ap-head { background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); color: white; padding: 14px 16px;
+    .ap-head { background: linear-gradient(135deg, #0a1226 0%, #0e2049 100%); color: white; padding: 14px 16px;
       display: flex; align-items: center; gap: 10px; }
-    .ap-head .ap-avatar { width: 36px; height: 36px; border-radius: 50%; background: white;
-      display: grid; place-items: center; font-size: 22px; }
+    .ap-head .ap-avatar { width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, #2dd4bf, #38bdf8); color: #06283d;
+      display: grid; place-items: center; font-size: 21px;
+      box-shadow: 0 6px 18px -6px rgba(45,212,191,.7); }
     .ap-head h3 { font-weight: 700; font-size: 15px; margin: 0; line-height: 1.2; }
+    .ap-head .ap-online { display: inline-block; width: 8px; height: 8px; border-radius: 999px;
+      background: #34d399; vertical-align: middle; margin-left: 3px;
+      box-shadow: 0 0 0 0 rgba(52,211,153,.7); animation: ap-pulse 2s infinite; }
     .ap-head .ap-sub { font-size: 11px; opacity: .85; margin-top: 1px; }
     .ap-head .ap-close { margin-left: auto; background: transparent; border: 0; color: white; font-size: 20px;
       cursor: pointer; opacity: .8; padding: 4px 8px; }
     .ap-head .ap-close:hover { opacity: 1; }
+
+    /* Instant human contact — text or call, right from the chat */
+    .ap-now { display: flex; gap: 8px; padding: 10px 12px; background: #fff; border-bottom: 1px solid #e2e8f0; }
+    .ap-now a { flex: 1; text-align: center; text-decoration: none; font-weight: 700; font-size: 12.5px;
+      padding: 9px 10px; border-radius: 999px; transition: transform .12s, filter .12s; }
+    .ap-now a:hover { transform: translateY(-1px); filter: brightness(1.04); }
+    .ap-now .ap-now-text { background: #0d9488; color: #fff; box-shadow: 0 6px 16px -8px rgba(13,148,136,.8); }
+    .ap-now .ap-now-call { background: #fff7ed; color: #9a3412; border: 1px solid #fed7aa; }
 
     .ap-body { flex: 1; overflow-y: auto; padding: 14px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
     .ap-msg { max-width: 88%; padding: 9px 12px; border-radius: 14px; font-size: 13.5px; line-height: 1.45; white-space: pre-wrap; }
@@ -217,10 +234,14 @@
         <div class="ap-head">
           <div class="ap-avatar">🦷</div>
           <div>
-            <h3>Ask Premier</h3>
-            <div class="ap-sub">Premier Dental Academy · usually replies instantly</div>
+            <h3>Ask Premier <span class="ap-online" aria-hidden="true"></span></h3>
+            <div class="ap-sub">Instant answers · real team replies fast</div>
           </div>
           <button class="ap-close" id="ap-close" aria-label="Close chat">✕</button>
+        </div>
+        <div class="ap-now">
+          <a class="ap-now-text" href="sms:+19039136444" data-event="chat_text_click">📲 Text us now</a>
+          <a class="ap-now-call" href="tel:+19039136444" data-event="call_click">📞 Call (903) 913-6444</a>
         </div>
         <div class="ap-body" id="ap-body"></div>
         <div class="ap-quick" id="ap-quick"></div>

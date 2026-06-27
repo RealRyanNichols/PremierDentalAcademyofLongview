@@ -50,7 +50,7 @@
   <meta name="twitter:description" content="See the East Texas dental offices that have hired PDA graduates. Real names, real placements, real careers built in 12 weeks." />
   <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
 </head>
-<body class="bg-white">
+<body class="bg-white pda-tinted">
 
 <nav class="fixed top-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-b border-slate-200">
   <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -183,7 +183,7 @@ window.AOS && AOS.init({ duration: 500, once: true });
       const bg = colorFor(name);
       const daysToHire = g.graduation_date && g.hire_date ? daysBetween(g.graduation_date, g.hire_date) : null;
       return `
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="${(i%9)*50}">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition pda-glow-card" data-aos="fade-up" data-aos-delay="${(i%9)*50}">
           <div class="flex items-start gap-3 mb-3">
             <div class="w-12 h-12 rounded-full text-white font-bold text-lg grid place-items-center shrink-0" style="background:${bg}">${initials}</div>
             <div class="flex-1 min-w-0">
