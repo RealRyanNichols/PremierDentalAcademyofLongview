@@ -41,7 +41,7 @@
     <div class="text-5xl mb-3">🔐</div>
     <h1 class="display text-2xl font-bold">Teacher access only</h1>
     <p class="text-slate-600 mt-2">Sign in with the PDA admin account.</p>
-    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-lg">Sign in →</a>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
   </div>
 
   <div id="loading" class="hidden text-center text-slate-500 py-16">Loading your roster…</div>
@@ -53,7 +53,7 @@
         <h1 class="display text-3xl font-bold mt-1">How is every student doing?</h1>
         <p class="text-sm text-slate-600 mt-1">Who's logged in, who's practicing, who's behind, and exactly which modules they still need.</p>
       </div>
-      <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-lg text-sm font-semibold">⬇ Export gradebook CSV</button>
+      <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Export gradebook CSV</button>
     </div>
 
     <!-- Summary tiles (clickable filters) -->
@@ -108,7 +108,7 @@
     <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
     <div class="flex justify-between items-center mt-3">
       <span id="sms-status" class="text-xs text-slate-500"></span>
-      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-lg text-sm">Send →</button>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
     </div>
   </div>
 </div>
@@ -291,7 +291,7 @@
               ${r.exam_attempts ? `<div class="text-[10px] text-slate-400 mt-0.5">${r.exam_attempts} attempt(s)</div>` : '<div class="text-[10px] text-slate-400 mt-0.5">no exam yet</div>'}
             </div>
             <div class="flex flex-col gap-1 shrink-0">
-              ${phone ? `<button data-sms data-phone="${phone}" data-name="${esc(name)}" data-id="${r.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg">💬 Text</button>` : ''}
+              ${phone ? `<button data-sms data-phone="${phone}" data-name="${esc(name)}" data-id="${r.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-3 py-1.5 rounded-full">💬 Text</button>` : ''}
               ${phone ? `<a href="tel:${phone}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">📞 Call</a>` : ''}
               ${r.email ? `<a href="mailto:${esc(r.email)}?subject=Checking%20in%20on%20your%20PDA%20coursework" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">✉️ Email</a>` : ''}
             </div>
