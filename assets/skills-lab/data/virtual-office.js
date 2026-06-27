@@ -348,6 +348,168 @@
           answer:[0,1,2], explanation:'He leaves with pain-management guidance, a plan and next appointment, and an emergency contact. Assistants never prescribe — the dentist does.' }
       ]
     }
+  ,
+    {
+      id:'new-patient-intake', icon:'🪑', title:'New patient intake', level:'Beginner', room:'Operatory 1', patientId:null,
+      blurb:'Greet and seat a brand-new patient, place the bib, review the health history and take a baseline blood pressure.',
+      competencies:['seat_seat','seat_bib','mh_review','bp_interpret'],
+      steps:[
+        { speaker:'narrator', category:'Seating Patients', type:'choose',
+          prompt:'A new patient arrives. After greeting them by name, what do you do BEFORE seating them?',
+          options:['Confirm their identity and review the completed health history','Recline the chair fully and start','Hand them a toothbrush','Begin taking x-rays right away'],
+          answer:0, explanation:'Confirm who the patient is and review the medical history first. It drives every clinical decision and flags risks before treatment.' },
+        { speaker:'narrator', category:'Seating Patients', type:'choose',
+          prompt:'You place the patient napkin. How should it be positioned?',
+          options:['Covering the chest, with the chain fastened behind the neck','Clipped to the collar only','Folded on the tray','Draped over the face'],
+          answer:0, explanation:'The napkin protects clothing from water and debris. Fasten the chain behind the neck so it covers the chest.' },
+        { speaker:'patient', category:'Medical History', type:'choose',
+          prompt:'The patient mentions: "I take a blood thinner every day." What do you do?',
+          options:['Record it and flag the bleeding risk for the dentist','Tell the patient to stop taking it','Ignore it for a routine visit','Erase it to save time'],
+          answer:0, explanation:'Anticoagulants increase bleeding risk. Document it and alert the dentist. Never tell a patient to stop a prescribed medication.' },
+        { speaker:'narrator', category:'Blood Pressure', type:'choose',
+          prompt:'The baseline blood pressure reads 150/95. How do you handle it?',
+          options:['Record it and inform the dentist before treatment','Treat it as normal','Send the patient home immediately','Skip recording it'],
+          answer:0, explanation:'Normal is about 120/80. 150/95 is elevated. Document the reading and let the dentist decide whether to proceed.' }
+      ]
+    },
+    {
+      id:'medical-history-flags', icon:'📋', title:'Medical history red flags', level:'Intermediate', room:'Operatory 2', patientId:null,
+      blurb:'Spot the medical-history items that change how care is delivered, from allergies to pre-medication.',
+      competencies:['mh_review','mh_alert'],
+      steps:[
+        { speaker:'narrator', category:'Medical History', type:'choose',
+          prompt:'A patient lists a penicillin allergy. Where must this be made obvious?',
+          options:['Clearly flagged in the chart and confirmed to the dentist','Only remembered, not written','On a sticky note that gets tossed','Nowhere, allergies do not affect dentistry'],
+          answer:0, explanation:'Allergies must be prominently flagged and communicated, so no one prescribes or uses a material the patient reacts to.' },
+        { speaker:'patient', category:'Medical History', type:'choose',
+          prompt:'The patient had a joint replacement and "a heart problem." Why does this matter?',
+          options:['Some conditions need antibiotic pre-medication before certain procedures','It never matters for dental care','You should refuse to treat them','You should double the anesthetic'],
+          answer:0, explanation:'Certain cardiac and joint conditions may require antibiotic premedication. Flag it so the dentist follows current guidelines.' },
+        { speaker:'narrator', category:'Medical History', type:'choose',
+          prompt:'A patient reports she is pregnant. A reasonable response is to:',
+          options:['Note it so the dentist can tailor x-rays, medications and positioning','Take a full-mouth x-ray series anyway','Tell her care must wait until after delivery','Ignore it'],
+          answer:0, explanation:'Pregnancy affects radiograph decisions, drug choices and chair positioning. Record it and let the dentist plan accordingly.' },
+        { speaker:'narrator', category:'Medical History', type:'choose',
+          prompt:'When should the medical history be reviewed?',
+          options:['At the first visit and updated at recall or when health changes','Only once, ever','Never, the form is enough','Only if the patient asks'],
+          answer:0, explanation:'Review at the first visit and update it regularly. Health, medications and allergies change over time.' }
+      ]
+    },
+    {
+      id:'bitewing-series', icon:'🩻', title:'Bitewing x-ray series', level:'Intermediate', room:'Operatory 1', patientId:null,
+      blurb:'Position and expose a bitewing series, then recognize the common errors and how to fix them.',
+      competencies:['xray_bw','xerr_overlap','xerr_conecut'],
+      steps:[
+        { speaker:'narrator', category:'X-Ray Positioning', type:'choose',
+          prompt:'Before any x-ray exposure, what must the patient wear?',
+          options:['A lead apron with thyroid collar','Only safety glasses','Nothing extra is needed','A bib only'],
+          answer:0, explanation:'A lead apron with thyroid collar protects the patient. Use proper technique and the lowest dose that yields a diagnostic image.' },
+        { speaker:'narrator', category:'X-Ray Error Recognition', type:'choose',
+          prompt:'A bitewing shows the contacts overlapping so you cannot see between the teeth. The cause is incorrect:',
+          options:['Horizontal angulation','Vertical angulation','Exposure time','Sensor speed'],
+          answer:0, explanation:'Overlapped contacts come from wrong horizontal angulation. Direct the beam straight through the contacts to open them.' },
+        { speaker:'narrator', category:'X-Ray Error Recognition', type:'choose',
+          prompt:'Part of the image is blank with a curved clear border. This cone-cut happened because:',
+          options:['The beam was not centered over the sensor','The patient moved','The exposure was too long','The sensor was backward'],
+          answer:0, explanation:'A cone-cut is unexposed area where the beam missed the sensor. Center the position-indicating device over the receptor.' },
+        { speaker:'narrator', category:'X-Ray Positioning', type:'choose',
+          prompt:'After exposing the series, your next step is to:',
+          options:['Mount or label the images to the correct teeth','Delete them and restart','Leave them unlabeled','Hand the patient the sensor'],
+          answer:0, explanation:'Images must be mounted and labeled accurately so the dentist reviews the correct teeth.' }
+      ]
+    },
+    {
+      id:'alginate-impression', icon:'🥄', title:'Alginate impression', level:'Intermediate', room:'Operatory 3', patientId:null,
+      blurb:'Mix, load, seat and pour an alginate impression for a study model.',
+      competencies:['imp_alginate','imp_pour'],
+      steps:[
+        { speaker:'narrator', category:'Impressions', type:'choose',
+          prompt:'Correct alginate mixing technique means:',
+          options:['Measure water and powder with the provided ratio, then mix smooth and creamy','Eyeball the amounts','Use hot water to set it instantly','Add extra powder so it is stiff'],
+          answer:0, explanation:'Use the manufacturer ratio and measuring tools. Warmer water speeds set, colder slows it. Mix smooth and bubble-free.' },
+        { speaker:'narrator', category:'Impressions', type:'choose',
+          prompt:'When seating the loaded tray, you should:',
+          options:['Seat the back first, then the front, and hold still until set','Wiggle it the whole time','Remove it the moment it touches teeth','Have the patient bite down hard right away'],
+          answer:0, explanation:'Seat and hold without movement so the material captures detail and does not distort while it sets.' },
+        { speaker:'patient', category:'Patient Communication', type:'choose',
+          prompt:'The patient looks anxious about gagging. A good move is to:',
+          options:['Have them breathe through the nose and sit slightly upright','Tell them to hold their breath','Push the tray deeper','Ignore the discomfort'],
+          answer:0, explanation:'Upright posture and nasal breathing reduce the gag reflex. Reassure the patient and work efficiently.' },
+        { speaker:'narrator', category:'Impressions', type:'choose',
+          prompt:'How soon should the impression be poured in stone?',
+          options:['Promptly, because alginate distorts as it dries or absorbs water','Next week is fine','Only after freezing it','It never needs pouring'],
+          answer:0, explanation:'Alginate is dimensionally unstable. Pour it promptly, or store per protocol, to keep an accurate model.' }
+      ]
+    },
+    {
+      id:'perio-charting', icon:'📊', title:'Periodontal charting', level:'Advanced', room:'Operatory 2', patientId:null,
+      blurb:'Record probing depths and bleeding points accurately while the clinician calls them out.',
+      competencies:['chart_perio','chart_numbering'],
+      steps:[
+        { speaker:'narrator', category:'Charting', type:'choose',
+          prompt:'A full periodontal chart records how many probing sites per tooth?',
+          options:['Six sites per tooth','One per tooth','Two per tooth','Ten per tooth'],
+          answer:0, explanation:'Six sites per tooth: mesial, middle and distal on both the facial and lingual surfaces.' },
+        { speaker:'dentist', category:'Charting', type:'choose',
+          prompt:'The clinician calls "three, two, four." You should:',
+          options:['Enter those millimeter depths at the matching sites without slowing the flow','Round them all to five','Guess if you missed one','Write them in the wrong tooth to keep up'],
+          answer:0, explanation:'Enter the exact numbers at the correct sites. Accurate real-time entry keeps the exam moving and the record trustworthy.' },
+        { speaker:'narrator', category:'Charting', type:'choose',
+          prompt:'A pocket reads 5 mm with bleeding on probing. It is recorded because it:',
+          options:['Signals possible active periodontal disease for the dentist to evaluate','Is normal and ignored','Means the tooth must be pulled','Is the assistant decision to treat'],
+          answer:0, explanation:'Depths of 4 mm and up with bleeding suggest disease. You record accurately; the dentist diagnoses and plans care.' },
+        { speaker:'narrator', category:'Charting', type:'choose',
+          prompt:'In the Universal Numbering System, the permanent teeth are numbered:',
+          options:['1 through 32','1 through 20','A through T','By quadrant letters only'],
+          answer:0, explanation:'Permanent teeth are 1 to 32 starting at the upper right third molar. Primary teeth use letters A to T.' }
+      ]
+    },
+    {
+      id:'four-handed-transfer', icon:'🤝', title:'Four-handed instrument transfer', level:'Beginner', room:'Operatory 1', patientId:null,
+      blurb:'Keep the procedure smooth with proper instrument transfer and field isolation.',
+      competencies:['four_transfer','four_isolation'],
+      steps:[
+        { speaker:'narrator', category:'Four-Handed Assisting', type:'choose',
+          prompt:'Where does instrument transfer happen?',
+          options:['In the transfer zone over the patient chin and chest','Across the patient face','Behind the dentist head','On the floor'],
+          answer:0, explanation:'Transfer in the zone over the chest and chin, never passing instruments over the patient face.' },
+        { speaker:'narrator', category:'Four-Handed Assisting', type:'choose',
+          prompt:'In a standard transfer you deliver the next instrument so the dentist can use it by:',
+          options:['Placing it into the grasp in the correct orientation, working end ready','Dropping it on the tray','Making the dentist look away from the field','Handing it sharp end toward the eyes'],
+          answer:0, explanation:'Retrieve the used instrument and place the next one ready to use, so the operator never looks away from the field.' },
+        { speaker:'narrator', category:'Four-Handed Assisting', type:'choose',
+          prompt:'The high-volume evacuator (HVE) is used to:',
+          options:['Keep the field dry and clear and control aerosols','Polish the tooth','Cure the composite','Take the x-ray'],
+          answer:0, explanation:'The HVE removes water, saliva and debris and controls aerosol, keeping the field clear for the operator.' },
+        { speaker:'narrator', category:'Four-Handed Assisting', type:'choose',
+          prompt:'Good isolation and suction mainly help by:',
+          options:['Improving visibility and keeping materials dry so they bond and set correctly','Making the visit longer','Replacing the dentist','Removing the need for gloves'],
+          answer:0, explanation:'A dry, visible field is essential. Many materials fail if contaminated by saliva, so isolation protects the result.' }
+      ]
+    },
+    {
+      id:'fainting-syncope', icon:'🚨', title:'Patient faints in the chair', level:'Advanced', room:'Operatory 3', patientId:null,
+      blurb:'A nervous patient turns pale and lightheaded. Manage syncope and know the emergency kit.',
+      competencies:['emer_syncope','emer_kit'],
+      steps:[
+        { speaker:'patient', category:'Emergency Readiness', type:'choose',
+          prompt:'During an injection the patient turns pale and sweaty and says they feel faint. Your first action is to:',
+          options:['Stop, lower the chair so the head is below the heart, and alert the dentist','Keep working quickly to finish','Sit them straight up','Give them water to drink'],
+          answer:0, explanation:'This is likely syncope. Stop, place the patient supine with legs slightly raised so blood returns to the brain, and call the dentist.' },
+        { speaker:'narrator', category:'Emergency Readiness', type:'choose',
+          prompt:'Once the patient is positioned, a helpful next step is to:',
+          options:['Check breathing, loosen tight clothing, and use an ammonia inhalant if available','Leave the room','Offer a hand mirror','Restart treatment immediately'],
+          answer:0, explanation:'Support airway and circulation, loosen restrictive clothing, and a crushed ammonia inhalant under the nose can help rouse them.' },
+        { speaker:'narrator', category:'Emergency Readiness', type:'choose',
+          prompt:'Oxygen in a fainting (syncope) patient is:',
+          options:['Appropriate for most office emergencies except hyperventilation','Never given','Only given after an hour','Only given if the patient asks'],
+          answer:0, explanation:'Oxygen helps in most office emergencies. The main exception is hyperventilation, where it is not indicated.' },
+        { speaker:'narrator', category:'Emergency Readiness', type:'choose',
+          prompt:'Who keeps the emergency kit and oxygen stocked and in date?',
+          options:['The team checks it on a schedule, and the assistant often maintains it','No one, it is decorative','Only the dentist ever touches it','The patient'],
+          answer:0, explanation:'The emergency kit and oxygen must be checked regularly and kept in date. The assistant frequently owns this routine.' }
+      ]
+    }
   ];
   var SCENARIO_BY_ID = {}; SCENARIOS.forEach(function (s) { SCENARIO_BY_ID[s.id] = s; });
 
