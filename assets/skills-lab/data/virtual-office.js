@@ -42,10 +42,10 @@
   function ins(id, name, usedFor, emoji) { return { id:id, name:name, usedFor:usedFor, image:IMG+'instr-' + id + '.png', emoji:emoji }; }
   var INSTRUMENTS = [
     /* --- Mirrors, probes & hand instruments --- */
-    ins('mirror','Mouth mirror (x2)','Indirect vision, retraction of cheek/tongue, and reflecting light onto the field','🪞'),
+    ins('mirror','Mouth mirror','Indirect vision, retraction of cheek/tongue, and reflecting light onto the field','🪞'),
     ins('explorer','Explorer','Detecting caries, calculus & checking margins by feel','🪡'),
     ins('explorer-probe','Explorer / perio-probe combo','Double-ended instrument: explorer end checks decay & margins, probe end measures sulcus depth','🪡'),
-    ins('cotton-pliers','Cotton (college) pliers (x2)','Carrying & placing cotton, pellets and other small items in the mouth','🤏'),
+    ins('cotton-pliers','Cotton pliers','Carrying & placing cotton, pellets and other small items in the mouth','🤏'),
     ins('periodontal-probe','Periodontal probe','Measuring sulcus/pocket depth in millimeters','📏'),
     ins('spoon-excavator','Spoon excavator','Removing soft decay & temporary material','🥄'),
     ins('condenser','Condenser (plugger)','Packing/condensing restorative material into the prep','🔨'),
@@ -65,6 +65,8 @@
     ins('cotton-pellets','Cotton pellets','Drying the prep, applying or blotting medicaments and cement','⚪'),
     /* --- Restorative materials & accessories --- */
     ins('matrix-band','Matrix band & retainer (Tofflemire)','Recreating the missing wall of a tooth so a filling can be packed','➰'),
+    ins('wedge','Wedge','Placed between the teeth to adapt the matrix band and create a tight contact for a filling','🪵'),
+    ins('bite-block','Bite block','Rubber block the patient bites on to hold the mouth open and rest the jaw during longer procedures','🧱'),
     ins('articulating-paper','Articulating paper & holder','Marking high spots so the bite (occlusion) can be checked & adjusted','🟦'),
     ins('anesthetic-syringe','Anesthetic syringe','Aspirating dental syringe the dentist uses to deliver local anesthetic','💉'),
     ins('etch','Etchant','Phosphoric-acid gel that micro-roughens enamel/dentin for bonding','🧪'),
@@ -123,29 +125,29 @@
      (gauze, air-water syringe, surgical suction). "x2" items (mirrors,
      cotton pliers) are a single instrument id; the builder grades by id. */
   var TRAYS = [
-    { id:'exam',       procedure:'Basic Exam',          image:IMG+'tray-exam.png',       requiredInstrumentIds:['mirror','explorer','cotton-pliers','periodontal-probe'] },
+    { id:'exam',       procedure:'Basic Exam',          image:IMG+'tray-exam.png',       requiredInstrumentIds:['mirror','explorer','cotton-pliers'] },
     { id:'restorative',procedure:'Restorative Filling', image:IMG+'tray-restorative.png',requiredInstrumentIds:[
       // baseline
       'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
       // restorative
       'mirror','explorer-probe','spoon-excavator','cotton-pliers','condenser','matrix-band','articulating-paper','anesthetic-syringe',
-      'etch','bond','curing-light','composite','flowable-composite','shade-guide'] },
+      'etch','bond','curing-light','composite','flowable-composite','shade-guide','wedge','bite-block'] },
     { id:'crown',      procedure:'Crown',               image:IMG+'tray-crownprep.png',  requiredInstrumentIds:[
       // baseline
       'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
       // crown
       'mirror','explorer-probe','spoon-excavator','cotton-pliers','condenser','cb-scissors','retraction-cord','cord-packer','ferric-sulfate',
       'articulating-paper','anesthetic-syringe','heavy-body','light-body','bite-registration','temp-crown-material','impression-tray',
-      'floss','cement','curing-light','shade-guide','cotton-pellets'] },
+      'floss','cement','curing-light','shade-guide','cotton-pellets','bite-block'] },
     { id:'endo',       procedure:'Root Canal (Endo)',   image:IMG+'tray-endo.png',       requiredInstrumentIds:[
       // baseline
-      'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze','cotton-rolls','dri-aids',
+      'high-speed-handpiece','low-speed-handpiece','hve-tip','saliva-ejector','air-water-syringe','gauze',
       // endo
-      'mirror','endo-explorer','dental-dam','dam-frame','dam-punch','dam-clamp','endo-files','barbed-broach','apex-locator',
-      'endo-measuring-block','rubber-stoppers','irrigation-syringe','paper-points','gutta-percha','root-canal-sealer','endo-plugger','glick','cavit'] },
-    { id:'extraction', procedure:'Simple Extraction',   image:IMG+'tray-extraction.png', requiredInstrumentIds:[
+      'mirror','explorer','cotton-pliers','anesthetic-syringe','endo-explorer','dental-dam','dam-frame','dam-punch','dam-clamp','endo-files','barbed-broach','apex-locator',
+      'endo-measuring-block','rubber-stoppers','irrigation-syringe','paper-points','gutta-percha','root-canal-sealer','endo-plugger','glick','cavit','bite-block'] },
+    { id:'extraction', procedure:'Extraction',   image:IMG+'tray-extraction.png', requiredInstrumentIds:[
       // extraction baseline
-      'gauze','air-water-syringe','surgical-suction',
+      'gauze','air-water-syringe','surgical-suction','mirror','anesthetic-syringe',
       // extraction
       'cheek-retractor','rongeurs','bone-file','elevator','forceps','hemostat','scissors','sutures','surgical-curette'] }
   ];
@@ -183,7 +185,7 @@
           answer:0, explanation:'A biological (spore) test is the only proof of true sterilization. Run it and log the result — this is exactly what an inspector checks.' },
         { speaker:'dentist', category:'Morning Setup', type:'multi',
           prompt:'"First up is a new-patient exam. Set the tray." Select every instrument a basic exam tray needs.',
-          options:['Mouth mirror','Explorer','Cotton (college) pliers','Surgical forceps','Amalgam carrier'],
+          options:['Mouth mirror','Explorer','Cotton pliers','Surgical forceps','Amalgam carrier'],
           answer:[0,1,2], explanation:'Basic exam = mirror + explorer + cotton pliers. Forceps and a carrier belong to surgical and restorative trays.' }
       ]
     },
