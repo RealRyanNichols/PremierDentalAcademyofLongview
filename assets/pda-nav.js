@@ -28,6 +28,7 @@
           <a href="/tools/take-home-pay" class="block px-4 py-2 hover:bg-slate-50">Take-home pay</a>
           <a href="/tools/schedule-planner" class="block px-4 py-2 hover:bg-slate-50">Fit school into my life</a>
           <a href="/tools/interview-prep" class="block px-4 py-2 hover:bg-slate-50">Interview prep</a>
+          <a href="/tools/career-paths" class="block px-4 py-2 hover:bg-slate-50">Career paths</a>
           <a href="/tools/practice-exam"      class="block px-4 py-2 hover:bg-slate-50">Practice exam</a>
           <a href="/skills-lab"               class="block px-4 py-2 hover:bg-slate-50">Skills Lab</a>
           <a href="/tools/flashcards"         class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
@@ -75,6 +76,7 @@
     <a href="/tools/take-home-pay" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Take-home pay</a>
     <a href="/tools/schedule-planner" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Fit school into my life</a>
     <a href="/tools/interview-prep" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Interview prep</a>
+    <a href="/tools/career-paths" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Career paths</a>
     <a href="/tools/practice-exam"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Practice exam</a>
     <a href="/skills-lab"               data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Skills Lab</a>
     <a href="/tools/flashcards"         data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
@@ -501,6 +503,7 @@
       <a href="/tools/take-home-pay" class="block hover:text-white">Take-home pay</a>
       <a href="/tools/schedule-planner" class="block hover:text-white">Fit it into my life</a>
       <a href="/tools/interview-prep" class="block hover:text-white">Interview prep</a>
+      <a href="/tools/career-paths" class="block hover:text-white">Career paths</a>
       <a href="/tools/practice-exam" class="block hover:text-white">Practice exam</a>
       <a href="/skills-lab" class="block hover:text-white">Skills Lab</a>
       <a href="/tools/practice-pro" class="block hover:text-white">Practice Pro</a>
