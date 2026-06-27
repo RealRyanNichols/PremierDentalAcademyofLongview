@@ -509,6 +509,7 @@
       <a href="/waitlist" class="block hover:text-white">Join the waitlist</a>
       <a href="/salary" class="block hover:text-white">Salary calculator</a>
       <a href="/study-pack" class="block hover:text-white">Study Pack — $19</a>
+      <a href="/exam-prep-course" class="block hover:text-white">Exam-Prep Course — $97</a>
     </nav>
     <nav aria-label="Free trainers" class="space-y-2">
       <p class="text-white font-semibold">Free trainers</p>
