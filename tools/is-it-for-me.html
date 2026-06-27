@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Is dental assisting right for you? | Premier Dental Academy</title>
+<meta name="description" content="A quick, encouraging quiz to see if a dental-assistant career fits you. Six questions, instant result, no signup. From Premier Dental Academy of Longview.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/is-it-for-me">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .opt{border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 10px;font-size:13px;font-weight:600;color:#475569;cursor:pointer;transition:.12s;flex:1;text-align:center}
+  .opt.on{background:#0d9488;border-color:#0d9488;color:#fff}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free 60-second quiz</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Is this <span class="text-amber-400 italic">for you?</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">No wrong answers — just an honest look at whether a dental-assistant career fits who you are. Six quick questions.</p>
+  </div>
+</section>
+
+<main class="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <form id="quiz" class="space-y-4"></form>
+  <div class="mt-6 text-center">
+    <button id="seeBtn" data-event="fit_quiz_run" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md disabled:opacity-40" disabled>See my result →</button>
+    <p id="prog" class="text-sm text-slate-500 mt-2">Answer all 6 to see your result</p>
+  </div>
+  <div id="result" class="hidden mt-8"></div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var Q = [
+    'I like helping people and making them feel cared for.',
+    'I am good with my hands and pay attention to detail.',
+    'I can stay calm and focused when things get busy.',
+    'I want a real career in months — not years of school and debt.',
+    'I am okay being around clinical things (the mouth, a little blood).',
+    'I want steady work that is always in demand.'
+  ];
+  var ans = {};
+  var form = document.getElementById('quiz'), seeBtn = document.getElementById('seeBtn'), prog = document.getElementById('prog');
+  form.innerHTML = Q.map(function (q, i) {
+    return '<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4" data-q="' + i + '">' +
+      '<div class="font-semibold text-navy-900 text-sm">' + (i + 1) + '. ' + q + '</div>' +
+      '<div class="flex gap-2 mt-3">' +
+      [['Yes', 2], ['Somewhat', 1], ['Not really', 0]].map(function (o) {
+        return '<button type="button" class="opt" data-i="' + i + '" data-v="' + o[1] + '">' + o[0] + '</button>';
+      }).join('') + '</div></div>';
+  }).join('');
+
+  form.addEventListener('click', function (e) {
+    var b = e.target.closest('.opt'); if (!b) return;
+    var i = b.dataset.i;
+    form.querySelectorAll('.opt[data-i="' + i + '"]').forEach(function (x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    ans[i] = parseInt(b.dataset.v, 10);
+    var n = Object.keys(ans).length;
+    prog.textContent = n + ' of 6 answered';
+    seeBtn.disabled = n < 6;
+  });
+
+  seeBtn.addEventListener('click', function () {
+    var score = Object.keys(ans).reduce(function (s, k) { return s + ans[k]; }, 0);
+    var head, body;
+    if (score >= 9) { head = 'You would be a natural. 🌟'; body = 'Your answers line up beautifully with what makes a great dental assistant — caring, steady, and ready for a real career fast. This is absolutely for you.'; }
+    else if (score >= 5) { head = 'Strong fit. 💪'; body = 'You have the heart and the drive this career rewards. The skills? Those we teach you, hands-on, from day one. You can do this.'; }
+    else { head = 'It might be for you — let us talk. 💬'; body = 'Plenty of our best graduates were unsure at first. If you want a fresh start and steady work, we will help you figure out if this is your path — no pressure.'; }
+    document.getElementById('result').innerHTML =
+      '<div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 text-center">' +
+      '<h2 class="display text-2xl font-bold text-navy-900">' + head + '</h2>' +
+      '<p class="text-slate-600 mt-2">' + body + '</p>' +
+      '<div class="mt-5 flex flex-wrap gap-3 justify-center">' +
+      '<a href="/apply" data-event="apply_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Apply free →</a>' +
+      '<a href="/tools/practice-pro" class="bg-white border border-slate-200 text-navy-900 font-bold px-6 py-3 rounded-full">Try the free preview</a>' +
+      '<a href="tel:+19039136444" data-event="call_click" class="bg-white border border-slate-200 text-navy-900 font-bold px-6 py-3 rounded-full">Talk to Amanda</a>' +
+      '</div></div>';
+    document.getElementById('result').classList.remove('hidden');
+    document.getElementById('result').scrollIntoView({ behavior: 'smooth' });
+    if (window.PDA && window.PDA.track) { try { window.PDA.track('fit_quiz_complete', { score: score }); } catch (e) {} }
+  });
+})();
+</script>
+</body>
+</html>
