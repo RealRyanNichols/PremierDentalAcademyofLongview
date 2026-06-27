@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where can a dental-assistant career take you? | Premier Dental Academy</title>
+<meta name="description" content="Dental assisting is a starting line, not a ceiling. See the career ladder — certifications, expanded functions, specialty roles, office manager and beyond — and what each step can pay. Free, no signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/career-paths">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Where can this <span class="text-amber-400 italic">take you?</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Becoming an RDA is the starting line, not the ceiling. Tap each step to see what it is, what it can pay, and how to get there.</p>
+  </div>
+</section>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <div id="ladder" class="space-y-3"></div>
+  <p class="text-xs text-slate-500 mt-4">Pay figures are regional estimates and vary by employer, experience, certifications and hours — they are not a guarantee.</p>
+
+  <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 mt-6 text-center">
+    <h3 class="display text-xl font-bold">It all starts with step one.</h3>
+    <p class="text-teal-50 mt-1 text-sm">Get registered as an RDA — then the ladder is yours to climb.</p>
+    <div class="mt-4 flex flex-wrap gap-3 justify-center">
+      <a href="/enroll" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Start step one →</a>
+      <a href="/tools/take-home-pay" class="bg-white text-navy-900 font-bold px-6 py-3 rounded-full">See the pay</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var STEPS = [
+    { n:1, icon:'🦷', title:'Registered Dental Assistant', pay:'~$36k–$44k to start (East Texas)',
+      what:'Your entry into the field — chairside assisting, sterilization, x-rays, charting and patient care.',
+      how:'Complete PDA and register as an RDA in Texas. This is where you begin.' },
+    { n:2, icon:'📜', title:'Add certifications', pay:'Higher pay + more roles open up',
+      what:'Radiology, coronal polishing, nitrous-oxide monitoring, CPR/BLS, sealants — each credential makes you more valuable and more hireable.',
+      how:'Stack certifications over your first year or two. Many offices help pay for them.' },
+    { n:3, icon:'🛠️', title:'Expanded Functions Assistant', pay:'Typically a step up from a standard RDA',
+      what:'Take on more clinical duties allowed under Texas rules — more responsibility, more pay.',
+      how:'Pursue expanded-functions training after you have chairside experience.' },
+    { n:4, icon:'⭐', title:'Lead or specialty assistant', pay:'Specialty offices often pay more',
+      what:'Become the go-to assistant, or specialize — orthodontics, oral surgery, or pediatric dentistry.',
+      how:'Build a strong track record, then move into a specialty practice or a lead role.' },
+    { n:5, icon:'📋', title:'Treatment coordinator / office manager', pay:'Often a salaried leadership role',
+      what:'Run the front office — scheduling, treatment plans, insurance, and the patient experience.',
+      how:'Grow your front-desk and people skills; many managers started chairside.' },
+    { n:6, icon:'🎓', title:'Hygiene or beyond', pay:'A larger jump (more schooling required)',
+      what:'Some assistants go on to dental hygiene or further healthcare careers, using assisting as the launchpad.',
+      how:'Use your experience and income to fund more education when you are ready.' }
+  ];
+  document.getElementById('ladder').innerHTML = STEPS.map(function (s) {
+    return '<div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">' +
+      '<button class="rung w-full text-left p-4 flex items-center gap-3">' +
+      '<div class="w-9 h-9 rounded-full bg-teal-600 text-white grid place-items-center font-bold shrink-0">' + s.n + '</div>' +
+      '<div class="text-2xl">' + s.icon + '</div>' +
+      '<div class="flex-1 min-w-0"><div class="font-bold text-navy-900">' + s.title + '</div>' +
+      '<div class="text-xs text-teal-700 font-semibold">' + s.pay + '</div></div>' +
+      '<div class="text-slate-400 text-xl">+</div></button>' +
+      '<div class="det hidden px-4 pb-4"><p class="text-sm text-slate-700">' + s.what + '</p>' +
+      '<p class="text-sm text-slate-600 mt-1"><span class="font-semibold text-navy-900">How to get there:</span> ' + s.how + '</p></div></div>';
+  }).join('');
+  var fired = false;
+  document.getElementById('ladder').addEventListener('click', function (e) {
+    var b = e.target.closest('.rung'); if (!b) return;
+    b.parentElement.querySelector('.det').classList.toggle('hidden');
+    if (!fired && window.PDA && window.PDA.track) { try { window.PDA.track('career_paths_used'); } catch (e2) {} fired = true; }
+  });
+})();
+</script>
+</body>
+</html>

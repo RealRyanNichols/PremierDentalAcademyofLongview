@@ -52,6 +52,8 @@
     injectStyles();
     var D = window.SL_VO_DATA, tray = opts.tray, mount = opts.mount;
     var INSTR = D.INSTRUMENTS;
+    var SHELF = INSTR.slice();
+    for (var _i = SHELF.length - 1; _i > 0; _i--) { var _j = Math.floor(Math.random() * (_i + 1)); var _t = SHELF[_i]; SHELF[_i] = SHELF[_j]; SHELF[_j] = _t; }
     var byId = D.INSTRUMENT_BY_ID;
     var required = tray.requiredInstrumentIds.slice();
     var placed = [];
@@ -60,7 +62,7 @@
     mount.innerHTML =
       '<div class="sl-fade">' +
       '<div class="flex items-center justify-between gap-3">' +
-      (opts.onExit ? '<button id="tbExit" class="text-sm text-slate-500 hover:text-slate-700 font-semibold">&larr; ' + esc(opts.exitLabel || 'All trays') + '</button>' : '<span></span>') +
+      (opts.onExit ? '<button id="tbExit" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-full px-3 py-1.5">&larr; ' + esc(opts.exitLabel || 'All trays') + '</button>' : '<span></span>') +
       '<div class="text-xs text-slate-500">' + required.length + ' instruments needed</div></div>' +
       '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-2">Build the ' + esc(tray.procedure) + ' tray</h2>' +
       '<p class="text-slate-500 text-sm">Tap an instrument to add it (or drag it onto the tray). Tap a placed one to take it off. Set the tray, then check it.</p>' +
@@ -113,7 +115,7 @@
       if (!placed.length) { var h = document.createElement('div'); h.className = 'empty'; h.textContent = 'Empty tray — add the instruments this procedure needs.'; zone.appendChild(h); }
       else placed.forEach(function (id) { zone.appendChild(card(byId[id], true)); });
       palette.innerHTML = '';
-      INSTR.forEach(function (it) { if (placed.indexOf(it.id) < 0) palette.appendChild(card(it, false)); });
+      SHELF.forEach(function (it) { if (placed.indexOf(it.id) < 0) palette.appendChild(card(it, false)); });
       checkBtn.disabled = placed.length === 0;
     }
 

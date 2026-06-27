@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Tell Your Family You're Going Back to School | Premier Dental Academy</title>
+<meta name="description" content="A free, judgment-free script to talk to your family about training as a dental assistant — pick what worries them and get honest talking points you can actually use. No signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/family-talk">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .concern{cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;border-radius:999px;padding:.55rem 1rem;font-size:.9rem;font-weight:600;color:#0f172a;transition:.12s}
+  .concern.on{background:#0d9488;color:#fff;border-color:#0d9488}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">How to tell your family <span class="text-amber-400 italic">you're doing this.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Big changes are easier when the people you love are on board. Tap what worries them, and we'll give you honest, no-pressure talking points — and a short script to start the conversation.</p>
+  </div>
+</section>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10" id="tool">
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+    <h2 class="display text-lg font-bold text-navy-900 mb-3">What are they worried about?</h2>
+    <div id="concerns" class="flex flex-wrap gap-2"></div>
+  </div>
+
+  <div id="points" class="space-y-4 mt-6"></div>
+
+  <div id="scriptCard" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mt-6 hidden">
+    <div class="flex items-center justify-between mb-2">
+      <h2 class="display text-lg font-bold text-navy-900">Your conversation starter</h2>
+      <button id="copy" class="text-xs font-semibold text-teal-700 hover:text-teal-900">Copy</button>
+    </div>
+    <p id="script" class="text-slate-700 text-sm leading-relaxed whitespace-pre-wrap"></p>
+  </div>
+
+  <div class="mt-8 bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 text-center">
+    <h2 class="display text-2xl font-bold">Bring them with you.</h2>
+    <p class="text-teal-50 mt-2 text-sm max-w-xl mx-auto">Family is welcome to call Amanda with questions, or come see the campus on a tour. No pressure, ever.</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="tel:+19039136444" data-event="call_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full">📞 (903) 913-6444</a>
+      <a href="/apply" data-event="apply_click" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full">Apply free</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function(){
+  var DATA = [
+    { id:'money', label:'💸 The cost', point:'Be upfront about the real number: In-Person is $1,997 with $200 down and simple payments, or Online is $397. Then show them the funding options — Workforce Solutions/WIOA, GI Bill/veterans, and payment plans — so it doesn\'t land as one scary bill.' },
+    { id:'time', label:'⏰ The time', point:'Show them it\'s short and structured — about 12 weeks, with evening options so you can keep working. Walk through your weekly schedule so they can see exactly when you\'ll study and when you\'ll still be present.' },
+    { id:'work', label:'🤔 Will it actually lead to a job?', point:'Dental offices in East Texas hire assistants regularly, and Premier helps with placement. You\'re not gambling on a vague degree — this is a specific, in-demand local skill with a clear path to a paycheck.' },
+    { id:'age', label:'🎂 "Am I too old / is it too late?"', point:'There\'s no age limit on a fresh start. Students range widely, and plenty come in with zero dental background. What matters is showing up and caring about patients — both things you already do.' },
+    { id:'fail', label:'😟 "What if I can\'t do it?"', point:'You won\'t be alone — it\'s small classes with real instructors and tons of hands-on practice. And the money isn\'t lost if life changes: Online transfers in full to In-Person credit, and In-Person is pro-rated per Texas rules.' },
+    { id:'kids', label:'👶 Childcare / family time', point:'Name it directly and make a plan together: which evenings you\'ll be in class, who covers what, and how the trade-off pays off — a stable career with daytime office hours once you\'re working.' }
+  ];
+  var sel = {};
+  var concernsEl = document.getElementById('concerns');
+  DATA.forEach(function(d){
+    var b = document.createElement('button');
+    b.type='button'; b.className='concern'; b.dataset.id=d.id; b.textContent=d.label;
+    concernsEl.appendChild(b);
+  });
+  function render(){
+    var pts = document.getElementById('points'); pts.innerHTML='';
+    var chosen = DATA.filter(function(d){return sel[d.id];});
+    chosen.forEach(function(d){
+      var c=document.createElement('div');
+      c.className='bg-white rounded-2xl border border-slate-200 shadow-sm p-5 pda-glow-card';
+      c.innerHTML='<div class="font-semibold text-navy-900">'+d.label+'</div><p class="text-slate-700 text-sm mt-1.5 leading-relaxed">'+d.point+'</p>';
+      pts.appendChild(c);
+    });
+    var sc = document.getElementById('scriptCard');
+    if(chosen.length){
+      sc.classList.remove('hidden');
+      document.getElementById('script').textContent =
+        '"I\'ve been thinking hard about our future, and I want to train as a dental assistant at Premier Dental Academy. '+
+        'It\'s about 12 weeks, with evening options so I can keep things going at home. '+
+        chosen.map(function(d){return d.point.split('. ')[0]+'.';}).join(' ')+
+        ' I\'m not asking you to figure it out for me — I just want you in my corner while I do this."';
+    } else { sc.classList.add('hidden'); }
+  }
+  concernsEl.addEventListener('click', function(e){
+    var b=e.target.closest('.concern'); if(!b) return;
+    sel[b.dataset.id]=!sel[b.dataset.id]; b.classList.toggle('on', sel[b.dataset.id]);
+    render();
+    try{ if(window.PDA&&window.PDA.track) window.PDA.track('family_talk_used',{concerns:Object.keys(sel).filter(function(k){return sel[k];})}); }catch(e){}
+  });
+  document.getElementById('copy').addEventListener('click', function(){
+    var t=document.getElementById('script').textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(t);
+    this.textContent='Copied ✓'; var self=this; setTimeout(function(){self.textContent='Copy';},1500);
+  });
+})();
+</script>
+</body>
+</html>

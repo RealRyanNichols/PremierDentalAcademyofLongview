@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Life Resource Hub | Premier Dental Academy of Longview</title>
+<meta name="description" content="Real help for the things that get in the way of finishing school — childcare, food, bills, someone to talk to, and safety. Free resources for East Texas students.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/resource-hub">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .res a.link{color:#0f766e;font-weight:600}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">You are not alone</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Help with the <span class="text-amber-400 italic">hard stuff.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Life does not pause for school. If childcare, food, bills, or stress are in your way, here is real, free help in East Texas — so you can keep going.</p>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <div class="res grid sm:grid-cols-2 gap-4" id="cards"></div>
+
+  <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mt-6 text-sm text-amber-900">
+    <strong>In an emergency, call 911.</strong> These are independent resources we share to help our students — Premier Dental Academy is not affiliated with them, and availability can change.
+  </div>
+
+  <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 mt-6 text-center">
+    <h3 class="display text-xl font-bold">We are in your corner.</h3>
+    <p class="text-teal-50 mt-1 text-sm">If you are stuck, talk to Amanda — we will help you find a way forward.</p>
+    <div class="mt-4 flex flex-wrap gap-3 justify-center">
+      <a href="tel:+19039136444" data-event="call_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Call or text (903) 913-6444</a>
+      <a href="/tools/funding-finder" class="bg-white text-navy-900 font-bold px-6 py-3 rounded-full">Get training paid for →</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var R = [
+    { icon:'🧸', title:'Childcare help', body:'Texas can help working or in-training parents pay for childcare. Ask your local Workforce Solutions office, or visit <a class="link" href="https://www.twc.texas.gov/programs/child-care" target="_blank" rel="noopener">twc.texas.gov</a>. Need it fast? Dial <a class="link" href="tel:211">211</a>.' },
+    { icon:'🍎', title:'Food assistance', body:'Apply for SNAP food benefits at <a class="link" href="https://www.yourtexasbenefits.com" target="_blank" rel="noopener">YourTexasBenefits.com</a>. For a food pantry near you, contact the <a class="link" href="https://www.easttexasfoodbank.org" target="_blank" rel="noopener">East Texas Food Bank</a> or dial <a class="link" href="tel:211">211</a>.' },
+    { icon:'🏠', title:'Rent, utilities & bills', body:'Dial <a class="link" href="tel:211">211</a> (211 Texas) — a free, 24/7 line that connects you to local rent, utility, and emergency-assistance programs.' },
+    { icon:'💬', title:'Someone to talk to', body:'Free and confidential, 24/7. Call or text <a class="link" href="tel:988">988</a> (Suicide & Crisis Lifeline), or the SAMHSA helpline at <a class="link" href="tel:18006624357">1-800-662-4357</a> for mental health or substance support.' },
+    { icon:'🛟', title:'Safety at home', body:'If you are not safe, you deserve help. The National Domestic Violence Hotline is <a class="link" href="tel:18007997233">1-800-799-7233</a> (or text START to 88788), free and confidential. Dial <a class="link" href="tel:211">211</a> for local shelters.' },
+    { icon:'🎓', title:'Finish your GED', body:'No high-school diploma yet? Free GED and adult-education classes are available across East Texas. Dial <a class="link" href="tel:211">211</a> or ask Workforce Solutions to find one near you.' }
+  ];
+  document.getElementById('cards').innerHTML = R.map(function (r) {
+    return '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">' +
+      '<div class="flex items-start gap-3"><div class="text-2xl">' + r.icon + '</div><div>' +
+      '<h3 class="display text-lg font-bold text-navy-900">' + r.title + '</h3>' +
+      '<p class="text-sm text-slate-600 mt-1 leading-relaxed">' + r.body + '</p></div></div></div>';
+  }).join('');
+})();
+</script>
+</body>
+</html>

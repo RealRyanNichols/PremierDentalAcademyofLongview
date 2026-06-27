@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Can you fit dental-assistant school into your life? | Premier Dental Academy</title>
+<meta name="description" content="Tap the times you could study each week and see how fast you could finish dental-assistant training around work and family. Free, no signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/schedule-planner">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .slot{border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 4px;font-size:12px;font-weight:600;color:#64748b;cursor:pointer;text-align:center;transition:.12s}
+  .slot.on{background:#0d9488;border-color:#0d9488;color:#fff}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Can you fit school <span class="text-amber-400 italic">into your life?</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Between work, kids, and everything else — yes, you can. The online program is self-paced. Tap the times you could study and see how fast you would finish.</p>
+  </div>
+</section>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+    <h2 class="display text-lg font-bold text-navy-900">When could you study?</h2>
+    <p class="text-sm text-slate-500 mt-1">Tap any blocks that could work — even a few count. Most students do about 8–10 hours a week.</p>
+    <div class="overflow-x-auto mt-4">
+      <div id="grid" class="min-w-[520px]"></div>
+    </div>
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-4 mt-5">
+    <div class="bg-navy-900 text-white rounded-2xl p-5"><div class="text-sm text-slate-300">Study time you picked</div><div class="display text-3xl font-bold text-amber-400 mt-1"><span id="hrs">0</span> hrs/week</div></div>
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5"><div class="text-sm text-slate-500">You could finish in about</div><div class="display text-3xl font-bold text-teal-700 mt-1" id="weeks">— weeks</div></div>
+  </div>
+  <div id="msg" class="rounded-2xl p-4 text-sm font-medium mt-4 bg-slate-100 text-slate-600">Tap a few time blocks above to see your plan.</div>
+
+  <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 mt-5 text-center">
+    <h3 class="display text-xl font-bold">It fits. Let us help you start.</h3>
+    <p class="text-teal-50 mt-1 text-sm">Online starts any day, at your pace. In-person cohorts run on a set calendar.</p>
+    <div class="mt-4 flex flex-wrap gap-3 justify-center">
+      <a href="/enroll" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Enroll now →</a>
+      <a href="/tools/funding-finder" class="bg-white text-navy-900 font-bold px-6 py-3 rounded-full">Can I get it paid for?</a>
+    </div>
+  </div>
+  <p class="text-xs text-slate-500 mt-3 text-center">Estimate based on roughly 100 study hours. Online is self-paced; in-person follows the cohort calendar.</p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  var SLOTS = [['Morning', 2], ['Midday', 2], ['Evening', 3]];
+  var TARGET = 100, fired = false;
+  var grid = document.getElementById('grid');
+  var html = '<div class="grid" style="grid-template-columns:64px repeat(7,1fr);gap:6px">';
+  html += '<div></div>' + DAYS.map(function (d) { return '<div class="text-center text-xs font-bold text-slate-500 py-1">' + d + '</div>'; }).join('');
+  SLOTS.forEach(function (s, si) {
+    html += '<div class="text-xs font-semibold text-slate-500 flex items-center">' + s[0] + '</div>';
+    DAYS.forEach(function (d, di) {
+      html += '<button type="button" class="slot" data-h="' + s[1] + '" data-k="' + di + '-' + si + '">+' + s[1] + 'h</button>';
+    });
+  });
+  html += '</div>';
+  grid.innerHTML = html;
+
+  function recalc() {
+    var hrs = 0;
+    grid.querySelectorAll('.slot.on').forEach(function (b) { hrs += parseFloat(b.dataset.h); });
+    document.getElementById('hrs').textContent = hrs;
+    var weeksEl = document.getElementById('weeks'), msg = document.getElementById('msg');
+    if (hrs <= 0) { weeksEl.textContent = '— weeks'; msg.className = 'rounded-2xl p-4 text-sm font-medium mt-4 bg-slate-100 text-slate-600'; msg.textContent = 'Tap a few time blocks above to see your plan.'; return; }
+    var weeks = Math.max(6, Math.ceil(TARGET / hrs));
+    weeksEl.textContent = 'about ' + weeks + ' weeks';
+    if (hrs >= 8) { msg.className = 'rounded-2xl p-4 text-sm font-medium mt-4 bg-emerald-50 text-emerald-800'; msg.textContent = 'That is a strong, realistic pace — right in the range most of our students keep while working and raising kids. You can absolutely do this.'; }
+    else { msg.className = 'rounded-2xl p-4 text-sm font-medium mt-4 bg-amber-50 text-amber-900'; msg.textContent = 'Even at this pace you finish — and because online is self-paced, busy weeks are okay. Add a block or two and you speed right up.'; }
+    if (!fired && window.PDA && window.PDA.track) { try { window.PDA.track('schedule_planner_used'); } catch (e) {} fired = true; }
+  }
+  grid.addEventListener('click', function (e) {
+    var b = e.target.closest('.slot'); if (!b) return;
+    b.classList.toggle('on'); recalc();
+  });
+})();
+</script>
+</body>
+</html>

@@ -371,7 +371,8 @@ function cardHTML(c) {
       </div>
       <div class="mt-4 flex gap-2">
         ${cta}
-        <a href="tel:+19039136444" data-event="call_click" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm" aria-label="Call PDA">📞</a>
+        <button type="button" data-ics data-start="${c.start_date}" data-end="${c.end_date || ''}" data-label="${LABEL[cls]}" data-cid="${c.id}" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm" aria-label="Add this class start date to your calendar" title="Add to calendar">📅</button>
+        <a href="tel:+19039136444" data-event="call_click" class="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-sm" aria-label="Call PDA">📞</a>
       </div>
     </div>
   </div>`;
@@ -429,6 +430,41 @@ document.addEventListener('click', (ev) => {
   filter = btn.dataset.filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
   render();
+});
+
+// ── Add-to-calendar: build a universal .ics for the class start date ──
+// Works with Apple Calendar, Google Calendar, and Outlook. No backend needed.
+document.addEventListener('click', (ev) => {
+  const b = ev.target.closest('[data-ics]');
+  if (!b) return;
+  const start = b.dataset.start;
+  if (!start) return;
+  const end = b.dataset.end || start;
+  const label = b.dataset.label || 'In-Person';
+  const cid = b.dataset.cid || '';
+  const ymd = (iso) => iso.replace(/-/g, '');
+  const dayAfter = (iso) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d.getDate() + 1); return ymd(d.toISOString().slice(0, 10)); };
+  const stamp = new Date().toISOString().replace(/[-:]/g, '').slice(0, 15) + 'Z';
+  const reserve = 'https://www.premierdentalacademyoflongview.com/enroll' + (cid ? ('?cohort=' + cid) : '');
+  const ics = [
+    'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Premier Dental Academy of Longview//Calendar//EN', 'CALSCALE:GREGORIAN',
+    'BEGIN:VEVENT',
+    'UID:pda-cohort-' + (cid || ymd(start)) + '@premierdentalacademyoflongview.com',
+    'DTSTAMP:' + stamp,
+    'DTSTART;VALUE=DATE:' + ymd(start),
+    'DTEND;VALUE=DATE:' + dayAfter(end),
+    'SUMMARY:PDA RDA Class Starts — ' + label,
+    'DESCRIPTION:Your Premier Dental Academy RDA class begins. Reserve your seat: ' + reserve + ' \\n Questions? Call (903) 913-6444.',
+    'LOCATION:2800 Gilmer Rd\\, Suite 106\\, Longview\\, TX 75604',
+    'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:Premier Dental Academy class starts tomorrow', 'END:VALARM',
+    'END:VEVENT', 'END:VCALENDAR'
+  ].join('\r\n');
+  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = 'pda-class-' + start + '.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  try { if (window.PDA && window.PDA.track) window.PDA.track('add_to_calendar', { cohort: cid, label: label }); } catch (e) {}
 });
 
 loadCohorts().then(() => { if (window.AOS) AOS.refreshHard(); });

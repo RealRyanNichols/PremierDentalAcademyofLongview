@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDA Take-Home Pay + Budget Planner | Premier Dental Academy</title>
+<meta name="description" content="See what a Registered Dental Assistant paycheck really looks like in East Texas — estimated take-home pay and a simple monthly budget. Free, no signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/take-home-pay">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  input[type=range]{width:100%;accent-color:#0d9488}
+  .exp{width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px}
+  .exp:focus{outline:none;border-color:#0d9488}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">See your new life <span class="text-amber-400 italic">in numbers.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">What does a dental-assistant paycheck actually look like? Set your pay, then your real monthly bills, and watch what is left over.</p>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 grid lg:grid-cols-2 gap-6 items-start" id="tool">
+  <div class="space-y-5">
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <h2 class="display text-lg font-bold text-navy-900 mb-3">Your pay</h2>
+      <div class="flex items-center justify-between text-sm text-slate-600 mb-1"><span>Hourly wage</span><span id="wageOut" class="font-semibold text-navy-900">$20.00/hr</span></div>
+      <input type="range" id="wage" min="16" max="26" value="20" step="0.5">
+      <div class="flex items-center justify-between text-sm text-slate-600 mt-3 mb-1"><span>Hours per week</span><span id="hoursOut" class="font-semibold text-navy-900">40</span></div>
+      <input type="range" id="hours" min="20" max="40" value="40" step="1">
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+      <h2 class="display text-lg font-bold text-navy-900 mb-3">Your monthly bills</h2>
+      <div class="space-y-3">
+        <div><label class="text-sm text-slate-600">Rent / housing</label><input class="exp" id="e_rent" type="number" value="900" min="0"></div>
+        <div><label class="text-sm text-slate-600">Childcare</label><input class="exp" id="e_child" type="number" value="0" min="0"></div>
+        <div><label class="text-sm text-slate-600">Car payment + gas</label><input class="exp" id="e_car" type="number" value="350" min="0"></div>
+        <div><label class="text-sm text-slate-600">Groceries</label><input class="exp" id="e_food" type="number" value="400" min="0"></div>
+        <div><label class="text-sm text-slate-600">Phone, insurance + other</label><input class="exp" id="e_other" type="number" value="300" min="0"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="space-y-4 lg:sticky lg:top-6">
+    <div class="bg-navy-900 text-white rounded-2xl p-6">
+      <div class="text-sm text-slate-300">Estimated take-home pay</div>
+      <div class="display text-4xl font-bold text-amber-400 mt-1" id="takeMo">$2,947/mo</div>
+      <div class="text-sm text-slate-400 mt-1" id="takeYr">about $41,600/yr gross</div>
+    </div>
+    <div class="grid grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"><div class="text-xs text-slate-500">Monthly bills</div><div class="display text-2xl font-bold text-navy-900" id="billsOut">$1,950</div></div>
+      <div class="bg-white rounded-2xl border border-slate-100 shadow-sm p-4"><div class="text-xs text-slate-500">Left over each month</div><div class="display text-2xl font-bold" id="leftOut">$997</div></div>
+    </div>
+    <div id="msg" class="rounded-2xl p-4 text-sm font-medium"></div>
+    <p class="text-xs text-slate-500">Estimate only. Texas has no state income tax; take-home assumes roughly 15% for federal + FICA. Your actual pay, taxes, hours and benefits vary by employer.</p>
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-5 text-center">
+      <h3 class="display text-lg font-bold">Ready to earn it?</h3>
+      <div class="mt-3 flex flex-wrap gap-2 justify-center">
+        <a href="/enroll" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full text-sm">Enroll now →</a>
+        <a href="/tools/funding-finder" class="bg-white text-navy-900 font-bold px-5 py-2.5 rounded-full text-sm">Can I get it paid for?</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var money = function (n) { return '$' + Math.round(n).toLocaleString(); };
+  var fired = false;
+  function render() {
+    var wage = parseFloat($('wage').value), hours = parseInt($('hours').value, 10);
+    $('wageOut').textContent = '$' + wage.toFixed(2) + '/hr';
+    $('hoursOut').textContent = hours;
+    var grossYr = wage * hours * 52, grossMo = grossYr / 12, takeMo = grossMo * 0.85;
+    $('takeMo').textContent = money(takeMo) + '/mo';
+    $('takeYr').textContent = 'about ' + money(grossYr) + '/yr gross';
+    var bills = ['e_rent','e_child','e_car','e_food','e_other'].reduce(function (s, id) { return s + (parseFloat($(id).value) || 0); }, 0);
+    $('billsOut').textContent = money(bills);
+    var left = takeMo - bills;
+    $('leftOut').textContent = money(left);
+    $('leftOut').style.color = left >= 0 ? '#0f766e' : '#b91c1c';
+    var msg = $('msg');
+    if (left >= 400) { msg.textContent = 'Breathing room every month — that is money for savings, your kids, or paying off the program fast.'; msg.style.background = '#ecfdf5'; msg.style.color = '#065f46'; }
+    else if (left >= 0) { msg.textContent = 'It works — and as you gain experience and certifications, your pay climbs from here.'; msg.style.background = '#fffbeb'; msg.style.color = '#92400e'; }
+    else { msg.textContent = 'Tight at these numbers — picking up hours or trimming a bill closes the gap, and RDA pay grows with experience.'; msg.style.background = '#fef2f2'; msg.style.color = '#991b1b'; }
+    if (!fired && window.PDA && window.PDA.track) { try { window.PDA.track('takehome_calc_used'); } catch (e) {} fired = true; }
+  }
+  ['wage','hours','e_rent','e_child','e_car','e_food','e_other'].forEach(function (id) {
+    $(id).addEventListener('input', render);
+  });
+  render();
+})();
+</script>
+</body>
+</html>
