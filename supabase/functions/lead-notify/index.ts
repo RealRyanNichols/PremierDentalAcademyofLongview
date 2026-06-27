@@ -64,7 +64,7 @@ function autoresponderHtml(firstName: string): string {
   </div>
   <div style="border:1px solid #e2e8f0;border-radius:14px;padding:28px 26px;margin:8px">
     <h1 style="font-family:Georgia,serif;font-size:22px;margin:0 0 12px">Thanks, ${fn} — we've got you. 🎉</h1>
-    <p style="font-size:15px;line-height:1.6;color:#334155;margin:0 0 14px">I'm Amanda, the founder of Premier Dental Academy of Longview. Someone from our team will personally reach out within <strong>1 business day</strong> — no payment or commitment required.</p>
+    <p style="font-size:15px;line-height:1.6;color:#334155;margin:0 0 14px">I'm Amanda, the founder of Premier Dental Academy of Longview. Someone from our team will personally reach out <strong>as quickly as possible</strong> — no payment or commitment required.</p>
     <div style="text-align:center;margin:0 0 18px">
       <a href="https://www.premierdentalacademyoflongview.com/tools/practice-exam" style="display:inline-block;background:#0d9488;color:#fff;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;margin:4px">Try the free practice exam →</a>
     </div>
