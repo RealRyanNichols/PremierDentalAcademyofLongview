@@ -7,8 +7,8 @@
 
   /* ── Navy hero / page-head + stats bands: a slow, soft "aurora" drifts behind
         the content so the dark sections feel alive instead of flat. ── */
-  section[class*="0a1226"] { position: relative; overflow: hidden; isolation: isolate; }
-  section[class*="0a1226"]::before {
+  [class*="0a1226"] { position: relative; overflow: hidden; isolation: isolate; }
+  [class*="0a1226"]::before {
     content: ""; position: absolute; inset: -45% -15%; z-index: 0; pointer-events: none;
     background:
       radial-gradient(38% 48% at 18% 22%, rgba(20,184,166,.20), transparent 62%),
@@ -17,7 +17,7 @@
     animation: pdaAurora 16s ease-in-out infinite alternate;
     will-change: transform;
   }
-  section[class*="0a1226"] > * { position: relative; z-index: 1; }
+  [class*="0a1226"] > * { position: relative; z-index: 1; }
   @keyframes pdaAurora {
     0%   { transform: translate3d(-3%, -2%, 0) scale(1.05); }
     100% { transform: translate3d(4%, 3%, 0)  scale(1.14); }

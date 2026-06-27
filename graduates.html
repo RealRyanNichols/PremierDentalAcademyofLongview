@@ -183,7 +183,7 @@ window.AOS && AOS.init({ duration: 500, once: true });
       const bg = colorFor(name);
       const daysToHire = g.graduation_date && g.hire_date ? daysBetween(g.graduation_date, g.hire_date) : null;
       return `
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition" data-aos="fade-up" data-aos-delay="${(i%9)*50}">
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 hover:shadow-lg transition pda-glow-card" data-aos="fade-up" data-aos-delay="${(i%9)*50}">
           <div class="flex items-start gap-3 mb-3">
             <div class="w-12 h-12 rounded-full text-white font-bold text-lg grid place-items-center shrink-0" style="background:${bg}">${initials}</div>
             <div class="flex-1 min-w-0">

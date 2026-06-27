@@ -209,7 +209,7 @@ window.AOS && AOS.init({ duration: 500, once: true });
             : `<span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full">${seatsLeft} of ${cap} seats open</span>`;
     const isCareer = c.program === 'career_track';
     return `
-      <div class="${isCareer ? 'bg-gradient-to-br from-slate-900 to-cyan-900 text-white' : 'bg-white border border-slate-200'} rounded-2xl p-6 hover:shadow-xl transition" data-aos="fade-up">
+      <div class="${isCareer ? 'bg-gradient-to-br from-slate-900 to-cyan-900 text-white' : 'bg-white border border-slate-200'} rounded-2xl p-6 hover:shadow-xl transition pda-glow-card" data-aos="fade-up">
         <div class="flex items-start justify-between gap-2 mb-3">
           <div>
             <span class="text-[10px] uppercase tracking-widest font-bold ${isCareer ? 'text-amber-300' : 'text-teal-700'}">${p.label} · ${p.dur}</span>
@@ -245,11 +245,11 @@ window.AOS && AOS.init({ duration: 500, once: true });
 
   document.getElementById('current-list').innerHTML = current.length
     ? current.map(c => renderCohortCard(c, false)).join('')
-    : '<div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">No classes in session right now — see upcoming below.</div>';
+    : '<div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500 pda-glow-card">No classes in session right now — see upcoming below.</div>';
 
   document.getElementById('upcoming-list').innerHTML = upcoming.length
     ? upcoming.map(c => renderCohortCard(c, true)).join('')
-    : '<div class="md:col-span-3 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">No upcoming classes posted yet — call (903) 913-6444 to ask about the next one.</div>';
+    : '<div class="md:col-span-3 bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500 pda-glow-card">No upcoming classes posted yet — call (903) 913-6444 to ask about the next one.</div>';
 
   window.AOS && AOS.refresh();
 
