@@ -50,3 +50,35 @@
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
+
+/* Scroll-progress bar — a thin teal→cyan→amber line at the very top that fills
+   as the visitor reads. Pure progressive enhancement: fixed-position, pointer-
+   events:none, zero layout impact, and harmless if it never runs. */
+(function () {
+  'use strict';
+  if (typeof window === 'undefined' || window.__pdaProgress) return;
+  window.__pdaProgress = true;
+  function start() {
+    var bar = document.createElement('div');
+    bar.setAttribute('aria-hidden', 'true');
+    bar.style.cssText = 'position:fixed;top:0;left:0;height:3px;width:0;z-index:9999;' +
+      'pointer-events:none;border-radius:0 3px 3px 0;' +
+      'background:linear-gradient(90deg,#0d9488,#22d3ee 55%,#f59e0b);' +
+      'box-shadow:0 0 12px rgba(13,148,136,.55);transition:width .12s ease-out;';
+    document.body.appendChild(bar);
+    var ticking = false;
+    function update() {
+      var st = window.scrollY || document.documentElement.scrollTop || 0;
+      var h = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      bar.style.width = (h > 0 ? Math.min(100, (st / h) * 100) : 0).toFixed(2) + '%';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { requestAnimationFrame(update); ticking = true; }
+    }, { passive: true });
+    window.addEventListener('resize', update, { passive: true });
+    update();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
