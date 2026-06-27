@@ -52,6 +52,8 @@
     injectStyles();
     var D = window.SL_VO_DATA, tray = opts.tray, mount = opts.mount;
     var INSTR = D.INSTRUMENTS;
+    var SHELF = INSTR.slice();
+    for (var _i = SHELF.length - 1; _i > 0; _i--) { var _j = Math.floor(Math.random() * (_i + 1)); var _t = SHELF[_i]; SHELF[_i] = SHELF[_j]; SHELF[_j] = _t; }
     var byId = D.INSTRUMENT_BY_ID;
     var required = tray.requiredInstrumentIds.slice();
     var placed = [];
@@ -113,7 +115,7 @@
       if (!placed.length) { var h = document.createElement('div'); h.className = 'empty'; h.textContent = 'Empty tray — add the instruments this procedure needs.'; zone.appendChild(h); }
       else placed.forEach(function (id) { zone.appendChild(card(byId[id], true)); });
       palette.innerHTML = '';
-      INSTR.forEach(function (it) { if (placed.indexOf(it.id) < 0) palette.appendChild(card(it, false)); });
+      SHELF.forEach(function (it) { if (placed.indexOf(it.id) < 0) palette.appendChild(card(it, false)); });
       checkBtn.disabled = placed.length === 0;
     }
 
