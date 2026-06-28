@@ -59,7 +59,7 @@
       cta: { label: 'Apply now →', href: '/apply' } },
 
     { match: /\b(amanda|williams|founder|owner|who runs)\b/i,
-      reply: 'Premier Dental Academy was founded by **Amanda Williams**, with 7+ years in East Texas dental practices. She started PDA so new RDAs would walk in already fluent in the software, not learning it the hard way.',
+      reply: 'Premier Dental Academy is owned by **Amanda Williams** — and she\'s not a doctor or a corporate trainer. She took this same course, earned her RDA, and worked chairside in an East Texas office. Then she was asked to take the school over, and she bought it. She runs PDA so new RDAs walk in already fluent — instead of learning it the hard way like she had to.',
       cta: { label: 'Read Amanda\'s story →', href: '/about' } },
 
     { match: /\b(location|address|where|campus|directions|map)\b/i,
@@ -133,14 +133,39 @@
 
   // Style block — scoped
   const STYLE = `
-    .ap-launcher { position: fixed; bottom: 20px; right: 20px; z-index: 999; }
-    .ap-btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px 12px 14px; border-radius: 999px;
+    .ap-launcher { position: fixed; bottom: 22px; right: 22px; z-index: 999; }
+    .ap-btn { position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px 16px 20px; border-radius: 999px;
       background: linear-gradient(135deg, #0d9488 0%, #0891b2 100%); color: white;
-      font-family: Inter, system-ui, sans-serif; font-weight: 600; font-size: 14px;
-      box-shadow: 0 12px 30px -8px rgba(13,148,136,.5); cursor: pointer; border: 0;
-      transition: transform .15s; }
-    .ap-btn:hover { transform: translateY(-2px); }
-    .ap-btn .ap-tooth { font-size: 22px; }
+      font-family: Inter, system-ui, sans-serif; font-weight: 800; font-size: 17px; letter-spacing: .2px;
+      box-shadow: 0 16px 42px -8px rgba(13,148,136,.7); cursor: pointer; border: 0;
+      transition: transform .15s, box-shadow .15s; animation: ap-attn 4s ease-in-out 3s infinite; }
+    .ap-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 22px 52px -8px rgba(13,148,136,.85); }
+    .ap-btn .ap-tooth { font-size: 27px; }
+    @keyframes ap-attn { 0%,90%,100%{transform:none} 93%{transform:translateY(-5px)} 96%{transform:translateY(-1px)} 98%{transform:translateY(-4px)} }
+
+    /* Proactive teaser bubble — invites a stuck visitor to engage + capture intent */
+    .ap-teaser { position: fixed; bottom: 96px; right: 22px; z-index: 1001; max-width: 300px;
+      background: #fff; border: 1px solid #e2e8f0; border-radius: 16px 16px 4px 16px;
+      box-shadow: 0 22px 54px -12px rgba(15,23,42,.45); padding: 14px 14px 13px;
+      font-family: Inter, system-ui, sans-serif;
+      transform: translateY(10px) scale(.96); opacity: 0; pointer-events: none; transition: all .25s ease-out; }
+    .ap-teaser.show { transform: none; opacity: 1; pointer-events: auto; }
+    .ap-teaser .ap-tx { display: flex; gap: 9px; align-items: flex-start; }
+    .ap-teaser .ap-tt-av { width: 32px; height: 32px; border-radius: 50%; flex: 0 0 32px;
+      background: linear-gradient(135deg, #2dd4bf, #38bdf8); display: grid; place-items: center; font-size: 18px; }
+    .ap-teaser p { margin: 0; font-size: 13.5px; line-height: 1.45; color: #0f172a; font-weight: 600; padding-right: 12px; }
+    .ap-teaser .ap-tt-close { position: absolute; top: 6px; right: 9px; border: 0; background: transparent; color: #94a3b8; font-size: 15px; cursor: pointer; }
+    .ap-teaser .ap-tt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+    .ap-teaser .ap-tt-chips button { background: #ecfeff; border: 1px solid #a5f3fc; color: #0e7490; font-size: 12px; font-weight: 600;
+      padding: 6px 11px; border-radius: 999px; cursor: pointer; }
+    .ap-teaser .ap-tt-chips button:hover { background: #cffafe; }
+
+    /* Inline lead-capture form inside the chat */
+    .ap-lead { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 12px; margin-top: 2px; align-self: flex-start; max-width: 88%; width: 88%; }
+    .ap-lead input { width: 100%; box-sizing: border-box; padding: 9px 11px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px; margin-bottom: 7px; font-family: inherit; }
+    .ap-lead input:focus { outline: none; border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,.15); }
+    .ap-lead button { width: 100%; background: #f59e0b; color: #0f172a; font-weight: 800; border: 0; border-radius: 999px; padding: 10px; font-size: 13.5px; cursor: pointer; }
+    .ap-lead button:hover { background: #d97706; color: #fff; }
     .ap-btn .ap-pulse { position: absolute; top: 8px; right: 8px; width: 10px; height: 10px;
       background: #f59e0b; border-radius: 999px; box-shadow: 0 0 0 0 rgba(245,158,11,.7);
       animation: ap-pulse 2s infinite; }
@@ -230,6 +255,11 @@
         <span class="ap-label">Ask Premier</span>
         <span class="ap-pulse" aria-hidden="true"></span>
       </button>
+      <div class="ap-teaser" id="ap-teaser" role="dialog" aria-label="Quick question from Premier">
+        <button class="ap-tt-close" id="ap-tt-close" aria-label="Dismiss">✕</button>
+        <div class="ap-tx"><div class="ap-tt-av" aria-hidden="true">🦷</div><p>Hey! 👋 Quick question — what brought you to PDA today?</p></div>
+        <div class="ap-tt-chips" id="ap-tt-chips"></div>
+      </div>
       <div class="ap-panel" id="ap-panel" role="dialog" aria-label="Ask Premier chatbot">
         <div class="ap-head">
           <div class="ap-avatar">🦷</div>
@@ -338,6 +368,63 @@
       }
     });
     root.querySelector('#ap-close').addEventListener('click', () => panel.classList.remove('open'));
+
+    // ── Proactive intake: ask why they're here + capture the lead ──────────────
+    const REASONS = [
+      { label: '🔎 Exploring the career', v: 'Exploring the dental assistant career' },
+      { label: '✅ Ready to enroll',       v: 'Ready to enroll' },
+      { label: '💰 Cost & funding',        v: 'Cost & funding' },
+      { label: '📅 Class dates / timing',  v: 'Class dates and timing' },
+      { label: '👀 Just curious',          v: 'Just curious for now' },
+    ];
+    const teaser = root.querySelector('#ap-teaser');
+    const ttChips = root.querySelector('#ap-tt-chips');
+    ttChips.innerHTML = REASONS.map((r, i) => `<button data-i="${i}">${r.label}</button>`).join('');
+    function dismissTeaser() { teaser.classList.remove('show'); try { sessionStorage.setItem('ap_teaser_done', '1'); } catch (e) {} }
+    root.querySelector('#ap-tt-close').addEventListener('click', dismissTeaser);
+    toggle.addEventListener('click', () => teaser.classList.remove('show'));
+    ttChips.querySelectorAll('button').forEach((b) => {
+      b.addEventListener('click', () => {
+        const reason = REASONS[+b.dataset.i].v;
+        dismissTeaser();
+        if (!panel.classList.contains('open')) panel.classList.add('open');
+        startIntake(reason);
+      });
+    });
+
+    function startIntake(reason) {
+      hideQuick();
+      addMsg(reason, 'user');
+      addMsg('Awesome — thanks for telling me! 🙌 Want Amanda to personally follow up with your exact next step? Drop your first name and the best number or email and she\'ll reach out. (Optional — or just keep chatting below.)', 'bot');
+      const wrap = document.createElement('div');
+      wrap.className = 'ap-lead';
+      wrap.innerHTML = '<input id="ap-l-name" placeholder="First name" autocomplete="given-name"><input id="ap-l-contact" placeholder="Phone or email" autocomplete="tel"><button type="button" id="ap-l-send">Send to Amanda →</button>';
+      body.appendChild(wrap);
+      body.scrollTop = body.scrollHeight;
+      wrap.querySelector('#ap-l-send').addEventListener('click', () => {
+        const nm = wrap.querySelector('#ap-l-name').value.trim();
+        const ct = wrap.querySelector('#ap-l-contact').value.trim();
+        if (!ct) { wrap.querySelector('#ap-l-contact').focus(); return; }
+        submitLead(nm, ct, reason);
+        wrap.remove();
+      });
+    }
+
+    async function submitLead(name, contact, reason) {
+      const rec = { first_name: name || null, source: 'ask-premier', interest_path: reason,
+        message: 'Ask Premier intake — ' + reason + ' · page ' + location.pathname };
+      if (/@/.test(contact)) rec.email = contact; else rec.phone = contact;
+      addMsg((name ? name + ', y' : 'Y') + 'ou\'re all set! 🎉 Amanda or someone from PDA will reach out as quickly as possible. Ask me anything else in the meantime.', 'bot');
+      try { if (sb) await sb.from('leads').insert(rec); } catch (e) {}
+      showQuick();
+    }
+
+    // Show the teaser after a short delay — once per session, only if chat is closed.
+    try {
+      if (!sessionStorage.getItem('ap_teaser_done')) {
+        setTimeout(() => { if (!panel.classList.contains('open')) teaser.classList.add('show'); }, 12000);
+      }
+    } catch (e) {}
   }
 
   if (document.readyState === 'loading') {
