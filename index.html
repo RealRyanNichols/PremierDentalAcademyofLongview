@@ -416,7 +416,7 @@
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
   function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
-  function setWeekly(){mode="weekly";on(wk);off(mo);term.min=4;term.max=12;term.value=12;}
+  function setWeekly(){mode="weekly";on(wk);off(mo);term.min=4;term.max=NEW?52:12;term.value=12;}
   function render(){
     if(plan==="online"){reslbl.textContent="One-time (reg $997)";amt.textContent="$397";cnt.textContent="start today";lbl.textContent="";if(totLbl)totLbl.textContent="$397 one-time";return;}
     var n=parseInt(term.value,10),per=Math.round(IP.balance/n),u=mode==="weekly"?"wk":"mo";
