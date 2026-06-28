@@ -359,8 +359,8 @@
         <div class="grid grid-cols-2 gap-3" id="pdacalc-plans">
           <button type="button" data-plan="inperson" class="pdacalc-opt text-left rounded-xl border-2 border-teal-600 bg-teal-50 p-4 ring-4 ring-teal-600/10">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">In person</div>
-            <div class="display text-2xl font-bold text-slate-900">$200 <span class="text-sm font-medium text-slate-500">down</span></div>
-            <div class="text-xs text-slate-600">$1,997 total · weekly or monthly</div>
+            <div class="display text-2xl font-bold text-slate-900"><span id="pdacalc-ip-down">$200</span> <span class="text-sm font-medium text-slate-500">down</span></div>
+            <div class="text-xs text-slate-600" id="pdacalc-ip-sub">$1,997 total · weekly or monthly</div>
           </button>
           <button type="button" data-plan="online" class="pdacalc-opt text-left rounded-xl border-2 border-slate-200 bg-white p-4">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">Online</div>
@@ -378,7 +378,7 @@
           </div>
           <input type="range" id="pdacalc-term" min="1" max="3" value="3" step="1" class="w-full accent-teal-600">
           <div class="flex items-center justify-between text-sm text-slate-600 mt-1">
-            <span id="pdacalc-termlbl">3 months</span><span>$1,997 total</span>
+            <span id="pdacalc-termlbl">3 months</span><span id="pdacalc-totlbl">$1,997 total</span>
           </div>
         </div>
       </div>
@@ -391,25 +391,38 @@
           <div class="text-right text-sm text-slate-400" id="pdacalc-count">3 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot →</a>
-        <p class="text-center text-xs text-slate-500 mt-3">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.</p>
+        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.</p>
       </div>
     </div>
   </div>
 </section>
 <script>
 (function(){
-  var TOTAL=1997,DOWN=200,plan="inperson",mode="monthly";
+  // Date-aware pricing. Auto-flips at the July 1, 2026 cutover (midnight America/
+  // Chicago). Add ?pricing=new or ?pricing=old to preview either set of numbers.
+  var CUTOVER=Date.parse('2026-07-01T05:00:00Z');
+  var ov=new URLSearchParams(location.search).get('pricing');
+  var NEW=ov==='new'?true:ov==='old'?false:(Date.now()>=CUTOVER);
+  var IP=NEW?{down:500,planTotal:3500,pif:3000,balance:3000}:{down:200,planTotal:1997,pif:1997,balance:1797};
+  var plan="inperson",mode="monthly";
   var root=document.getElementById("pdacalc-plans");if(!root)return;
   var body=document.getElementById("pdacalc-body"),term=document.getElementById("pdacalc-term");
   var amt=document.getElementById("pdacalc-amt"),cnt=document.getElementById("pdacalc-count"),lbl=document.getElementById("pdacalc-termlbl"),reslbl=document.getElementById("pdacalc-reslbl");
   var wk=document.getElementById("pdacalc-wk"),mo=document.getElementById("pdacalc-mo");
+  var ipDown=document.getElementById("pdacalc-ip-down"),ipSub=document.getElementById("pdacalc-ip-sub"),note=document.getElementById("pdacalc-note"),totLbl=document.getElementById("pdacalc-totlbl");
+  if(ipDown)ipDown.textContent="$"+IP.down;
+  if(ipSub)ipSub.textContent=NEW?("$"+IP.planTotal.toLocaleString()+" plan / $"+IP.pif.toLocaleString()+" paid in full"):("$"+IP.planTotal.toLocaleString()+" total · weekly or monthly");
+  if(note)note.textContent=NEW?"Plans up to 12 months. Can't sit for the state board until paid in full. Workforce funding · GI Bill accepted.":"Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.";
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
+  function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
+  function setWeekly(){mode="weekly";on(wk);off(mo);term.min=4;term.max=NEW?52:12;term.value=12;}
   function render(){
-    if(plan==="online"){reslbl.textContent="One-time (reg $997)";amt.textContent="$397";cnt.textContent="start today";return;}
-    var n=parseInt(term.value,10),per=Math.round((TOTAL-DOWN)/n),u=mode==="weekly"?"wk":"mo";
-    reslbl.textContent="$200 down today, then";amt.textContent="$"+per.toLocaleString()+"/"+u;
+    if(plan==="online"){reslbl.textContent="One-time (reg $997)";amt.textContent="$397";cnt.textContent="start today";lbl.textContent="";if(totLbl)totLbl.textContent="$397 one-time";return;}
+    var n=parseInt(term.value,10),per=Math.round(IP.balance/n),u=mode==="weekly"?"wk":"mo";
+    reslbl.textContent="$"+IP.down+" down today, then";amt.textContent="$"+per.toLocaleString()+"/"+u;
     cnt.textContent=n+" payments";lbl.textContent=n+(mode==="weekly"?" weeks":" months");
+    if(totLbl)totLbl.textContent=NEW?("$"+IP.planTotal.toLocaleString()+" on a plan"):("$"+IP.planTotal.toLocaleString()+" total");
   }
   root.querySelectorAll(".pdacalc-opt").forEach(function(b){b.addEventListener("click",function(){
     plan=b.dataset.plan;
@@ -420,9 +433,9 @@
     });
     body.style.display=plan==="online"?"none":"block";render();
   });});
-  wk.addEventListener("click",function(){mode="weekly";on(wk);off(mo);term.min=4;term.max=12;term.value=12;render();});
-  mo.addEventListener("click",function(){mode="monthly";on(mo);off(wk);term.min=1;term.max=3;term.value=3;render();});
-  term.addEventListener("input",render);render();
+  wk.addEventListener("click",function(){setWeekly();render();});
+  mo.addEventListener("click",function(){setMonthly();render();});
+  setMonthly();term.addEventListener("input",render);render();
 })();
 </script>
 
@@ -496,7 +509,7 @@
           <h3 class="text-2xl font-bold display">In-Person</h3>
         </div>
         <p class="text-slate-600 text-sm">Hands-on at the Longview campus. Small classes, direct instruction.</p>
-        <div class="display text-4xl font-bold text-slate-900 my-6">$1,997<span class="text-base font-normal text-slate-500"> tuition</span></div>
+        <div class="display text-4xl font-bold text-slate-900 my-6"><span data-price="ip-total">$1,997</span><span class="text-base font-normal text-slate-500"> tuition</span></div>
         <ul class="space-y-2.5 text-sm text-slate-700">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Instructor-led classes at our Longview campus</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment</li>
@@ -847,7 +860,7 @@
         <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">In-Person</span>
         <h3 class="font-bold text-lg mt-2">In-Person</h3>
         <p class="text-xs text-slate-500 mt-1">At the Longview campus.</p>
-        <div class="display text-3xl font-bold mt-4">$1,997<span class="text-sm text-slate-500 font-normal"> tuition</span></div>
+        <div class="display text-3xl font-bold mt-4"><span data-price="ip-total">$1,997</span><span class="text-sm text-slate-500 font-normal"> tuition</span></div>
         <div class="text-xs text-teal-700 font-semibold mt-1">or $200 down + installments — paid off before class ends</div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
           <li>✓ Live instruction at our campus</li>

@@ -508,6 +508,8 @@
       <a href="/tour" class="block hover:text-white">Schedule a tour</a>
       <a href="/waitlist" class="block hover:text-white">Join the waitlist</a>
       <a href="/salary" class="block hover:text-white">Salary calculator</a>
+      <a href="/study-pack" class="block hover:text-white">Study Pack — $19</a>
+      <a href="/exam-prep-course" class="block hover:text-white">Exam-Prep Course — $97</a>
     </nav>
     <nav aria-label="Free trainers" class="space-y-2">
       <p class="text-white font-semibold">Free trainers</p>
@@ -563,4 +565,33 @@
   } else {
     init();
   }
+})();
+
+
+/* ── Date-aware tuition price tokens ──────────────────────────────────────────
+   Any element with data-price="ip-total" | "ip-pif" | "ip-plan" | "ip-down"
+   auto-updates at the July 1, 2026 cutover (midnight America/Chicago). Add
+   ?pricing=new or ?pricing=old to any URL to preview either set of numbers.
+   Lets static price text across the site flip in lockstep with the calculator
+   and the Square checkout — no manual edits on July 1. */
+(function () {
+  try {
+    var CUT = Date.parse('2026-07-01T05:00:00Z');
+    var ov = new URLSearchParams(location.search).get('pricing');
+    var NEW = ov === 'new' ? true : ov === 'old' ? false : (Date.now() >= CUT);
+    var M = {
+      'ip-total': NEW ? '$3,000' : '$1,997',
+      'ip-pif':   NEW ? '$3,000' : '$1,997',
+      'ip-plan':  NEW ? '$3,500' : '$1,997',
+      'ip-down':  NEW ? '$500'   : '$200'
+    };
+    function go() {
+      document.querySelectorAll('[data-price]').forEach(function (el) {
+        var v = M[el.getAttribute('data-price')];
+        if (v) el.textContent = v;
+      });
+    }
+    if (document.readyState !== 'loading') go();
+    else document.addEventListener('DOMContentLoaded', go);
+  } catch (e) { /* never break the page over price display */ }
 })();

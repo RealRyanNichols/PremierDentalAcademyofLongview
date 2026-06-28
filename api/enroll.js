@@ -20,6 +20,17 @@ const LOCATION_ID = '2P2ZE3FJNEYTV';
 const SQUARE_BASE = 'https://connect.squareup.com/v2';
 const MAX_INSTALLMENTS = 13; // Square invoice payment_requests cap
 
+// ── July 1, 2026 in-person price change (auto-switches at midnight Central) ──
+// Before:  in-person $1,997, $200 min down, balance paid by graduation.
+// On/after: in-person $3,000 paid-in-full OR $3,500 on a plan ($500 down +
+//           $3,000 balance), weekly or monthly, plans up to 12 months. The
+//           no-board-until-paid-in-full rule (enforced by PDA, not the calendar)
+//           replaces the old "must finish by graduation" constraint. Online is
+//           unchanged here. Flips by date so no manual edit is needed on July 1.
+const CUTOVER_MS = Date.parse('2026-07-01T05:00:00Z'); // 2026-07-01 00:00 America/Chicago (CDT, UTC-5)
+const newPricing = () => Date.now() >= CUTOVER_MS;
+const NEW_IN_PERSON = { pifCents: 300000, planTotalCents: 350000, downCents: 50000, balanceCents: 300000 };
+
 const PLANS = {
   'in-person': { name: 'PDA RDA Program — In-Person', totalCents: 199700 },
   'online':    { name: 'PDA RDA Program — Online (Limited Time Sale)', totalCents: 39700 },
@@ -190,6 +201,32 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
   };
 }
 
+// New-pricing schedule (on/after July 1): split a fixed balance into `count`
+// equal-ish installments on Fridays (weekly +7d, monthly same day-of-month).
+// No class-end constraint — post-July-1 plans may run up to 12 months; the
+// no-board-until-paid rule is what gates certification, not the calendar. The
+// last payment absorbs any rounding remainder so the total is exact.
+function buildScheduleV2({ balanceCents, cadence, count, firstPaymentDate }) {
+  let n = Math.round(Number(count));
+  if (!Number.isFinite(n) || n < 1) n = 1;
+  if (n > MAX_INSTALLMENTS) throw new Error(`A plan can have at most ${MAX_INSTALLMENTS} payments.`);
+  const firstFriday = firstFridayOnOrAfter(firstPaymentDate);
+  const per = Math.floor(balanceCents / n);
+  const amounts = Array(n).fill(per);
+  amounts[n - 1] = balanceCents - per * (n - 1);
+  const dates = cadence === 'monthly'
+    ? Array.from({ length: n }, (_, i) => addMonths(firstFriday, i))
+    : Array.from({ length: n }, (_, i) => addDays(firstFriday, i * 7));
+  const requests = dates.map((due_date, i) => ({
+    request_type: 'INSTALLMENT',
+    due_date,
+    fixed_amount_requested_money: { amount: amounts[i], currency: 'USD' },
+    automatic_payment_source: 'CARD_ON_FILE',
+  }));
+  const totalCharged = amounts.reduce((a, b) => a + b, 0);
+  return { count: n, perCents: amounts[0], lastAmountCents: amounts[n - 1], firstAmountCents: amounts[0], amounts, totalCharged, dates, requests };
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
@@ -209,7 +246,7 @@ export default async function handler(req, res) {
   const {
     plan, downCents, cadence, firstPaymentDate, classEndDate,
     sourceId, email, name, phone, cohortName,
-    cohortId, special,
+    cohortId, special, payInFull, count,
   } = body;
 
   const basePlan = PLANS[plan];
@@ -224,22 +261,42 @@ export default async function handler(req, res) {
   if (!email || !name) return res.status(400).json({ error: 'Name and email are required.' });
 
   const isOnline = plan === 'online';
+  const useNew = newPricing() && plan === 'in-person';
 
-  // For Online, force pay-in-full and skip cadence/date checks. Online is a
-  // single $397 charge, no schedule, no card-on-file.
-  let down, remaining, paidInFull, schedule = null;
+  // down / remaining / paidInFull / total drive the charge + invoice below.
+  let down, remaining, paidInFull, schedule = null, total;
   if (isOnline) {
-    down = planDef.totalCents;
-    remaining = 0;
-    paidInFull = true;
+    // Online: single charge, no schedule. (Price unchanged here for now.)
+    total = planDef.totalCents;
+    down = total; remaining = 0; paidInFull = true;
+  } else if (useNew) {
+    // ── New in-person pricing (on/after July 1) ──
+    if (payInFull) {
+      total = NEW_IN_PERSON.pifCents;          // $3,000 paid in full (saves $500)
+      down = total; remaining = 0; paidInFull = true;
+    } else {
+      if (!['weekly', 'monthly'].includes(cadence)) return res.status(400).json({ error: 'Choose weekly or monthly.' });
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(firstPaymentDate)) return res.status(400).json({ error: 'Invalid first payment date.' });
+      total = NEW_IN_PERSON.planTotalCents;    // $3,500 on a plan
+      down = NEW_IN_PERSON.downCents;          // $500 down today
+      remaining = NEW_IN_PERSON.balanceCents;  // $3,000 balance, auto-charged
+      paidInFull = false;
+      try {
+        schedule = buildScheduleV2({ balanceCents: NEW_IN_PERSON.balanceCents, cadence, count, firstPaymentDate });
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
+    }
   } else {
+    // ── Current in-person pricing (before July 1) ──
+    total = planDef.totalCents;
     if (!['daily', 'weekly', 'monthly'].includes(cadence)) return res.status(400).json({ error: 'Invalid cadence.' });
     if (!/^\d{4}-\d{2}-\d{2}$/.test(firstPaymentDate)) return res.status(400).json({ error: 'Invalid first payment date.' });
     if (!/^\d{4}-\d{2}-\d{2}$/.test(classEndDate)) return res.status(400).json({ error: 'Invalid class end date.' });
     down = Math.round(Number(downCents));
     if (!Number.isFinite(down) || down < 20000) return res.status(400).json({ error: 'Minimum down payment is $200.' });
-    if (down > planDef.totalCents) return res.status(400).json({ error: 'Down payment cannot exceed total tuition.' });
-    remaining = planDef.totalCents - down;
+    if (down > total) return res.status(400).json({ error: 'Down payment cannot exceed total tuition.' });
+    remaining = total - down;
     paidInFull = remaining === 0;
     if (!paidInFull) {
       try {
@@ -249,7 +306,6 @@ export default async function handler(req, res) {
       }
     }
   }
-  const total = planDef.totalCents;
 
   const [first, ...rest] = String(name).trim().split(/\s+/);
   const family = rest.join(' ');

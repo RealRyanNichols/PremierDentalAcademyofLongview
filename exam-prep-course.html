@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RDA Exam-Prep Mini-Course | Premier Dental Academy</title>
+<meta name="description" content="A self-paced, interactive mini-course that walks you through the dental assistant state board — infection control, radiology safety, chairside, instruments, and a full practice test. Instant access.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/exam-prep-course">
+<meta property="og:title" content="RDA Exam-Prep Mini-Course">
+<meta property="og:description" content="Walk into your state board ready. Interactive, self-paced, instant access.">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  #card-container{min-height:44px}
+  .lesson-link.done span.dot{background:#0d9488;border-color:#0d9488}
+  .quiz-opt{cursor:pointer}
+  .quiz-opt.correct{background:#ecfdf5;border-color:#0d9488}
+  .quiz-opt.wrong{background:#fef2f2;border-color:#ef4444}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://web.squarecdn.com/v1/square.js"></script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Product","name":"RDA Exam-Prep Mini-Course","description":"A self-paced, interactive mini-course for the dental assistant state board: infection control, radiology safety, chairside, instruments, and a practice test.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://premierdentalacademyoflongview.com/exam-prep-course","offers":{"@type":"Offer","price":"97.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://premierdentalacademyoflongview.com/exam-prep-course"}}
+</script>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen">
+
+<div id="gate-loading" class="max-w-2xl mx-auto px-6 py-24 text-center text-slate-400">
+  <p class="display text-xl">Loading the course…</p>
+</div>
+
+<!-- ===== SALES (non-owners) ===== -->
+<div id="sales" class="hidden">
+  <section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
+      <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Self-paced · interactive · instant access</p>
+      <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Walk into your state board <span class="text-amber-400 italic">ready</span></h1>
+      <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">The RDA Exam-Prep Mini-Course walks you through the board section by section — with short lessons and a quick quiz after each one so it actually sticks. Finish knowing exactly what to expect.</p>
+      <div class="mt-7 inline-flex items-center gap-3 bg-white/10 border border-white/20 rounded-2xl px-6 py-4">
+        <span class="text-slate-300 line-through text-lg">$147</span>
+        <span class="display text-4xl font-bold text-amber-400">$97</span>
+        <span class="text-left text-xs text-slate-200 leading-tight">one-time<br>lifetime access</span>
+      </div>
+      <div class="mt-6"><a href="#buy" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md">Start the course →</a></div>
+    </div>
+  </section>
+
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-navy-900">What you'll master</h2>
+    <div class="grid sm:grid-cols-2 gap-4 mt-7">
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">1 · Infection control &amp; sterilization</h3><p class="text-sm text-slate-600 mt-1">The #1 tested area — PPE, the clean-to-sterile instrument flow, autoclave + spore testing.</p></div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">2 · Radiology safety</h3><p class="text-sm text-slate-600 mt-1">ALARA, lead apron + thyroid collar, exposure rules, and safe sensor handling.</p></div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">3 · Chairside &amp; instruments</h3><p class="text-sm text-slate-600 mt-1">Four-handed dentistry, instrument transfer, isolation, and tray setups by procedure.</p></div>
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">4 · Exam-day strategy</h3><p class="text-sm text-slate-600 mt-1">How the board is structured, how to pace yourself, and how to beat test anxiety.</p></div>
+    </div>
+    <p class="text-center text-sm text-slate-500 mt-6">Every lesson ends with an instant-feedback quiz. Your progress saves automatically. PDA students get this included.</p>
+  </main>
+
+  <!-- CHECKOUT -->
+  <section id="buy" class="max-w-md mx-auto px-4 sm:px-6 pb-16">
+    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-xl overflow-hidden">
+      <div class="bg-teal-700 text-white px-6 py-4 text-center"><p class="text-xs uppercase tracking-widest text-teal-100">Lifetime access</p><p class="display text-2xl font-bold">Start the course — <span class="text-amber-300">$97</span></p></div>
+      <div class="p-6 space-y-4">
+        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Your name</label><input id="bp-name" type="text" autocomplete="name" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" /></div>
+        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Email (your login + receipt)</label><input id="bp-email" type="email" autocomplete="email" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" /></div>
+        <div><label class="block text-sm font-semibold text-slate-700 mb-1">Card</label><div id="card-container" class="border-2 border-slate-200 rounded-lg p-3 bg-white"></div></div>
+        <button id="pay-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3.5 rounded-full shadow-md disabled:opacity-40" disabled>Pay $97 &amp; start</button>
+        <div id="err" hidden class="text-xs bg-rose-50 border border-rose-200 text-rose-900 rounded p-2"></div>
+        <p class="text-[11px] text-slate-400 text-center">Secure checkout by Square. Already enrolled? <a href="/login" class="text-teal-700 underline">Sign in</a>.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===== COURSE (owners) ===== -->
+<div id="course" class="hidden">
+  <section class="bg-gradient-to-br from-navy-900 to-teal-800 text-white">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 py-7 flex items-center justify-between gap-4">
+      <div><p class="text-teal-200 text-xs font-bold uppercase tracking-widest">Your course</p><h1 class="display text-2xl sm:text-3xl font-bold">RDA Exam-Prep Mini-Course</h1></div>
+      <div class="text-right text-sm"><div id="prog-label" class="text-teal-100">0% complete</div><div class="w-32 h-2 bg-white/20 rounded-full mt-1 overflow-hidden"><div id="prog-bar" class="h-full bg-amber-400" style="width:0%"></div></div></div>
+    </div>
+  </section>
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 grid md:grid-cols-[230px_1fr] gap-8">
+    <aside><nav id="lesson-nav" class="space-y-1 md:sticky md:top-6"></nav></aside>
+    <section id="lesson-body" class="min-w-0"></section>
+  </main>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var SB_URL='https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY='sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var SQUARE_APP_ID='sq0idp-wP-0xugR7vYxfPzzYDVt7Q';
+  var SQUARE_LOCATION_ID='2P2ZE3FJNEYTV';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+  var loading=document.getElementById('gate-loading'), sales=document.getElementById('sales'), course=document.getElementById('course');
+  var card=null,payments=null;
+  function show(el){ loading.classList.add('hidden'); sales.classList.add('hidden'); course.classList.add('hidden'); el.classList.remove('hidden'); }
+
+  var LESSONS=[
+    {id:'infection', title:'Infection Control & Sterilization',
+     html:'<p class="text-slate-700 leading-relaxed">This is the most heavily tested area on the board. You protect the patient, yourself, and the next patient.</p><ul class="mt-3 space-y-2 text-slate-700 text-sm list-disc pl-5"><li><b>PPE:</b> gloves, mask, protective eyewear, and a clinic gown.</li><li><b>Surface barriers</b> on anything touched during treatment; disinfect between patients.</li><li><b>Instrument cycle — one direction, dirty &rarr; clean:</b> clean (ultrasonic/washer) &rarr; package &rarr; sterilize (autoclave) &rarr; store.</li><li><b>Verify the autoclave</b> with a weekly <b>biological (spore) test</b> — tape/indicators alone don&rsquo;t prove sterility.</li></ul>',
+     quiz:[
+       {q:'What is the correct order of instrument processing?',opts:['Clean → package → sterilize → store','Sterilize → clean → store → package','Store → package → clean → sterilize'],a:0,why:'Instruments are cleaned, then packaged, then sterilized in the autoclave, then stored.'},
+       {q:'What actually verifies the autoclave is sterilizing?',opts:['A weekly biological (spore) test','Color-change tape only','A visual once-over'],a:0,why:'Spore tests are the standard that proves the load reached sterilization.'},
+       {q:'Instrument flow in the sterilization area should move…',opts:['One direction, dirty to clean','Clean to dirty','Back and forth as needed'],a:0,why:'One-directional dirty-to-clean flow prevents cross-contamination.'}
+     ]},
+    {id:'radiology', title:'Radiology Safety',
+     html:'<p class="text-slate-700 leading-relaxed">Radiation safety is about protecting the patient and the operator while still getting a diagnostic image.</p><ul class="mt-3 space-y-2 text-slate-700 text-sm list-disc pl-5"><li><b>ALARA</b> — As Low As Reasonably Achievable. Keep exposure to the minimum needed.</li><li><b>Patient protection:</b> lead apron <b>with</b> a thyroid collar.</li><li><b>Never hold the sensor/film</b> in the patient&rsquo;s mouth for them — use a holder; the patient or a device holds it.</li><li><b>Operator:</b> stand back and to the side, out of the primary beam.</li></ul>',
+     quiz:[
+       {q:'ALARA stands for…',opts:['As Low As Reasonably Achievable','Always Limit All Radiation Amounts','Assistant Logs All Radiographs Accurately'],a:0,why:'ALARA = keep dose as low as reasonably achievable.'},
+       {q:'Who should hold the sensor in place during exposure?',opts:['A holder device (or the patient) — never the operator','The assistant','The dentist'],a:0,why:'Staff never hold receptors during exposure; use a holder to avoid repeated dose.'},
+       {q:'Correct patient protection for x-rays is…',opts:['Lead apron with thyroid collar','Gloves only','Safety glasses only'],a:0,why:'Lead apron plus thyroid collar shields the patient.'}
+     ]},
+    {id:'chairside', title:'Chairside & Instruments',
+     html:'<p class="text-slate-700 leading-relaxed">Smooth chairside support keeps the procedure efficient and the patient comfortable.</p><ul class="mt-3 space-y-2 text-slate-700 text-sm list-disc pl-5"><li><b>Four-handed dentistry:</b> anticipate and transfer instruments in the transfer zone.</li><li><b>HVE</b> (high-volume evacuation) keeps the field dry and removes aerosol; the <b>saliva ejector</b> is low-volume for comfort.</li><li><b>Mouth mirror:</b> indirect vision, retraction, and reflecting light.</li><li><b>Set up trays in order of use</b> — practice in the Tray Builder.</li></ul>',
+     quiz:[
+       {q:'The HVE (high-volume evacuator) is mainly for…',opts:['Keeping the field dry and removing aerosol/debris','Patient comfort suction only','Polishing teeth'],a:0,why:'HVE removes large volumes of fluid and aerosol to keep the field clear.'},
+       {q:'A mouth mirror is used for…',opts:['Indirect vision, retraction, and reflecting light','Measuring pocket depth','Condensing filling material'],a:0,why:'Those three jobs are the mirror&rsquo;s core uses.'},
+       {q:'Instruments on a tray should be arranged…',opts:['In order of use','Alphabetically','Largest to smallest'],a:0,why:'Order-of-use setup supports smooth four-handed flow.'}
+     ]},
+    {id:'examday', title:'Exam-Day Strategy',
+     html:'<p class="text-slate-700 leading-relaxed">You know the material — now don&rsquo;t let nerves cost you points.</p><ul class="mt-3 space-y-2 text-slate-700 text-sm list-disc pl-5"><li><b>Read the whole question</b> and every option before answering.</li><li><b>Eliminate</b> clearly wrong choices first, then decide.</li><li>When torn, pick the option that&rsquo;s safest for <b>patient safety / infection control</b>.</li><li><b>Rest the night before</b> and do light review — cramming hurts recall.</li></ul>',
+     quiz:[
+       {q:'Best first move on a tough multiple-choice question?',opts:['Eliminate the clearly wrong options','Guess immediately','Skip it forever'],a:0,why:'Eliminating wrong answers improves your odds and clarifies the choice.'},
+       {q:'Best preparation the night before?',opts:['Rest plus light review','Cram all night','Do nothing and wing it'],a:0,why:'Sleep protects memory and focus far more than late cramming.'},
+       {q:'Stuck between two answers and both seem ok?',opts:['Choose the safest patient-safety / infection-control option','Always pick the longest answer','Always pick A'],a:0,why:'When in doubt, the patient-safety-first choice is usually correct on boards.'}
+     ]}
+  ];
+
+  var KEY='pda_examprep_v1';
+  function doneSet(){ try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }catch(e){ return []; } }
+  function markDone(id){ var d=doneSet(); if(d.indexOf(id)<0){ d.push(id); localStorage.setItem(KEY,JSON.stringify(d)); } }
+  function pct(){ return Math.round(doneSet().filter(function(id){return LESSONS.some(function(l){return l.id===id;});}).length/LESSONS.length*100); }
+  function updateProgress(){ var p=pct(); document.getElementById('prog-bar').style.width=p+'%'; document.getElementById('prog-label').textContent=p+'% complete'; }
+
+  var current=0;
+  function renderNav(){
+    var d=doneSet();
+    document.getElementById('lesson-nav').innerHTML=LESSONS.map(function(l,i){
+      var done=d.indexOf(l.id)>=0;
+      return '<button data-i="'+i+'" class="lesson-link '+(done?'done':'')+' w-full text-left flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm '+(i===current?'bg-teal-50 text-teal-800 font-semibold':'text-slate-600 hover:bg-slate-100')+'"><span class="dot inline-block w-4 h-4 rounded-full border-2 border-slate-300 shrink-0"></span>'+(i+1)+'. '+l.title+'</button>';
+    }).join('')+'<a href="/tools/practice-exam" class="block mt-3 px-3 py-2.5 rounded-lg text-sm text-amber-700 font-semibold hover:bg-amber-50">★ Free full practice exam →</a>';
+  }
+  function renderLesson(){
+    var l=LESSONS[current];
+    var quizHtml=l.quiz.map(function(qq,qi){
+      return '<div class="q mt-4 bg-white border border-slate-200 rounded-xl p-4" data-qi="'+qi+'"><p class="font-semibold text-navy-900 text-sm">'+(qi+1)+'. '+qq.q+'</p><div class="mt-2 space-y-2">'+qq.opts.map(function(o,oi){return '<label class="quiz-opt block border-2 border-slate-200 rounded-lg px-3 py-2 text-sm"><input type="radio" name="q'+qi+'" value="'+oi+'" class="mr-2">'+o+'</label>';}).join('')+'</div><p class="why hidden mt-2 text-xs text-slate-600"></p></div>';
+    }).join('');
+    document.getElementById('lesson-body').innerHTML=
+      '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6"><p class="text-xs font-bold uppercase tracking-widest text-teal-700">Lesson '+(current+1)+' of '+LESSONS.length+'</p><h2 class="display text-2xl font-bold text-navy-900 mt-1">'+l.title+'</h2><div class="mt-3">'+l.html+'</div></div>'+
+      '<div class="mt-5"><h3 class="font-bold text-navy-900">Quick check</h3>'+quizHtml+
+      '<button id="grade" class="mt-4 bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full">Check answers</button> <button id="nextL" class="mt-4 hidden bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">'+(current<LESSONS.length-1?'Complete & next →':'Finish course ✓')+'</button>'+
+      '<p id="score" class="mt-3 text-sm font-semibold"></p></div>';
+    renderNav();
+  }
+  function grade(){
+    var l=LESSONS[current], correct=0;
+    l.quiz.forEach(function(qq,qi){
+      var sel=document.querySelector('input[name="q'+qi+'"]:checked');
+      var box=document.querySelector('.q[data-qi="'+qi+'"]');
+      var why=box.querySelector('.why');
+      box.querySelectorAll('.quiz-opt').forEach(function(op){op.classList.remove('correct','wrong');});
+      var opts=box.querySelectorAll('.quiz-opt');
+      if(opts[qq.a]) opts[qq.a].classList.add('correct');
+      if(sel){ var v=+sel.value; if(v===qq.a){correct++;} else if(opts[v]){opts[v].classList.add('wrong');} }
+      why.textContent='Why: '+qq.why; why.classList.remove('hidden');
+    });
+    var sc=document.getElementById('score'); sc.textContent='You got '+correct+' of '+l.quiz.length+' right.'; sc.className='mt-3 text-sm font-semibold '+(correct===l.quiz.length?'text-teal-700':'text-slate-700');
+    document.getElementById('nextL').classList.remove('hidden');
+    markDone(l.id); updateProgress(); renderNav();
+  }
+  function go(i){ current=Math.max(0,Math.min(LESSONS.length-1,i)); renderLesson(); window.scrollTo({top:0,behavior:'smooth'}); }
+  document.addEventListener('click',function(ev){
+    var nav=ev.target.closest && ev.target.closest('.lesson-link'); if(nav){ go(+nav.dataset.i); return; }
+    if(ev.target.id==='grade') grade();
+    if(ev.target.id==='nextL'){ if(current<LESSONS.length-1) go(current+1); else { document.getElementById('lesson-body').innerHTML='<div class="bg-white rounded-2xl border-2 border-teal-600 shadow-xl p-8 text-center"><p class="display text-3xl font-bold text-navy-900">You’re ready! 🎓</p><p class="text-slate-600 mt-2">You’ve finished every lesson. Now prove it on the full mock board.</p><a href="/tools/practice-exam" class="inline-block mt-4 bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Take the free practice exam →</a></div>'; updateProgress(); }}
+    if(ev.target.id==='pay-btn') pay();
+  });
+
+  async function check(){
+    try{
+      var u=(await sb.auth.getUser()).data.user;
+      if(u){
+        var em=document.getElementById('bp-email'); if(em) em.value=u.email||'';
+        var prof=(await sb.from('profiles').select('exam_prep,is_admin,program,first_name').eq('id',u.id).maybeSingle()).data;
+        var nm=document.getElementById('bp-name'); if(nm&&prof&&prof.first_name) nm.value=prof.first_name;
+        var enrolled = prof && prof.program && prof.program!=='preview';
+        if(prof&&(prof.exam_prep===true||prof.is_admin===true||enrolled)){ show(course); go(0); updateProgress(); return; }
+        var pur=(await sb.from('purchases').select('id').eq('contact_email',u.email).eq('product_key','exam_prep_course').limit(1)).data;
+        if(pur&&pur.length){ show(course); go(0); updateProgress(); return; }
+      }
+    }catch(e){}
+    show(sales); initSquare();
+  }
+  async function initSquare(){ try{ if(!window.Square) return; payments=window.Square.payments(SQUARE_APP_ID,SQUARE_LOCATION_ID); card=await payments.card(); await card.attach('#card-container'); document.getElementById('pay-btn').disabled=false; }catch(e){ console.warn('Square init',e); } }
+  var LOCK=false;
+  async function pay(){
+    if(LOCK) return; var btn=document.getElementById('pay-btn'), err=document.getElementById('err'); err.hidden=true;
+    var name=document.getElementById('bp-name').value.trim(), email=document.getElementById('bp-email').value.trim();
+    if(!name||!email){ err.textContent='Please enter your name and email.'; err.hidden=false; return; }
+    if(!card){ err.textContent='Card form is still loading — one second.'; err.hidden=false; return; }
+    LOCK=true; btn.disabled=true; btn.textContent='Processing…';
+    var tok; try{ tok=await card.tokenize(); if(tok.status!=='OK') throw new Error((tok.errors&&tok.errors[0]&&tok.errors[0].message)||'Card was rejected.'); }
+    catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $97 & start'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
+    try{ if(window.PDA&&window.PDA.track) window.PDA.track('begin_checkout',{product:'exam_prep_course',value:97}); }catch(e){}
+    try{
+      var resp=await fetch(SB_URL+'/functions/v1/buy-product',{method:'POST',headers:{'Content-Type':'application/json','apikey':SB_KEY},body:JSON.stringify({product_key:'exam_prep_course',sourceId:tok.token,email:email,name:name})});
+      var out=await resp.json().catch(function(){return{};});
+      if(out.alreadyOwned){ location.reload(); return; }
+      if(resp.ok&&out.ok){ try{ if(window.PDA&&window.PDA.track) window.PDA.track('purchase',{product:'exam_prep_course',value:97,currency:'USD'}); }catch(e){}
+        document.getElementById('buy').innerHTML='<div class="bg-white rounded-2xl border-2 border-teal-600 shadow-xl p-8 text-center"><p class="display text-2xl font-bold text-navy-900">You’re enrolled! 🎉</p><p class="text-slate-600 mt-2">Check <b>'+email.replace(/</g,'&lt;')+'</b> for your one-tap sign-in link. Your course is unlocked here and in Kajabi.</p><a href="/login" class="inline-block mt-4 bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full">Start the course →</a></div>';
+        document.getElementById('buy').scrollIntoView({behavior:'smooth',block:'center'}); return; }
+      throw new Error(out.error||'Something went wrong.');
+    }catch(e){ btn.textContent='⛔ Call (903) 913-6444 if charged'; err.innerHTML='<b>Hold on.</b> '+((e.message||'Checkout error.').replace(/</g,'&lt;'))+' If your card shows a charge, text Amanda at (903) 913-6444.'; err.hidden=false; }
+  }
+  check();
+})();
+</script>
+</body>
+</html>
