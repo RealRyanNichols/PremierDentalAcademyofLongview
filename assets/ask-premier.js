@@ -24,8 +24,13 @@
     } catch (e) {}
   }
 
-  // Knowledge base — keyword matchers + canned responses
+  // Knowledge base — keyword matchers + canned responses (first match wins,
+  // so the most specific matchers go first)
   const KB = [
+    { match: /\b(study pack|cheat sheet|exam prep|exam-prep|mini[- ]?course|board prep|add[- ]?ons?)\b/i,
+      reply: 'Two optional add-ons (not required — tuition already includes the full curriculum and trainers):\n\n📚 **Study Pack — $19**: instrument cheat sheets, tray setups, tooth numbering, abbreviations + a state-board quick-study guide. Instant access.\n\n🎯 **Exam-Prep Mini-Course — $97**: focused Texas state-board prep with lifetime access.\n\nAnd the **practice exam is free** at /tools/practice-exam.',
+      cta: { label: 'Get the Study Pack ($19) →', href: '/study-pack' } },
+
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
       reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a payment plan** — $500 down, then weekly or monthly payments.\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
@@ -39,8 +44,8 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**.',
-      cta: { label: 'Apply →', href: '/apply' } },
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
+      cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
       reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. We help you navigate eligibility — submit a free application and we\'ll get on a call.',

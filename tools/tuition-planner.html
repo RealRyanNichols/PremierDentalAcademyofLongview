@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuition Planner — Build Your Exact Payment Schedule | Premier Dental Academy</title>
+<meta name="description" content="Free tuition planner for the in-person RDA program: $3,000 paid in full, or $3,500 on a plan — $500 down, then pick weekly or monthly and see your exact Friday payment dates. Same math as our checkout. No signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/tuition-planner">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Tuition Planner — Build Your Exact Payment Schedule">
+<meta property="og:description" content="$500 down, then pick weekly or monthly payments (up to 12) and see your exact payment dates before you enroll. Same math as our checkout.">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/tuition-planner">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .seg{cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;border-radius:999px;padding:.5rem 1.1rem;font-size:.9rem;font-weight:600;color:#0f172a;transition:.12s}
+  .seg.on{background:#0d9488;color:#fff;border-color:#0d9488}
+  input[type=range]{accent-color:#0d9488;width:100%}
+</style>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">See your exact payment plan <span class="text-amber-400 italic">before you enroll.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">In-person tuition is <strong class="text-white">$3,000 paid in full</strong>, or <strong class="text-white">$3,500 on a plan</strong> — $500 down, then the $3,000 balance weekly or monthly. Build your schedule below and see every payment date. This is the <em>same math</em> our checkout uses.</p>
+  </div>
+</section>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10" id="tool">
+
+  <!-- Two ways to pay -->
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div class="bg-white rounded-2xl border-2 border-slate-200 p-5">
+      <p class="text-xs font-bold uppercase tracking-widest text-teal-700">Pay in full</p>
+      <div class="display text-3xl font-bold mt-2">$3,000</div>
+      <p class="text-sm text-slate-600 mt-1">One payment today. <strong>Saves $500</strong> vs. the plan — and your certificate requirement is already covered.</p>
+    </div>
+    <div class="bg-white rounded-2xl border-2 border-teal-600 p-5 shadow-sm">
+      <p class="text-xs font-bold uppercase tracking-widest text-teal-700">Payment plan</p>
+      <div class="display text-3xl font-bold mt-2">$3,500 <span class="text-base font-semibold text-slate-500">total</span></div>
+      <p class="text-sm text-slate-600 mt-1"><strong>$500 down today</strong>, then the <strong>$3,000</strong> balance auto-billed weekly (on Fridays) or monthly — up to 12 payments.</p>
+    </div>
+  </div>
+
+  <!-- Plan builder -->
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mt-6">
+    <h2 class="display text-lg font-bold text-navy-900">Build your plan</h2>
+
+    <div class="flex flex-wrap items-center gap-2 mt-4">
+      <span class="text-sm font-semibold text-slate-700 mr-1">Pay the $3,000 balance</span>
+      <button type="button" id="wk" class="seg">Weekly</button>
+      <button type="button" id="mo" class="seg on">Monthly</button>
+    </div>
+
+    <div class="mt-5">
+      <div class="flex items-center justify-between text-sm font-semibold text-slate-700">
+        <label for="count">Number of payments</label>
+        <span id="countlbl" class="text-teal-700">6</span>
+      </div>
+      <input type="range" id="count" min="1" max="12" step="1" value="6" class="mt-2">
+    </div>
+
+    <div class="mt-5">
+      <label for="start" class="block text-sm font-semibold text-slate-700 mb-1.5">When do you want to start paying?</label>
+      <input type="date" id="start" class="border-2 border-slate-200 rounded-lg px-3 py-2 text-sm focus:border-teal-600 focus:outline-none">
+      <p class="text-xs text-slate-500 mt-1.5">Your first payment is the <strong>first Friday</strong> on or after this date. Weekly plans stay on Fridays; monthly plans repeat that day of the month.</p>
+    </div>
+
+    <!-- Result -->
+    <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5">
+      <div class="grid sm:grid-cols-3 gap-3 text-center">
+        <div><div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Down today</div><div class="display text-2xl font-bold mt-0.5">$500</div></div>
+        <div><div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Then</div><div class="display text-2xl font-bold mt-0.5" id="per">—</div></div>
+        <div><div class="text-xs text-slate-500 uppercase tracking-wide font-semibold">Paid in full by</div><div class="display text-2xl font-bold mt-0.5" id="end">—</div></div>
+      </div>
+      <ol id="dates" class="mt-4 grid sm:grid-cols-2 gap-x-6 gap-y-1.5 text-sm text-slate-700"></ol>
+      <p class="text-xs text-slate-500 mt-4">Plan total <strong>$3,500</strong> ($500 down + $3,000 in installments). The last payment absorbs any rounding so the total is exact. Your <strong>certificate is issued once tuition is paid in full</strong> — there's no "finish by graduation" deadline.</p>
+      <div class="flex flex-wrap gap-2 mt-4">
+        <button type="button" id="share-native" class="seg">📤 Share my plan</button>
+        <a id="share-sms" class="seg" href="#">💬 Text it</a>
+        <button type="button" id="share-copy" class="seg">🔗 Copy link</button>
+      </div>
+      <p class="text-xs text-slate-400 mt-2">Sharing sends a link that opens this planner with your exact plan already filled in — handy for whoever's helping with tuition.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="mt-8 bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 text-center">
+    <h2 class="display text-2xl font-bold">Like your plan? Lock it in.</h2>
+    <p class="text-teal-50 mt-2 text-sm max-w-xl mx-auto">You'll pick this exact schedule inside checkout — $500 down holds your seat, and Square auto-bills the rest on the dates you chose. Prefer $0 out-of-pocket? Ask about TWC / WIOA / GI Bill funding.</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="/enroll?plan=in-person" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full">Start with $500 down →</a>
+      <a href="/tools/funding-finder" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full">Check funding options</a>
+      <a href="tel:+19039136444" data-event="call_click" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full">📞 (903) 913-6444</a>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  // Mirrors api/enroll.js buildScheduleV2 EXACTLY — if you change the payment
+  // engine, change this too. Balance split: floor(balance/count), last payment
+  // absorbs the remainder. Dates: first Friday on/after the chosen start, then
+  // +7 days (weekly) or same day-of-month clamped to month end (monthly).
+  var BALANCE = 300000, DOWN = 50000; // cents
+
+  function addDays(iso, days) { var d = new Date(iso + 'T00:00:00Z'); d.setUTCDate(d.getUTCDate() + days); return d.toISOString().slice(0, 10); }
+  function addMonths(iso, months) {
+    var d = new Date(iso + 'T12:00:00Z'), dom = d.getUTCDate();
+    d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + months);
+    var last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+    d.setUTCDate(Math.min(dom, last));
+    return d.toISOString().slice(0, 10);
+  }
+  function firstFridayOnOrAfter(iso) { var d = new Date(iso + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + (5 - d.getUTCDay() + 7) % 7); return d.toISOString().slice(0, 10); }
+
+  function schedule(cadence, count, startIso) {
+    var n = Math.max(1, Math.min(12, Math.round(count)));
+    var firstFriday = firstFridayOnOrAfter(startIso);
+    var per = Math.floor(BALANCE / n);
+    var amounts = []; for (var i = 0; i < n; i++) amounts.push(per);
+    amounts[n - 1] = BALANCE - per * (n - 1);
+    var dates = [];
+    for (var j = 0; j < n; j++) dates.push(cadence === 'monthly' ? addMonths(firstFriday, j) : addDays(firstFriday, j * 7));
+    return { amounts: amounts, dates: dates };
+  }
+
+  var fmt$ = function (c) { return '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 }); };
+  var fmtDate = function (iso) { var d = new Date(iso + 'T12:00:00Z'); return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); };
+  var fmtDateLong = function (iso) { var d = new Date(iso + 'T12:00:00Z'); return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }); };
+
+  var cadence = 'monthly';
+  var wk = document.getElementById('wk'), mo = document.getElementById('mo');
+  var count = document.getElementById('count'), countlbl = document.getElementById('countlbl');
+  var start = document.getElementById('start');
+  var per = document.getElementById('per'), end = document.getElementById('end'), list = document.getElementById('dates');
+
+  var today = new Date(); // local "today" for the default start date
+  start.value = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  start.min = start.value;
+
+  // Shared links pre-fill the plan (?cadence=weekly&count=8&start=YYYY-MM-DD)
+  try {
+    var q = new URLSearchParams(location.search);
+    if (q.get('cadence') === 'weekly') { cadence = 'weekly'; wk.classList.add('on'); mo.classList.remove('on'); }
+    var qc = parseInt(q.get('count'), 10);
+    if (qc >= 1 && qc <= 12) count.value = qc;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(q.get('start') || '') && q.get('start') >= start.min) start.value = q.get('start');
+  } catch (e) {}
+
+  function render() {
+    var n = parseInt(count.value, 10);
+    countlbl.textContent = n + (n === 1 ? ' payment' : ' payments') + (cadence === 'weekly' ? ' · weekly' : ' · monthly');
+    var s = schedule(cadence, n, start.value || start.min);
+    var unit = cadence === 'weekly' ? '/wk' : '/mo';
+    per.textContent = n === 1 ? fmt$(s.amounts[0]) + ' once' : fmt$(s.amounts[0]) + unit;
+    end.textContent = fmtDate(s.dates[s.dates.length - 1]);
+    var html = '';
+    for (var i = 0; i < s.dates.length; i++) {
+      html += '<li class="flex justify-between border-b border-slate-100 pb-1"><span>' + (i + 1) + '. ' + fmtDateLong(s.dates[i]) + '</span><strong>' + fmt$(s.amounts[i]) + '</strong></li>';
+    }
+    list.innerHTML = html;
+    trackSoon(n);
+  }
+
+  // Track at most one event per settled configuration (slider drags collapse).
+  var trackTimer = null, firstRender = true;
+  function trackSoon(n) {
+    if (firstRender) { firstRender = false; return; }
+    clearTimeout(trackTimer);
+    trackTimer = setTimeout(function () {
+      try { if (window.PDA && window.PDA.track) window.PDA.track('tuition_planner_built', { cadence: cadence, count: n }); } catch (e) {}
+    }, 800);
+  }
+
+  wk.addEventListener('click', function () { cadence = 'weekly'; wk.classList.add('on'); mo.classList.remove('on'); render(); });
+  mo.addEventListener('click', function () { cadence = 'monthly'; mo.classList.add('on'); wk.classList.remove('on'); render(); });
+  count.addEventListener('input', render);
+  start.addEventListener('change', render);
+  render();
+
+  // ── Share: link opens this planner with the chosen plan pre-filled ──
+  function planUrl() {
+    return 'https://www.premierdentalacademyoflongview.com/tools/tuition-planner?cadence=' + cadence + '&count=' + count.value + '&start=' + (start.value || start.min);
+  }
+  function planText() {
+    var n = parseInt(count.value, 10);
+    var s = schedule(cadence, n, start.value || start.min);
+    return 'My PDA dental-assistant tuition plan: $500 down, then ' + n + ' ' + cadence + ' payment' + (n === 1 ? '' : 's') + ' of ' + fmt$(s.amounts[0]) + ' — paid in full by ' + fmtDate(s.dates[s.dates.length - 1]) + '. See it here: ';
+  }
+  function trackShare(kind) { try { if (window.PDA && window.PDA.track) window.PDA.track('tuition_planner_share', { kind: kind }); } catch (e) {} }
+  document.getElementById('share-native').addEventListener('click', function () {
+    trackShare('native');
+    if (navigator.share) { navigator.share({ title: 'My PDA tuition plan', text: planText(), url: planUrl() }).catch(function () {}); }
+    else { document.getElementById('share-copy').click(); }
+  });
+  document.getElementById('share-sms').addEventListener('click', function (e) {
+    trackShare('sms');
+    e.currentTarget.href = 'sms:?&body=' + encodeURIComponent(planText() + planUrl());
+  });
+  document.getElementById('share-copy').addEventListener('click', function () {
+    trackShare('copy');
+    var btn = document.getElementById('share-copy');
+    (navigator.clipboard ? navigator.clipboard.writeText(planUrl()) : Promise.reject()).then(
+      function () { btn.textContent = '✅ Copied'; setTimeout(function () { btn.textContent = '🔗 Copy link'; }, 1600); },
+      function () { window.prompt('Copy this link:', planUrl()); }
+    );
+  });
+})();
+</script>
+</body>
+</html>

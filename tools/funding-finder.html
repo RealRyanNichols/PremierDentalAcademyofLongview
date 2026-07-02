@@ -108,7 +108,7 @@ tailwind.config = { theme: { extend: {
       matches.push(card('💛', 'Scholarship / hardship help', 'We never want money to be the only thing in your way. Ask Amanda about scholarship or hardship options for parents and students rebuilding. <span class="text-slate-400">[Amanda to confirm details]</span>', false));
     }
     // Always-available options
-    matches.push(card('💳', 'Simple payment plan', '$500 down holds your seat, then simple weekly or monthly payments (up to 12) — your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay.', ans.plan === 'Yes'));
+    matches.push(card('💳', 'Simple payment plan', '$500 down holds your seat, then simple weekly or monthly payments (up to 12) — your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
     matches.push(card('💻', 'Online for $397', 'If upfront cost is tight, the 100% online program is a flat $397 (regularly $997) and you can start any day.', false));
 
     var elig = ans.hsgrad === 'No'

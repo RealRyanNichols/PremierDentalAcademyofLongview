@@ -110,8 +110,26 @@
       { name: "Student Hub",                     path: "/portal",              what: "Enrolled-student portal" },
       { name: "Flashcards",                      path: "/tools/flashcards",    what: "Terminology study" },
       { name: "Resume Builder",                  path: "/tools/resume-builder",what: "RDA resume tool" },
-      { name: "Salary Calculator",               path: "/salary",              what: "East Texas RDA pay estimate" }
+      { name: "Salary Calculator",               path: "/salary",              what: "East Texas RDA pay estimate" },
+      { name: "Tuition Planner",                 path: "/tools/tuition-planner", what: "Build your exact $500-down payment schedule (same math as checkout)" }
     ],
+
+    // ── The offer: what tuition includes + optional paid add-ons ────────────
+    // REAL ONLY. Every bullet below already appears on live pages (enroll
+    // format cards); add-ons are live Square products with their own pages.
+    offer: {
+      included: [
+        "Live instruction (Longview campus) or same curriculum fully online",
+        "Full Practice Pro + ChairSide trainer access",
+        "Infection control + radiology training",
+        "PDA Certificate of Completion",
+        "Job placement help with East Texas offices"
+      ],
+      addOns: [
+        { name: "Dental Assistant Study Pack",  path: "/study-pack",        price: 19, priceDisplay: "$19", what: "Instrument cheat sheets, tray setups, tooth numbering, abbreviations + state-board quick-study guide" },
+        { name: "RDA Exam-Prep Mini-Course",    path: "/exam-prep-course",  price: 97, priceDisplay: "$97", what: "Walk into the state board ready — lifetime access" }
+      ]
+    },
 
     texasRda: {
       requiredCourses: ["Radiology", "Jurisprudence", "Infection control"],
