@@ -109,6 +109,7 @@ tailwind.config = { theme: { extend: {
     }
     // Always-available options
     matches.push(card('💳', 'Simple payment plan', '$500 down holds your seat, then simple weekly or monthly payments (up to 12) — your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
+    matches.push(card('🤝', 'Sponsor-a-Student program', 'Local businesses sponsor students through school — a full seat or part of one. Free to apply, and nothing goes public without your OK. <a href="/sponsor-a-student" class="underline font-semibold text-teal-700">Apply for a sponsorship →</a>', false));
     matches.push(card('💻', 'Online for $397', 'If upfront cost is tight, the 100% online program is a flat $397 (regularly $997) and you can start any day.', false));
 
     var elig = ans.hsgrad === 'No'

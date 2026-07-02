@@ -47,8 +47,12 @@
       reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
       cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
+    { match: /\b(sponsor|sponsorship|adopt a student|can'?t afford|cant afford)\b/i,
+      reply: '**Sponsor a Student** is our local "adopt a student" program:\n\n🏢 **Businesses** sponsor a student\'s tuition — a full seat ($3,000) or any part of one. We invoice you, every dollar goes to tuition, and we recognize your business publicly (with your permission).\n\n🌱 **Students** who can\'t afford class can apply for a sponsorship — free, no obligation, and nothing goes public without your written OK.',
+      cta: { label: 'See the program →', href: '/sponsor-a-student' } },
+
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
-      reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. We help you navigate eligibility — submit a free application and we\'ll get on a call.',
+      reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding** — and local businesses can **sponsor a student\'s tuition** through our Sponsor-a-Student program. We help you navigate eligibility — submit a free application and we\'ll get on a call.',
       cta: { label: 'Apply for funding →', href: '/apply' } },
 
     { match: /\b(salary|pay|earn|how much.*make|income|wage)\b/i,

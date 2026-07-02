@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sponsor a Student — Adopt a Future Dental Assistant | Premier Dental Academy of Longview</title>
+<meta name="description" content="Local businesses sponsor East Texas students through dental assistant school — a three-way win: the student trains and gets hired, your business invests in the local workforce, and Longview gets another working RDA. Sponsor a full seat or any part of one.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/sponsor-a-student">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sponsor a Student — Adopt a Future Dental Assistant">
+<meta property="og:description" content="A three-way win for East Texas: a student gets trained, your business invests in the local workforce, and a dental office gets a job-ready RDA. Sponsor a full seat or any part of one.">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/sponsor-a-student">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Sponsor a Student · Longview, TX</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Adopt a future <span class="text-amber-400 italic">dental assistant.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Some of the hardest-working people in East Texas want to become Registered Dental Assistants — they just can't cover tuition. Your business can put one of them through school. She trains, graduates, and goes to work. That's the whole idea.</p>
+    <div class="mt-7 flex flex-wrap gap-3 justify-center">
+      <a href="#sponsor" data-event="sponsor_cta_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-7 py-3.5 rounded-full shadow-md">🤝 Sponsor a student →</a>
+      <a href="#apply-help" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-full">I need help paying for class</a>
+    </div>
+    <p class="text-teal-100 text-sm mt-5">A full seat is <strong class="text-white">$3,000</strong> — or sponsor any part of one. Every dollar goes to tuition.</p>
+  </div>
+</section>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+
+  <!-- Three-way win -->
+  <section class="text-center" aria-labelledby="win-h">
+    <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">Why it works</p>
+    <h2 id="win-h" class="display text-3xl sm:text-4xl font-bold mt-2">One sponsorship. <span class="text-amber-500 italic">Three wins.</span></h2>
+    <div class="grid sm:grid-cols-3 gap-4 mt-8 text-left">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-3xl">👩‍⚕️</div>
+        <h3 class="font-bold text-lg mt-2">The student wins</h3>
+        <p class="text-sm text-slate-600 mt-1">She gets into class without the money standing in her way — trains hands-on, earns her certificate, and starts a real career in months, not years.</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-3xl">🏢</div>
+        <h3 class="font-bold text-lg mt-2">Your business wins</h3>
+        <p class="text-sm text-slate-600 mt-1">You invest in the local workforce and we recognize your business publicly (with your permission) as her sponsor. We invoice you and provide full documentation — many businesses treat sponsorships as a business expense; ask your tax professional.</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="text-3xl">🦷</div>
+        <h3 class="font-bold text-lg mt-2">East Texas wins</h3>
+        <p class="text-sm text-slate-600 mt-1">Dental offices here hire assistants every cohort. One sponsorship turns a neighbor who needed a shot into a trained, working RDA in the community.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="mt-14" aria-labelledby="how-h">
+    <div class="text-center mb-8">
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">How it works</p>
+      <h2 id="how-h" class="display text-3xl font-bold mt-2">Like an angel tree — <span class="text-amber-500 italic">for careers.</span></h2>
+    </div>
+    <div class="grid sm:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">1</div>
+        <h3 class="font-bold mt-3">Students raise their hand</h3>
+        <p class="text-sm text-slate-600 mt-1">People who want to take the class but can't afford tuition apply below. We talk to every one of them, and — with their written consent — create a short, first-name-only profile.</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">2</div>
+        <h3 class="font-bold mt-3">You pick a student</h3>
+        <p class="text-sm text-slate-600 mt-1">Browse the students waiting below (or let Amanda match you). Sponsor a full seat — <strong>$3,000</strong> — or any part of one. We invoice your business directly; every dollar goes to that student's tuition.</p>
+      </div>
+      <div class="bg-white rounded-2xl border border-slate-200 p-6">
+        <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">3</div>
+        <h3 class="font-bold mt-3">She trains &amp; goes to work</h3>
+        <p class="text-sm text-slate-600 mt-1">Your student enrolls in the next cohort, trains hands-on at the Longview campus, and we help her interview with East Texas offices when she finishes. You'll know the ending of this story.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Students waiting (public, anonymized, consent-only) -->
+  <section id="students-waiting" class="mt-14 scroll-mt-6" aria-labelledby="waiting-h">
+    <div class="text-center mb-6">
+      <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">The board</p>
+      <h2 id="waiting-h" class="display text-3xl font-bold mt-2">Students waiting for a <span class="text-amber-500 italic">sponsor.</span></h2>
+      <p class="text-slate-600 text-sm mt-2 max-w-xl mx-auto">First names only, listed with each student's written permission. Want the full story on any of them? Call Amanda — she knows every one personally.</p>
+    </div>
+    <div id="profiles-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <div id="profiles-empty" class="hidden bg-white border border-slate-200 rounded-2xl p-8 text-center">
+      <div class="text-4xl">🌱</div>
+      <p class="font-bold mt-2">Profiles are going up now.</p>
+      <p class="text-sm text-slate-600 mt-1 max-w-md mx-auto">Students are applying and Amanda is talking with each one before they're listed. Don't want to wait? <a href="tel:+19039136444" class="text-teal-700 font-semibold underline">Call (903) 913-6444</a> and she'll match your business with a student today.</p>
+    </div>
+  </section>
+
+  <!-- Business sponsor form -->
+  <section id="sponsor" class="mt-14 scroll-mt-6" aria-labelledby="sponsor-h">
+    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-sm overflow-hidden">
+      <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-white px-6 py-5">
+        <h2 id="sponsor-h" class="display text-2xl font-bold">🤝 For businesses: sponsor a student</h2>
+        <p class="text-teal-50 text-sm mt-1">Tell us who you are and how you'd like to help. Amanda will call you back within 1 business day with students who are ready to start.</p>
+      </div>
+      <form id="sponsor-form" class="p-6 grid sm:grid-cols-2 gap-4 text-sm">
+        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+        <label class="block">
+          <span class="font-semibold text-slate-700">Business name *</span>
+          <input name="business" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Contact name *</span>
+          <input name="contact" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Email *</span>
+          <input name="email" type="email" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Phone</span>
+          <input name="phone" type="tel" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="font-semibold text-slate-700">How would you like to sponsor?</span>
+          <select name="level" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+            <option value="full">Full seat — $3,000 (one student, tuition covered)</option>
+            <option value="partial">Part of a seat — any amount helps ($500 covers a down payment)</option>
+            <option value="multiple">More than one student</option>
+            <option value="unsure" selected>Not sure yet — call me and let's talk</option>
+          </select>
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="font-semibold text-slate-700">Anything we should know? (optional)</span>
+          <textarea name="notes" rows="2" maxlength="1000" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="e.g. we'd like to sponsor someone from Kilgore, we're a dental office looking to grow our own assistant…"></textarea>
+        </label>
+        <div class="sm:col-span-2">
+          <button type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Send — have Amanda call me →</button>
+          <div id="sponsor-msg" class="hidden mt-2 font-semibold"></div>
+        </div>
+      </form>
+    </div>
+    <div class="bg-slate-100 border border-slate-200 rounded-xl px-5 py-4 mt-4 text-xs text-slate-600 leading-relaxed">
+      <strong>About the paperwork:</strong> Premier Dental Academy is a private career school (not a 501(c)(3) charity), so a sponsorship is not a charitable donation. We invoice your business directly, every dollar is applied to your student's tuition, and you get full documentation. Many local businesses treat sponsorships as an ordinary business expense — like advertising or workforce development — and with your permission we recognize your business publicly as the sponsor. <strong>Ask your CPA or tax professional</strong> how a sponsorship fits your situation; we can't give tax advice.
+    </div>
+  </section>
+
+  <!-- Student application form -->
+  <section id="apply-help" class="mt-14 scroll-mt-6" aria-labelledby="apply-help-h">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div class="bg-slate-900 text-white px-6 py-5">
+        <h2 id="apply-help-h" class="display text-2xl font-bold">🌱 For students: apply for a sponsorship</h2>
+        <p class="text-slate-300 text-sm mt-1">If you want to become a dental assistant but tuition is the thing in your way, tell us. There's no fee to apply and no obligation — Amanda reads every single one.</p>
+      </div>
+      <form id="student-form" class="p-6 grid sm:grid-cols-2 gap-4 text-sm">
+        <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+        <label class="block">
+          <span class="font-semibold text-slate-700">First name *</span>
+          <input name="first_name" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Last name *</span>
+          <input name="last_name" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Email *</span>
+          <input name="email" type="email" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Phone *</span>
+          <input name="phone" type="tel" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Your town</span>
+          <input name="city" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Longview, Kilgore, Tyler…" />
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">When could you start?</span>
+          <select name="start_when" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>As soon as possible</option>
+            <option>In the next 1–2 months</option>
+            <option>Later this year</option>
+          </select>
+        </label>
+        <label class="block sm:col-span-2">
+          <span class="font-semibold text-slate-700">Tell us your story (a few sentences) *</span>
+          <textarea name="story" rows="3" required maxlength="1500" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Why dental assisting? What's standing in your way? Anything you want a sponsor to know."></textarea>
+          <span class="text-xs text-slate-500">Nothing goes public without your written OK. If you're a match, we'll ask before listing a first-name-only profile on this page.</span>
+        </label>
+        <div class="sm:col-span-2">
+          <button type="submit" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Apply for sponsorship — free →</button>
+          <div id="student-msg" class="hidden mt-2 font-semibold"></div>
+        </div>
+      </form>
+    </div>
+    <p class="text-xs text-slate-500 mt-3 text-center">Also worth checking: <a href="/tools/funding-finder" class="text-teal-700 underline">TWC / WIOA / veterans funding</a> and the <a href="/tools/tuition-planner" class="text-teal-700 underline">$500-down payment plan</a> — lots of students combine them.</p>
+  </section>
+
+  <!-- FAQ -->
+  <section class="mt-14 max-w-3xl mx-auto" aria-labelledby="sp-faq">
+    <div class="text-center mb-6">
+      <h2 id="sp-faq" class="display text-3xl font-bold">Common questions, <span class="text-amber-500 italic">honest answers.</span></h2>
+    </div>
+    <div class="space-y-3">
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">How much does it cost to sponsor a student?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">A full seat is <strong>$3,000</strong> (the pay-in-full tuition). You can also sponsor part of a seat — <strong>$500</strong> covers a student's down payment and gets her started, and any amount is applied straight to tuition.</div>
+      </details>
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Is a sponsorship tax-deductible?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">We can't give tax advice. PDA is a private career school, not a 501(c)(3), so this isn't a charitable donation — but many local businesses treat sponsorships as an ordinary business expense (advertising / workforce development), especially with the public recognition we provide. We invoice your business and give you full documentation; <strong>ask your CPA</strong> how it fits your situation.</div>
+      </details>
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Do I pick the student?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Your call. Browse the board above and pick someone, or tell Amanda what matters to you (your town, a dental office growing its own assistant, a single parent getting a restart) and she'll match you. She personally talks with every student before they're listed.</div>
+      </details>
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Where does the money go?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">100% to that student's tuition at Premier Dental Academy — we invoice you directly and apply it to her account. If your student can't finish, we'll talk to you before anything else happens with the funds.</div>
+      </details>
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">I'm a student — is this a loan? What's the catch?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Not a loan, and no catch: a sponsor pays some or all of your tuition because they want another trained dental assistant in East Texas. Your part is showing up and doing the work. Applying is free, and nothing about you is made public without your written OK.</div>
+      </details>
+    </div>
+  </section>
+
+  <!-- CTA band -->
+  <section class="mt-14 bg-gradient-to-b from-navy-900 to-navy-800 text-white rounded-3xl px-6 py-10 text-center">
+    <h2 class="display text-2xl sm:text-3xl font-bold">Faster than a form? <span class="text-amber-400 italic">Call Amanda.</span></h2>
+    <p class="text-slate-300 mt-2 max-w-xl mx-auto text-sm">She runs the school, knows every student on this page, and can set up a sponsorship in one phone call.</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="tel:+19039136444" data-event="call_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full">📞 Call (903) 913-6444</a>
+      <a href="sms:+19039136444" data-event="text_click" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-6 py-3 rounded-full">💬 Text us</a>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var sb = null;
+  try { sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'); } catch (e) {}
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); };
+  var money = function (c) { return '$' + Math.round(c / 100).toLocaleString('en-US'); };
+
+  // UTM attribution folded into the lead message (same pattern as /apply)
+  function attribution() {
+    var a = {};
+    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
+    try {
+      var p = new URLSearchParams(location.search);
+      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
+    } catch (e) {}
+    try { if (!a.referrer) a.referrer = document.referrer || ''; } catch (e) {}
+    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
+    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
+  }
+
+  function wireForm(formId, msgId, buildLead, eventName) {
+    var form = document.getElementById(formId);
+    var msg = document.getElementById(msgId);
+    if (!form) return;
+    form.onsubmit = async function (e) {
+      e.preventDefault();
+      var fd = new FormData(form);
+      if ((fd.get('website') || '').trim()) { form.reset(); return; } // honeypot
+      var btn = form.querySelector('button[type=submit]');
+      btn.disabled = true;
+      var lead = buildLead(fd);
+      var saved = false;
+      if (sb) {
+        try { saved = !(await sb.from('leads').insert(lead)).error; } catch (err) {}
+      }
+      if (!saved) {
+        try {
+          var pending = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+          pending.push(Object.assign({}, lead, { created_at: new Date().toISOString() }));
+          localStorage.setItem('pda.pendingLeads', JSON.stringify(pending));
+        } catch (e2) {}
+      }
+      try { if (window.PDA && window.PDA.track) window.PDA.track(eventName, { saved: saved }); } catch (e3) {}
+      btn.disabled = false;
+      msg.classList.remove('hidden');
+      msg.textContent = '✓ Got it — Amanda will reach out within 1 business day. Faster: call or text (903) 913-6444.';
+      msg.className = 'mt-2 font-semibold text-emerald-700';
+      form.reset();
+    };
+  }
+
+  wireForm('sponsor-form', 'sponsor-msg', function (fd) {
+    var parts = String(fd.get('contact') || '').trim().split(/\s+/);
+    var LEVELS = { full: 'Full seat ($3,000)', partial: 'Partial', multiple: 'Multiple students', unsure: 'Not sure — call me' };
+    return {
+      first_name: parts[0] || '',
+      last_name: parts.slice(1).join(' ') || null,
+      email: fd.get('email') || null,
+      phone: fd.get('phone') || null,
+      interest_path: '/sponsor-a-student',
+      source: 'sponsor-business',
+      message: [
+        'BUSINESS SPONSOR — wants to sponsor a student',
+        'Company: ' + (fd.get('business') || ''),
+        'Level: ' + (LEVELS[fd.get('level')] || fd.get('level') || ''),
+        fd.get('notes') ? 'Notes: ' + fd.get('notes') : '',
+        attribution(),
+      ].filter(Boolean).join(' · '),
+    };
+  }, 'sponsor_business_submit');
+
+  wireForm('student-form', 'student-msg', function (fd) {
+    return {
+      first_name: fd.get('first_name'),
+      last_name: fd.get('last_name') || null,
+      email: fd.get('email') || null,
+      phone: fd.get('phone') || null,
+      interest_path: '/sponsor-a-student',
+      source: 'sponsor-student',
+      message: [
+        'SPONSORSHIP APPLICATION — student needs tuition help',
+        fd.get('city') ? 'City: ' + fd.get('city') : '',
+        fd.get('start_when') ? 'Start: ' + fd.get('start_when') : '',
+        'Story: ' + (fd.get('story') || ''),
+        attribution(),
+      ].filter(Boolean).join(' · '),
+    };
+  }, 'sponsor_student_submit');
+
+  // ── The board: approved, consented, anonymized profiles only ──
+  (async function () {
+    var grid = document.getElementById('profiles-grid');
+    var empty = document.getElementById('profiles-empty');
+    var rows = [];
+    if (sb) {
+      try {
+        var res = await sb.from('sponsor_profiles')
+          .select('display_name, story, city, goal_cents, raised_cents, status')
+          .in('status', ['approved', 'sponsored'])
+          .order('created_at', { ascending: false }).limit(12);
+        rows = res.data || [];
+      } catch (e) {}
+    }
+    if (!rows.length) { empty.classList.remove('hidden'); return; }
+    grid.innerHTML = rows.map(function (r) {
+      var pct = r.goal_cents > 0 ? Math.min(100, Math.round((r.raised_cents / r.goal_cents) * 100)) : 0;
+      var sponsored = r.status === 'sponsored';
+      return '<div class="bg-white rounded-2xl border ' + (sponsored ? 'border-emerald-300' : 'border-slate-200') + ' p-5">'
+        + '<div class="flex items-center gap-2">'
+        + '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold grid place-items-center">' + esc((r.display_name || '?')[0]) + '</div>'
+        + '<div><div class="font-bold">' + esc(r.display_name) + '</div>' + (r.city ? '<div class="text-xs text-slate-500">' + esc(r.city) + ', TX</div>' : '') + '</div>'
+        + (sponsored ? '<span class="ml-auto text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Sponsored ✓</span>' : '')
+        + '</div>'
+        + '<p class="text-sm text-slate-700 mt-3">' + esc(r.story) + '</p>'
+        + (!sponsored
+          ? '<div class="mt-4"><div class="flex justify-between text-xs font-semibold text-slate-600 mb-1"><span>' + money(r.raised_cents) + ' raised</span><span>' + money(r.goal_cents) + ' goal</span></div>'
+            + '<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-teal-500 to-cyan-500" style="width:' + pct + '%"></div></div>'
+            + '<a href="#sponsor" data-event="sponsor_profile_click" class="inline-block mt-3 text-sm font-bold text-teal-700 hover:underline">Sponsor ' + esc((r.display_name || '').split(' ')[0]) + ' →</a></div>'
+          : '')
+        + '</div>';
+    }).join('');
+  })();
+})();
+</script>
+</body>
+</html>
