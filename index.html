@@ -107,7 +107,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 with payment plans available. Online is a limited-time $397 one-time payment (regularly $997) — non-refundable but transferable to In-Person credit if you switch. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 with payment plans available. Online is a limited-time $397 one-time payment (regularly $997) — non-refundable but transferable to In-Person credit if you switch. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them." }
       },
       {
         "@type": "Question",
@@ -391,7 +391,7 @@
           <div class="text-right text-sm text-slate-400" id="pdacalc-count">6 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot →</a>
-        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.</p>
+        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. WIOA funding through Workforce Solutions East Texas.</p>
       </div>
     </div>
   </div>
@@ -412,7 +412,7 @@
   var ipDown=document.getElementById("pdacalc-ip-down"),ipSub=document.getElementById("pdacalc-ip-sub"),note=document.getElementById("pdacalc-note"),totLbl=document.getElementById("pdacalc-totlbl");
   if(ipDown)ipDown.textContent="$"+IP.down;
   if(ipSub)ipSub.textContent=NEW?("$"+IP.planTotal.toLocaleString()+" plan / $"+IP.pif.toLocaleString()+" paid in full"):("$"+IP.planTotal.toLocaleString()+" total · weekly or monthly");
-  if(note)note.textContent=NEW?"Plans up to 12 months. Can't sit for the state board until paid in full. Workforce funding · GI Bill accepted.":"Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.";
+  if(note)note.textContent=NEW?"Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.":"Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. WIOA funding through Workforce Solutions East Texas.";
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
   function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
@@ -667,7 +667,7 @@
       <a href="/tools/funding-finder" data-event="tool_card_click" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 block">
         <div class="text-3xl">💰</div>
         <h3 class="display text-lg font-bold text-navy-900 mt-2">Can you get it paid for?</h3>
-        <p class="text-sm text-slate-600 mt-1">See what funding could cover your tuition — Workforce Solutions, veterans, payment plans.</p>
+        <p class="text-sm text-slate-600 mt-1">See what funding could cover your tuition — WIOA / Workforce Solutions and payment plans.</p>
         <span class="text-teal-700 font-semibold text-sm mt-3 inline-block">Open tool →</span>
       </a>
       <a href="/tools/take-home-pay" data-event="tool_card_click" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 block">
@@ -895,7 +895,7 @@
         <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-full shadow-md">Enroll Online — $397 →</a>
       </div>
     </div>
-    <p class="text-center text-xs text-slate-500 mt-8">Eligible for Texas Workforce Solutions funding · Veterans benefits accepted · Payment plans available</p>
+    <p class="text-center text-xs text-slate-500 mt-8">May qualify for WIOA funding through Workforce Solutions · Payment plans available</p>
     <div class="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-600 font-medium">
       <span>🔒 Secure Square checkout</span>
       <span>💳 Klarna · Afterpay · Affirm</span>
@@ -946,7 +946,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($3,000)</strong> — payment plans available. <strong>Online is on sale right now: $397 one-time</strong> (regularly $997) — non-refundable at this price, but if it isn't right for you we'll transfer the full $397 as credit toward the In-Person program. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($3,000)</strong> — payment plans available. <strong>Online is on sale right now: $397 one-time</strong> (regularly $997) — non-refundable at this price, but if it isn't right for you we'll transfer the full $397 as credit toward the In-Person program. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
