@@ -136,7 +136,7 @@
     <div class="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
       <p class="text-[12.5px] uppercase tracking-[0.18em] text-teal-300 font-bold" data-aos="fade-up">In-person class calendar</p>
       <h1 class="display text-4xl sm:text-6xl font-semibold mt-4 leading-[1.05]" data-aos="fade-up">Pick your <span class="text-amber-400 italic">start date.</span></h1>
-      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$200 down</strong>.</p>
+      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$500 down</strong>.</p>
       <div class="mt-9" data-aos="fade-up" data-aos-delay="150">
         <a href="#open-dates" data-event="calendar_see_dates_click" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-lg transition">See open dates ↓</a>
       </div>
@@ -160,8 +160,8 @@
       <div class="step-card accent" data-aos="fade-up" data-aos-delay="100">
         <span class="step-connect hidden md:block">→</span>
         <span class="step-num">2</span>
-        <h3 class="display text-xl font-bold text-slate-900 mt-4">Reserve with $200 down</h3>
-        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Tap <strong>“Reserve seat”</strong> to check out securely. $200 holds your spot — then simple <strong>weekly or monthly</strong> payments. No big lump sum.</p>
+        <h3 class="display text-xl font-bold text-slate-900 mt-4">Reserve with $500 down</h3>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Tap <strong>“Reserve seat”</strong> to check out securely. $500 holds your spot — then simple <strong>weekly or monthly</strong> payments. No big lump sum.</p>
       </div>
       <div class="step-card" data-aos="fade-up" data-aos-delay="200">
         <span class="step-num">3</span>
@@ -224,7 +224,7 @@
           </li>
           <li class="walk-step">
             <span class="walk-dot">2</span>
-            <div><p class="font-bold text-slate-900">Pay your $200 deposit securely</p><p class="text-slate-600 text-sm mt-0.5">Checkout runs on Square — encrypted, no account required. That $200 locks your seat in the class.</p></div>
+            <div><p class="font-bold text-slate-900">Pay your $500 deposit securely</p><p class="text-slate-600 text-sm mt-0.5">Checkout runs on Square — encrypted, no account required. That $200 locks your seat in the class.</p></div>
           </li>
           <li class="walk-step">
             <span class="walk-dot">3</span>
@@ -279,7 +279,7 @@ const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.c
 const fmtMonth = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 const fmtDate  = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtShort = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-const PRICE = { in_person: '$1,997', online: '$397' };
+const PRICE = { in_person: '$3,000', online: '$397' };
 const ICON  = { in_person: '🏫', online: '💻' };
 const LABEL = { in_person: 'In-Person',  online: 'Online' };
 

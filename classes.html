@@ -181,7 +181,7 @@ window.AOS && AOS.init({ duration: 500, once: true });
   // Pricing comes from the single source of truth (assets/site-facts.js → window.PDA_FACTS).
   // Literals remain only as a fallback so the page still renders if that script fails to load.
   const F = (typeof window !== 'undefined' && window.PDA_FACTS) ? window.PDA_FACTS : {};
-  const IP_PRICE = (((F.pricing || {}).inPerson || {}).totalDisplay) || '$1,997';
+  const IP_PRICE = (((F.pricing || {}).inPerson || {}).totalDisplay) || '$3,000';
   const ON_PRICE = (((F.pricing || {}).online   || {}).priceDisplay) || '$397';
   const PROGRAMS = {
     foundation:   { label: 'In-Person', price: IP_PRICE, dur: 'At our Longview campus' },

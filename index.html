@@ -21,7 +21,7 @@
     "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
-    "priceRange": "$397 – $1,997",
+    "priceRange": "$397 – $3,000",
     "image": "https://premierdentalacademyoflongview.com/assets/og-cover.png",
     "logo": "https://premierdentalacademyoflongview.com/assets/og-cover.png",
     "address": {
@@ -42,7 +42,7 @@
       "@type": "OfferCatalog",
       "name": "RDA Training Programs",
       "itemListElement": [
-        { "@type": "Offer", "name": "PDA RDA Program — In-Person",  "price": "1997", "priceCurrency": "USD" },
+        { "@type": "Offer", "name": "PDA RDA Program — In-Person",  "price": "3000", "priceCurrency": "USD" },
         { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "397",  "priceCurrency": "USD" }
       ]
     }
@@ -58,7 +58,7 @@
       "name": "PDA RDA Program — In-Person",
       "description": "Registered Dental Assistant training at our Longview, TX campus. Live instructor-led classes with hands-on equipment and practice management software.",
       "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview", "sameAs": "https://premierdentalacademyoflongview.com" },
-      "offers": { "@type": "Offer", "price": "1997", "priceCurrency": "USD", "category": "Tuition" },
+      "offers": { "@type": "Offer", "price": "3000", "priceCurrency": "USD", "category": "Tuition" },
       "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "OnSite", "location": "Longview, TX" },
       "educationalCredentialAwarded": "PDA Certificate of Completion",
       "occupationalCategory": "31-9091"
@@ -107,7 +107,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $1,997 with payment plans available. Online is a limited-time $397 one-time payment (regularly $997) — non-refundable but transferable to In-Person credit if you switch. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 with payment plans available. Online is a limited-time $397 one-time payment (regularly $997) — non-refundable but transferable to In-Person credit if you switch. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding." }
       },
       {
         "@type": "Question",
@@ -117,7 +117,7 @@
       {
         "@type": "Question",
         "name": "What's the refund policy if I change my mind?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Online ($397 sale): non-refundable, but transferable in full to In-Person credit if it isn't the right fit — your money is never lost. In-Person ($1,997): pro-rated refund per Texas state proprietary-school guidelines; submit your withdrawal in writing and refunds process within 30 days." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Online ($397 sale): non-refundable, but transferable in full to In-Person credit if it isn't the right fit — your money is never lost. In-Person ($3,000): pro-rated refund per Texas state proprietary-school guidelines; submit your withdrawal in writing and refunds process within 30 days." }
       }
     ]
   }
@@ -359,8 +359,8 @@
         <div class="grid grid-cols-2 gap-3" id="pdacalc-plans">
           <button type="button" data-plan="inperson" class="pdacalc-opt text-left rounded-xl border-2 border-teal-600 bg-teal-50 p-4 ring-4 ring-teal-600/10">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">In person</div>
-            <div class="display text-2xl font-bold text-slate-900"><span id="pdacalc-ip-down">$200</span> <span class="text-sm font-medium text-slate-500">down</span></div>
-            <div class="text-xs text-slate-600" id="pdacalc-ip-sub">$1,997 total · weekly or monthly</div>
+            <div class="display text-2xl font-bold text-slate-900"><span id="pdacalc-ip-down">$500</span> <span class="text-sm font-medium text-slate-500">down</span></div>
+            <div class="text-xs text-slate-600" id="pdacalc-ip-sub">$3,000 total · weekly or monthly</div>
           </button>
           <button type="button" data-plan="online" class="pdacalc-opt text-left rounded-xl border-2 border-slate-200 bg-white p-4">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">Online</div>
@@ -376,19 +376,19 @@
               <button type="button" id="pdacalc-mo" class="px-3 py-1 rounded-full text-xs font-semibold bg-white text-teal-700 shadow-sm">Monthly</button>
             </span>
           </div>
-          <input type="range" id="pdacalc-term" min="1" max="3" value="3" step="1" class="w-full accent-teal-600">
+          <input type="range" id="pdacalc-term" min="2" max="12" value="6" step="1" class="w-full accent-teal-600">
           <div class="flex items-center justify-between text-sm text-slate-600 mt-1">
-            <span id="pdacalc-termlbl">3 months</span><span id="pdacalc-totlbl">$1,997 total</span>
+            <span id="pdacalc-termlbl">3 months</span><span id="pdacalc-totlbl">$3,000 total</span>
           </div>
         </div>
       </div>
       <div>
         <div class="bg-slate-900 text-white rounded-2xl p-6 flex items-end justify-between">
           <div>
-            <div class="text-sm text-slate-400" id="pdacalc-reslbl">$200 down today, then</div>
-            <div class="display text-4xl font-bold text-amber-400" id="pdacalc-amt">$599/mo</div>
+            <div class="text-sm text-slate-400" id="pdacalc-reslbl">$500 down today, then</div>
+            <div class="display text-4xl font-bold text-amber-400" id="pdacalc-amt">$500/mo</div>
           </div>
-          <div class="text-right text-sm text-slate-400" id="pdacalc-count">3 payments</div>
+          <div class="text-right text-sm text-slate-400" id="pdacalc-count">6 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot →</a>
         <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. Workforce funding · GI Bill accepted.</p>
@@ -509,7 +509,7 @@
           <h3 class="text-2xl font-bold display">In-Person</h3>
         </div>
         <p class="text-slate-600 text-sm">Hands-on at the Longview campus. Small classes, direct instruction.</p>
-        <div class="display text-4xl font-bold text-slate-900 my-6"><span data-price="ip-total">$1,997</span><span class="text-base font-normal text-slate-500"> tuition</span></div>
+        <div class="display text-4xl font-bold text-slate-900 my-6"><span data-price="ip-total">$3,000</span><span class="text-base font-normal text-slate-500"> tuition</span></div>
         <ul class="space-y-2.5 text-sm text-slate-700">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Instructor-led classes at our Longview campus</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment</li>
@@ -860,8 +860,8 @@
         <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">In-Person</span>
         <h3 class="font-bold text-lg mt-2">In-Person</h3>
         <p class="text-xs text-slate-500 mt-1">At the Longview campus.</p>
-        <div class="display text-3xl font-bold mt-4"><span data-price="ip-total">$1,997</span><span class="text-sm text-slate-500 font-normal"> tuition</span></div>
-        <div class="text-xs text-teal-700 font-semibold mt-1">or $200 down + installments — paid off before class ends</div>
+        <div class="display text-3xl font-bold mt-4"><span data-price="ip-total">$3,000</span><span class="text-sm text-slate-500 font-normal"> tuition</span></div>
+        <div class="text-xs text-teal-700 font-semibold mt-1">or $500 down + installments — paid off before class ends</div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
           <li>✓ Live instruction at our campus</li>
           <li>✓ Hands-on equipment practice</li>
@@ -946,7 +946,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($1,997)</strong> — payment plans available. <strong>Online is on sale right now: $397 one-time</strong> (regularly $997) — non-refundable at this price, but if it isn't right for you we'll transfer the full $397 as credit toward the In-Person program. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($3,000)</strong> — payment plans available. <strong>Online is on sale right now: $397 one-time</strong> (regularly $997) — non-refundable at this price, but if it isn't right for you we'll transfer the full $397 as credit toward the In-Person program. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and WIOA workforce funding.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -960,7 +960,7 @@
           <span>What if I don't like it after enrolling?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.<br><br><strong>In-Person ($1,997):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing (email is fine); refunds process within 30 days.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.<br><br><strong>In-Person ($3,000):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing (email is fine); refunds process within 30 days.</div>
       </details>
     </div>
   </div>

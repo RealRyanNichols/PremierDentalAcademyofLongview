@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Enroll in Dental Assistant School — Longview, TX & Online | PDA</title>
-  <meta name="description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
+  <meta name="description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -34,6 +34,9 @@
     body[data-plan="online"] [data-online-hide] { display: none !important; }
     body[data-plan="online"] #online-summary { display: block; }
     #online-summary { display: none; }
+    /* In-person plan-only controls (cadence / count / start date) are hidden
+       unless the buyer chooses the payment plan. Pay-in-full needs none of it. */
+    body:not([data-paymode="plan"]) [data-plan-only] { display: none !important; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/seat-mask.js"></script>
@@ -50,11 +53,11 @@
   <meta property="og:site_name" content="Premier Dental Academy of Longview" />
   <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/enroll" />
   <meta property="og:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
-  <meta property="og:description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
+  <meta property="og:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
   <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
-  <meta name="twitter:description" content="Enroll in the PDA RDA Program. $200 down today, then daily, weekly, or monthly installments — finished by the time class ends." />
+  <meta name="twitter:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
   <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
 
   <!-- Course schema → Google Course rich results in SERPs (price, provider). -->
@@ -89,7 +92,7 @@
         },
         "offers": {
           "@type": "Offer",
-          "price": "1997",
+          "price": "3000",
           "priceCurrency": "USD",
           "url": "https://www.premierdentalacademyoflongview.com/enroll",
           "availability": "https://schema.org/InStock"
@@ -153,8 +156,8 @@
     <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:border-teal-600 transition">
       <div class="flex items-center gap-2"><span class="text-2xl">🏫</span><h3 class="font-bold text-xl">In-Person</h3></div>
       <p class="text-sm text-slate-500 mt-1">At the Longview campus</p>
-      <div class="display text-4xl font-bold mt-5">$1,997</div>
-      <div class="text-xs text-slate-500 mt-0.5">tuition · $200 down, then daily/weekly/monthly</div>
+      <div class="display text-4xl font-bold mt-5">$3,000</div>
+      <div class="text-xs text-slate-500 mt-0.5">paid in full · or $3,500 on a plan ($500 down, then weekly/monthly)</div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Live instruction at our Longview campus</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment</li>
@@ -267,32 +270,31 @@
           <input id="phone" type="tel" autocomplete="tel" class="w-full sm:w-1/2 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
         </div>
 
+        <!-- In-person: choose pay-in-full or a payment plan -->
         <div data-online-hide>
-          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Down payment today
-            <span class="text-slate-400 font-normal">— $200 minimum, pay more to lower installments</span>
-          </label>
-          <div class="space-y-2">
-            <div class="flex items-baseline gap-2 flex-wrap">
-              <span id="down-display" class="display text-3xl font-bold text-teal-700">$200</span>
-              <span class="text-xs text-slate-500">of $1,997 total tuition</span>
-            </div>
-            <input id="down" type="range" min="200" max="1997" step="25" value="200"
-                   class="w-full accent-teal-600 cursor-pointer"
-                   oninput="document.getElementById('down-display').textContent = '$' + Number(this.value).toLocaleString();" />
-            <div class="flex justify-between text-[10px] uppercase tracking-wider text-slate-400 font-semibold">
-              <span>$200 min</span>
-              <span>Paid in full · $1,997</span>
-            </div>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">How would you like to pay?</label>
+          <div class="grid grid-cols-2 gap-2" id="paymode-group">
+            <label class="paymode-opt cursor-pointer border-2 border-teal-600 bg-teal-50 rounded-lg p-3 text-center transition">
+              <input type="radio" name="paymode" value="full" checked class="sr-only" />
+              <div class="text-sm font-semibold">Pay in full</div>
+              <div class="text-xs text-slate-500">$3,000 · save $500</div>
+            </label>
+            <label class="paymode-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
+              <input type="radio" name="paymode" value="plan" class="sr-only" />
+              <div class="text-sm font-semibold">Payment plan</div>
+              <div class="text-xs text-slate-500">$3,500 · $500 down</div>
+            </label>
           </div>
+          <p class="text-xs text-slate-500 mt-1.5">Pay in full is <strong>$3,000</strong>. On a plan it's <strong>$3,500</strong> — <strong>$500 down today</strong>, then the <strong>$3,000</strong> balance auto-billed on the schedule you choose.</p>
         </div>
 
-        <div data-online-hide>
-          <label class="block text-sm font-semibold text-slate-900 mb-1.5">How do you want to pay the rest?</label>
+        <div data-online-hide data-plan-only>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Pay the $3,000 balance</label>
           <div class="grid grid-cols-2 gap-2" id="cadence-group">
             <label class="cadence-opt cursor-pointer border-2 border-teal-600 bg-teal-50 rounded-lg p-3 text-center transition">
               <input type="radio" name="cadence" value="weekly" checked class="sr-only" />
               <div class="text-sm font-semibold">Weekly</div>
-              <div class="text-xs text-slate-500">most popular</div>
+              <div class="text-xs text-slate-500">smaller amounts</div>
             </label>
             <label class="cadence-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
               <input type="radio" name="cadence" value="monthly" class="sr-only" />
@@ -302,10 +304,28 @@
           </div>
         </div>
 
-        <div data-online-hide>
+        <div data-online-hide data-plan-only>
+          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Number of payments</label>
+          <select id="count" class="w-full sm:w-56 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none">
+            <option value="2">2 payments</option>
+            <option value="3">3 payments</option>
+            <option value="4">4 payments</option>
+            <option value="5">5 payments</option>
+            <option value="6" selected>6 payments</option>
+            <option value="7">7 payments</option>
+            <option value="8">8 payments</option>
+            <option value="9">9 payments</option>
+            <option value="10">10 payments</option>
+            <option value="11">11 payments</option>
+            <option value="12">12 payments</option>
+          </select>
+          <p class="text-xs text-slate-500 mt-1.5">Up to 12 payments (weekly or monthly). Your certificate is issued once tuition is paid in full.</p>
+        </div>
+
+        <div data-online-hide data-plan-only>
           <label class="block text-sm font-semibold text-slate-900 mb-1.5">Start paying on</label>
           <input id="first-date" type="date" class="w-full sm:w-56 border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
-          <p class="text-xs text-slate-500 mt-1.5">Final payment must be done by the time class ends.</p>
+          <p class="text-xs text-slate-500 mt-1.5">Each payment lands on a Friday — starting the first Friday on or after this date.</p>
         </div>
 
         <div>
@@ -413,7 +433,7 @@
   <div class="text-center mt-10 text-sm text-slate-600 max-w-2xl mx-auto">
     <p class="font-semibold text-slate-900">Refund &amp; transfer policy</p>
     <p class="mt-1"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.</p>
-    <p class="mt-1"><strong>In-Person ($1,997):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing; refunds process within 30 days.</p>
+    <p class="mt-1"><strong>In-Person ($3,000, or $3,500 on a plan):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing; refunds process within 30 days.</p>
   </div>
 
   <div class="text-center mt-6 text-xs text-slate-500">
@@ -433,7 +453,7 @@
     <div class="space-y-3">
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group" open>
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">How do payments work?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">In-Person is <strong>$1,997</strong> — put <strong>$200 down</strong> today and split the rest into simple weekly or monthly payments, paid in full by graduation (within 12 weeks). Online is a one-time <strong>$397</strong> (sale; reg $997). You can also split with Klarna, Afterpay, or Affirm.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">In-Person is <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> — put <strong>$500 down</strong> today and split the <strong>$3,000</strong> balance into simple weekly or monthly payments (up to 12). Online is a one-time <strong>$397</strong> (sale; reg $997). You can also split with Klarna, Afterpay, or Affirm.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">Do I need any experience?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
@@ -445,7 +465,7 @@
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">What if I change my mind?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online ($397):</strong> non-refundable at the sale price, but transferable in full to In-Person credit — your money is never lost. <strong>In-Person ($1,997):</strong> pro-rated refund per Texas state guidelines.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online ($397):</strong> non-refundable at the sale price, but transferable in full to In-Person credit — your money is never lost. <strong>In-Person ($3,000 / $3,500 plan):</strong> pro-rated refund per Texas state guidelines.</div>
       </details>
     </div>
   </section>
@@ -453,7 +473,7 @@
   <!-- ───────── Final CTA ───────── -->
   <section class="mt-12 text-center" data-aos="fade-up">
     <h2 class="display text-2xl sm:text-3xl font-bold text-slate-900">Ready to start? <span class="text-amber-500 italic">Pick your format.</span></h2>
-    <p class="text-slate-600 mt-2">$200 holds your in-person seat — or start Online today.</p>
+    <p class="text-slate-600 mt-2">$500 holds your in-person seat — or start Online today.</p>
     <div class="mt-5 flex flex-wrap gap-3 justify-center">
       <a href="#top" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-md">Choose your program ↑</a>
       <a href="/apply" data-event="apply_click" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-7 py-3.5 rounded-full">Apply free first</a>
@@ -484,7 +504,15 @@ const addDays = (iso, n) => { const d = new Date(iso + 'T00:00:00'); d.setDate(d
 // Add whole calendar months keeping the SAME day-of-month (constructed at local
 // noon so DST can't bump the day). Only used for the monthly plan's +1/+2 month
 // steps from a first-Friday date (always the 1st–7th), so no month-overflow.
-const addMonths = (iso, n) => { const d = new Date(iso + 'T12:00:00'); d.setMonth(d.getMonth() + n); return d.toISOString().slice(0,10); };
+const addMonths = (iso, n) => {
+  const d = new Date(iso + 'T12:00:00');
+  const dom = d.getDate();
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  const lastDom = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(dom, lastDom)); // clamp (e.g. 31 → 28/30) to match api/enroll.js
+  return d.toISOString().slice(0,10);
+};
 // First Friday ON OR AFTER iso. getDay(): 0=Sun … 5=Fri … 6=Sat. Mirrors the
 // server so the buyer's preview shows the EXACT same Friday due dates.
 const firstFridayOnOrAfter = (iso) => { const d = new Date(iso + 'T12:00:00'); d.setDate(d.getDate() + ((5 - d.getDay() + 7) % 7)); return d.toISOString().slice(0,10); };
@@ -560,12 +588,14 @@ function updateCohortMeta() {
   const pillClass = seats.full ? 'full' : (seats.urgent ? 'urgent' : 'normal');
   el.innerHTML = `Class runs <b>${fmtDate(c.start_date)}</b> → <b>${fmtDate(end)}</b>${c.end_date ? '' : ' (estimated)'} · <span class="seat-pill ${pillClass}">${seats.label}</span>`;
 
+  // Plans can now run up to ~12 months and are NOT bounded by class end
+  // (certification is gated by paying in full, not the calendar), so the
+  // start date is only floored at today — no upper cap.
   const fp = document.getElementById('first-date');
-  fp.min = isoToday();
-  fp.max = end;
-  if (!fp.value || fp.value > end || fp.value < isoToday()) {
-    const d = addDays(isoToday(), 7);
-    fp.value = d > end ? end : d;
+  if (fp) {
+    fp.min = isoToday();
+    fp.removeAttribute('max');
+    if (!fp.value || fp.value < isoToday()) fp.value = addDays(isoToday(), 7);
   }
 }
 
@@ -581,86 +611,52 @@ function computeSchedule() {
       valid: true, warning: '', plan,
     };
   }
-  const down = Math.round(Number(document.getElementById('down').value) * 100);
-  const cadence = document.querySelector('[name="cadence"]:checked').value;
+  // ── In-person (on/after July 1, 2026): pay in full ($3,000) OR a plan
+  //    ($3,500 = $500 down + $3,000 balance split into `count` Friday
+  //    installments). Mirrors api/enroll.js buildScheduleV2 exactly. ──
+  const NEW = { pif: 300000, planTotal: 350000, down: 50000, balance: 300000 };
+  const paymode = (document.querySelector('[name="paymode"]:checked') || {}).value || 'full';
+
+  if (paymode === 'full') {
+    return {
+      total: NEW.pif, down: NEW.pif, remaining: 0, cadence: 'one-time',
+      firstDate: '', end: null, count: 0, dates: [], amounts: [],
+      payInFull: true, valid: true, warning: '', plan,
+    };
+  }
+
+  // Payment plan
+  const cadence = document.querySelector('[name="cadence"]:checked').value; // weekly | monthly
+  let count = parseInt((document.getElementById('count') || {}).value, 10);
+  if (!Number.isFinite(count) || count < 1) count = 1;
+  if (count > 13) count = 13;
   const firstDate = document.getElementById('first-date').value;
-  const end = state.cohort ? cohortEnd(state.cohort) : null;
-  const out = { total, down, cadence, firstDate, end, valid: false, warning: '', plan };
+  const out = {
+    total: NEW.planTotal, down: NEW.down, remaining: NEW.balance,
+    cadence, count, firstDate, end: null, payInFull: false,
+    valid: false, warning: '', plan,
+  };
+  if (!firstDate) { out.warning = 'Pick a date to start paying.'; return out; }
 
-  if (!end || !firstDate) { out.warning = 'Pick a class first.'; return out; }
-  if (down < 20000) { out.warning = 'Minimum down payment is $200.'; return out; }
-  if (down > total) { out.warning = "Down payment can't exceed total tuition."; return out; }
+  // Split the $3,000 balance into `count` equal installments; the last one
+  // absorbs any rounding remainder so the total is exact.
+  const per = Math.floor(NEW.balance / count);
+  const amounts = Array(count).fill(per);
+  amounts[count - 1] = NEW.balance - per * (count - 1);
+  // Every payment lands on a Friday: first Friday on/after the start date,
+  // then weekly (+7d) or monthly (same day-of-month). Matches api/enroll.js.
+  const firstFriday = firstFridayOnOrAfter(firstDate);
+  const dates = cadence === 'monthly'
+    ? Array.from({ length: count }, (_, i) => addMonths(firstFriday, i))
+    : Array.from({ length: count }, (_, i) => addDays(firstFriday, i * 7));
 
-  const remaining = total - down;
-  out.remaining = remaining;
-  if (remaining === 0) { out.valid = true; out.count = 0; out.dates = []; return out; }
-
-  const step = cadence === 'daily' ? 1 : cadence === 'weekly' ? 7 : 30;
-  // Owner rule: payments fall on FRIDAYS. Anchor weekly/monthly schedules to the
-  // first Friday on/after the chosen start date (matches api/enroll.js exactly).
-  const firstFriday = (cadence === 'weekly' || cadence === 'monthly')
-    ? firstFridayOnOrAfter(firstDate)
-    : firstDate;
-  const window = diffDays(firstFriday, end);
-  if (window < 0) { out.warning = 'First payment date is after class ends.'; return out; }
-
-  // Per Amanda: every installment is a CLEAN round number — no "change."
-  //   Weekly  → $160 every week
-  //   Monthly → $640 every month
-  // At the $200 minimum down on $1,997 tuition both cadences land on the SAME
-  // plan total: $200 + $1,920 = $2,120 (weekly = 12 × $160, monthly = 3 × $640).
-  // The schedule rounds UP, so the sum of installments is ≥ the remaining
-  // balance — that's Amanda's "you pay more for choosing the payment plan"
-  // pricing (vs. $1,997 paid in full).
-  const FIRST_PER = { weekly: 16000, monthly: 64000 };
-  const NEXT_PER  = { weekly: 16000, monthly: 64000 };
-  let amounts;
-  if (cadence === 'weekly' || cadence === 'monthly') {
-    amounts = [FIRST_PER[cadence]];
-    let covered = amounts[0];
-    while (covered < remaining) {
-      amounts.push(NEXT_PER[cadence]);
-      covered += NEXT_PER[cadence];
-      if (amounts.length > 13) {
-        out.warning = `That cadence would need more than 13 payments before class ends. Increase your down payment.`;
-        return out;
-      }
-    }
-  } else {
-    // Daily — legacy, evenly split.
-    const count = Math.max(1, Math.min(13, Math.floor(window / step) + 1));
-    const per = Math.floor(remaining / count);
-    amounts = Array(count).fill(per);
-    amounts[count - 1] = remaining - per * (count - 1);
-  }
-  const count = amounts.length;
-  // Friday-based due dates, mirroring api/enroll.js:
-  //   weekly  → firstFriday, +7d each (stays Friday)
-  //   monthly → firstFriday, then same day-of-month +1/+2 months
-  //   daily   → legacy flat day steps from the raw start date
-  let dates;
-  if (cadence === 'monthly') {
-    dates = Array.from({ length: count }, (_, i) => addMonths(firstFriday, i));
-  } else if (cadence === 'weekly') {
-    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * 7));
-  } else {
-    dates = Array.from({ length: count }, (_, i) => addDays(firstFriday, i * step));
-  }
-  const lastDate = dates[count - 1];
-  if (diffDays(lastDate, end) < 0) {
-    out.warning = `A ${cadence} plan starting ${fmtDate(firstDate)} can't finish by class end (${fmtDate(end)}). Pick an earlier start date or increase your down payment.`;
-    return out;
-  }
-
-  const totalCharged = amounts.reduce((a, b) => a + b, 0);
-  out.count = count;
   out.amounts = amounts;
-  out.per = amounts[amounts.length - 1];           // last installment (the recurring one)
-  out.firstAmount = amounts[0];                    // first installment ($640 monthly, $160 weekly)
-  out.lastAmount = amounts[amounts.length - 1];
-  out.totalCharged = totalCharged;                 // sum of installments
-  out.totalAll = down + totalCharged;              // grand total the student pays
-  out.dates = dates;                               // Friday-based due dates (see above)
+  out.dates = dates;
+  out.firstAmount = amounts[0];
+  out.lastAmount = amounts[count - 1];
+  out.per = amounts[count - 1];
+  out.totalCharged = amounts.reduce((a, b) => a + b, 0); // == $3,000 balance
+  out.totalAll = NEW.down + out.totalCharged;            // == $3,500 plan total
   out.valid = true;
   return out;
 }
@@ -738,6 +734,17 @@ async function pickPlan(plan) {
   // payment-plan UI (cohort picker, down-payment slider, cadence picker,
   // start-paying-on date) since none of it applies.
   document.body.setAttribute('data-plan', plan);
+  // In-person defaults to Pay-in-full; reset the toggle each time a format is
+  // (re)picked so plan-only controls start hidden.
+  document.body.setAttribute('data-paymode', 'full');
+  const pmFull = document.querySelector('[name="paymode"][value="full"]');
+  if (pmFull) pmFull.checked = true;
+  document.querySelectorAll('.paymode-opt').forEach(el => {
+    const checked = el.querySelector('input').checked;
+    el.classList.toggle('border-teal-600', checked);
+    el.classList.toggle('bg-teal-50', checked);
+    el.classList.toggle('border-slate-200', !checked);
+  });
   renderCohortOptions();
   renderSummary();
   document.getElementById('checkout').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -809,8 +816,13 @@ async function submit() {
   // the button. NEVER show "Payment failed" if the server returns ok=true.
   try {
     const body = {
-      plan: state.plan, downCents: s.down, cadence: s.cadence,
-      firstPaymentDate: s.firstDate, classEndDate: s.end,
+      plan: state.plan,
+      payInFull: s.payInFull === true,
+      cadence: s.cadence,
+      count: s.count,
+      firstPaymentDate: s.firstDate,
+      downCents: s.down,
+      classEndDate: s.end || null,
       sourceId: tokenRes.token, email, name, phone,
       cohortName: state.cohort?.name || null,
       cohortId: state.cohort?.id || null,
@@ -889,6 +901,16 @@ document.addEventListener('click', (ev) => {
 });
 
 document.addEventListener('change', (ev) => {
+  if (ev.target.matches('[name="paymode"]')) {
+    document.body.setAttribute('data-paymode', ev.target.value);
+    document.querySelectorAll('.paymode-opt').forEach(el => {
+      const checked = el.querySelector('input').checked;
+      el.classList.toggle('border-teal-600', checked);
+      el.classList.toggle('bg-teal-50',      checked);
+      el.classList.toggle('border-slate-200', !checked);
+    });
+    renderSummary();
+  }
   if (ev.target.matches('[name="cadence"]')) {
     document.querySelectorAll('.cadence-opt').forEach(el => {
       const checked = el.querySelector('input').checked;
@@ -900,7 +922,7 @@ document.addEventListener('change', (ev) => {
   }
   if (ev.target.id === 'cohort')     { updateCohortMeta(); renderSummary(); }
   if (ev.target.id === 'first-date') { renderSummary(); }
-  if (ev.target.id === 'down')       { renderSummary(); }
+  if (ev.target.id === 'count')      { renderSummary(); }
 });
 
 loadCohorts().then(autoPickFromUrl);
