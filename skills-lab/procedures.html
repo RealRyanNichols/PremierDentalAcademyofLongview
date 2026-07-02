@@ -64,6 +64,8 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/ui.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
 <script src="/assets/skills-lab/instrument-icons.js"></script>
+<script src="/assets/skills-lab/instrument-art.js"></script>
+<script src="/assets/skills-lab/people-art.js"></script>
 <script src="/assets/skills-lab/scenario-player.js"></script>
 <script>
 (function () {
@@ -88,10 +90,14 @@ tailwind.config = { theme: { extend: {
   function renderCards() {
     cards.innerHTML = SCENARIOS.map(function (p) {
       var done = SC.isDone(p.id);
-      var who = p.patientId && VO.PATIENT_BY_ID[p.patientId] ? VO.PATIENT_BY_ID[p.patientId].name : 'Office task';
+      var pat = p.patientId && VO.PATIENT_BY_ID[p.patientId];
+      var who = pat ? pat.name : 'Office task';
+      var face = window.SL_PEOPLE
+        ? '<div class="shrink-0 w-12 h-12 rounded-full overflow-hidden shadow-sm">' + SL_PEOPLE.bust(pat || 'narrator') + '</div>'
+        : '<div class="text-3xl shrink-0">' + p.icon + '</div>';
       return '<button data-proc="' + p.id + '" class="text-left bg-white rounded-2xl shadow-sm border ' +
         (done ? 'border-emerald-200' : 'border-slate-100') + ' p-5 hover:border-teal-300 hover:shadow transition">' +
-        '<div class="flex items-start gap-3"><div class="text-3xl shrink-0">' + p.icon + '</div><div class="min-w-0">' +
+        '<div class="flex items-start gap-3">' + face + '<div class="min-w-0">' +
         '<div class="flex items-center gap-2 flex-wrap"><h3 class="display text-lg font-bold text-navy-900">' + esc(p.title) + '</h3>' +
         (done ? '<span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ Completed</span>' : '') + '</div>' +
         '<p class="text-sm text-slate-600 mt-1">' + esc(p.blurb) + '</p>' +

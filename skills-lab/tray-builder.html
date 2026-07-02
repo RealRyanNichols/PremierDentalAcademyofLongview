@@ -78,6 +78,7 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/ui.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
 <script src="/assets/skills-lab/instrument-icons.js"></script>
+<script src="/assets/skills-lab/instrument-art.js"></script>
 <script src="/assets/skills-lab/tray-builder.js"></script>
 <script>
 (function () {
@@ -101,9 +102,18 @@ tailwind.config = { theme: { extend: {
   function renderCards() {
     trayCards.innerHTML = TRAYS.map(function (t) {
       var done = TB.isDone(t.id);
+      // Preview strip: the tray's signature instruments (realistic art via SL_ICON_FOR).
+      var SIG = { exam:['mirror','explorer','cotton-pliers'], restorative:['composite','condenser','curing-light'],
+        crown:['retraction-cord','impression-tray','temp-crown-material'], endo:['endo-files','gutta-percha','dam-clamp'],
+        extraction:['forceps','elevator','sutures'] };
+      var strip = (SIG[t.id] || t.requiredInstrumentIds.slice(0, 3)).map(function (id) {
+        var it = VO.INSTRUMENT_BY_ID[id];
+        var ic = (window.SL_ICON_FOR && it) ? SL_ICON_FOR(it) : '<span style="font-size:15px">' + ((it && it.emoji) || '🦷') + '</span>';
+        return '<span style="width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(150deg,#f0fdfa,#dcf3ee);border:1px solid #bfe8df;border-radius:8px;padding:2px">' + ic + '</span>';
+      }).join('');
       return '<button data-tray="' + t.id + '" class="text-left bg-white rounded-2xl shadow-sm border ' +
         (done ? 'border-emerald-200' : 'border-slate-100') + ' p-4 hover:border-teal-300 hover:shadow transition">' +
-        '<div class="flex items-center gap-2"><span class="text-2xl">🧰</span>' +
+        '<div class="flex items-center gap-2"><span class="inline-flex items-center gap-1">' + strip + '</span>' +
         (done ? '<span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ Built</span>' : '') + '</div>' +
         '<div class="display font-bold text-navy-900 mt-2">' + esc(t.procedure) + '</div>' +
         '<div class="text-xs text-slate-500 mt-1">' + t.requiredInstrumentIds.length + ' instruments</div>' +
@@ -158,7 +168,7 @@ tailwind.config = { theme: { extend: {
   var library = document.getElementById('library');
   function thumb(item) {
     var fb = (window.SL_ICON_FOR ? SL_ICON_FOR(item) : '<span style="font-size:22px">' + (item.emoji || '🦷') + '</span>');
-    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + fb + '</span></div>';
+    return '<div class="thumb"><img src="' + item.image + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + fb + '</span></div>';
   }
   library.innerHTML = VO.INSTRUMENTS.map(function (it) {
     return '<div class="lib-card">' + thumb(it) +

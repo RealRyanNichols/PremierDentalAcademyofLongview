@@ -37,6 +37,50 @@ Status: captured 2026-06-26. To be implemented on branch `claude/site-redesign` 
 
 ---
 
+## Virtual Dental Office — full renovation (2026-07-02)
+
+Ryan asked for a complete renovation: "realistic people, realistic situations,
+realistic word boxes asking questions that the person has to choose the
+instrument for that situation." Shipped on branch
+`claude/virtual-dental-office-redesign-vp2ii5`:
+
+- **The Three.js block-figure 3D room is GONE.** `/skills-lab/virtual-office` now
+  renders a realistic illustrated operatory (`assets/skills-lab/office-scene.js`,
+  layered SVG): contoured patient chair with a reclined patient (bib + safety
+  glasses), dentist masked/gloved at the head, the assistant ("you") on the
+  patient's LEFT holding the HVE, op light, delivery unit + handpieces, tray with
+  visible instruments, cabinetry/sink, x-ray arm, tooth-chart monitor. Same 9
+  station pins/legend/progress + preview gating as before. Guided visits zoom the
+  camera chairside and highlight whoever is speaking; each patient persona swaps
+  into the chair (Emma renders as a child). A separate STERILIZATION ROOM view
+  shows the one-way DIRTY -> CLEAN flow (receiving/rinse/ultrasonic -> wrap ->
+  autoclave -> sterile storage) with a weekly spore-test log on the wall.
+- **Realistic people** (`assets/skills-lab/people-art.js`, `window.SL_PEOPLE`):
+  illustrated portrait busts for Dr. Williams, Renee, Carla, "you" and all 8
+  patient personas, used in every dialogue box, visit picker, day-shift schedule
+  and procedures cards. No more emoji faces.
+- **Realistic instruments** (`assets/skills-lab/instrument-art.js`,
+  `window.SL_ART`, overrides `SL_ICON_FOR`): full-length vector art for all 67
+  instruments/materials, used across the instrument library, tray builder,
+  quizzes thumbs and the new instrument questions.
+- **Choose-the-instrument word boxes**: the scenario player renders every step as
+  a conversation (portrait + speech bubble). New step type `instrument` = the
+  dentist describes the moment ("Time for the cord — I need to seat it into the
+  sulcus before we take the impression. Hand me…") and the student picks the
+  right instrument off a stainless tray strip. 29 of these are woven through the
+  scenarios + day-shift appointments; distractors are plausible same-tray
+  instruments; every answer is clinically correct.
+- **Tray Builder**: setting the tray is now visual — a stainless tray with a teal
+  liner on a counter, instruments lie full-length in order of use with ✓/✗
+  grading in place, and the shelf is a supply drawer with organizer bins.
+- 3D leftovers (importmap/three.js CDN dependency) removed; everything is
+  self-hosted vector art, so it renders identically on phones and school
+  computers with no WebGL/CDN dependency.
+
+Earlier items below are superseded by this renovation but kept for history.
+
+---
+
 ## Virtual Operatory — 3D geometry status (2026-06-27)
 
 DONE in `skills-lab/virtual-office.html` (Three.js scene builder):

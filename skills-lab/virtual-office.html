@@ -4,8 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Virtual Dental Office — Skills Lab | Premier Dental Academy</title>
-<meta name="description" content="Step into a real 3D dental operatory. Orbit around the room, meet the dentist, and tap the chair, light, tray, x-ray, suction, computer and sterilization area to learn exactly what each is — and what you do there on day one. Then set up your tray.">
+<meta name="description" content="Step into a realistic illustrated dental operatory. Meet the dentist and your patient, tap the chair, light, tray, x-ray, suction, charting computer and sterilization area to learn exactly what each is — then assist real visits chairside.">
 <meta name="robots" content="index,follow">
+<meta property="og:title" content="Virtual Dental Office — Skills Lab | Premier Dental Academy">
+<meta property="og:description" content="Step into a realistic illustrated operatory — explore every station, then assist real visits chairside.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/skills-lab/virtual-office">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -26,13 +30,13 @@ tailwind.config = { theme: { extend: {
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
   .display{font-family:'Fraunces',serif}
   .gradient-text{background:linear-gradient(90deg,#0d9488,#0891b2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  /* 3D stage */
+  /* Illustrated operatory stage */
   .scene-wrap{position:relative;width:100%;aspect-ratio:16/10;border-radius:1rem;overflow:hidden;
     box-shadow:0 10px 40px rgba(15,23,42,.18);
-    background:radial-gradient(120% 95% at 50% 0%, #e3eef0 0%, #cbdbdf 48%, #aab9bf 100%);}
+    background:radial-gradient(120% 95% at 50% 0%, #f2efe7 0%, #e3ded1 48%, #c8c2b1 100%);}
   @media (max-width:640px){.scene-wrap{aspect-ratio:4/3}}
-  #stage canvas{position:absolute;inset:0;width:100%!important;height:100%!important;display:block;touch-action:none}
   #pins{position:absolute;inset:0;z-index:6;pointer-events:none}
+  #pins .hot{pointer-events:auto}
   .hot{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;display:grid;place-items:center;
     width:32px;height:32px;border-radius:9999px;background:#0d9488;color:#fff;font-weight:800;font-size:14px;
     border:3px solid #fff;box-shadow:0 4px 14px rgba(13,148,136,.6);cursor:pointer;transition:transform .12s;will-change:left,top}
@@ -45,10 +49,8 @@ tailwind.config = { theme: { extend: {
     background:rgba(255,255,255,.92);padding:1px 7px;border-radius:6px;white-space:nowrap;box-shadow:0 1px 5px rgba(0,0,0,.16)}
   .scene-hint{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:7;font-size:11px;font-weight:600;
     color:#0f172a;background:rgba(255,255,255,.85);padding:4px 11px;border-radius:9999px;pointer-events:none}
-  .scene-loading{position:absolute;inset:0;z-index:8;display:grid;place-items:center;gap:10px;
-    background:linear-gradient(180deg,rgba(248,250,252,.55),rgba(203,219,223,.55));font-weight:700;color:#0f766e;text-align:center;padding:1rem}
-  .spin{width:30px;height:30px;border:3px solid #99f6e4;border-top-color:#0d9488;border-radius:50%;animation:sp 1s linear infinite;margin:0 auto}
-  @keyframes sp{to{transform:rotate(360deg)}}
+  /* the marker hint only applies while the full room (with pins) is showing */
+  .scene-wrap:not(.vo-mode-room) .scene-hint{display:none}
   .legend-chip{display:inline-flex;align-items:center;gap:.45rem;background:#fff;border:1px solid #e2e8f0;border-radius:9999px;
     padding:.4rem .8rem;font-size:.8rem;font-weight:600;color:#0f172a;cursor:pointer;transition:.12s}
   .legend-chip:hover{border-color:#5eead4;box-shadow:0 2px 8px rgba(13,148,136,.18)}
@@ -60,12 +62,18 @@ tailwind.config = { theme: { extend: {
   .hot.locked{background:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.55)}
   .hot.locked::after{border-color:#fde68a}
   .hot.hot--hover{transform:translate(-50%,-50%) scale(1.22)}
+  @media (max-width:640px){
+    .hot{width:26px;height:26px;font-size:11px;border-width:2px}
+    .hot .pinlabel{display:none}
+    .scene-hint{display:none}
+  }
   .fade-in{animation:fadeIn .28s ease both}@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   /* In-scene speaker nameplate */
   .vo-speaker{position:absolute;left:10px;top:10px;z-index:7;display:flex;align-items:center;gap:.5rem;
     background:rgba(15,23,42,.78);color:#fff;padding:6px 12px 6px 6px;border-radius:9999px;backdrop-filter:blur(6px);
     box-shadow:0 4px 14px rgba(0,0,0,.25);max-width:80%}
   .vo-speaker .sl-ava{width:36px;height:36px}
+  .vo-speaker .sl-port{width:36px;height:36px;border-radius:9999px;overflow:hidden;flex:none;background:#e3f1ee}
   .vo-speaker .nm{font-size:12px;font-weight:800;line-height:1.1}
   .vo-speaker .rl{font-size:10px;color:#a5f3fc;font-weight:600}
 </style>
@@ -82,8 +90,8 @@ tailwind.config = { theme: { extend: {
   <!-- Hero -->
   <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
     <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">At the chair · Virtual Dental Office</p>
-    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Step into a real operatory.</h1>
-    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base"><strong class="text-white">Drag to look around the room</strong> in 3D — just like standing in it on your first day. Tap any glowing marker to learn what it is, take a <strong class="text-white">guided visit with Dr. Williams</strong>, or set up your tray.</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Step into the operatory.</h1>
+    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">A patient is in the chair and the room is set — just like your first day. <strong class="text-white">Tap any glowing marker</strong> to learn every station, then take a <strong class="text-white">guided visit with Dr. Williams</strong> and assist chairside, or set up your tray.</p>
   </div>
 
   <!-- Preview gate strip (filled by JS when the visitor is not a signed-in student) -->
@@ -93,7 +101,7 @@ tailwind.config = { theme: { extend: {
   <div class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl shadow p-5 sm:p-6 mt-6">
     <div class="flex items-start gap-4 flex-wrap">
       <div class="text-4xl shrink-0">🩺</div>
-      <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-[14rem]">
         <h2 class="display text-xl sm:text-2xl font-bold">Take a guided visit</h2>
         <p class="text-teal-50 text-sm mt-1 max-w-xl">Dr. Williams walks you through a real appointment right here in the operatory — and the patient talks to you. Answer each question to move the visit forward and credit the skills to your passport.</p>
       </div>
@@ -112,18 +120,17 @@ tailwind.config = { theme: { extend: {
     <p class="text-[11px] text-slate-400 mt-2">Tap each glowing marker (or a station below). Marking "Got it" turns it green and counts toward your First Day Ready Score.</p>
   </div>
 
-  <!-- The 3D operatory -->
+  <!-- The operatory -->
   <div class="scene-wrap mt-6" id="stage">
     <div id="pins"></div>
     <div id="speakerTag" class="vo-speaker hidden"></div>
-    <div class="scene-hint">🖱️ Drag to look around · scroll / pinch to zoom</div>
-    <div class="scene-loading" id="sceneLoading"><div><div class="spin"></div><div class="mt-2">Building your operatory…</div></div></div>
+    <div class="scene-hint" id="sceneHint">Tap any numbered marker — or the equipment itself</div>
   </div>
 
   <!-- Guided visit mounts here (in-scene dialogue) -->
   <div id="visitMount" class="mt-6 hidden"></div>
 
-  <!-- Station legend (always works, even without 3D) -->
+  <!-- Station legend (always works, even without the scene) -->
   <div class="mt-4">
     <div class="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-2">Stations in this room — tap to learn each one</div>
     <div id="legend" class="flex flex-wrap gap-2"></div>
@@ -152,7 +159,10 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/quiz-engine.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
 <script src="/assets/skills-lab/instrument-icons.js"></script>
+<script src="/assets/skills-lab/instrument-art.js"></script>
+<script src="/assets/skills-lab/people-art.js"></script>
 <script src="/assets/skills-lab/scenario-player.js"></script>
+<script src="/assets/skills-lab/office-scene.js"></script>
 
 <!-- Station logic (classic script: always runs, drives panels + progress + tray) -->
 <script>
@@ -279,10 +289,14 @@ tailwind.config = { theme: { extend: {
     if (s.action === 'tray') actionBtn = '<button id="doTray" class="rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition">Quick tray quiz →</button>' +
       '<a href="/skills-lab/tray-builder" class="inline-block rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition">Open the full Tray Builder →</a>';
     if (s.action === 'chairside') actionBtn = '<a href="/tools/chairside" class="inline-block rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition">Open the charting trainer →</a>';
+    var pk = { dentist: 'dentist', patient: 'p_exam', assistant: 'assistant' }[id];
+    var panelIcon = (pk && window.SL_PEOPLE && window.SL_PEOPLE.has && window.SL_PEOPLE.has(pk))
+      ? '<div class="shrink-0" style="width:52px;height:52px;border-radius:9999px;overflow:hidden">' + window.SL_PEOPLE.bust(pk) + '</div>'
+      : '<div class="text-4xl shrink-0">' + s.icon + '</div>';
     panel.innerHTML =
       '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 sm:p-6">' +
       '  <div class="flex items-start gap-4">' +
-      '    <div class="text-4xl shrink-0">' + s.icon + '</div>' +
+      panelIcon +
       '    <div class="flex-1 min-w-0">' +
       '      <h2 class="display text-xl sm:text-2xl font-bold text-navy-900">' + esc(s.name) + '</h2>' +
       '      <p class="text-slate-600 mt-1 text-sm">' + esc(s.what) + '</p>' +
@@ -346,29 +360,36 @@ tailwind.config = { theme: { extend: {
     trayMount.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  // ---- Legend (clickable list under the scene; also the no-WebGL fallback) ----
+  // ---- Legend (clickable list under the scene; also the no-scene fallback) ----
+  // People stations show their illustrated bust when people-art is loaded.
+  var PEOPLE_KEY = { dentist: 'dentist', patient: 'p_exam', assistant: 'assistant' };
+  function chipIcon(k) {
+    var pk = PEOPLE_KEY[k];
+    if (pk && window.SL_PEOPLE && window.SL_PEOPLE.has && window.SL_PEOPLE.has(pk)) {
+      return '<span style="display:inline-block;width:20px;height:20px;border-radius:9999px;overflow:hidden;vertical-align:-5px">' + window.SL_PEOPLE.bust(pk) + '</span>';
+    }
+    return STATIONS[k].icon;
+  }
   var legend = document.getElementById('legend');
   legend.innerHTML = KEYS.map(function (k, i) {
     return '<button data-legend="' + k + '" class="legend-chip"><span class="num">' + (i + 1) + '</span>' +
-           '<span>' + STATIONS[k].icon + ' ' + esc(STATIONS[k].short) + '</span></button>';
+           '<span>' + chipIcon(k) + ' ' + esc(STATIONS[k].short) + '</span></button>';
   }).join('');
   legend.querySelectorAll('[data-legend]').forEach(function (b) {
     b.addEventListener('click', function () { openStation(b.dataset.legend); });
   });
 
-  // Expose for the 3D module
+  // Expose for the scene module
   window.PDA_VO = { STATIONS: STATIONS, KEYS: KEYS, openStation: openStation, explored: explored,
     access: function () { return ACCESS; }, isLocked: isLocked };
 
-  // Safety net: if the 3D module never takes over (e.g. CDN blocked), don't hang the spinner.
+  // Safety net: if the scene module didn't load, keep the page useful.
   setTimeout(function () {
-    var l = document.getElementById('sceneLoading');
-    if (l && l.style.display !== 'none' && !document.querySelector('#stage canvas')) {
-      l.innerHTML = '<div style="max-width:22rem"><div style="font-size:1.6rem">🪑</div>' +
-        '<div class="mt-1">The 3D room is taking a while to load.</div>' +
-        '<div style="font-weight:500;color:#475569;margin-top:.35rem;font-size:.8rem">Use the numbered stations just below to explore the operatory now.</div></div>';
+    if (!document.querySelector('#stage svg')) {
+      var hint = document.getElementById('sceneHint');
+      if (hint) hint.textContent = 'Use the numbered stations just below to explore the operatory.';
     }
-  }, 12000);
+  }, 3000);
 
   paintProgress();
   voBoot();
@@ -390,9 +411,13 @@ tailwind.config = { theme: { extend: {
   function renderPicker() {
     pickerWrap.innerHTML = VO.SCENARIOS.map(function (s) {
       var done = SC.isDone(s.id);
-      var who = s.patientId && VO.PATIENT_BY_ID[s.patientId] ? VO.PATIENT_BY_ID[s.patientId].name : 'Office task';
+      var pat = s.patientId && VO.PATIENT_BY_ID[s.patientId];
+      var who = pat ? pat.name : 'Office task';
+      var face = window.SL_PEOPLE
+        ? '<span class="shrink-0 inline-block w-10 h-10 rounded-full overflow-hidden">' + SL_PEOPLE.bust(pat || 'narrator') + '</span>'
+        : '<span class="text-2xl">' + s.icon + '</span>';
       return '<button data-visit="' + s.id + '" class="text-left bg-white/10 hover:bg-white/20 rounded-xl p-3 transition">' +
-        '<div class="flex items-center gap-2"><span class="text-2xl">' + s.icon + '</span>' +
+        '<div class="flex items-center gap-2">' + face +
         '<span class="font-bold text-sm">' + esc(s.title) + (done ? ' <span class="text-emerald-200">✓</span>' : '') + '</span></div>' +
         '<div class="text-[11px] text-teal-50 mt-1">' + esc(s.room) + ' · 👤 ' + esc(who) + ' · ' + s.steps.length + ' steps</div>' +
         '</button>';
@@ -405,8 +430,13 @@ tailwind.config = { theme: { extend: {
   function setSpeaker(info) {
     var p = info.speaker;
     tag.classList.remove('hidden');
-    tag.innerHTML = SC.avatarHTML(p) + '<div><div class="nm">' + esc(p.name) + '</div>' +
+    tag.innerHTML = (SC.portraitHTML ? SC.portraitHTML(p) : SC.avatarHTML(p)) + '<div><div class="nm">' + esc(p.name) + '</div>' +
       '<div class="rl">' + (p.role ? esc(p.role) + ' · ' : '') + 'asking…</div></div>';
+    var sc = window.PDA_VO_SCENE;
+    if (sc) {
+      var key = info.step && info.step.speaker;
+      sc.setSpeaker(key === 'dentist' || key === 'patient' || key === 'assistant' ? key : null);
+    }
   }
 
   function previewGate() {
@@ -432,12 +462,15 @@ tailwind.config = { theme: { extend: {
     pickerWrap.classList.add('hidden');
     startBtn.textContent = 'Choose a visit →';
     mount.classList.remove('hidden');
+    var sc = window.PDA_VO_SCENE;
+    if (sc) sc.setMode(scenario.room === 'Sterilization' ? 'steri' : 'chairside', { patientId: scenario.patientId || null });
     SC.run({
       mount: mount, scenario: scenario,
       onStep: setSpeaker,
       onExit: endVisit, exitLabel: 'End visit',
       onFinish: function (res) {
         tag.classList.add('hidden');
+        if (window.PDA_VO_SCENE) window.PDA_VO_SCENE.setSpeaker(null);
         var back = document.createElement('button');
         back.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition';
         back.textContent = 'Back to the office';
@@ -457,6 +490,8 @@ tailwind.config = { theme: { extend: {
     tag.classList.add('hidden');
     pickerWrap.classList.add('hidden');
     startBtn.textContent = 'Choose a visit →';
+    var sc = window.PDA_VO_SCENE;
+    if (sc) { sc.setSpeaker(null); sc.setMode('room', { patientId: 'p_exam' }); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -469,466 +504,26 @@ tailwind.config = { theme: { extend: {
 })();
 </script>
 
-<!-- 3D operatory (module; degrades gracefully to the legend above if WebGL/Three.js is unavailable) -->
-<script type="importmap">
-{ "imports": {
-  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-} }
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-
-const VO = window.PDA_VO || { KEYS: [], STATIONS: {}, openStation(){} };
-const stage = document.getElementById('stage');
-const pinsEl = document.getElementById('pins');
-const loadingEl = document.getElementById('sceneLoading');
-
-function failSoft(msg) {
-  if (loadingEl) {
-    loadingEl.innerHTML = '<div style="max-width:22rem"><div style="font-size:1.6rem">🪑</div>' +
-      '<div class="mt-1">' + (msg || 'Your browser can\'t show the 3D view.') + '</div>' +
-      '<div style="font-weight:500;color:#475569;margin-top:.35rem;font-size:.8rem">Use the numbered stations just below the room to explore every part of the operatory.</div></div>';
-  }
-}
-
-try {
-  // ---- Renderer ----
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  // DESKTOP LAG FIX: the scene is static, so bake shadows ONCE instead of every
-  // frame. The big desktop canvas was re-rendering two 2048px shadow maps per
-  // frame (mobile's smaller canvas hid the cost). Orbiting moves the camera, not
-  // the geometry/lights, so a one-time bake stays correct at every angle.
-  renderer.shadowMap.autoUpdate = false;
-  renderer.shadowMap.needsUpdate = true;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  stage.insertBefore(renderer.domElement, pinsEl);
-
-  // ---- Scene + camera ----
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xdde8ea);
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.06).texture;
-
-  const camera = new THREE.PerspectiveCamera(46, 16 / 10, 0.1, 100);
-  camera.position.set(4.6, 3.0, 5.0);
-
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
-  controls.enablePan = false;
-  controls.minDistance = 3.2;
-  controls.maxDistance = 9.5;
-  controls.maxPolarAngle = 1.46;          // don't drop under the floor
-  controls.minPolarAngle = 0.25;
-  controls.target.set(0, 0.95, -0.4);
-  controls.autoRotate = true;             // gentle intro spin
-  controls.autoRotateSpeed = 0.5;
-  ['pointerdown', 'wheel', 'touchstart'].forEach(function (ev) {
-    renderer.domElement.addEventListener(ev, function () { controls.autoRotate = false; }, { passive: true });
+<!-- Mount the illustrated operatory scene -->
+<script>
+(function () {
+  'use strict';
+  if (!window.SL_SCENE) return;                    // scene module missing: legend still works
+  var VO = window.PDA_VO || { openStation: function () {}, isLocked: null, explored: null };
+  var stage = document.getElementById('stage');
+  if (!stage) return;
+  var ctrl = window.SL_SCENE.mount(stage, {
+    mode: 'room',
+    patientId: 'p_exam',
+    onStation: function (k) { VO.openStation(k); },
+    locked: function (k) { return VO.isLocked ? VO.isLocked(k) : false; }
   });
-
-  // ---- Lights ----
-  scene.add(new THREE.HemisphereLight(0xeaf6ff, 0xb6bfc6, 0.9));
-  const sun = new THREE.DirectionalLight(0xfff4e2, 2.2);
-  sun.position.set(-5, 6.5, 3.5);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 30;
-  sun.shadow.camera.left = -7; sun.shadow.camera.right = 7;
-  sun.shadow.camera.top = 7; sun.shadow.camera.bottom = -7;
-  sun.shadow.bias = -0.0004;
-  scene.add(sun);
-
-  const opSpot = new THREE.SpotLight(0xfff6df, 45, 9, 0.6, 0.45, 1.6);
-  opSpot.position.set(0, 2.55, -0.45);
-  opSpot.target.position.set(0, 0.85, -0.7);
-  opSpot.castShadow = false;          // one shadow-casting light is plenty; saves a full pass
-  scene.add(opSpot); scene.add(opSpot.target);
-
-  // ---- Material + geometry helpers ----
-  const M  = (o) => new THREE.MeshStandardMaterial(o);
-  const Mp = (o) => new THREE.MeshPhysicalMaterial(o);
-  const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
-  const cyl = (rt, rb, h, s) => new THREE.CylinderGeometry(rt, rb, h, s || 28);
-
-  const mTeal   = Mp({ color: 0x0d9488, roughness: 0.45, clearcoat: 0.6, clearcoatRoughness: 0.4 });
-  const mTealD  = Mp({ color: 0x0f766e, roughness: 0.45, clearcoat: 0.5 });
-  const mChrome = M({ color: 0xd7dde1, roughness: 0.25, metalness: 0.95 });
-  const mWhite  = M({ color: 0xeef2f3, roughness: 0.6 });
-  const mGrey   = M({ color: 0xb8c2c8, roughness: 0.55, metalness: 0.2 });
-  const mDark   = M({ color: 0x0f172a, roughness: 0.5 });
-  const mSkin   = M({ color: 0xe9b48f, roughness: 0.7 });
-  const mGown   = M({ color: 0xbfe3ec, roughness: 0.85 });
-  const mScrub  = M({ color: 0x0e7490, roughness: 0.8 });
-
-  function mesh(geo, mat, x, y, z, opts) {
-    const m = new THREE.Mesh(geo, mat);
-    m.position.set(x, y, z);
-    m.castShadow = !(opts && opts.noCast);
-    m.receiveShadow = true;
-    if (opts && opts.rx) m.rotation.x = opts.rx;
-    if (opts && opts.ry) m.rotation.y = opts.ry;
-    if (opts && opts.rz) m.rotation.z = opts.rz;
-    scene.add(m);
-    return m;
-  }
-
-  // ---- Floor (tiled) ----
-  function tileTexture() {
-    const c = document.createElement('canvas'); c.width = c.height = 256;
-    const g = c.getContext('2d');
-    g.fillStyle = '#e7edee'; g.fillRect(0, 0, 256, 256);
-    g.fillStyle = '#dde5e6'; g.fillRect(0, 0, 128, 128); g.fillRect(128, 128, 128, 128);
-    g.strokeStyle = '#c2cdcf'; g.lineWidth = 4;
-    g.strokeRect(0, 0, 128, 128); g.strokeRect(128, 0, 128, 128);
-    g.strokeRect(0, 128, 128, 128); g.strokeRect(128, 128, 128, 128);
-    const t = new THREE.CanvasTexture(c);
-    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 4); t.colorSpace = THREE.SRGBColorSpace;
-    return t;
-  }
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(11, 9), M({ map: tileTexture(), roughness: 0.5, metalness: 0.05 }));
-  floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-
-  // Charting-software TOOTH CHART drawn onto the operatory computer screen.
-  function chartTexture() {
-    const c = document.createElement('canvas'); c.width = 512; c.height = 320;
-    const g = c.getContext('2d');
-    g.fillStyle = '#0b2236'; g.fillRect(0, 0, 512, 320);
-    g.fillStyle = '#0d9488'; g.fillRect(0, 0, 512, 36);
-    g.fillStyle = '#fff'; g.font = 'bold 18px Inter, Arial'; g.fillText('PATIENT CHART — Tooth #14 · MOD', 14, 25);
-    g.fillStyle = '#7dd3fc'; g.font = '12px Inter, Arial'; g.fillText('Surfaces: M O D · Mark as the dentist calls them', 16, 58);
-    // two arches of teeth (upper + lower), 16 each
-    function arch(cy, label) {
-      g.fillStyle = '#94a3b8'; g.font = '10px Inter, Arial'; g.fillText(label, 16, cy - 22);
-      for (let i = 0; i < 16; i++) {
-        const x = 30 + i * 29, hi = (i === 5); // highlight one tooth (#14-ish)
-        g.fillStyle = hi ? '#f59e0b' : '#e2e8f0';
-        g.beginPath(); g.roundRect(x, cy, 22, 30, 5); g.fill();
-        if (hi) { g.fillStyle = '#7c2d12'; g.font = 'bold 11px Inter'; g.fillText('14', x + 4, cy + 20); }
-      }
-    }
-    if (g.roundRect) { arch(96, 'UPPER'); arch(176, 'LOWER'); }
-    g.fillStyle = '#22d3ee'; g.fillRect(0, 250, 512, 2);
-    g.fillStyle = '#cbd5e1'; g.font = '12px Inter, Arial';
-    g.fillText('Next visit: scheduled  ·  Insurance: verified  ·  Pre-med: none', 16, 278);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
-  }
-
-  // Walls + ceiling
-  const backWall = new THREE.Mesh(new THREE.PlaneGeometry(11, 4.2), M({ color: 0xdfe7e9, roughness: 0.95 }));
-  backWall.position.set(0, 2.1, -3); backWall.receiveShadow = true; scene.add(backWall);
-  const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(9, 4.2), M({ color: 0xe4ebec, roughness: 0.95 }));
-  leftWall.rotation.y = Math.PI / 2; leftWall.position.set(-4, 2.1, 0); leftWall.receiveShadow = true; scene.add(leftWall);
-  const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(11, 9), M({ color: 0xf4f7f8, roughness: 1 }));
-  ceiling.rotation.x = Math.PI / 2; ceiling.position.set(0, 3.4, 0); scene.add(ceiling);
-
-  // Window on back wall (visual daylight)
-  mesh(box(2.0, 1.4, 0.08), mWhite, 2.5, 2.4, -2.97);
-  const glass = new THREE.Mesh(new THREE.PlaneGeometry(1.78, 1.18), M({ color: 0xcdebf3, emissive: 0xbfe6f0, emissiveIntensity: 0.9, roughness: 0.3 }));
-  glass.position.set(2.5, 2.4, -2.93); scene.add(glass);
-  mesh(box(0.05, 1.18, 0.04), mWhite, 2.5, 2.4, -2.92);
-  mesh(box(1.78, 0.05, 0.04), mWhite, 2.5, 2.4, -2.92);
-
-  // ---- Back cabinet / counter ----
-  mesh(box(5.2, 0.9, 0.55), mWhite, 0, 0.46, -2.72);
-  mesh(box(5.25, 0.06, 0.6), mGrey, 0, 0.93, -2.72);
-  mesh(box(5.0, 0.7, 0.4), mWhite, 0, 2.05, -2.85);
-  // sink
-  mesh(box(0.5, 0.14, 0.34), mDark, -0.2, 0.9, -2.66);
-  mesh(cyl(0.02, 0.02, 0.22, 16), mChrome, -0.2, 1.04, -2.78);
-  mesh(cyl(0.02, 0.02, 0.16, 16), mChrome, -0.2, 1.12, -2.72, { rx: Math.PI / 2.4 });
-  // ---- Sterilization zone: one-way DIRTY → CLEAN (rinse → ultrasonic → autoclave) ----
-  // Ultrasonic cleaner (DIRTY side, by the sink)
-  mesh(box(0.34, 0.22, 0.3), M({ color: 0xc4ccd2, roughness: 0.4, metalness: 0.45 }), -0.75, 1.06, -2.66);
-  mesh(box(0.26, 0.015, 0.22), M({ color: 0x7dd3fc, emissive: 0x38bdf8, emissiveIntensity: 0.25, roughness: 0.3 }), -0.75, 1.18, -2.66); // bath surface
-  // autoclave (sterilizer — CLEAN side)
-  mesh(box(0.52, 0.42, 0.4), M({ color: 0xdbe2e6, roughness: 0.4, metalness: 0.4 }), -1.75, 1.16, -2.66);
-  mesh(cyl(0.16, 0.16, 0.06, 28), mChrome, -1.75, 1.16, -2.45, { rx: Math.PI / 2 });
-  mesh(cyl(0.12, 0.12, 0.07, 28), M({ color: 0x334155, roughness: 0.35, metalness: 0.6 }), -1.75, 1.16, -2.43, { rx: Math.PI / 2 });
-  // Wall sign teaching the one-way flow
-  (function () {
-    const c = document.createElement('canvas'); c.width = 512; c.height = 120;
-    const g = c.getContext('2d');
-    g.fillStyle = '#0b2236'; g.fillRect(0, 0, 512, 120);
-    g.fillStyle = '#0d9488'; g.fillRect(0, 0, 512, 30);
-    g.fillStyle = '#fff'; g.font = 'bold 17px Inter, Arial'; g.fillText('STERILIZATION — one direction only', 12, 21);
-    g.fillStyle = '#fca5a5'; g.font = 'bold 30px Inter, Arial'; g.fillText('DIRTY', 26, 86);
-    g.fillStyle = '#22d3ee'; g.font = 'bold 32px Inter, Arial'; g.fillText('→   →', 200, 84);
-    g.fillStyle = '#86efac'; g.font = 'bold 30px Inter, Arial'; g.fillText('CLEAN', 360, 86);
-    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(1.25, 0.29), M({ map: t, emissive: 0xffffff, emissiveMap: t, emissiveIntensity: 0.45, roughness: 0.6 }));
-    sign.position.set(-1.2, 1.6, -2.83); scene.add(sign);
-  })();
-  // monitor (charting computer)
-  mesh(box(0.05, 0.42, 0.05), mDark, 1.9, 1.35, -2.74);
-  mesh(box(0.72, 0.46, 0.05), mDark, 1.9, 1.62, -2.72);
-  const chartTex = chartTexture();
-  const screen = new THREE.Mesh(new THREE.PlaneGeometry(0.64, 0.38), M({ map: chartTex, emissive: 0xffffff, emissiveMap: chartTex, emissiveIntensity: 0.55, roughness: 0.4 }));
-  screen.position.set(1.9, 1.62, -2.69); scene.add(screen);
-
-  // ---- Dental chair (head toward -z) ----
-  mesh(cyl(0.36, 0.42, 0.12, 32), mGrey, 0, 0.07, 0.45);
-  mesh(cyl(0.13, 0.13, 0.55, 24), mChrome, 0, 0.4, 0.45);
-  mesh(box(0.6, 0.16, 1.5), mTeal, 0, 0.62, 0.18);                 // seat
-  mesh(box(0.58, 0.15, 0.95), mTeal, 0, 0.67, -0.95, { rx: 0.16 }); // backrest (reclined)
-  mesh(box(0.42, 0.13, 0.3), mTealD, 0, 0.75, -1.5, { rx: 0.26 }); // headrest
-  mesh(box(0.06, 0.1, 0.5), mTealD, 0.33, 0.74, 0.0);              // armrests
-  mesh(box(0.06, 0.1, 0.5), mTealD, -0.33, 0.74, 0.0);
-
-  // patient
-  mesh(new THREE.CapsuleGeometry(0.17, 0.7, 6, 16), mGown, 0, 0.8, -0.55, { rx: Math.PI / 2 });
-  mesh(box(0.38, 0.03, 0.32), mGown, 0, 0.9, -1.05);
-  mesh(new THREE.SphereGeometry(0.14, 24, 20), mSkin, 0, 0.86, -1.45);
-  mesh(new THREE.SphereGeometry(0.145, 24, 20, 0, Math.PI * 2, 0, Math.PI / 1.7), M({ color: 0x6b4a32, roughness: 0.9 }), 0, 0.88, -1.46);
-
-  // ---- Dentist (seated at head of chair, facing +z) ----
-  mesh(cyl(0.22, 0.22, 0.07, 24), mDark, 0, 0.5, -2.05);
-  mesh(cyl(0.05, 0.05, 0.42, 16), mChrome, 0, 0.28, -2.05);
-  mesh(new THREE.CapsuleGeometry(0.18, 0.42, 6, 16), mScrub, 0, 0.92, -2.05);
-  mesh(new THREE.SphereGeometry(0.135, 24, 20), mSkin, 0, 1.3, -1.98);
-  mesh(box(0.2, 0.08, 0.03), mWhite, 0, 1.25, -1.86);   // mask
-  mesh(new THREE.SphereGeometry(0.14, 24, 20, 0, Math.PI * 2, 0, Math.PI / 1.9), M({ color: 0x3b2c20, roughness: 0.9 }), 0, 1.33, -2.0);
-
-  // ---- Assistant stool (your seat) ----
-  mesh(cyl(0.21, 0.21, 0.07, 24), M({ color: 0x1f2937, roughness: 0.7 }), 1.2, 0.52, 0.2);
-  mesh(cyl(0.05, 0.05, 0.44, 16), mChrome, 1.2, 0.28, 0.2);
-
-  // ---- Dental assistant (YOU), seated at the stool on the patient's left ----
-  mesh(new THREE.CapsuleGeometry(0.17, 0.42, 6, 16), mScrub, 1.2, 0.95, 0.24);                    // torso
-  mesh(new THREE.SphereGeometry(0.13, 24, 20), mSkin, 1.17, 1.33, 0.16);                          // head
-  mesh(new THREE.SphereGeometry(0.135, 24, 20, 0, Math.PI * 2, 0, Math.PI / 1.8),
-       M({ color: 0x4a3320, roughness: 0.9 }), 1.17, 1.36, 0.17);                                 // hair
-  mesh(box(0.18, 0.07, 0.03), mWhite, 1.1, 1.30, 0.07, { ry: -0.7 });                             // mask, turned toward patient
-
-  // ---- Overhead operatory light ----
-  mesh(cyl(0.05, 0.05, 0.7, 16), mWhite, 0, 3.05, -0.9);
-  mesh(cyl(0.045, 0.045, 0.9, 16), mWhite, 0, 2.7, -0.65, { rx: 0.7 });
-  mesh(cyl(0.36, 0.36, 0.12, 36), mWhite, 0, 2.55, -0.45, { rx: 0.5 });
-  const lightFace = new THREE.Mesh(cyl(0.3, 0.3, 0.03, 36), M({ color: 0xffffff, emissive: 0xfff3d0, emissiveIntensity: 2.2 }));
-  lightFace.position.set(0, 2.49, -0.36); lightFace.rotation.x = 0.5 + Math.PI; scene.add(lightFace);
-
-  // ---- Delivery unit + instrument tray (patient's right) ----
-  mesh(cyl(0.05, 0.05, 0.95, 16), mChrome, 1.55, 0.48, 0.45);
-  mesh(box(0.6, 0.05, 0.06), mChrome, 1.28, 0.98, 0.2);
-  mesh(box(0.5, 0.04, 0.36), M({ color: 0xc9d2d7, roughness: 0.3, metalness: 0.5 }), 1.05, 1.0, 0.0);
-  for (let i = 0; i < 4; i++) {
-    mesh(cyl(0.013, 0.013, 0.26, 12), mChrome, 0.92 + i * 0.07, 1.03, 0.0, { rz: Math.PI / 2 });
-  }
-  // suction hoses
-  const hoseMat = M({ color: 0x9aa7ad, roughness: 0.6 });
-  [[1.2, 0.95, 0.1, 0.5, 0.9, -0.2], [1.28, 0.95, 0.2, 0.6, 0.92, -0.05]].forEach(function (p) {
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(p[0], p[1], p[2]),
-      new THREE.Vector3((p[0] + p[3]) / 2, 0.7, (p[2] + p[5]) / 2 - 0.1),
-      new THREE.Vector3(p[3], p[4], p[5])
-    ]);
-    const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, 0.022, 10, false), hoseMat);
-    tube.castShadow = true; scene.add(tube);
-  });
-  // Distinct suction tips at the hose ends:
-  //   HVE (high-volume evacuator) — wide chrome tip; keeps the field dry/aerosol-controlled.
-  mesh(cyl(0.034, 0.024, 0.14, 16), mChrome, 0.5, 0.92, -0.2, { rx: -0.6 });
-  mesh(cyl(0.026, 0.026, 0.02, 16), M({ color: 0x334155, roughness: 0.4 }), 0.5, 0.99, -0.16, { rx: -0.6 });
-  //   Saliva ejector — thin low-volume tip (the classic bendable blue straw).
-  mesh(cyl(0.012, 0.012, 0.12, 12), M({ color: 0x60a5fa, roughness: 0.5 }), 0.6, 0.95, -0.05, { rx: -0.5 });
-  mesh(cyl(0.013, 0.013, 0.03, 12), M({ color: 0x2563eb, roughness: 0.5 }), 0.6, 1.01, -0.02, { rx: -0.5 });
-
-  // ---- X-ray unit (left wall) ----
-  mesh(box(0.22, 0.42, 0.28), mWhite, -3.85, 1.75, -0.5);
-  mesh(cyl(0.04, 0.04, 0.9, 14), mGrey, -3.4, 1.65, -0.48, { rz: Math.PI / 2.6 });
-  mesh(cyl(0.04, 0.04, 0.8, 14), mGrey, -2.75, 1.5, -0.45, { rz: -Math.PI / 2.4 });
-  mesh(cyl(0.1, 0.1, 0.2, 20), M({ color: 0xe2e8f0, roughness: 0.4 }), -2.3, 1.45, -0.42);
-  mesh(cyl(0.06, 0.08, 0.2, 20), M({ color: 0xcbd5e1, roughness: 0.4 }), -2.15, 1.4, -0.34, { rz: Math.PI / 2.2 });
-
-  // ---- Extra realism props (static decor; nearly free thanks to baked shadows) ----
-  // Door on the left wall
-  mesh(box(0.08, 2.5, 1.0), M({ color: 0xe8eef0, roughness: 0.9 }), -3.96, 1.25, 1.6);
-  mesh(box(0.06, 2.4, 0.9), M({ color: 0xf4f8f9, roughness: 0.9 }), -3.9, 1.25, 1.6);
-  mesh(cyl(0.03, 0.03, 0.12, 12), mChrome, -3.84, 1.15, 1.2, { rx: Math.PI / 2 });
-  // Baseboards
-  mesh(box(11, 0.12, 0.04), M({ color: 0xcdd6d8, roughness: 0.8 }), 0, 0.06, -2.98);
-  mesh(box(0.04, 0.12, 9), M({ color: 0xcdd6d8, roughness: 0.8 }), -3.98, 0.06, 0);
-  // Sharps container (red, realistic) + a clean glove-box dispenser rack (S/M/L)
-  mesh(box(0.22, 0.26, 0.18), M({ color: 0xdc2626, roughness: 0.6 }), 0.7, 1.06, -2.66);
-  const mGloveBox = M({ color: 0xeaf1f1, roughness: 0.7 });          // on-brand off-white dispensers
-  const mGloveLip = M({ color: 0x0d9488, roughness: 0.6 });          // teal label lip = the glove opening
-  [1.15, 1.4, 1.65].forEach(function (gx) {
-    mesh(box(0.2, 0.12, 0.14), mGloveBox, gx, 1.0, -2.64);
-    mesh(box(0.16, 0.02, 0.05), mGloveLip, gx, 1.06, -2.57);         // angled front opening
-  });
-  // Wall clock on the back wall
-  mesh(cyl(0.18, 0.18, 0.04, 28), mWhite, -1.1, 2.55, -2.95, { rx: Math.PI / 2 });
-  mesh(cyl(0.16, 0.16, 0.02, 28), M({ color: 0xf8fafc, roughness: 0.5 }), -1.1, 2.55, -2.92, { rx: Math.PI / 2 });
-  mesh(box(0.015, 0.1, 0.01), mDark, -1.1, 2.59, -2.9);
-  mesh(box(0.08, 0.015, 0.01), mDark, -1.07, 2.55, -2.9);
-  // Framed diploma on the left wall
-  mesh(box(0.04, 0.5, 0.66), M({ color: 0x8a6d3b, roughness: 0.6 }), -3.97, 2.2, -1.2);
-  mesh(box(0.02, 0.4, 0.56), mWhite, -3.93, 2.2, -1.2);
-  // Corner plant
-  mesh(cyl(0.16, 0.12, 0.3, 18), M({ color: 0x475569, roughness: 0.7 }), -3.4, 0.15, 2.4);
-  mesh(new THREE.SphereGeometry(0.28, 16, 14), M({ color: 0x2f8f5b, roughness: 0.9 }), -3.4, 0.5, 2.4);
-  mesh(new THREE.SphereGeometry(0.2, 16, 14), M({ color: 0x37a169, roughness: 0.9 }), -3.2, 0.62, 2.5);
-  // Two recessed ceiling light panels (emissive)
-  [-1.4, 1.4].forEach(function (px) {
-    var p = new THREE.Mesh(new THREE.PlaneGeometry(1.4, 0.5), M({ color: 0xffffff, emissive: 0xf1f7ff, emissiveIntensity: 0.8, roughness: 1 }));
-    p.rotation.x = Math.PI / 2; p.position.set(px, 3.38, 0.4); scene.add(p);
-  });
-  // Water cup on the delivery unit
-  mesh(cyl(0.04, 0.035, 0.09, 16), M({ color: 0xdbeafe, roughness: 0.4 }), 1.2, 1.06, 0.18);
-
-  // ===== Hotspot anchors (3D world points the pins track) =====
-  const anchors = {
-    dentist:  new THREE.Vector3(0, 1.45, -2.0),
-    patient:  new THREE.Vector3(0, 0.95, -1.0),
-    assistant:new THREE.Vector3(1.2, 1.52, 0.2),
-    light:    new THREE.Vector3(0, 2.62, -0.45),
-    tray:     new THREE.Vector3(1.05, 1.12, 0.0),
-    suction:  new THREE.Vector3(0.62, 0.95, -0.05),
-    xray:     new THREE.Vector3(-2.25, 1.6, -0.4),
-    computer: new THREE.Vector3(1.9, 1.82, -2.7),
-    steri:    new THREE.Vector3(-1.75, 1.42, -2.6)
-  };
-
-  // Build pin elements over the canvas
-  const pinEls = [];
-  VO.KEYS.forEach(function (k, i) {
-    const st = VO.STATIONS[k] || {};
-    const b = document.createElement('button');
-    b.className = 'hot';
-    b.dataset.st = k;
-    b.innerHTML = (i + 1) + '<span class="pinlabel">' + (st.short || '') + '</span>';
-    b.addEventListener('click', function () { VO.openStation(k); });
-    pinsEl.appendChild(b);
-    pinEls.push(b);
-  });
-
-  window.PDA_VO_repaintPins = function (e) {
-    e = e || {};
-    pinEls.forEach(function (p) { p.classList.toggle('done', !!e[p.dataset.st]); });
-  };
-  if (VO.explored) window.PDA_VO_repaintPins(VO.explored());
-
-  // ---- Tap the REAL equipment: invisible pick proxies + hover ring + fly-to ----
-  const pickable = [];
-  Object.keys(anchors).forEach(function (k) {
-    const proxy = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.85, 0.85),
-      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }));
-    proxy.position.copy(anchors[k]); proxy.userData.station = k; scene.add(proxy); pickable.push(proxy);
-  });
-  const ring = new THREE.Mesh(new THREE.TorusGeometry(0.32, 0.028, 12, 40),
-    new THREE.MeshBasicMaterial({ color: 0x14b8a6 }));
-  ring.visible = false; scene.add(ring);
-
-  const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2();
-  let downX = 0, downY = 0, downT = 0, dragging = false;
-  function ndcFrom(e) {
-    const r = renderer.domElement.getBoundingClientRect();
-    ndc.x = ((e.clientX - r.left) / r.width) * 2 - 1;
-    ndc.y = -((e.clientY - r.top) / r.height) * 2 + 1;
-  }
-  function pickStation() {
-    ray.setFromCamera(ndc, camera);
-    const hit = ray.intersectObjects(pickable, false);
-    return hit.length ? hit[0].object.userData.station : null;
-  }
-  function setHover(k) {
-    renderer.domElement.style.cursor = k ? 'pointer' : '';
-    if (k && anchors[k]) { ring.position.copy(anchors[k]); ring.visible = true; } else { ring.visible = false; }
-    pinEls.forEach(function (p) { p.classList.toggle('hot--hover', p.dataset.st === k); });
-  }
-  // Fly-to: glide the camera in to frame whatever you tapped
-  let fly = null;
-  function flyTo(a) {
-    if (!a) return; controls.autoRotate = false;
-    const dir = camera.position.clone().sub(controls.target); dir.y = Math.max(dir.y, 1.1); dir.normalize();
-    fly = { pos: a.clone().add(dir.multiplyScalar(3.4)), tgt: a.clone(), n: 0 };
-  }
-  renderer.domElement.addEventListener('pointerdown', function (e) { downX = e.clientX; downY = e.clientY; downT = Date.now(); dragging = false; });
-  renderer.domElement.addEventListener('pointermove', function (e) {
-    if (e.buttons && (Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) > 8)) dragging = true;
-    ndcFrom(e); setHover(pickStation());
-  });
-  renderer.domElement.addEventListener('pointerup', function (e) {
-    if (dragging || (Date.now() - downT) > 500) return;
-    ndcFrom(e); const k = pickStation();
-    if (k) { VO.openStation(k); flyTo(anchors[k]); }
-  });
-  renderer.domElement.addEventListener('pointerleave', function () { setHover(null); });
-  // Tapping an HTML pin should also glide the camera over
-  pinEls.forEach(function (p) { p.addEventListener('click', function () { flyTo(anchors[p.dataset.st]); }); });
-
-  // Lock styling for pins (amber + 🔒) in preview mode
-  window.PDA_VO_repaintLocks = function (locked) {
-    pinEls.forEach(function (p) { p.classList.toggle('locked', !!(locked && locked(p.dataset.st))); });
-  };
-  if (VO.isLocked) window.PDA_VO_repaintLocks(VO.isLocked);
-
-  const tmp = new THREE.Vector3();
-  function updatePins() {
-    const w = stage.clientWidth, h = stage.clientHeight;
-    pinEls.forEach(function (p) {
-      const a = anchors[p.dataset.st];
-      if (!a) { p.style.display = 'none'; return; }
-      tmp.copy(a).project(camera);
-      const inFront = tmp.z < 1;
-      const x = (tmp.x * 0.5 + 0.5) * w;
-      const y = (-tmp.y * 0.5 + 0.5) * h;
-      if (inFront && x > -20 && x < w + 20 && y > -20 && y < h + 20) {
-        p.style.display = '';
-        p.style.left = x + 'px';
-        p.style.top = y + 'px';
-      } else {
-        p.style.display = 'none';
-      }
-    });
-  }
-
-  // ---- Sizing ----
-  function resize() {
-    const w = stage.clientWidth, h = stage.clientHeight;
-    if (!w || !h) return;
-    renderer.setSize(w, h, false);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-  resize();
-  if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
-  window.addEventListener('resize', resize);
-
-  // ---- Render loop ----
-  renderer.setAnimationLoop(function () {
-    if (fly) {
-      camera.position.lerp(fly.pos, 0.12);
-      controls.target.lerp(fly.tgt, 0.12);
-      if (++fly.n > 45 || camera.position.distanceTo(fly.pos) < 0.04) fly = null;
-    }
-    controls.update();
-    if (ring.visible) {
-      ring.lookAt(camera.position);
-      const s = 1 + Math.sin(performance.now() * 0.005) * 0.08;
-      ring.scale.set(s, s, s);
-    }
-    updatePins();
-    renderer.render(scene, camera);
-  });
-
-  // Reveal: hide the loading overlay once the first frame is up
-  requestAnimationFrame(function () {
-    requestAnimationFrame(function () { if (loadingEl) loadingEl.style.display = 'none'; });
-  });
-
-} catch (err) {
-  console.error('Virtual office 3D failed:', err);
-  failSoft('The 3D view couldn\'t start on this device.');
-}
+  window.PDA_VO_SCENE = ctrl;
+  window.PDA_VO_repaintPins = function (e) { ctrl.repaintPins(e); };
+  window.PDA_VO_repaintLocks = function (fn) { ctrl.repaintLocks(fn); };
+  if (VO.explored) ctrl.repaintPins(VO.explored());
+  if (VO.isLocked) ctrl.repaintLocks(VO.isLocked);
+})();
 </script>
 </body>
 </html>
