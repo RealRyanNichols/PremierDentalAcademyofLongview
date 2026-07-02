@@ -93,7 +93,7 @@
       logo: 'https://premierdentalacademyoflongview.com/assets/logo-mark.png',
       image: 'https://premierdentalacademyoflongview.com/assets/og-cover.png',
       telephone: '+1-903-913-6444',
-      priceRange: '$397–$1,997',
+      priceRange: '$397–$3,500',
       address: {
         '@type': 'PostalAddress',
         streetAddress: '2800 Gilmer Rd, Suite 106',

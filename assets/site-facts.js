@@ -39,19 +39,25 @@
     },
 
     pricing: {
-      inPerson: { total: 1997, totalDisplay: "$1,997", totalCents: 199700, downPayment: 200, downDisplay: "$200" },
+      // July 1, 2026 price change — must match api/enroll.js (the payment engine).
+      // Pay in full: $3,000. Payment plan: $3,500 total = $500 down + $3,000 balance.
+      inPerson: {
+        total: 3000, totalDisplay: "$3,000", totalCents: 300000,
+        planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000,
+        downPayment: 500, downDisplay: "$500"
+      },
       online:   { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true, saleLabel: "limited-time sale" }
     },
 
     paymentPlan: {
-      text: "$200 down holds your seat, then simple weekly or monthly payments. No big lump sum.",
+      text: "$500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments (up to 12). Plan total $3,500 — or save $500 by paying $3,000 in full.",
       cadence: "weekly or monthly",
       splitPay: ["Klarna", "Afterpay", "Affirm"]
     },
 
     transferRefund: {
       online: "Online ($397) is non-refundable; 100% transfers as credit toward In-Person tuition within 90 days.",
-      inPerson: "In-Person ($1,997) is pro-rated per the Terms.",
+      inPerson: "In-Person ($3,000 paid in full, or $3,500 on a plan) is pro-rated per the Terms.",
       source: "terms.html"
     },
 
@@ -131,7 +137,7 @@
     },
 
     _meta: {
-      updated: "2026-06-21",
+      updated: "2026-07-02",
       maintainer: "docs/business-facts-source-of-truth.md",
       rule: "Do not hard-code these facts in pages. Read from window.PDA_FACTS."
     }
