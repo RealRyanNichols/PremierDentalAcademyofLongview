@@ -69,6 +69,9 @@
     </div>
 
     <div id="panel-leads">
+      <!-- Amanda's plain-English summary: the story first, numbers to back it up -->
+      <div id="story-card" class="bg-white rounded-2xl border border-slate-200 p-5 mb-5"></div>
+
       <!-- Pipeline board -->
       <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5" id="pipeline-board"></div>
 
@@ -101,6 +104,7 @@
         <label class="flex items-center gap-1.5 text-sm text-slate-600 bg-white border border-slate-300 rounded-lg px-3 py-2 cursor-pointer">
           <input type="checkbox" id="uncontacted-only" class="accent-rose-600" /> Uncontacted only
         </label>
+        <button id="density-toggle" type="button" title="Switch between the calm one-line view and full detail" class="bg-white border border-slate-300 hover:border-teal-600 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700"></button>
       </div>
 
       <!-- Leads list -->
@@ -228,6 +232,11 @@
   let allComms = [];
   let expandedThreads = new Set();
   let currentTab = 'leads';
+  // Calm view = one friendly line per person, tap to open the full card.
+  // Detailed view = everything at once (the old layout). Amanda's choice sticks.
+  let density = 'calm';
+  try { density = localStorage.getItem('pda.leads.density') || 'calm'; } catch (e) {}
+  let expandedLeads = new Set();
 
   // A lead is "hot" (call first) if money's in motion or it's fresh & untouched.
   function isHot(l) {
@@ -283,6 +292,95 @@
     if (!bits.length) return '';
     return `<div class="text-sm mt-1.5 bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg px-3 py-2">
       💰 <strong>Ready to pay:</strong> ${bits.join(' · ')}</div>`;
+  }
+
+  // ── Plain-words storytelling: where this person came from + what to do next ──
+  function sourceStory(l) {
+    const s = (l.source || '').toLowerCase();
+    const path = (l.interest_path || '').toLowerCase();
+    if (s === 'sponsor-student') return 'asked for help paying tuition (sponsorship)';
+    if (s === 'sponsor-business') return 'is a business offering to sponsor a student';
+    if (s.includes('night-class')) return 'wants a seat in the night class';
+    if (s.includes('apply')) return 'filled out the application' + (path.includes('online') ? ' for Online' : path.includes('person') ? ' for In-Person' : '');
+    if (s.includes('tour')) return 'asked to tour the campus';
+    if (s.includes('waitlist')) return 'joined the waitlist';
+    if (s.includes('study-guide')) return 'grabbed the free study guide';
+    if (s.includes('practice-exam') || s.includes('exam')) return 'took the free practice exam';
+    if (s.includes('employer') || s.includes('request-graduate')) return 'is a dental office asking for a graduate';
+    if (s.includes('blog')) return 'reached out from a blog article';
+    if (s.includes('enroll')) return 'was on the checkout page';
+    return 'reached out from the website';
+  }
+  function storyLine(l) {
+    return `${esc(l.first_name || 'Someone')} ${sourceStory(l)} ${timeAgo(l.created_at)}.`;
+  }
+  function nextStep(l) {
+    const stage = stageOf(l);
+    if (stage === 'lost') return { text: 'Nothing to do — marked lost.', tone: 'text-slate-400' };
+    if (stage === 'paying') return { text: 'Mid-payment — a friendly check-in keeps it moving.', tone: 'text-emerald-700' };
+    if (l.pay_intent) return { text: 'They picked a payment plan — call while it’s warm.', tone: 'text-emerald-700' };
+    if (!l.last_contact_at) return { text: l.phone ? 'No one has reached out yet — a quick text is a great first touch.' : 'No one has reached out yet — send a short email.', tone: 'text-rose-600' };
+    if (stage === 'tour_booked') return { text: 'Tour booked — confirm the day before.', tone: 'text-violet-700' };
+    return { text: `You reached out ${timeAgo(l.last_contact_at)} — waiting on their reply.`, tone: 'text-slate-500' };
+  }
+
+  // The story card: one honest sentence about today, then two small pictures —
+  // new people over the last 14 days, and how they're finding the school.
+  function renderStoryCard() {
+    const card = document.getElementById('story-card');
+    if (!card) return;
+    const active = allLeads.filter(l => stageOf(l) !== 'lost');
+    const hotN = allLeads.filter(isHot).length;
+    const neverN = active.filter(l => !l.last_contact_at).length;
+    const weekAgo = Date.now() - 7 * 864e5;
+    const newWeekN = allLeads.filter(l => new Date(l.created_at).getTime() > weekAgo).length;
+    const needsReplyN = buildThreads().filter(t => t.needsReply).length;
+
+    const hour = new Date().getHours();
+    const hello = (hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening')
+      + (profile?.first_name ? ', ' + esc(profile.first_name) : '');
+    const bits = [];
+    if (hotN) bits.push(`<strong class="text-rose-700">${hotN} ${hotN === 1 ? 'person' : 'people'} to call first</strong>`);
+    if (needsReplyN) bits.push(`<strong class="text-cyan-700">${needsReplyN} text${needsReplyN === 1 ? '' : 's'} waiting on your reply</strong>`);
+    if (!bits.length && neverN) bits.push(`<strong class="text-amber-700">${neverN} ${neverN === 1 ? 'person' : 'people'} still waiting on a first hello</strong>`);
+    const weekBit = newWeekN ? ` ${newWeekN} new ${newWeekN === 1 ? 'person' : 'people'} found you this week.` : '';
+    const sentence = bits.length
+      ? `${hello} — you have ${bits.join(' and ')}.${weekBit}`
+      : `${hello} — you’re all caught up. ${weekBit || 'Nothing is waiting on you right now.'}`;
+
+    const days = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - i);
+      const next = new Date(d); next.setDate(d.getDate() + 1);
+      days.push({ d, n: allLeads.filter(l => { const t = new Date(l.created_at); return t >= d && t < next; }).length });
+    }
+    const max = Math.max(1, ...days.map(x => x.n));
+    const spark = days.map(x =>
+      `<div title="${x.d.toLocaleDateString()} — ${x.n} new" class="flex-1 rounded-t ${x.n ? 'bg-teal-500' : 'bg-slate-200'}" style="height:${Math.max(4, Math.round((x.n / max) * 40))}px"></div>`).join('');
+
+    const bySource = {};
+    allLeads.forEach(l => { const k = sourceStory(l); bySource[k] = (bySource[k] || 0) + 1; });
+    const top = Object.entries(bySource).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const maxS = Math.max(1, ...top.map(t => t[1]));
+    const srcBars = top.map(([k, n]) =>
+      `<div class="flex items-center gap-2 text-xs">
+        <div class="w-40 sm:w-56 truncate text-slate-600">${esc(k)}</div>
+        <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-cyan-500" style="width:${Math.round((n / maxS) * 100)}%"></div></div>
+        <div class="w-7 text-right font-bold mono">${n}</div>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <p class="text-base leading-relaxed text-slate-800">${sentence}</p>
+      <div class="grid sm:grid-cols-2 gap-5 mt-4">
+        <div>
+          <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold mb-1.5">New people, last 14 days</div>
+          <div class="flex items-end gap-1 h-11">${spark}</div>
+        </div>
+        <div>
+          <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold mb-1.5">How they’re finding you</div>
+          <div class="space-y-1.5">${srcBars || '<div class="text-xs text-slate-400">No leads yet.</div>'}</div>
+        </div>
+      </div>`;
   }
 
   function actionButtons(l, compact) {
@@ -351,7 +449,44 @@
 
     const list = document.getElementById('leads-list');
     document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
-    list.innerHTML = leads.map(l => {
+    list.innerHTML = leads.map(l => density === 'calm' ? calmEntry(l) : fullCard(l)).join('');
+
+    wireRowHandlers();
+    renderStoryCard();
+    renderSubs();
+  }
+
+  // Calm view: one friendly line per person — who they are, what they did,
+  // and the one thing to do next. Tap the row to open the full card.
+  function calmEntry(l) {
+    const open = expandedLeads.has(l.id);
+    const stage = stageOf(l);
+    const m = STAGE_META[stage];
+    const hot = isHot(l);
+    const step = nextStep(l);
+    const name = `${l.first_name||''} ${l.last_name||''}`.trim() || '(no name)';
+    const row = `
+      <div class="p-3.5 sm:px-5 flex items-center gap-3 cursor-pointer hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : ''}" data-expand="${l.id}">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-xs shrink-0">
+          ${esc((l.first_name?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-semibold text-sm">${esc(name)}</span>
+            ${hot ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">🔥</span>' : ''}
+            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${m.chip}">${m.label}</span>
+            ${l.ready_timeline ? `<span class="text-[10px] font-semibold bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">📅 ${esc(readinessLabel(l.ready_timeline))}</span>` : ''}
+          </div>
+          <div class="text-sm text-slate-600 truncate mt-0.5">${storyLine(l)}</div>
+          <div class="text-xs font-semibold mt-0.5 ${step.tone}">→ ${step.text}</div>
+        </div>
+        <div class="shrink-0 hidden sm:block">${actionButtons(l, true)}</div>
+        <div class="text-slate-400 shrink-0" aria-hidden="true">${open ? '▴' : '▾'}</div>
+      </div>`;
+    return open ? row + fullCard(l) : row;
+  }
+
+  function fullCard(l) {
       const stage = stageOf(l);
       const hot = isHot(l);
       const name = `${l.first_name||''} ${l.last_name||''}`.trim() || '(no name)';
@@ -398,13 +533,19 @@
             </div>
           </div>
         </div>`;
-    }).join('');
-
-    wireRowHandlers();
-    renderSubs();
   }
 
   function wireRowHandlers() {
+    // Calm-view rows: tap anywhere (except a control) to open the full card
+    document.querySelectorAll('[data-expand]').forEach(row => {
+      row.addEventListener('click', (e) => {
+        if (e.target.closest('a,button,select,textarea,input')) return;
+        const id = row.dataset.expand;
+        if (expandedLeads.has(id)) expandedLeads.delete(id); else expandedLeads.add(id);
+        render();
+      });
+    });
+
     // Stage change → write pipeline_stage (and keep legacy status roughly in sync)
     document.querySelectorAll('.stage-sel').forEach(sel => {
       sel.onchange = async (e) => {
@@ -634,6 +775,15 @@
   document.getElementById('stage-filter').onchange = render;
   document.getElementById('source-filter').onchange = render;
   document.getElementById('uncontacted-only').onchange = render;
+  // Calm ↔ Detailed view toggle — Amanda's preference is remembered on this device
+  const densBtn = document.getElementById('density-toggle');
+  function syncDensityBtn() { densBtn.textContent = density === 'calm' ? '🗂 Show full detail' : '🌿 Back to calm view'; }
+  densBtn.onclick = () => {
+    density = density === 'calm' ? 'detailed' : 'calm';
+    try { localStorage.setItem('pda.leads.density', density); } catch (e) {}
+    syncDensityBtn(); render();
+  };
+  syncDensityBtn();
   document.getElementById('msg-search').oninput = renderMessages;
   document.getElementById('msg-needs-reply').onchange = renderMessages;
   document.getElementById('refresh').onclick = load;
@@ -674,7 +824,7 @@
   const SMS_TEMPLATES = [
     ['👋 Intro', (n) => `Hi ${n||'there'}, this is Amanda at Premier Dental Academy of Longview. Thanks for reaching out! What questions can I answer about becoming a dental assistant?`],
     ['📅 Tour', (n) => `Hi ${n||'there'}! Would you like to come tour the Longview campus this week? I can show you the labs and chairs. What day works?`],
-    ['💸 Plans', (n) => `Hi ${n||'there'}, just a heads up — we have payment plans starting at $200 down so you can start now and pay as you go. Want me to send the details?`],
+    ['💸 Plans', (n) => `Hi ${n||'there'}, just a heads up — we have payment plans starting at $500 down so you can start now and pay as you go. Want me to send the details?`],
     ['🌙 Tonight', (n) => `Hi ${n||'there'}! We still have a seat or two in tonight's class. Want me to hold one for you? Just reply YES.`],
   ];
   function renderTemplates() {
