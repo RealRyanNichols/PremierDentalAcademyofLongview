@@ -27,7 +27,7 @@
   // Knowledge base — keyword matchers + canned responses
   const KB = [
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$1,997** with payment plans available.\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
+      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a plan** ($500 down, then weekly or monthly payments).\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
@@ -39,11 +39,11 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person ($1,997)** has flexible payment plans — $200 down, then daily/weekly/monthly until paid off.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**.',
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — $500 down, then weekly or monthly payments (up to 12) until paid off.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas** — you apply directly with them (free).',
       cta: { label: 'Apply →', href: '/apply' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
-      reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. We help you navigate eligibility — submit a free application and we\'ll get on a call.',
+      reply: 'Yes — through **WIOA funding** with **Workforce Solutions East Texas**. You apply directly with them (not through PDA): fill out their free WIOA interest form and they\'ll contact you within about 3 business days by phone, text, or email. The process takes ~6–8 weeks, so start early to be funded in time for your class. Start here: https://www.easttexasworkforce.org/apply',
       cta: { label: 'Apply for funding →', href: '/apply' } },
 
     { match: /\b(salary|pay|earn|how much.*make|income|wage)\b/i,
@@ -79,7 +79,7 @@
       cta: { label: 'Send a message →', href: '/contact' } },
 
     { match: /\b(refund|money back|guarantee|cancel)\b/i,
-      reply: '**Online ($397 sale):** non-refundable at the sale price — but if Online isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program. Your money is never lost.\n\n**In-Person ($1,997):** pro-rated refund per Texas state proprietary-school guidelines.',
+      reply: '**Online ($397 sale):** non-refundable at the sale price — but if Online isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program. Your money is never lost.\n\n**In-Person ($3,000, or $3,500 on a plan):** pro-rated refund per Texas state proprietary-school guidelines.',
       cta: { label: 'See full policy →', href: '/terms' } },
 
     { match: /\b(certification|certificate|license|state board|rda|register|registration|texas)\b/i,
@@ -118,7 +118,7 @@
     { label: '⏱ How long does the program take?', q: 'How long does the program take?' },
     { label: '📅 When\'s the next class?',       q: 'When is the next class?' },
     { label: '💵 Can I pay monthly?',            q: 'Can I pay monthly?' },
-    { label: '🎖 Do you accept GI Bill / TWC?',  q: 'Do you accept GI Bill or TWC funding?' },
+    { label: '💰 Can WIOA funding cover it?',  q: 'Can WIOA funding cover my tuition?' },
     { label: '📝 I want to apply',              q: 'I want to apply' },
     { label: '👋 Talk to a real person',        q: 'I want to talk to a human' },
   ];

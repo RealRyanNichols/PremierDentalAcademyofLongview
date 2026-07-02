@@ -39,19 +39,19 @@
     },
 
     pricing: {
-      inPerson: { total: 1997, totalDisplay: "$1,997", totalCents: 199700, downPayment: 200, downDisplay: "$200" },
+      inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", balance: 3000, balanceDisplay: "$3,000" },
       online:   { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true, saleLabel: "limited-time sale" }
     },
 
     paymentPlan: {
-      text: "$200 down holds your seat, then simple weekly or monthly payments. No big lump sum.",
+      text: "Pay in full for $3,000, or go on a plan ($3,500): $500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments (up to 12). No big lump sum.",
       cadence: "weekly or monthly",
       splitPay: ["Klarna", "Afterpay", "Affirm"]
     },
 
     transferRefund: {
       online: "Online ($397) is non-refundable; 100% transfers as credit toward In-Person tuition within 90 days.",
-      inPerson: "In-Person ($1,997) is pro-rated per the Terms.",
+      inPerson: "In-Person ($3,000, or $3,500 on a plan) is pro-rated per the Terms.",
       source: "terms.html"
     },
 
