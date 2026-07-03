@@ -11,6 +11,31 @@
 //   4. Wires the hamburger: open / close, body-scroll-lock, link click
 //      auto-closes, viewport resize auto-closes back to desktop layout.
 (function () {
+  // ---- Meta Pixel (Premier Dental Academy Pixel 1290830552877730) ----
+  // Site-wide base code: builds retargeting audiences (PageView on every page).
+  // Funnel events: InitiateCheckout on /enroll, Purchase on /enroll-success.
+  // Guarded so pages with their own pixel snippet (e.g. /go/dental-assistant)
+  // don't double-init.
+  try {
+    if (!window.fbq) {
+      !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];t=b.createElement(e);t.async=!0;
+      t.src=v;s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)}(window,document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+      window.fbq('init', '1290830552877730');
+      window.fbq('track', 'PageView');
+    }
+    var pdaPixelPath = location.pathname.replace(/\.html$/, '').replace(/\/$/, '');
+    if (pdaPixelPath === '/enroll') {
+      window.fbq('track', 'InitiateCheckout');
+    } else if (pdaPixelPath === '/enroll-success') {
+      window.fbq('track', 'Purchase', { currency: 'USD', value: 500.00 });
+    }
+  } catch (e) { /* pixel must never break the nav */ }
+
   const NAV_HTML = `
 <nav aria-label="Primary" class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
