@@ -253,10 +253,13 @@ sbInsert('page_visits',{page:'fb_funnel',visitor_hash:visitorHash()}).catch(()=>
     document.getElementById('cd-name').textContent = new Date(c.start_date + 'T12:00:00').toLocaleDateString('en-US', { month:'long', day:'numeric' });
     document.getElementById('countdown').style.display = 'block';
 
-    // Real seats-remaining from the database.
+    // Seat availability — no numeric claim here; the /enroll page is the single
+    // place that displays seat numbers, so the two pages can never contradict.
     const left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
-    if(c.capacity && left > 0 && left <= c.capacity){
-      document.getElementById('seats-line').innerHTML = `<span class="seats-pill">Only ${left} of ${c.capacity} seats open — 2 Pay-in-Full Packs available</span>`;
+    if(left <= 0){
+      document.getElementById('seats-line').innerHTML = `<span class="seats-pill">This class is full — ask about the next one</span>`;
+    } else {
+      document.getElementById('seats-line').innerHTML = `<span class="seats-pill">Small class, limited seats — 2 Pay-in-Full Packs available</span>`;
     }
 
     function tick(){
