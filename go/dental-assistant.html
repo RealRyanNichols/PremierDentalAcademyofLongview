@@ -93,6 +93,41 @@ footer{padding:30px 20px;text-align:center;font-size:.8rem;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){
   .btn.pulse,.arrow-down,.seats-pill,.pack,.pack .pack-tag,.goodie{animation:none}
 }
+
+/* ── Interactive decision tools ─────────────────────────── */
+.tool-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:34px 28px;box-shadow:var(--shadow)}
+.race{margin-top:26px;display:grid;gap:18px}
+.race-row .r-label{display:flex;justify-content:space-between;font-size:.9rem;font-weight:700;color:var(--navy);margin-bottom:6px}
+.race-row .r-label .r-time{color:var(--muted);font-weight:600}
+.race-track{background:var(--teal-light);border-radius:999px;height:34px;overflow:hidden}
+.race-fill{height:100%;border-radius:999px;display:flex;align-items:center;padding-left:14px;color:#fff;font-weight:700;font-size:.8rem;white-space:nowrap;width:0;transition:width 1.6s cubic-bezier(.2,.8,.2,1)}
+.race-fill.pda{background:linear-gradient(90deg,var(--gold),#e0a94e)}
+.race-fill.cert{background:#7a99a3}
+.race-fill.college{background:#3e5c66}
+.slider-wrap{margin-top:22px}
+.slider-wrap input[type=range]{width:100%;accent-color:var(--gold);height:34px;cursor:pointer}
+.slider-readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:14px}
+.readout-box{background:var(--teal-light);border-radius:14px;padding:16px;text-align:center}
+.readout-box .r-big{font-family:'Fraunces',serif;font-size:1.7rem;font-weight:700;color:var(--navy)}
+.readout-box .r-small{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.fin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 18px}
+.fin-tab{padding:10px 18px;border-radius:999px;border:2px solid var(--teal);background:#fff;color:var(--teal);font-weight:700;cursor:pointer;font-size:.88rem}
+.fin-tab.active{background:var(--teal);color:#fff}
+.fin-panel{display:none;background:var(--teal-light);border-radius:16px;padding:24px}
+.fin-panel.active{display:block}
+.fin-panel h3{font-size:1.15rem;margin-bottom:.4rem}
+.fin-panel p{font-size:.93rem;color:var(--ink);margin-bottom:.6rem}
+.fin-panel .fp-big{font-family:'Fraunces',serif;font-size:2rem;color:var(--navy);font-weight:700}
+.quiz-q{display:none}
+.quiz-q.active{display:block}
+.quiz-opts{display:grid;gap:10px;margin-top:16px}
+.quiz-opt{text-align:left;background:#fff;border:2px solid var(--line);border-radius:12px;padding:14px 18px;font-size:.95rem;font-weight:600;color:var(--navy);cursor:pointer;transition:border-color .15s}
+.quiz-opt:hover{border-color:var(--gold)}
+.quiz-progress{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.quiz-result{display:none;background:var(--gold-light);border:1px solid #edd9b4;border-radius:16px;padding:24px;margin-top:6px}
+.quiz-result p{font-size:.97rem;color:var(--ink);margin-bottom:14px}
+.hero-logo{height:54px;width:auto;margin-bottom:16px;display:block}
+.tool-note{font-size:.75rem;color:var(--muted);margin-top:12px}
 </style>
 </head>
 <body>
@@ -113,7 +148,8 @@ footer{padding:30px 20px;text-align:center;font-size:.8rem;color:var(--muted)}
 <header class="hero">
   <div class="wrap hero-grid">
     <div>
-      <span class="eyebrow">Longview, TX · In-Person · No Experience Needed</span>
+      <img class="hero-logo" src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview logo">
+    <span class="eyebrow">Longview, TX · In-Person · No Experience Needed</span>
       <h1>Start a Dental Assisting Career in East Texas — Without Two Years of School or a Pile of Debt.</h1>
       <p class="sub">Hands-on training in Longview on real dental equipment, led by instructors in the room with you. Radiology and infection control — the coursework tied to the Texas RDA pathway — included. Then we help you get in front of East Texas dental offices that are hiring.</p>
       <ul class="checks">
@@ -170,6 +206,133 @@ footer{padding:30px 20px;text-align:center;font-size:.8rem;color:var(--muted)}
       <a class="btn gold pulse" href="https://www.premierdentalacademyoflongview.com/enroll?plan=pay-in-full">Enroll Pay-in-Full — Claim the Pack →</a>
       <p style="margin-top:12px"><a href="#form" style="color:var(--teal);font-weight:600;font-size:.9rem">Not ready to enroll? Get class dates first ↑</a></p>
       <p class="fine-print">Pack goes to the first two pay-in-full enrollments in the upcoming Longview class — once those two seats are claimed, it's gone for this session. Recommendation letter is earned through performance during the program.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="tool-card">
+      <span class="kicker">⏱ The Time Race</span>
+      <h2 class="sec">How fast can you actually be working?</h2>
+      <p class="lead">Same career. Very different waits. Watch how the paths compare:</p>
+      <div class="race" id="race">
+        <div class="race-row">
+          <div class="r-label"><span>🦷 Premier Dental Academy (hands-on, Longview)</span><span class="r-time">~12 weeks</span></div>
+          <div class="race-track"><div class="race-fill pda" data-w="12">12 weeks</div></div>
+        </div>
+        <div class="race-row">
+          <div class="r-label"><span>Typical college certificate program</span><span class="r-time">~9–12 months</span></div>
+          <div class="race-track"><div class="race-fill cert" data-w="60">up to ~52 weeks</div></div>
+        </div>
+        <div class="race-row">
+          <div class="r-label"><span>Associate degree route</span><span class="r-time">~2 years</span></div>
+          <div class="race-track"><div class="race-fill college" data-w="100">~104 weeks</div></div>
+        </div>
+      </div>
+      <p style="margin-top:20px;font-weight:700;color:var(--navy)">While the 2-year route is still in its first semester, you could already be working chairside in an East Texas office — earning, not owing.</p>
+      <div style="margin-top:16px"><a class="btn gold" href="#form">I don't want to wait 2 years →</a></div>
+      <p class="tool-note">Program length ~12 weeks. Certificate and degree lengths are typical published program durations; check any school you compare for exact timelines.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="tool-card">
+      <span class="kicker">🧮 The Payback Math</span>
+      <h2 class="sec">Slide your future wage. See when tuition pays for itself.</h2>
+      <p class="lead">East Texas dental assistants in our published data earn roughly $38,000–$46,000 a year (about $808/week at the middle). Move the slider and do your own math:</p>
+      <div class="slider-wrap">
+        <input type="range" id="wage" min="15" max="25" step="0.5" value="20" aria-label="Hourly wage">
+        <div style="text-align:center;font-weight:800;color:var(--navy);font-size:1.15rem">If you earned <span id="wage-out" style="color:var(--gold)">$20.00/hr</span> full-time…</div>
+        <div class="slider-readout">
+          <div class="readout-box"><div class="r-big" id="ro-week">$800</div><div class="r-small">per week (gross)</div></div>
+          <div class="readout-box"><div class="r-big" id="ro-payback">~4 wks</div><div class="r-small">of pay ≈ your $3,000 tuition</div></div>
+          <div class="readout-box"><div class="r-big" id="ro-year">$41,600</div><div class="r-small">per year (gross)</div></div>
+        </div>
+      </div>
+      <div style="margin-top:18px"><a class="btn gold" href="#form">Show me how to get there →</a></div>
+      <p class="tool-note">This is arithmetic, not a promise — wages vary by office, experience, and duties. Figures based on the East Texas ranges on our <a href="/salary" style="color:var(--teal)">salary page</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="tool-card">
+      <span class="kicker">💳 Ways To Pay</span>
+      <h2 class="sec">Four real ways to cover tuition. Pick your style.</h2>
+      <div class="fin-tabs">
+        <button class="fin-tab active" data-fin="pif" type="button">Pay in full</button>
+        <button class="fin-tab" data-fin="plan" type="button">Payment plan</button>
+        <button class="fin-tab" data-fin="split" type="button">Klarna / Afterpay / Affirm</button>
+        <button class="fin-tab" data-fin="wioa" type="button">WIOA (may be free)</button>
+      </div>
+      <div class="fin-panel active" id="fin-pif">
+        <h3>Pay in full — the straight line</h3>
+        <div class="fp-big">$3,000</div>
+        <p>One payment, done. It's $500 less than the plan total — and right now the first two pay-in-full students in the next class also take home the <strong>Premier Pay-in-Full Pack</strong> (scrub coat, engraved instruments, typodont &amp; more).</p>
+        <a class="btn gold pulse" href="https://www.premierdentalacademyoflongview.com/enroll?plan=pay-in-full">Enroll pay-in-full →</a>
+      </div>
+      <div class="fin-panel" id="fin-plan">
+        <h3>Payment plan — small bites</h3>
+        <div class="fp-big">$500 down today</div>
+        <p>Then the $3,000 balance splits into simple auto-billed payments ($3,500 plan total). Slide to see what fits:</p>
+        <input type="range" id="npay" min="4" max="12" step="1" value="8" aria-label="Number of payments">
+        <p style="font-weight:800;color:var(--navy);font-size:1.1rem;margin-top:6px"><span id="npay-n">8</span> payments of <span id="npay-amt" style="color:var(--gold)">$375</span> <span style="font-weight:600;color:var(--muted)">(weekly or monthly — your pick)</span></p>
+        <a class="btn gold" href="https://www.premierdentalacademyoflongview.com/enroll?plan=payment-plan">Start with $500 down →</a>
+      </div>
+      <div class="fin-panel" id="fin-split">
+        <h3>Klarna, Afterpay, or Affirm</h3>
+        <p>Prefer to split payments through a service you already use? Klarna, Afterpay, and Affirm are accepted at checkout — their terms and approval are between you and them, and many students find it the easiest way to spread the cost.</p>
+        <a class="btn gold" href="https://www.premierdentalacademyoflongview.com/enroll">See checkout options →</a>
+      </div>
+      <div class="fin-panel" id="fin-wioa">
+        <h3>WIOA funding — training that may cost you $0</h3>
+        <p>Texas Workforce Solutions offers WIOA funding that can help cover dental-assistant training for people who qualify. The application takes about 6–8 weeks, so if the timing matters, start now and hold your seat with a plan in the meantime.</p>
+        <a class="btn gold" href="/tools/funding-finder">Check if I qualify (free, 6 questions) →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="tool-card" id="quiz">
+      <span class="kicker">✅ 30-Second Gut Check</span>
+      <h2 class="sec">Is this actually right for you? Tap through.</h2>
+      <div class="quiz-q active" id="qq1">
+        <div class="quiz-progress">Question 1 of 3</div>
+        <p style="font-weight:700;color:var(--navy);font-size:1.05rem">Do you have any dental experience?</p>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quizPick(1,'none')" type="button">None at all — starting from zero</button>
+          <button class="quiz-opt" onclick="quizPick(1,'some')" type="button">A little (front desk, sterilization, shadowing…)</button>
+        </div>
+      </div>
+      <div class="quiz-q" id="qq2">
+        <div class="quiz-progress">Question 2 of 3</div>
+        <p style="font-weight:700;color:var(--navy);font-size:1.05rem">What does your life look like right now?</p>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quizPick(2,'working')" type="button">Working — I'd need class to fit around a job</button>
+          <button class="quiz-opt" onclick="quizPick(2,'parenting')" type="button">Parenting (or both!) — my time is tight</button>
+          <button class="quiz-opt" onclick="quizPick(2,'open')" type="button">Pretty open — I can commit fully</button>
+        </div>
+      </div>
+      <div class="quiz-q" id="qq3">
+        <div class="quiz-progress">Question 3 of 3</div>
+        <p style="font-weight:700;color:var(--navy);font-size:1.05rem">When do you want your first dental-office paycheck?</p>
+        <div class="quiz-opts">
+          <button class="quiz-opt" onclick="quizPick(3,'asap')" type="button">As soon as humanly possible</button>
+          <button class="quiz-opt" onclick="quizPick(3,'year')" type="button">Sometime this year</button>
+          <button class="quiz-opt" onclick="quizPick(3,'exploring')" type="button">Just exploring for now</button>
+        </div>
+      </div>
+      <div class="quiz-result" id="quiz-result">
+        <p id="quiz-msg"></p>
+        <a class="btn gold pulse" href="#form" id="quiz-cta">Get my class dates →</a>
+        <p class="tool-note">Want a deeper look? Try the full <a href="/tools/is-it-for-me" style="color:var(--teal)">"Is it for me?" tool</a> — no signup needed.</p>
+      </div>
     </div>
   </div>
 </section>
@@ -308,6 +471,89 @@ document.getElementById('fbform').addEventListener('submit', async function(e){
     btn.disabled = false; btn.textContent = 'Send Me Class Dates →';
   }
 });
+
+/* ── Time-race chart: bars grow when scrolled into view ── */
+(function(){
+  const race = document.getElementById('race');
+  if(!race) return;
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if(en.isIntersecting){
+        race.querySelectorAll('.race-fill').forEach(f=>{ f.style.width = f.dataset.w + '%'; });
+        io.disconnect();
+        logEventSafe('fb_funnel_chart_view');
+      }
+    });
+  }, { threshold: 0.4 });
+  io.observe(race);
+})();
+
+/* ── Payback slider ── */
+(function(){
+  const s = document.getElementById('wage');
+  if(!s) return;
+  const fmt = n => '$' + Math.round(n).toLocaleString('en-US');
+  function upd(){
+    const hr = parseFloat(s.value);
+    const week = hr * 40;
+    document.getElementById('wage-out').textContent = '$' + hr.toFixed(2) + '/hr';
+    document.getElementById('ro-week').textContent = fmt(week);
+    document.getElementById('ro-payback').textContent = '~' + Math.ceil(3000 / week) + ' wks';
+    document.getElementById('ro-year').textContent = fmt(hr * 2080);
+  }
+  s.addEventListener('input', upd); upd();
+})();
+
+/* ── Financing tabs + plan slider ── */
+document.querySelectorAll('.fin-tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.fin-tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.fin-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById('fin-' + t.dataset.fin).classList.add('active');
+    logEventSafe('fb_funnel_fin_' + t.dataset.fin);
+  });
+});
+(function(){
+  const n = document.getElementById('npay');
+  if(!n) return;
+  function upd(){
+    const c = parseInt(n.value, 10);
+    document.getElementById('npay-n').textContent = c;
+    document.getElementById('npay-amt').textContent = '$' + Math.ceil(3000 / c).toLocaleString('en-US');
+  }
+  n.addEventListener('input', upd); upd();
+})();
+
+/* ── 3-question gut-check quiz ── */
+const quizAns = {};
+function quizPick(q, val){
+  quizAns[q] = val;
+  document.getElementById('qq' + q).classList.remove('active');
+  if(q < 3){
+    document.getElementById('qq' + (q + 1)).classList.add('active');
+    return;
+  }
+  let msg = '';
+  msg += quizAns[1] === 'none'
+    ? "Starting from zero? You're in the majority — most of our students walk in with no dental background, and the program is built exactly for that. "
+    : "That head start counts — you'll recognize things on day one and build real chairside skill on top of it. ";
+  msg += quizAns[2] === 'working'
+    ? "And since you're working, a ~12-week focused program beats putting life on hold for semesters — ask us for the current schedule and see if it fits. "
+    : quizAns[2] === 'parenting'
+      ? "Tight schedule? That's exactly who we designed this for — short, focused, and close to home in Longview. "
+      : "With room to commit, you could move through this fast and be interviewing while others are still enrolling. ";
+  msg += quizAns[3] === 'asap'
+    ? "Wanting it ASAP is the easy part: the next Longview class is forming right now, and the countdown at the top of this page is real."
+    : quizAns[3] === 'year'
+      ? "Wanting it this year is very doable — there are multiple class starts coming, and asking for dates today costs nothing."
+      : "Just exploring is a fine place to be — grab the class dates and pricing now so that when you're ready, you're not starting from scratch.";
+  document.getElementById('quiz-msg').textContent = msg;
+  document.getElementById('quiz-result').style.display = 'block';
+  if(quizAns[3] === 'exploring'){ document.getElementById('quiz-cta').textContent = 'Send me dates & info (no pressure) →'; }
+  logEventSafe('fb_funnel_quiz_done');
+}
+function logEventSafe(p){ try{ sbInsert('page_visits',{page:p,visitor_hash:visitorHash()}).catch(()=>{});}catch(e){} }
 </script>
 </body>
 </html>
