@@ -596,6 +596,23 @@ function autoPickFromUrl() {
   const planParam = (params.get('plan') || params.get('mode') || '').toLowerCase().trim();
   if (planParam === 'in-person' || planParam === 'in_person' || planParam === 'inperson') {
     pickPlan('in-person');
+    // Optional ?paymode=plan|full (or ?paymode=payment-plan) preselects the toggle
+    // so "Reserve with $500 down" CTAs land straight on the payment-plan view.
+    const pm = (params.get('paymode') || '').toLowerCase().trim();
+    if (pm === 'plan' || pm === 'payment-plan' || pm === 'down') {
+      const r = document.querySelector('[name="paymode"][value="plan"]');
+      if (r) {
+        r.checked = true;
+        document.body.setAttribute('data-paymode', 'plan');
+        document.querySelectorAll('.paymode-opt').forEach(el => {
+          const ck = el.querySelector('input').checked;
+          el.classList.toggle('border-teal-600', ck);
+          el.classList.toggle('bg-teal-50', ck);
+          el.classList.toggle('border-slate-200', !ck);
+        });
+        if (typeof renderSummary === 'function') renderSummary();
+      }
+    }
     return;
   }
   if (planParam === 'online') {
