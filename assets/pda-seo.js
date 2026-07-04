@@ -62,7 +62,13 @@
     'tools': 'Trainers', 'practice-pro': 'Practice Pro', 'chairside': 'ChairSide',
     'thank-you': 'Thank you', 'unsubscribe': 'Unsubscribe', '404': 'Not found',
   };
-  if (segs.length > 0) {
+  // Defer to a page that already ships its own BreadcrumbList in static HTML
+  // (e.g. the generated city pages) — never inject a second, conflicting one.
+  const hasStaticBreadcrumb = Array.prototype.some.call(
+    document.querySelectorAll('script[type="application/ld+json"]'),
+    (s) => /"BreadcrumbList"/.test(s.textContent || '')
+  );
+  if (segs.length > 0 && !hasStaticBreadcrumb) {
     const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: location.origin + '/' }];
     let acc = '';
     segs.forEach((seg, i) => {

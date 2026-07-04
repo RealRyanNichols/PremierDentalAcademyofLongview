@@ -123,7 +123,7 @@
         <label for="otp-email" class="sr-only">Email address</label>
         <input id="otp-email" type="email" required placeholder="you@example.com" class="w-full border-2 border-slate-200 focus:border-teal-600 outline-none rounded-xl px-4 py-3 text-sm" />
         <button type="submit" id="otp-btn" class="mt-3 w-full bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full">Email me a sign-in link →</button>
-        <p id="otp-msg" class="text-sm text-center mt-3" hidden></p>
+        <p id="otp-msg" class="text-sm text-center mt-3" role="status" aria-live="polite" hidden></p>
       </form>
       <p class="text-xs text-slate-400 text-center mt-4">Already have a PDA account? <a href="/login" class="text-teal-700 underline">Sign in here</a> and come back — enrolled students get Exam Pro free.</p>
     </div>
@@ -140,7 +140,7 @@
       <div class="max-w-sm mx-auto mt-6">
         <div id="card-container" class="border-2 border-slate-200 rounded-xl p-3 bg-slate-50"></div>
         <button id="pay-btn" disabled class="mt-4 w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-full shadow">Pay $29 &amp; unlock</button>
-        <p id="err" class="text-sm text-rose-600 mt-3" hidden></p>
+        <p id="err" class="text-sm text-rose-600 mt-3" role="alert" aria-live="assertive" hidden></p>
         <p class="text-xs text-slate-400 text-center mt-3">Secure payment by Square. Questions? Text Amanda at <a href="tel:+19039136444" class="underline">(903) 913-6444</a>.</p>
         <p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 text-center mt-2">Enrolled PDA student? It's <b>included free</b> — if checkout still asks you to pay after signing in, text Amanda before paying.</p>
       </div>
@@ -287,11 +287,17 @@
       LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
       err.textContent=e.message||'Card error.'; err.hidden=false; return;
     }
+    // Pre-flight: a valid session is required, and NO charge is possible here —
+    // so on failure just reset and let them retry, never the "call if charged" lock.
+    var sess=(await sb.auth.getSession()).data.session;
+    if(!sess){
+      LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
+      err.textContent='Your sign-in expired — refresh the page and sign in again, then retry. No charge was made.';
+      err.hidden=false; return;
+    }
     track('begin_checkout',{product:'exam_pro',value:29});
     try{ if(typeof fbq==='function') fbq('track','InitiateCheckout',{content_name:'Exam Pro',value:29,currency:'USD'}); }catch(e){}
     try{
-      var sess=(await sb.auth.getSession()).data.session;
-      if(!sess){ throw new Error('Your sign-in expired — refresh the page and sign in again. No charge was made.'); }
       var resp=await fetch(SB_URL+'/functions/v1/buy-exam-pro',{
         method:'POST',
         headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+sess.access_token},
@@ -318,9 +324,12 @@
       }
       throw new Error(out.error||'Something went wrong.');
     }catch(e){
-      // Charge state unknown — NEVER tell a possibly-charged buyer it failed outright.
-      btn.textContent='⛔ Call (903) 913-6444 if charged';
-      err.innerHTML='<b>Hold on.</b> '+String(e.message||'Checkout error.').replace(/</g,'&lt;')+' If your card shows a charge, text Amanda at (903) 913-6444 and she\'ll unlock it instantly.';
+      // Reaching here means we never got a clean response (network blip, etc.).
+      // Retrying is SAFE — the edge function's pre-charge marker + already-paid
+      // guards make a repeat submit idempotent — so re-enable rather than dead-lock.
+      // If a charge somehow did land, send them to Amanda instead of re-paying.
+      LOCK=false; btn.disabled=false; btn.textContent='Try again';
+      err.innerHTML='<b>We couldn\'t confirm your payment.</b> '+String(e.message||'Checkout error.').replace(/</g,'&lt;')+' Please try again. If your card already shows a $29 charge, don\'t re-pay — text Amanda at (903) 913-6444 and she\'ll unlock Exam Pro right away.';
       err.hidden=false;
     }
   }
