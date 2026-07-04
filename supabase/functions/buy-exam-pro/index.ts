@@ -1,19 +1,19 @@
 // Standalone $29 "Exam Pro" purchase.
 //
 // Charges $29 via Square, then flips profiles.exam_pro = true for the
-// signed-in caller. UNLAUNCHED until tested: no public "Buy" button links here
-// yet — the test page at /tools/exam-pro.html drives it manually.
+// signed-in caller. Public buy page: /exam-pro.
 //
 // SAFETY (mirrors api/enroll.js):
 //  (1) Caller MUST be a signed-in Supabase user (verify_jwt). We grant Pro to
 //      that exact user id — never trust a client-supplied id.
 //  (2) If the user is already Pro/enrolled/admin, we short-circuit and DO NOT
-//      charge.
+//      charge. Same if a completed exam_pro purchase already exists (covers
+//      the paid-but-ungranted warning path).
 //  (3) Idempotency key is derived from user id + card nonce, so a re-submit
 //      dedupes at Square and can't double-charge.
 //  (4) Once the card is charged we NEVER return an error: if the entitlement
-//      write fails we return ok=true with a `warning` so the buyer never sees
-//      "failed" and pays again. Amanda grants Pro manually in that rare case.
+//      write fails we return ok=true with a `warning`, record the purchase,
+//      and open an urgent admin task so Amanda grants Pro manually.
 //
 // Reads SQUARE_ACCESS_TOKEN from the public.app_secrets table (same pattern
 // as kajabi-my-courses / quo-*). SUPABASE_URL / SERVICE_ROLE_KEY / ANON_KEY
@@ -62,6 +62,19 @@ Deno.serve(async (req) => {
     .maybeSingle();
   if (prof && (prof.exam_pro === true || prof.is_admin === true || (prof.program && prof.program !== "preview"))) {
     return json({ ok: true, alreadyPro: true, message: "You already have Exam Pro — no charge made." });
+  }
+
+  // (2b) Paid before but the entitlement flip failed (warning path)? The
+  // purchases row is the durable receipt — never charge the same buyer twice.
+  const { data: prevPurchase } = await sb
+    .from("purchases")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("product_key", "exam_pro")
+    .eq("status", "completed")
+    .limit(1);
+  if (prevPurchase && prevPurchase.length) {
+    return json({ ok: true, alreadyPro: true, message: "You already paid for Exam Pro — no new charge was made. If it isn't unlocked yet, text Amanda at (903) 913-6444." });
   }
 
   const { sourceId } = await req.json().catch(() => ({} as { sourceId?: string }));
@@ -125,6 +138,41 @@ Deno.serve(async (req) => {
   }
   if (!granted) {
     warning = "Your payment went through, but we couldn't unlock Pro automatically. Amanda has been notified and will enable it within 1 business day.";
+  }
+
+  // Durable purchase record (also feeds the admin KPI revenue tile and the
+  // (2b) double-charge guard). external_payment_id has a unique partial index,
+  // so Square retries can't produce duplicate rows.
+  try {
+    await sb.from("purchases").insert({
+      student_id: user.id,
+      product_key: "exam_pro",
+      product_label: "Exam Pro",
+      amount_cents: PRICE_CENTS,
+      payment_type: "one_time",
+      status: "completed",
+      external_payment_id: payment.id,
+      contact_email: user.email,
+      source: "site",
+      metadata: { receipt_url: payment.receipt_url || null, granted },
+    });
+  } catch (e) {
+    console.error("[buy-exam-pro] purchases insert failed:", e);
+  }
+
+  // Make "Amanda has been notified" true: an urgent task shows up on the
+  // admin home + KPI cockpit until she flips the flag.
+  if (!granted) {
+    try {
+      await sb.from("admin_tasks").insert({
+        title: `Grant Exam Pro: ${user.email || user.id} paid $29 but auto-grant failed (payment ${payment.id})`,
+        priority: 1,
+        status: "open",
+        notes: "Set profiles.exam_pro = true for this student, then close this task.",
+      });
+    } catch (e) {
+      console.error("[buy-exam-pro] admin_tasks insert failed:", e);
+    }
   }
 
   try {

@@ -535,6 +535,7 @@
       <a href="/salary" class="block hover:text-white">Salary calculator</a>
       <a href="/study-pack" class="block hover:text-white">Study Pack — $19</a>
       <a href="/exam-prep-course" class="block hover:text-white">Exam-Prep Course — $97</a>
+      <a href="/exam-pro" class="block hover:text-white">Exam Pro — $29</a>
     </nav>
     <nav aria-label="Free trainers" class="space-y-2">
       <p class="text-white font-semibold">Free trainers</p>
@@ -556,6 +557,7 @@
     <nav aria-label="More" class="space-y-2">
       <p class="text-white font-semibold">More</p>
       <a href="/employers" class="block hover:text-white">For dental offices</a>
+      <a href="/locations" class="block hover:text-white">Towns we serve</a>
       <a href="/graduates" class="block hover:text-white">Our graduates</a>
       <a href="/about" class="block hover:text-white">About Amanda</a>
       <a href="/contact" class="block hover:text-white">Contact</a>

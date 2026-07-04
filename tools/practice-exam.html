@@ -482,28 +482,51 @@
   $('start-quick').onclick = () => { currentMode = 'quick'; gateThenStart(() => begin(shuffle(BANK).slice(0, 10))); };
   $('start-full').onclick  = () => { currentMode = 'full';  gateThenStart(() => begin(shuffle(BANK))); };
 
-  function showProUpsell() {
+  function startFreeTimedDrill() {
+    currentMode = 'timed';
+    const pool = shuffle(BANK);
+    const n = Math.min(50, pool.length);
+    begin(pool.slice(0, n), { timed: true, seconds: n * 60 });
+  }
+
+  function showProUpsell(signedIn) {
     const wrap = document.createElement('div');
     wrap.className = 'fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4';
+    const body = signedIn
+      ? `<p class="text-slate-600 text-sm mt-2">Your account doesn't have <strong>Exam Pro</strong> yet. The full timed mock with the expanded 75+ question bank is <strong>$29 one-time</strong> — or included with enrollment. <span class="block mt-1 text-slate-500">Enrolled already and think this is wrong? Text Amanda at (903) 913-6444.</span></p>
+      <div class="flex flex-wrap gap-2 justify-center mt-5">
+        <a href="/exam-pro" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full">Get Exam Pro — $29 →</a>
+        <button class="pro-free-drill bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Run a free timed drill instead →</button>
+      </div>`
+      : `<p class="text-slate-600 text-sm mt-2">The Timed Mock Exam and our expanded question bank are part of <strong>Exam Pro</strong> — included <strong>free</strong> when you enroll, or yours on its own for <strong>$29</strong>. Already a student? Just sign in.</p>
+      <div class="flex flex-wrap gap-2 justify-center mt-5">
+        <a href="/exam-pro" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full">Get Exam Pro — $29 →</a>
+        <a href="/enroll" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Enroll (includes it) →</a>
+        <a href="/login" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">I'm a student — sign in</a>
+      </div>`;
     wrap.innerHTML = `<div class="bg-white rounded-2xl max-w-md w-full p-6 text-center pop">
       <div class="text-4xl mb-2">🔒</div>
-      <h3 class="display text-2xl font-bold">Unlock Exam Pro</h3>
-      <p class="text-slate-600 text-sm mt-2">The Timed Mock Exam and our expanded question bank are part of <strong>Exam Pro</strong> — included <strong>free</strong> when you enroll. Already a student? Just sign in.</p>
-      <div class="flex flex-wrap gap-2 justify-center mt-5">
-        <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full">Enroll →</a>
-        <a href="/login" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">I'm a student — sign in</a>
-      </div>
+      <h3 class="display text-2xl font-bold">${signedIn ? 'Exam Pro isn’t on this account yet' : 'Unlock Exam Pro'}</h3>
+      ${body}
       <button class="pro-close mt-4 text-slate-400 hover:text-slate-700 text-sm">Maybe later</button>
     </div>`;
-    wrap.addEventListener('click', (e) => { if (e.target === wrap || e.target.classList.contains('pro-close')) wrap.remove(); });
+    wrap.addEventListener('click', (e) => {
+      if (e.target === wrap || e.target.classList.contains('pro-close')) wrap.remove();
+      if (e.target.classList.contains('pro-free-drill')) { wrap.remove(); startFreeTimedDrill(); }
+    });
     document.body.appendChild(wrap);
   }
 
   $('start-timed').onclick = async () => {
     const pro = await checkPro();
-    if (!pro) { showProUpsell(); return; }
-    currentMode = 'timed';
+    if (!pro) { showProUpsell(false); return; }
+    // Real entitlement lives in RLS: only Exam Pro / enrolled / admin accounts
+    // can read exam_questions_pro. A signed-in account with no rows isn't
+    // entitled — offer the $29 unlock (or a free-bank drill) instead of a
+    // silently degraded "mock".
     const pq = await fetchProQuestions();
+    if (!pq.length) { showProUpsell(true); return; }
+    currentMode = 'timed';
     const pool = shuffle(BANK.concat(pq));
     const n = Math.min(50, pool.length);
     begin(pool.slice(0, n), { timed: true, seconds: n * 60 });
@@ -515,6 +538,7 @@
   checkPro().then(async (pro) => {
     if (!pro) return;
     const pq = await fetchProQuestions();
+    if (!pq.length) return; // signed in but not entitled — keep the Pro badge + lock
     $('timed-count').textContent = (BANK.length + pq.length);
     const cta = $('timed-cta');
     cta.textContent = 'Start the timed mock exam →';
