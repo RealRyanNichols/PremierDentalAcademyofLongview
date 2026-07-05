@@ -416,6 +416,8 @@
       if (/@/.test(contact)) rec.email = contact; else rec.phone = contact;
       addMsg((name ? name + ', y' : 'Y') + 'ou\'re all set! 🎉 Amanda or someone from PDA will reach out as quickly as possible. Ask me anything else in the meantime.', 'bot');
       try { if (sb) await sb.from('leads').insert(rec); } catch (e) {}
+      // Fire the Meta standard Lead event (pda-analytics maps this name).
+      try { if (window.PDA && window.PDA.track) window.PDA.track('ask_premier_lead_submit', { reason: reason }); } catch (e) {}
       showQuick();
     }
 

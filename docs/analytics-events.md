@@ -51,6 +51,24 @@ const attr = window.PDA.attribution(); // { utm_source, utm_medium, ..., referre
   source/referrer of each lead. (Added to the form flows in the lead-flow prompt.)
 - Privacy: we store only campaign/referrer/landing path — no sensitive personal data.
 
+## Meta standard-event mapping (retargeting / lookalikes)
+The Meta pixel (`1290830552877730`) is loaded site-wide by `pda-nav.js`. On top of the
+custom event names above, `pda-analytics.js` fires Meta **standard** events so Ads can
+optimize and build audiences:
+- **`Lead`** — fired automatically whenever `track()` is called with a lead-conversion
+  name: `application_submit`, `waitlist_submit`, `tour_submit`, `study_guide_submit`,
+  `practice_exam_lead_submit`, `employer_request_submit`, `night_class_lead`,
+  `ask_premier_lead_submit`. Add new lead forms to the `LEAD_EVENTS` map in
+  `pda-analytics.js` and they map automatically. Gated on `window.fbq` (not the optional
+  `PDA_ANALYTICS_CONFIG.metaPixelId`), so it works with the site-wide pixel.
+- **`Purchase`** — fired per checkout, once each, to avoid double-counting:
+  `/enroll-success` (path-based, in `pda-nav.js`), `/exam-pro`, `study-pack`, and
+  `exam-prep-course` each fire their own `fbq('track','Purchase', {value,currency})`.
+  `Purchase` is deliberately **not** mapped centrally from the `purchase` custom event —
+  doing so would double-count the enroll and exam-pro paths.
+- **`InitiateCheckout`** — path-based on `/enroll` (`pda-nav.js`); `/exam-pro` fires it on
+  card submit.
+
 ## Validation
 `npm run check:analytics` (and `npm test`) loads the script in a stubbed environment and
 asserts `window.PDA.track` exists and runs without throwing.
