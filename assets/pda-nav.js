@@ -487,19 +487,11 @@
     }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
       if (!rows || !rows.length) return;
       var inperson = rows.filter(function (c) { return (c.delivery_mode || '').indexOf('person') > -1 || /night|in.person/i.test(c.name || ''); });
+      var c = inperson[0] || rows[0];
       var today = new Date(); today.setHours(0, 0, 0, 0);
-      function daysOut(c) { return Math.round((new Date(c.start_date + 'T00:00:00') - today) / 86400000); }
-      var pool = (inperson.length ? inperson : rows).filter(function (c) { return daysOut(c) >= 0; });
-      if (!pool.length) return;
-      // Smart fallback: advertise the next class that still HAS seats. Only
-      // fall back to the sold-out soonest class when nothing with seats is
-      // inside the 10-day window — SOLD OUT is the exception, not the default.
-      var withSeats = pool.filter(function (c) { return ((c.capacity || 0) - (c.enrolled_count || 0)) > 0; });
-      var c = (withSeats.length && daysOut(withSeats[0]) <= 10) ? withSeats[0]
-            : (daysOut(pool[0]) <= 10 ? pool[0] : null);
-      if (!c) return; // nothing genuinely soon
       var d = new Date(c.start_date + 'T00:00:00');
-      var days = daysOut(c);
+      var days = Math.round((d - today) / 86400000);
+      if (days < 0 || days > 10) return; // only when genuinely soon
       var left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
       var when = days <= 0 ? 'starts tonight' : days === 1 ? 'starts tomorrow'
         : 'starts ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -601,6 +593,7 @@
         <a href="/privacy" class="hover:text-white">Privacy</a>
         <a href="/terms" class="hover:text-white">Terms</a>
         <span class="text-slate-500">Trainers use fictional data only. No real PHI.</span>
+        <span class="text-slate-400">🛡️ Licensed &amp; regulated by the Texas Workforce Commission · Career School License #S5316</span>
       </div>
     </div>
   </div>
