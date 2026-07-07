@@ -37,6 +37,7 @@
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
+<script defer src="/assets/student-nav.js"></script>
 <script src="/assets/pda-feedback.js" defer></script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -210,6 +211,19 @@
     </div>
     <div id="kajabi-empty" class="hidden text-sm text-slate-600 bg-slate-50 border border-slate-200 rounded-xl p-4"></div>
     <div id="kajabi-grid" class="hidden grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+  </section>
+
+  <!-- My purchases / prep tools (profile entitlement flags + purchases rows) -->
+  <section id="purchases-section" class="hidden bg-white rounded-2xl border border-slate-200 p-5 sm:p-6 mb-6">
+    <div class="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div>
+        <h2 class="display text-xl font-bold">My prep tools</h2>
+        <p class="text-sm text-slate-600 mt-0.5" id="purchases-sub">Everything you own, in one place.</p>
+      </div>
+      <a href="/tools" class="text-sm font-semibold text-teal-700 hover:text-teal-900">All tools →</a>
+    </div>
+    <div id="purchases-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    <div id="purchases-history" class="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500"></div>
   </section>
 
   <!-- Live student feedback (filled in by pda-feedback.js) -->
@@ -516,6 +530,45 @@
 
   // Kajabi courses — fetch in background so the rest of the dashboard isn't blocked
   loadKajabiCourses(sb, session).catch(err => console.warn('[kajabi] load failed', err));
+
+  // ── My prep tools: owned products (profile entitlement flags + purchases) ──
+  (async () => {
+    // Keep in sync with tools/index.html META + docs/mini-products-launch-checklist.md
+    const CATALOG = [
+      { flag: 'exam_pro',   name: 'RDA Exam Pro — Mock State Board', icon: '⏱️', href: '/exam-pro' },
+      { flag: 'study_pack', name: 'Dental Assistant Study Pack',     icon: '📚', href: '/study-pack' },
+      { flag: 'exam_prep',  name: 'RDA Exam-Prep Mini-Course',       icon: '🎯', href: '/exam-prep-course' },
+    ];
+    const enrolled = isAdmin || (p.program && p.program !== 'preview');
+    const owned = CATALOG.filter(c => p[c.flag] === true);
+    const shown = enrolled ? CATALOG : owned;
+    let history = [];
+    try {
+      const { data: rows } = await sb.from('purchases')
+        .select('product_label, amount_cents, status, created_at')
+        .eq('student_id', session.user.id).eq('status', 'completed')
+        .order('created_at', { ascending: false }).limit(10);
+      history = rows || [];
+    } catch (e) { /* purchases list is optional */ }
+    if (!shown.length && !history.length) return; // nothing owned — stay hidden, no upsell noise
+    document.getElementById('purchases-section').classList.remove('hidden');
+    document.getElementById('purchases-sub').textContent = enrolled
+      ? 'Included with your enrollment — open any of these anytime.'
+      : 'Everything you own, in one place.';
+    document.getElementById('purchases-grid').innerHTML = shown.map(c => `
+      <a href="${c.href}" class="flex items-center gap-3 bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition">
+        <span class="text-2xl">${c.icon}</span>
+        <span class="flex-1 min-w-0">
+          <span class="block font-bold text-sm">${c.name}</span>
+          <span class="block text-xs text-teal-700 font-semibold mt-0.5">${enrolled && p[c.flag] !== true ? '✓ Included with enrollment' : '✓ You own this'} · Open →</span>
+        </span>
+      </a>`).join('');
+    if (history.length) {
+      document.getElementById('purchases-history').innerHTML =
+        '<span class="font-semibold text-slate-600">Purchase history:</span> ' +
+        history.map(h => `${(h.product_label || 'Purchase')} — $${((h.amount_cents || 0) / 100).toFixed(0)} on ${new Date(h.created_at).toLocaleDateString()}`).join(' · ');
+    }
+  })();
 
   // ── Ask your teacher: send + show my question thread (student_questions) ──
   (async () => {

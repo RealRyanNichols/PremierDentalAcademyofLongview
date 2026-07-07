@@ -17,11 +17,18 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
   root-level HTML served without `.html` (e.g. `/night-class`).
 
 ## Repo layout (flattened — pages at the repo root)
-- `*.html` (root)       pages: /, /night-class, /dashboard, /login, /enroll,
-                        /admin, /about, /classes, /calendar, /graduates,
-                        /salary, the East-Texas city landing pages, etc.
-- `assets/`             shared JS (pda-nav, pda-seo, ask-premier, social proof,
-                        feedback) + logos/favicons/og-cover.
+- `*.html` (root)       pages: /, /dashboard, /login, /enroll, /admin, /about,
+                        /classes, /calendar, /graduates, /salary,
+                        /sponsor-a-student, the East-Texas city landing pages,
+                        etc. (/night-class is a redirect stub → /classes)
+- `go/`                 noindex ad funnels: /go/dental-assistant (general) +
+                        persona funnels (moms, single-moms, fresh-start,
+                        career-change, laid-off) on assets/funnel-kit.js/css.
+- `assets/`             shared JS: pda-nav (marketing shell), admin-nav +
+                        student-nav (admin/student shells), pda-track
+                        (first-party analytics → page_visits, rolled up nightly
+                        into daily_stats), pda-seo, ask-premier, funnel-kit,
+                        social proof, feedback + logos/favicons/og images.
 - `auth.js` (root)      Supabase auth shim.
 - `tools/`              student tools: practice-pro (Dentrix-style trainer with
                         the anatomical tooth chart), chairside, flashcards,
@@ -52,10 +59,18 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 
 ## Payments (api/enroll.js)
 - Vercel serverless function; reads `SQUARE_ACCESS_TOKEN` from Vercel env.
-- Square location id `2P2ZE3FJNEYTV`. Plans: in-person $1,997, online $397.
-- Takes a $200+ down payment now and schedules the balance as a Square auto-pay
-  installment invoice (clean round amounts). Idempotency keys are derived from
-  the card nonce so a re-submit can't double-charge. Never errors after a charge.
+- Square location id `2P2ZE3FJNEYTV`. Since July 1, 2026: in-person **$3,000
+  paid in full** OR **$3,500 on a plan** ($500 down + $3,000 balance, weekly or
+  monthly, up to ~13 installments / 12 months; certificate issued when tuition
+  is paid in full). Online $397 (sale; reg $997). Idempotency keys are derived
+  from the card nonce so a re-submit can't double-charge. Never errors after a
+  charge.
+- `supabase/functions/buy-product` is the one checkout engine for every item
+  in `public.products` (guest checkout, entitlement grant, Kajabi sync, Resend
+  access email). Dormant `ms_*` mini-products stay `active=false` until they
+  have a delivery PDF + page — see docs/mini-products-launch-checklist.md.
+- Deploy checklist: `npm test` (includes `check:pricing`, which fails on any
+  page contradicting the payment engine) + one-line entry in CHANGELOG.md.
 
 ## CRITICAL — schedule facts (per Amanda, July 6, 2026)
 - PDA NO LONGER OFFERS NIGHT/EVENING CLASSES. Never state or imply evening/night class

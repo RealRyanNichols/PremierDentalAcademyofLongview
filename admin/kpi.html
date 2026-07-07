@@ -135,7 +135,24 @@
       <p id="attention-empty" class="hidden text-sm text-slate-500 mt-3">Nothing urgent. Go teach. 🦷</p>
     </section>
 
-    <p class="text-xs text-slate-400 mb-4">Site traffic lives in <a class="underline" href="https://vercel.com/realryannichols/premier-dental-academyof-longview/analytics" target="_blank" rel="noopener">Vercel Analytics</a>; email stats live in Kajabi; full payment history lives in the Square Dashboard. This page shows what's in Supabase — leads, cohorts, students, and logged purchases.</p>
+    <!-- Site traffic — first-party pda-track events (daily_stats rollup + today's raw) -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 mb-8">
+      <h2 class="font-bold flex items-center gap-2">📡 Site traffic — your own data, no cookies</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Pageviews today</div><div id="t-today" class="text-2xl font-bold mono mt-1 text-teal-700">—</div></div>
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Pageviews 7d</div><div id="t-7d" class="text-2xl font-bold mono mt-1 text-teal-700">—</div></div>
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Pageviews 30d</div><div id="t-30d" class="text-2xl font-bold mono mt-1 text-cyan-700">—</div></div>
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Funnel → enroll clicks 30d</div><div id="t-funnel" class="text-2xl font-bold mono mt-1 text-amber-700">—</div></div>
+      </div>
+      <div class="grid lg:grid-cols-3 gap-6 mt-5">
+        <div><h3 class="text-sm font-bold text-slate-700">Top pages (30d)</h3><div id="t-top-pages" class="mt-2 space-y-1.5 text-sm"></div></div>
+        <div><h3 class="text-sm font-bold text-slate-700">Top tools (30d)</h3><div id="t-top-tools" class="mt-2 space-y-1.5 text-sm"></div></div>
+        <div><h3 class="text-sm font-bold text-slate-700">CTA clicks (30d)</h3><div id="t-ctas" class="mt-2 space-y-1.5 text-sm"></div></div>
+      </div>
+      <p class="text-xs text-slate-400 mt-4">From <span class="mono">assets/pda-track.js</span> → <span class="mono">page_visits</span>, rolled up nightly into <span class="mono">daily_stats</span>. Raw rows kept 180 days.</p>
+    </section>
+
+    <p class="text-xs text-slate-400 mb-4">Vercel Analytics adds geo/performance; email stats live in Kajabi; full payment history lives in the Square Dashboard.</p>
   </div>
 </main>
 
@@ -326,6 +343,50 @@
   if (attention.length) $('attention-list').innerHTML = attention.map(a => '<li class="py-2">' + a + '</li>').join('');
   else $('attention-empty').classList.remove('hidden');
 
+  // ── Site traffic: daily_stats rollup (fast) + today's raw count ──
+  (async () => {
+    try {
+      const d30 = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+      const d7 = new Date(Date.now() - 7 * 864e5).toISOString().slice(0, 10);
+      const todayIso = new Date(); todayIso.setHours(0, 0, 0, 0);
+      const [statsQ, todayQ] = await Promise.all([
+        sb.from('daily_stats').select('day,page,hits').gte('day', d30).limit(20000),
+        sb.from('page_visits').select('id', { count: 'exact', head: true }).gte('visited_at', todayIso.toISOString()).like('page', 'pv:%'),
+      ]);
+      const rows = statsQ.data || [];
+      const sum = (filter) => rows.filter(filter).reduce((a, r) => a + r.hits, 0);
+      const isPv = (r) => r.page.startsWith('pv:');
+      $('t-today').textContent = (todayQ.count || 0).toLocaleString();
+      $('t-7d').textContent = sum(r => isPv(r) && r.day >= d7).toLocaleString();
+      $('t-30d').textContent = sum(isPv).toLocaleString();
+      $('t-funnel').textContent = sum(r => r.page.startsWith('fb_funnel_enroll_click')).toLocaleString();
+
+      const bucket = (prefix, label) => {
+        const map = {};
+        rows.filter(r => r.page.startsWith(prefix)).forEach(r => {
+          const k = label(r.page); map[k] = (map[k] || 0) + r.hits;
+        });
+        return Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      };
+      const bar = ([k, n], max) =>
+        `<div class="flex items-center gap-2"><div class="w-36 truncate text-slate-600" title="${esc(k)}">${esc(k)}</div>
+         <div class="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-teal-500" style="width:${Math.round((n / max) * 100)}%"></div></div>
+         <div class="w-10 text-right font-bold mono">${n.toLocaleString()}</div></div>`;
+      const render = (id, list) => {
+        const max = Math.max(1, ...list.map(x => x[1]));
+        $(id).innerHTML = list.length ? list.map(x => bar(x, max)).join('') : '<div class="text-xs text-slate-400">No data yet.</div>';
+      };
+      render('t-top-pages', bucket('pv:', p => p.slice(3) || '/'));
+      render('t-top-tools', bucket('click:tool:', p => p.slice(11).split('|')[0]));
+      const ctas = {};
+      rows.forEach(r => {
+        const m = /^click:(enroll|apply|tour|call|email|funding)/.exec(r.page);
+        if (m) ctas[m[1]] = (ctas[m[1]] || 0) + r.hits;
+      });
+      render('t-ctas', Object.entries(ctas).sort((a, b) => b[1] - a[1]));
+    } catch (e) { /* traffic section is best-effort */ }
+  })();
+
   // ── Tooltip layer (any [data-tip]) ──
   let tip = null;
   const hideTip = () => { if (tip) tip.style.display = 'none'; };
@@ -341,5 +402,6 @@
   document.addEventListener('mouseleave', hideTip);
 })();
 </script>
+<script defer src="/assets/admin-nav.js"></script>
 </body>
 </html>

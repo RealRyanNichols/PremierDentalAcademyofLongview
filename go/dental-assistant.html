@@ -462,11 +462,13 @@ logEventSafe('fb_funnel');
 (async function(){
   try{
     const today = new Date().toISOString().slice(0,10);
-    const url = `${SUPABASE_URL}/rest/v1/cohorts?select=name,start_date,capacity,enrolled_count&delivery_mode=eq.in_person&status=eq.upcoming&start_date=gte.${today}&order=start_date.asc&limit=1`;
+    const url = `${SUPABASE_URL}/rest/v1/cohorts?select=name,start_date,capacity,enrolled_count&delivery_mode=eq.in_person&status=eq.upcoming&start_date=gte.${today}&order=start_date.asc&limit=8`;
     const res = await fetch(url, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` } });
     const rows = await res.json();
     if(!Array.isArray(rows) || !rows.length) return;
-    const c = rows[0];
+    // Count down to the next class that still HAS seats; only show the
+    // sold-out soonest class if it's genuinely the only one coming up.
+    const c = rows.find(r => ((r.capacity || 0) - (r.enrolled_count || 0)) > 0) || rows[0];
     const target = new Date(c.start_date + 'T08:00:00-05:00');
     if(isNaN(target) || target <= new Date()) return;
 
