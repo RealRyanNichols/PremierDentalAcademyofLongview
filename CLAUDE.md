@@ -65,12 +65,12 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
   (903) 913-6444 for current class days & times". Do not restore old schedule strings.
 - /night-class is a redirect stub → /classes. The blog post night-class-training-after-work
   was published and removed the same day. Do not recreate night-class content.
-- Until Amanda supplies the real current schedule, point readers to /calendar or the phone
-  number for days/times. NEVER invent class times.
-- AWAITING AMANDA: the actual current schedule; whether Aug 17 / Aug 25 cohort dates and
-  the (MWF)/(T/Th) day patterns in cohort names still hold; what to do with the
-  weekend-evening-dental-assistant-classes-texas post and the index.html testimonial that
-  mentions an "evenings-and-weekends schedule".
+- CONFIRMED by Amanda (Jul 7, 2026): classes are DAYTIME now; cohort start dates are
+  unchanged (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17). Exact daytime hours NOT yet
+  provided — say "daytime classes" and point to (903) 913-6444 / /calendar. NEVER invent times.
+- Per Amanda: LEAVE the weekend-evening-dental-assistant-classes-texas post (now generic,
+  no PDA evening claims) and the index.html "evenings-and-weekends" testimonial (real
+  historical quote). Revisit once exact daytime hours are published.
 
 ## HELD — do not ship
 - The night-class "$200 down / $1,497" offer section stays OUT of production
