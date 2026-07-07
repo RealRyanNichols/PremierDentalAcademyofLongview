@@ -39,7 +39,9 @@
     },
 
     pricing: {
-      inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", balance: 3000, balanceDisplay: "$3,000" },
+      // July 1, 2026 price change — must match api/enroll.js (the payment engine).
+      // Pay in full: $3,000. Payment plan: $3,500 total = $500 down + $3,000 balance.
+      inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000, balance: 3000, balanceDisplay: "$3,000" },
       online:   { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true, saleLabel: "limited-time sale" }
     },
 
@@ -104,8 +106,26 @@
       { name: "Student Hub",                     path: "/portal",              what: "Enrolled-student portal" },
       { name: "Flashcards",                      path: "/tools/flashcards",    what: "Terminology study" },
       { name: "Resume Builder",                  path: "/tools/resume-builder",what: "RDA resume tool" },
-      { name: "Salary Calculator",               path: "/salary",              what: "East Texas RDA pay estimate" }
+      { name: "Salary Calculator",               path: "/salary",              what: "East Texas RDA pay estimate" },
+      { name: "Tuition Planner",                 path: "/tools/tuition-planner", what: "Build your exact $500-down payment schedule (same math as checkout)" }
     ],
+
+    // ── The offer: what tuition includes + optional paid add-ons ────────────
+    // REAL ONLY. Every bullet below already appears on live pages (enroll
+    // format cards); add-ons are live Square products with their own pages.
+    offer: {
+      included: [
+        "Live instruction (Longview campus) or same curriculum fully online",
+        "Full Practice Pro + ChairSide trainer access",
+        "Infection control + radiology training",
+        "PDA Certificate of Completion",
+        "Job placement help with East Texas offices"
+      ],
+      addOns: [
+        { name: "Dental Assistant Study Pack",  path: "/study-pack",        price: 19, priceDisplay: "$19", what: "Instrument cheat sheets, tray setups, tooth numbering, abbreviations + state-board quick-study guide" },
+        { name: "RDA Exam-Prep Mini-Course",    path: "/exam-prep-course",  price: 97, priceDisplay: "$97", what: "Walk into the state board ready — lifetime access" }
+      ]
+    },
 
     texasRda: {
       requiredCourses: ["Radiology", "Jurisprudence", "Infection control"],
@@ -131,7 +151,7 @@
     },
 
     _meta: {
-      updated: "2026-06-21",
+      updated: "2026-07-02",
       maintainer: "docs/business-facts-source-of-truth.md",
       rule: "Do not hard-code these facts in pages. Read from window.PDA_FACTS."
     }

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Student Questions — PDA Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <img src="/assets/logo-mark.png" alt="PDA" width="28" height="28" class="w-7 h-7 rounded" />
+      <span>PDA Admin</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin/students" class="text-slate-600 hover:text-teal-700">Students</a>
+      <a href="/admin/leads" class="text-slate-600 hover:text-teal-700">Leads</a>
+      <a href="/admin/feedback" class="text-slate-600 hover:text-teal-700">Feedback</a>
+      <button id="signout" class="text-rose-600 hover:underline">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">🔒</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to view student questions.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in →</a>
+</div>
+
+<main id="view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Students are waiting</p>
+      <h1 class="display text-3xl font-bold">Student questions</h1>
+      <p class="text-slate-600 text-sm mt-1">Questions from the student dashboard's "Ask your teacher" box. Answers show up on the student's dashboard instantly.</p>
+    </div>
+    <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold text-sm px-4 py-2 rounded-lg">↻ Refresh</button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Waiting for answer</div><div id="s-open" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Answered</div><div id="s-done" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Total</div><div id="s-total" class="text-2xl font-bold text-slate-900 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">This week</div><div id="s-week" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+  </div>
+
+  <div class="flex gap-2 mb-4 text-sm">
+    <button data-f="open" class="q-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg">Unanswered</button>
+    <button data-f="done" class="q-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Answered</button>
+    <button data-f="all" class="q-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">All</button>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+  <div id="empty" class="hidden text-center text-slate-500 py-12">No questions here. 🎉</div>
+</main>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  const TOPIC = { course: '📚 Course', trainer: '🖥️ Trainer', schedule: '📅 Schedule', billing: '💳 Billing', other: '💬 General' };
+  let rows = [], people = {}, filter = 'open';
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  async function loadData() {
+    const { data } = await sb.from('student_questions')
+      .select('id, student_id, question, topic, answer, answered_at, created_at')
+      .order('created_at', { ascending: false }).limit(300);
+    rows = data || [];
+    const ids = [...new Set(rows.map(r => r.student_id))];
+    people = {};
+    if (ids.length) {
+      const { data: profs } = await sb.from('profiles').select('id, first_name, last_name, email').in('id', ids);
+      (profs || []).forEach(p => { people[p.id] = p; });
+    }
+    const open = rows.filter(r => !r.answer);
+    document.getElementById('s-open').textContent = open.length;
+    document.getElementById('s-done').textContent = rows.length - open.length;
+    document.getElementById('s-total').textContent = rows.length;
+    const weekAgo = Date.now() - 7 * 864e5;
+    document.getElementById('s-week').textContent = rows.filter(r => new Date(r.created_at).getTime() > weekAgo).length;
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    const shown = rows.filter(r => filter === 'all' || (filter === 'open' ? !r.answer : !!r.answer));
+    document.getElementById('empty').classList.toggle('hidden', shown.length > 0);
+    list.innerHTML = shown.map(r => {
+      const p = people[r.student_id] || {};
+      const who = ((p.first_name || '') + ' ' + (p.last_name || '')).trim() || p.email || 'Student';
+      const when = new Date(r.created_at).toLocaleString();
+      const badge = TOPIC[r.topic] || TOPIC.other;
+      return '<div class="bg-white rounded-xl border ' + (r.answer ? 'border-slate-200' : 'border-amber-300') + ' p-4" data-qid="' + r.id + '">'
+        + '<div class="flex items-center gap-2 flex-wrap mb-1">'
+        + '<span class="font-bold text-sm">' + esc(who) + '</span>'
+        + (p.email ? '<span class="text-xs text-slate-400">' + esc(p.email) + '</span>' : '')
+        + '<span class="text-[10px] uppercase tracking-wider font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">' + badge + '</span>'
+        + (r.answer ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">Answered</span>'
+                    : '<span class="text-[10px] uppercase tracking-wider font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Waiting</span>')
+        + '<span class="ml-auto text-xs text-slate-400">' + esc(when) + '</span></div>'
+        + '<div class="text-sm text-slate-800 mt-1">' + esc(r.question) + '</div>'
+        + (r.answer
+          ? '<div class="mt-2 pt-2 border-t border-slate-100 text-sm"><span class="text-[11px] font-bold uppercase tracking-wider text-teal-700">Your answer</span><div class="text-slate-700 mt-0.5">' + esc(r.answer) + '</div>'
+            + '<button class="q-edit text-xs text-teal-700 font-semibold mt-1 hover:underline">Edit answer</button></div>'
+          : '')
+        + '<div class="q-answer-box ' + (r.answer ? 'hidden' : '') + ' mt-2">'
+        + '<textarea rows="2" maxlength="4000" class="q-answer w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-teal-600" placeholder="Type your answer — the student sees it on their dashboard…">' + esc(r.answer || '') + '</textarea>'
+        + '<button class="q-send mt-1.5 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm px-4 py-1.5 rounded-lg">Send answer</button>'
+        + '</div></div>';
+    }).join('');
+
+    list.querySelectorAll('.q-edit').forEach(b => b.onclick = () => {
+      b.closest('[data-qid]').querySelector('.q-answer-box').classList.remove('hidden');
+    });
+    list.querySelectorAll('.q-send').forEach(b => b.onclick = async () => {
+      const card = b.closest('[data-qid]');
+      const answer = card.querySelector('.q-answer').value.trim();
+      if (!answer) return;
+      b.disabled = true; b.textContent = 'Sending…';
+      const { error } = await sb.from('student_questions')
+        .update({ answer, answered_by: session.user.id, answered_at: new Date().toISOString() })
+        .eq('id', card.getAttribute('data-qid'));
+      if (error) { b.disabled = false; b.textContent = 'Send answer'; alert('Failed: ' + error.message); return; }
+      loadData();
+    });
+  }
+
+  document.querySelectorAll('.q-filter').forEach(b => b.onclick = () => {
+    filter = b.getAttribute('data-f');
+    document.querySelectorAll('.q-filter').forEach(x => { x.className = 'q-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg'; });
+    b.className = 'q-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg';
+    render();
+  });
+  document.getElementById('refresh').onclick = loadData;
+  await loadData();
+})();
+</script>
+</body>
+</html>

@@ -49,7 +49,7 @@
     f.innerHTML =
       '<div class="wrap"><div class="foot-grid">' +
       '<div>' + brand() + '<p class="blurb">East Texas RDA training built on real practice-management software. Get hired faster.</p></div>' +
-      '<div><h5>Programs</h5><a href="enroll.html">In-person — $1,997</a><a href="enroll.html">Online — $397</a><a href="index.html#pricing">Pricing</a><a href="apply.html">Apply now</a><a href="classes.html">Cohort calendar</a></div>' +
+      '<div><h5>Programs</h5><a href="enroll.html">In-person — $3,000</a><a href="enroll.html">Online — $397</a><a href="index.html#pricing">Pricing</a><a href="apply.html">Apply now</a><a href="classes.html">Cohort calendar</a></div>' +
       '<div><h5>Free trainers</h5><a href="https://www.premierdentalacademyoflongview.com/tools/practice-pro">PDA Practice Pro</a><a href="https://www.premierdentalacademyoflongview.com/tools/chairside">PDA ChairSide</a><a href="skills-lab.html">Skills Lab</a><a href="salary.html">Salary calculator</a><a href="guide.html">Free guide</a></div>' +
       '<div><h5>Contact</h5><a href="' + TEL + '">' + PHONE + '</a><a href="' + SMS + '">Text us</a><a href="mailto:' + EMAIL + '">Email us</a><a href="contact.html">2800 Gilmer Rd, Ste 106<br>Longview, TX 75604</a><a href="employers.html">For dental offices</a></div>' +
       "</div>" +
@@ -66,7 +66,7 @@
   function initCalc() {
     var root = document.getElementById("pdacalc");
     if (!root) return;
-    var state = { plan: "inperson", mode: "monthly" }, TOTAL = 1997, DOWN = 200;
+    var state = { plan: "inperson", mode: "monthly" }, TOTAL = 3500, DOWN = 500;
     function render() {
       var t = root.querySelector("#term");
       var n = parseInt(t.value, 10);
@@ -108,7 +108,7 @@
       var hours = parseInt(root.querySelector("#hours").value, 10);
       var annual = Math.round(wage * hours * 52);
       var monthly = Math.round(annual / 12);
-      var weeksToPayback = Math.max(1, Math.round(1997 / (wage * hours)));
+      var weeksToPayback = Math.max(1, Math.round(3000 / (wage * hours)));
       root.querySelector("#wageout").textContent = "$" + wage.toFixed(2) + "/hr";
       root.querySelector("#hoursout").textContent = hours + " hrs/wk";
       root.querySelector("#annual").textContent = "$" + annual.toLocaleString();

@@ -68,12 +68,12 @@ tailwind.config = { theme: { extend: {
 <script>
 (function(){
   var DATA = [
-    { id:'money', label:'💸 The cost', point:'Be upfront about the real number: In-Person is $3,000 with $500 down and simple payments, or Online is $397. Then show them the funding options — WIOA through Workforce Solutions and payment plans — so it doesn\'t land as one scary bill.' },
-    { id:'time', label:'⏰ The time', point:'Show them it\'s short and structured — about 12 weeks, with evening options so you can keep working. Walk through your weekly schedule so they can see exactly when you\'ll study and when you\'ll still be present.' },
+    { id:'money', label:'💸 The cost', point:'Be upfront about the real number: In-Person is $3,000 paid in full — or $3,500 on a plan with $500 down and simple weekly or monthly payments — and Online is $397. Then show them the funding options — WIOA through Workforce Solutions, payment plans, and our Sponsor-a-Student program — so it doesn\'t land as one scary bill.' },
+    { id:'time', label:'⏰ The time', point:'Show them it\'s short and structured — about 12 weeks, with a schedule built so you can keep working (current class times are on the calendar page). Walk through the weekly schedule so they can see exactly when you\'ll study and when you\'ll still be present.' },
     { id:'work', label:'🤔 Will it actually lead to a job?', point:'Dental offices in East Texas hire assistants regularly, and Premier helps with placement. You\'re not gambling on a vague degree — this is a specific, in-demand local skill with a clear path to a paycheck.' },
     { id:'age', label:'🎂 "Am I too old / is it too late?"', point:'There\'s no age limit on a fresh start. Students range widely, and plenty come in with zero dental background. What matters is showing up and caring about patients — both things you already do.' },
     { id:'fail', label:'😟 "What if I can\'t do it?"', point:'You won\'t be alone — it\'s small classes with real instructors and tons of hands-on practice. And the money isn\'t lost if life changes: Online transfers in full to In-Person credit, and In-Person is pro-rated per Texas rules.' },
-    { id:'kids', label:'👶 Childcare / family time', point:'Name it directly and make a plan together: which evenings you\'ll be in class, who covers what, and how the trade-off pays off — a stable career with daytime office hours once you\'re working.' }
+    { id:'kids', label:'👶 Childcare / family time', point:'Name it directly and make a plan together: which days you\'ll be in class, who covers what, and how the trade-off pays off — a stable career with daytime office hours once you\'re working.' }
   ];
   var sel = {};
   var concernsEl = document.getElementById('concerns');
@@ -96,7 +96,7 @@ tailwind.config = { theme: { extend: {
       sc.classList.remove('hidden');
       document.getElementById('script').textContent =
         '"I\'ve been thinking hard about our future, and I want to train as a dental assistant at Premier Dental Academy. '+
-        'It\'s about 12 weeks, with evening options so I can keep things going at home. '+
+        'It\'s about 12 weeks, and the schedule is built so I can keep things going at home. '+
         chosen.map(function(d){return d.point.split('. ')[0]+'.';}).join(' ')+
         ' I\'m not asking you to figure it out for me — I just want you in my corner while I do this."';
     } else { sc.classList.add('hidden'); }

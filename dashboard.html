@@ -124,7 +124,19 @@
       <a href="/tools/flashcards" data-event="tool_start" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 rounded-full shadow-sm">
         🎴 State Exam Flashcards
       </a>
+      <a href="#ask-teacher" class="bg-white border-2 border-teal-600 text-teal-700 hover:bg-teal-50 font-semibold px-5 py-2.5 rounded-full">
+        💬 Ask your teacher
+      </a>
     </div>
+    <!-- In-page quick nav — one tap to any part of the dashboard -->
+    <nav aria-label="Dashboard sections" class="mt-5 flex flex-wrap gap-x-4 gap-y-1.5 text-sm font-semibold text-slate-600 border-t border-slate-200 pt-4">
+      <a href="#kajabi-section" class="hover:text-teal-700">🎓 My courses</a>
+      <a href="#trainers" class="hover:text-teal-700">🖥️ Trainers</a>
+      <a href="#skills-lab-sec" class="hover:text-teal-700">🦷 Skills Lab</a>
+      <a href="#progress-sec" class="hover:text-teal-700">📊 My progress</a>
+      <a href="#ask-teacher" class="hover:text-teal-700">💬 Ask your teacher</a>
+      <a href="#account" class="hover:text-teal-700">⚙️ Account</a>
+    </nav>
     <div class="mt-5 inline-flex items-start gap-2 text-sm bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-3 py-2">
       <span class="text-base">💻</span>
       <span><strong>Heads up:</strong> the practice trainers are built for desktop / laptop — that's how you'll use the real software in any dental office. Phone works for course videos and reading, but plan to do the trainers on a laptop. It'll feel right and work right.</span>
@@ -141,7 +153,8 @@
       </div>
       <a href="/admin" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 rounded-lg text-sm shrink-0">Open full admin →</a>
     </div>
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <a href="/admin/questions" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">🙋</div><div class="font-bold mt-1">Student questions</div><div class="text-xs text-slate-300 mt-0.5">Answer "Ask your teacher"</div></a>
       <a href="/admin/leads" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">📥</div><div class="font-bold mt-1">Leads &amp; forms</div><div class="text-xs text-slate-300 mt-0.5">Everyone who applied</div></a>
       <a href="/admin/leads#messages" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">💬</div><div class="font-bold mt-1">Messages</div><div class="text-xs text-slate-300 mt-0.5">Texts &amp; website messages</div></a>
       <a href="/admin/progress" class="bg-white/10 hover:bg-white/20 rounded-xl p-4 transition"><div class="text-2xl">📊</div><div class="font-bold mt-1">Student progress</div><div class="text-xs text-slate-300 mt-0.5">Grades, logins, who's behind</div></a>
@@ -186,6 +199,9 @@
         <p class="text-sm text-slate-600 mt-0.5">Pulled live from your Kajabi account.</p>
       </div>
       <a id="kajabi-library-btn" href="#" target="_blank" rel="noopener" class="hidden text-sm font-semibold text-teal-700 hover:text-teal-900">Open Kajabi library →</a>
+    </div>
+    <div class="mb-4 bg-gradient-to-r from-teal-50 to-amber-50 border border-teal-200 rounded-xl px-4 py-3 text-sm text-slate-800">
+      <strong class="text-teal-800">🚧 Coming soon:</strong> every course lesson is being built <strong>right into this dashboard</strong> — watch videos, take quizzes, and track progress here. No more going back and forth to Kajabi.
     </div>
     <div id="kajabi-loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="animate-pulse bg-slate-100 rounded-xl h-28"></div>
@@ -253,7 +269,7 @@
 
     <!-- Continue learning -->
     <section class="lg:col-span-2 space-y-4">
-      <div>
+      <div id="trainers" class="scroll-mt-6">
         <h2 class="display text-xl font-bold mb-3">Continue learning</h2>
         <a href="/tools/how-to-chart" class="flex items-center gap-2 mb-3 text-sm bg-teal-50 border border-teal-200 text-teal-800 rounded-xl px-4 py-2.5 hover:bg-teal-100 transition">📘 <span><strong>New to ChairSide?</strong> Read the step-by-step "How to chart" tutorial →</span></a>
         <div class="grid sm:grid-cols-2 gap-3">
@@ -287,7 +303,7 @@
       </div>
 
       <!-- Skills Lab: hands-on 3D operatory + drills (surfaced in the back office) -->
-      <div>
+      <div id="skills-lab-sec" class="scroll-mt-6">
         <div class="flex items-center justify-between mb-3">
           <h2 class="display text-xl font-bold">Skills Lab — hands-on</h2>
           <a href="/skills-lab" class="text-xs font-semibold text-teal-700 hover:text-teal-900">Open Skills Lab →</a>
@@ -332,7 +348,7 @@
       </div>
 
       <!-- Curriculum progress -->
-      <div class="bg-white rounded-2xl border border-slate-200 p-5">
+      <div id="progress-sec" class="scroll-mt-6 bg-white rounded-2xl border border-slate-200 p-5">
         <div class="flex items-center justify-between mb-3">
           <h2 class="display text-xl font-bold">Curriculum progress</h2>
           <span class="text-xs text-slate-500" id="progress-summary">0 of 12 modules touched</span>
@@ -349,6 +365,29 @@
 
     <!-- Sidebar -->
     <aside class="space-y-4">
+
+      <!-- Ask your teacher — two-way Q&A (student_questions table) -->
+      <section id="ask-teacher" class="scroll-mt-6 bg-white rounded-2xl border-2 border-teal-600 p-5 shadow-sm">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="text-lg">💬</span>
+          <h2 class="display text-xl font-bold">Ask your teacher</h2>
+        </div>
+        <p class="text-sm text-slate-600 mb-3">Stuck on anything — a lesson, a trainer, your schedule? Ask here and Amanda or your instructor will answer right on this page.</p>
+        <form id="ask-form" class="space-y-2">
+          <select name="topic" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-teal-600">
+            <option value="course">📚 A course / lesson</option>
+            <option value="trainer">🖥️ A practice trainer</option>
+            <option value="schedule">📅 Class schedule</option>
+            <option value="billing">💳 Payments / billing</option>
+            <option value="other" selected>💬 Something else</option>
+          </select>
+          <textarea name="question" rows="3" required maxlength="2000" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-teal-600" placeholder="Type your question…"></textarea>
+          <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2 rounded-full disabled:opacity-50">Send question</button>
+          <div id="ask-msg" class="hidden text-sm font-semibold"></div>
+        </form>
+        <div id="ask-history" class="mt-4 pt-3 border-t border-slate-100 space-y-3 text-sm"></div>
+        <p class="text-xs text-slate-500 mt-3">Need someone right now? <a href="tel:+19039136444" class="text-teal-700 font-semibold hover:underline">Call</a> or <a href="sms:+19039136444" class="text-teal-700 font-semibold hover:underline">text (903) 913-6444</a>.</p>
+      </section>
 
       <!-- Account card -->
       <section id="account" class="bg-white rounded-2xl border border-slate-200 p-5">
@@ -477,6 +516,58 @@
 
   // Kajabi courses — fetch in background so the rest of the dashboard isn't blocked
   loadKajabiCourses(sb, session).catch(err => console.warn('[kajabi] load failed', err));
+
+  // ── Ask your teacher: send + show my question thread (student_questions) ──
+  (async () => {
+    const askForm = document.getElementById('ask-form');
+    const askMsg = document.getElementById('ask-msg');
+    const history = document.getElementById('ask-history');
+    const escQ = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+    async function loadQuestions() {
+      const { data: qs } = await sb.from('student_questions')
+        .select('question, topic, answer, answered_at, created_at')
+        .eq('student_id', session.user.id)
+        .order('created_at', { ascending: false }).limit(15);
+      if (!qs || !qs.length) {
+        history.innerHTML = '<div class="text-xs text-slate-400">Your questions and answers will show up here.</div>';
+        return;
+      }
+      history.innerHTML = qs.map(q => `
+        <div class="rounded-xl border ${q.answer ? 'border-teal-200 bg-teal-50/50' : 'border-slate-200 bg-slate-50'} p-3">
+          <div class="text-slate-800">${escQ(q.question)}</div>
+          <div class="text-[11px] text-slate-400 mt-1">${new Date(q.created_at).toLocaleDateString()}</div>
+          ${q.answer
+            ? `<div class="mt-2 pt-2 border-t border-teal-100"><span class="text-[11px] font-bold uppercase tracking-wider text-teal-700">Answer from PDA</span><div class="text-slate-800 mt-1">${escQ(q.answer)}</div></div>`
+            : '<div class="mt-1.5 text-[11px] font-semibold text-amber-600">⏳ Waiting for an answer — we usually reply within 1 business day.</div>'}
+        </div>`).join('');
+    }
+    loadQuestions();
+
+    if (askForm) askForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const btn = askForm.querySelector('button[type=submit]');
+      const question = askForm.question.value.trim();
+      if (!question) return;
+      btn.disabled = true;
+      const { error } = await sb.from('student_questions').insert({
+        student_id: session.user.id, question, topic: askForm.topic.value,
+      });
+      btn.disabled = false;
+      askMsg.classList.remove('hidden');
+      if (error) {
+        askMsg.textContent = '✗ Couldn\'t send — try again, or text (903) 913-6444.';
+        askMsg.className = 'text-sm font-semibold text-rose-600';
+      } else {
+        askMsg.textContent = '✓ Sent! We\'ll answer right here.';
+        askMsg.className = 'text-sm font-semibold text-emerald-700';
+        askForm.question.value = '';
+        try { if (window.PDA && window.PDA.track) window.PDA.track('student_question_sent', { topic: askForm.topic.value }); } catch (e2) {}
+        loadQuestions();
+      }
+      setTimeout(() => askMsg.classList.add('hidden'), 4000);
+    };
+  })();
 
   // Practice-exam progress — show best/last/attempts + a sparkline (only if they've taken it)
   (async () => {

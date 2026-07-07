@@ -27,7 +27,7 @@ button, a link to an interactive website tool, "call/text Amanda" CTAs, and a sh
 | 1 (today) | `day-01-phones-back-on.html` | Our phone was down — it's fixed. Call or text us 📞 | Skills Lab + Practice Exam | Call/Text Amanda |
 | 2 | `day-02-skills-lab-tray.html` | Set up a dental tray like you already work here (free) 🦷 | Skills Lab tray builder | Enroll |
 | 3 | `day-03-salary.html` | What do dental assistants really make in East Texas? | /salary | Enroll |
-| 4 | `day-04-payment-plan.html` | Start for $200 down — here's how the payments work | /enroll | Enroll (in-person) |
+| 4 | `day-04-payment-plan.html` | Start for $500 down — here’s how the payments work | /enroll | Enroll (in-person) |
 | 5 | `day-05-online-anywhere.html` | Can't get to class? Train 100% online for $397 | Flashcards | Enroll (online) |
 | 6 | `day-06-tooth-chart.html` | Chart teeth like a pro — try our free trainer | Practice Pro / how-to-chart | Enroll |
 | 7 | `day-07-day-in-the-life.html` | What's a day really like as a dental assistant? | Skills Lab | Enroll |
@@ -71,7 +71,7 @@ stats during the test, **track click-through rate, not open rate.**
 ## Rules these emails follow (keep it this way)
 - **Real only:** no fabricated stats, names, testimonials, grad counts, or salary numbers.
   Salary claims live on `/salary`; we link there instead of quoting figures.
-- **No held offers:** only the **$200-down / $1,997 in-person** and **$397 online** offers.
+- **No held offers:** only the **$3,000-paid-in-full / $3,500-plan ($500 down) in-person** and **$397 online** offers.
   No `$1,497` / `$1,500` / pay-in-full / night-class-deposit pricing anywhere.
 - Inline styles only (email clients strip `<style>`/JS). Buttons are real `<a>` links.
 - `{{ unsubscribe_link }}` placeholder is in every footer — Kajabi will fill it (keep it).

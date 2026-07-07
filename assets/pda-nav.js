@@ -82,6 +82,7 @@
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-56 z-50 text-slate-700">
           <a href="/about"     class="block px-4 py-2 hover:bg-slate-50">About Amanda</a>
           <a href="/graduates" class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
+          <a href="/sponsor-a-student" class="block px-4 py-2 hover:bg-slate-50">Sponsor a student</a>
           <a href="/salary"    class="block px-4 py-2 hover:bg-slate-50">Salary calculator</a>
           <a href="/blog"      class="block px-4 py-2 hover:bg-slate-50">Blog</a>
           <a href="/contact"   class="block px-4 py-2 hover:bg-slate-50">Contact</a>
@@ -138,6 +139,7 @@
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">About PDA</p>
     <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">About Amanda</a>
     <a href="/graduates" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
+    <a href="/sponsor-a-student" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Sponsor a student</a>
     <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Salary calculator</a>
     <a href="/blog"      data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Blog</a>
     <a href="/contact"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Contact</a>
@@ -576,6 +578,7 @@
     <nav aria-label="More" class="space-y-2">
       <p class="text-white font-semibold">More</p>
       <a href="/employers" class="block hover:text-white">For dental offices</a>
+      <a href="/sponsor-a-student" class="block hover:text-white">Sponsor a student</a>
       <a href="/locations" class="block hover:text-white">Towns we serve</a>
       <a href="/graduates" class="block hover:text-white">Our graduates</a>
       <a href="/about" class="block hover:text-white">About Amanda</a>
