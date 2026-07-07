@@ -78,6 +78,8 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/ui.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
 <script src="/assets/skills-lab/instrument-icons.js"></script>
+<script src="/assets/skills-lab/instrument-art.js"></script>
+<script src="/assets/skills-lab/people-art.js"></script>
 <script src="/assets/skills-lab/scenario-player.js"></script>
 <script>
 (function () {
@@ -100,12 +102,18 @@ tailwind.config = { theme: { extend: {
 
   function patientOf(a) { return a.patientId ? VO.PATIENT_BY_ID[a.patientId] : null; }
 
+  // Illustrated patient bust when people-art is loaded; falls back to the photo/emoji slot.
+  function faceHTML(p, cls, fallback) {
+    if (p && window.SL_PEOPLE) return '<div class="' + cls + '">' + SL_PEOPLE.bust(p) + '</div>';
+    return fallback;
+  }
+
   function renderSchedule() {
     apptList.innerHTML = SHIFT.map(function (a, i) {
       var p = patientOf(a);
       return '<div class="flex items-center gap-3 bg-white rounded-xl border border-slate-100 p-3">' +
         '<div class="text-sm font-mono font-semibold text-slate-500 w-14 shrink-0">' + esc(a.time) + '</div>' +
-        '<div class="text-2xl shrink-0">' + a.icon + '</div>' +
+        faceHTML(p, 'shrink-0 w-10 h-10 rounded-full overflow-hidden shadow-sm', '<div class="text-2xl shrink-0">' + a.icon + '</div>') +
         '<div class="min-w-0"><div class="font-semibold text-navy-900">' + esc(a.title) + '</div>' +
         '<div class="text-xs text-slate-500 truncate">' + (p ? esc(p.name) + ' · ' + esc(p.reason) : 'Office task') + '</div></div>' +
         '<div class="ml-auto text-xs font-semibold ' + (results[i] != null ? 'text-emerald-600' : 'text-slate-300') + '">' + (results[i] != null ? results[i] + '%' : '') + '</div>' +
@@ -121,7 +129,8 @@ tailwind.config = { theme: { extend: {
       : '<span class="text-[11px] text-slate-400">No known allergies</span>';
     var meds = (p.meds || []).length ? p.meds.map(esc).join(', ') : 'None';
     return '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex items-start gap-4">' +
-      '<div class="chart-ava"><img src="' + p.photo + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + (p.emoji || '🧑') + '</span></div>' +
+      faceHTML(p, 'chart-ava',
+        '<div class="chart-ava"><img src="' + p.photo + '" alt="" loading="lazy" style="display:none" onload="this.style.display=\'\';this.nextElementSibling.style.display=\'none\'"><span class="fb">' + (p.emoji || '🧑') + '</span></div>') +
       '<div class="min-w-0 flex-1">' +
       '<div class="flex items-center gap-2 flex-wrap"><span class="display text-lg font-bold text-navy-900">' + esc(p.name) + '</span><span class="text-sm text-slate-400">· age ' + p.age + '</span></div>' +
       '<div class="text-sm text-slate-600 mt-0.5">' + esc(p.reason) + '</div>' +
@@ -192,7 +201,8 @@ tailwind.config = { theme: { extend: {
         var p = patientOf(a); var r = results[i];
         var col = r == null ? 'text-slate-300' : r >= 80 ? 'text-emerald-600' : r >= 50 ? 'text-amber-600' : 'text-rose-600';
         return '<div class="flex items-center gap-3 text-sm"><span class="font-mono text-slate-400 w-14">' + esc(a.time) + '</span>' +
-          '<span class="text-lg">' + a.icon + '</span><span class="flex-1 min-w-0 truncate text-navy-900">' + esc(a.title) + (p ? ' — ' + esc(p.name) : '') + '</span>' +
+          faceHTML(p, 'shrink-0 w-7 h-7 rounded-full overflow-hidden', '<span class="text-lg">' + a.icon + '</span>') +
+          '<span class="flex-1 min-w-0 truncate text-navy-900">' + esc(a.title) + (p ? ' — ' + esc(p.name) : '') + '</span>' +
           '<span class="font-bold ' + col + '">' + (r == null ? '—' : r + '%') + '</span></div>';
       }).join('') + '</div></div>' +
       '<div class="mt-6 flex flex-wrap items-center gap-3">' +

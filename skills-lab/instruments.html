@@ -67,6 +67,7 @@ tailwind.config = { theme: { extend: {
 <script src="/assets/skills-lab/ui.js"></script>
 <script src="/assets/skills-lab/data/virtual-office.js"></script>
 <script src="/assets/skills-lab/instrument-icons.js"></script>
+<script src="/assets/skills-lab/instrument-art.js"></script>
 <script>
 (function () {
   'use strict';
@@ -75,8 +76,11 @@ tailwind.config = { theme: { extend: {
   document.getElementById('sl-footer').innerHTML = U.footerHTML();
 
   function thumb(item) {
+    // Art shows immediately; a real photo (instr-<id>.png) replaces it only once it
+    // actually loads — lazy images below the fold never fire onerror, so the old
+    // hidden-fallback pattern left blank thumbs.
     var fb = (window.SL_ICON_FOR ? SL_ICON_FOR(item) : '<span style="font-size:22px">' + (item.emoji || '🦷') + '</span>');
-    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'\'"><span class="fb" style="display:none">' + fb + '</span></div>';
+    return '<div class="thumb"><img src="' + item.image + '" alt="" loading="lazy" style="display:none" onload="this.style.display=\'\';this.nextElementSibling.style.display=\'none\'"><span class="fb">' + fb + '</span></div>';
   }
 
   var INSTRUMENTS = VO.INSTRUMENTS;
