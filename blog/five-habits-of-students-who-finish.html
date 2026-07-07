@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The 5 Habits of Students Who Finish (Check Yourself)</title>
+  <meta name="description" content="From a school that watches closely: the five habits that separate students who finish dental assistant training from those who drift — with an interactive self-check." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .habit { cursor:pointer; transition: all .15s; }
+    .habit.done { background:#f0fdfa; border-color:#0d9488; }
+    .habit.done .hbox { background:#0d9488; border-color:#0d9488; color:#fff; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/five-habits-of-students-who-finish" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/five-habits-of-students-who-finish" />
+  <meta property="og:title" content="The 5 Habits of Students Who Finish" />
+  <meta property="og:description" content="The habits that separate students who finish from those who drift — with an interactive self-check." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The 5 Habits of Students Who Finish" />
+  <meta name="twitter:description" content="Check yourself against the five habits that get students to graduation." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The 5 Habits of Students Who Finish","description":"The five habits that separate students who finish dental assistant training from those who drift — with an interactive self-check.","datePublished":"2026-07-07","dateModified":"2026-07-07","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og-cover.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/five-habits-of-students-who-finish"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Encouragement · Study skills</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">The 5 habits of students who finish</h1>
+  <p class="text-slate-500 mt-3 text-lg">Twelve weeks is short — but it is long enough to drift if life pushes back. Watching students closely in small classes, you learn something: finishing has less to do with talent than with five repeatable habits. Tap each one you already have.</p>
+
+  <div class="not-prose mt-8">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="flex-1 bg-slate-100 rounded-full h-3 overflow-hidden"><div id="hbar" class="bg-gradient-to-r from-teal-600 to-emerald-500 h-3 rounded-full transition-all" style="width:0%"></div></div>
+      <span id="hcount" class="text-sm font-bold text-teal-700">0/5</span>
+    </div>
+    <div class="space-y-3">
+      <div class="habit border border-slate-200 rounded-xl p-4 flex gap-3 items-start" data-h="1"><span class="hbox w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center text-sm shrink-0 mt-0.5">✓</span><div><div class="font-semibold text-slate-900">1 · Show up even on the bad days</div><p class="text-sm text-slate-600 mb-0 mt-1">Not perfectly — just physically. The students who finish treat class like a shift they cannot skip. Motivation follows attendance far more often than it leads it.</p></div></div>
+      <div class="habit border border-slate-200 rounded-xl p-4 flex gap-3 items-start" data-h="2"><span class="hbox w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center text-sm shrink-0 mt-0.5">✓</span><div><div class="font-semibold text-slate-900">2 · Ask early, not after it snowballs</div><p class="text-sm text-slate-600 mb-0 mt-1">Confusion in week 2 becomes panic in week 6. Finishers raise a hand the same day something does not click — that is exactly what an 8-person class is for.</p></div></div>
+      <div class="habit border border-slate-200 rounded-xl p-4 flex gap-3 items-start" data-h="3"><span class="hbox w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center text-sm shrink-0 mt-0.5">✓</span><div><div class="font-semibold text-slate-900">3 · Practice small, practice daily</div><p class="text-sm text-slate-600 mb-0 mt-1">Twenty minutes in <a href="/tools/practice-pro" class="text-teal-700 font-semibold">Practice Pro</a> or the <a href="/skills-lab" class="text-teal-700 font-semibold">Skills Lab</a> beats a three-hour cram. Charts and tray setups become muscle memory through reps, not marathons.</p></div></div>
+      <div class="habit border border-slate-200 rounded-xl p-4 flex gap-3 items-start" data-h="4"><span class="hbox w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center text-sm shrink-0 mt-0.5">✓</span><div><div class="font-semibold text-slate-900">4 · Protect the calendar before the week starts</div><p class="text-sm text-slate-600 mb-0 mt-1">Finishers decide Sunday which hours belong to school and tell their family out loud. The free <a href="/tools/schedule-planner" class="text-teal-700 font-semibold">schedule planner</a> makes those hours visible; the <a href="/tools/family-talk" class="text-teal-700 font-semibold">family talk script</a> makes them respected.</p></div></div>
+      <div class="habit border border-slate-200 rounded-xl p-4 flex gap-3 items-start" data-h="5"><span class="hbox w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center text-sm shrink-0 mt-0.5">✓</span><div><div class="font-semibold text-slate-900">5 · Tell someone the goal</div><p class="text-sm text-slate-600 mb-0 mt-1">"I graduate in September" said out loud to a person who loves you is a contract. Quiet goals are easy to quit; spoken ones come with witnesses.</p></div></div>
+    </div>
+    <div id="hmsg" class="mt-4 text-[15px] font-medium text-slate-700 bg-amber-50 border border-amber-200 rounded-xl p-4">Tap the habits you already have — be honest.</div>
+  </div>
+
+  <div class="prose max-w-none mt-10">
+    <h2 class="display text-2xl font-bold mt-2">The honest part</h2>
+    <p>Nobody walks in with all five. That is fine — habits are built, and a 12-week program is exactly the length where a new habit has time to set. The structure helps too: small classes where your absence is noticed, daytime class hours (<a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> for exact times), and instructors who know your name by day one. Next cohorts start <strong>August 17</strong> and <strong>August 25</strong> — <a href="/calendar" class="text-teal-700 font-semibold">see all dates</a>.</p>
+
+    <div class="not-prose" data-pda-lead data-topic="five-habits" data-heading="Worried about finishing? Talk it through with Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">You bring habit #1. We'll help build the rest.</h2>
+      <p class="text-teal-100 mb-5">12 weeks, small classes, real software. Applying is free and takes minutes.</p>
+      <a href="/apply" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Apply now →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/study-25-minutes-a-day-busy-parents" class="text-teal-700 font-semibold">Studying 25 minutes a day</a> · <a href="/blog/is-dental-assistant-school-hard" class="text-teal-700 font-semibold">Is the school part hard?</a> · <a href="/blog/twelve-week-rule-monday-motivation" class="text-teal-700 font-semibold">The 12-week rule</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var done=0,total=5;
+  var msgs={0:"Tap the habits you already have — be honest.",1:"One is a start — pick the next easiest and build it this week.",2:"Two down. Habit 3 (small daily practice) is the highest-payoff next step.",3:"Three of five — you're already ahead of most first-week students.",4:"Four! You are genuinely built for this. One to go.",5:"All five? You are not a risk to finish — you are a future graduate. Go apply."};
+  document.querySelectorAll('.habit').forEach(function(h){
+    h.addEventListener('click',function(){
+      h.classList.toggle('done');
+      done=document.querySelectorAll('.habit.done').length;
+      document.getElementById('hbar').style.width=(done/total*100)+'%';
+      document.getElementById('hcount').textContent=done+'/5';
+      document.getElementById('hmsg').textContent=msgs[done];
+    });
+  });
+})();
+</script>
+</body>
+</html>

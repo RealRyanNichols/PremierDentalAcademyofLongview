@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Why We Built an Allergy Guard Into a Training App</title>
+  <meta name="description" content="PDA Practice Pro stops you from prescribing amoxicillin to a penicillin-allergic patient — the same safety logic real e-prescribing uses. Try the demo and see why safety habits must be trained, not hoped for." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .rxbtn { transition: all .15s; }
+    .rxbtn:hover { transform: translateY(-1px); }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/prescription-pad-allergy-guard" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/prescription-pad-allergy-guard" />
+  <meta property="og:title" content="Why We Built an Allergy Guard Into a Training App" />
+  <meta property="og:description" content="Try the demo: the same red-warning safety logic real e-prescribing uses — inside a free trainer." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Why We Built an Allergy Guard Into a Training App" />
+  <meta name="twitter:description" content="Patient safety as a trainable habit — try the interactive demo." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Why We Built an Allergy Guard Into a Training App","description":"PDA Practice Pro stops you from prescribing amoxicillin to a penicillin-allergic patient — the same safety logic real e-prescribing uses.","datePublished":"2026-07-07","dateModified":"2026-07-07","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og-cover.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/prescription-pad-allergy-guard"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Inside PDA · Patient safety</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">Why we built an allergy guard into a training app</h1>
+  <p class="text-slate-500 mt-3 text-lg">Most training software lets you click anything and calls it a day. Ours argues with you — on purpose. Here is the thinking behind Practice Pro's prescription allergy guard, and a little demo so you can feel it yourself.</p>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">Try it: the patient is allergic to penicillin</h2>
+    <div class="not-prose bg-slate-900 rounded-2xl p-5 text-white">
+      <div class="flex items-center gap-3 border-b border-slate-700 pb-3 mb-4">
+        <span class="w-9 h-9 bg-teal-600 rounded-full flex items-center justify-center font-bold text-sm">JW</span>
+        <div><div class="font-semibold text-sm">Williams, James · PT-1013</div><div class="text-xs text-rose-300 font-semibold">⚠ ALLERGY: Penicillin</div></div>
+      </div>
+      <div class="text-xs uppercase tracking-widest text-slate-400 mb-2">Write a prescription — pick a drug:</div>
+      <div class="flex flex-wrap gap-2">
+        <button class="rxbtn bg-white text-slate-900 text-sm font-semibold rounded-lg px-4 py-2" data-rx="amox">Amoxicillin 500mg</button>
+        <button class="rxbtn bg-white text-slate-900 text-sm font-semibold rounded-lg px-4 py-2" data-rx="clinda">Clindamycin 300mg</button>
+        <button class="rxbtn bg-white text-slate-900 text-sm font-semibold rounded-lg px-4 py-2" data-rx="ibu">Ibuprofen 600mg</button>
+      </div>
+      <div id="rxout" class="mt-4 rounded-xl p-4 text-sm bg-slate-800 text-slate-300">Select a medication to see what the trainer does.</div>
+    </div>
+    <p class="mt-4">That red stop is the whole lesson. Amoxicillin is a penicillin-class antibiotic — prescribing it to a penicillin-allergic patient is exactly the kind of error real e-prescribing systems exist to catch. Our trainer runs the same check, so the reflex — <strong>look at allergies before you touch the pad</strong> — is burned in before you ever stand in a real office. (Demo only: every patient in the trainer is fictional, and real prescribing decisions always belong to the dentist.)</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Safety habits can't be hoped for. They have to be rehearsed.</h2>
+    <div class="bg-slate-50 border-l-4 border-rose-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">The assistant is the last set of eyes.</div>
+      <p class="mt-1 mb-0">You are the one who pulls up the chart, preps the tray, and notices the red allergy banner. Offices trust assistants who have already practiced noticing. That is why the guard exists in a 22-drug training formulary instead of a warning slide in a lecture.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">It's one of many "argues with you" moments</h2>
+    <p>The same philosophy runs through the whole trainer: locked clinical notes that require amendments (like real legal records), claims that bounce when the data is wrong, a schedule that double-books if you are not paying attention. Every feature in <a href="/tools/practice-pro" class="text-teal-700 font-semibold">Practice Pro</a> pushes back the way a real office would — because software that never argues teaches habits that never hold.</p>
+    <p>You can open the <a href="/tools/practice-pro" class="text-teal-700 font-semibold">free preview</a> right now — no signup, 25 fictional patients — or step into the <a href="/skills-lab/virtual-office" class="text-teal-700 font-semibold">Virtual Dental Office</a> to see the chairside half. Enrolled students train on the full system for the whole 12-week program: daytime classes, <a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> for hours, next cohorts <strong>Aug 17</strong> and <strong>Aug 25</strong> (<a href="/calendar" class="text-teal-700 font-semibold">calendar</a>).</p>
+
+    <div class="not-prose" data-pda-lead data-topic="allergy-guard" data-heading="Curious how the trainers work? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">Train on software that argues back.</h2>
+      <p class="text-teal-100 mb-5">Open the free preview and try the prescription pad yourself — no signup, no card.</p>
+      <a href="/tools/practice-pro" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Try Practice Pro free →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/inside-pda-practice-pro-free-trainer" class="text-teal-700 font-semibold">Full Practice Pro tour</a> · <a href="/blog/infection-control-basics-texas-dental-assistants" class="text-teal-700 font-semibold">Infection control basics</a> · <a href="/blog/practice-pro-perio-chart-deep-dive" class="text-teal-700 font-semibold">The perio chart deep-dive</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var out=document.getElementById('rxout');
+  var res={
+    amox:'<div class="bg-rose-900/60 border border-rose-500 rounded-lg p-3"><strong class="text-rose-200">⛔ STOPPED — ALLERGY CONFLICT</strong><br><span class="text-rose-100">Amoxicillin is a penicillin-class antibiotic. Patient has a documented penicillin allergy. Prescription blocked — notify the dentist and document the alert.</span></div>',
+    clinda:'<div class="bg-emerald-900/50 border border-emerald-500 rounded-lg p-3"><strong class="text-emerald-200">✓ No allergy conflict found</strong><br><span class="text-emerald-100">Clindamycin is a common alternative for penicillin-allergic dental patients. In the real world: the dentist decides — your job is making sure the allergy banner was seen.</span></div>',
+    ibu:'<div class="bg-emerald-900/50 border border-emerald-500 rounded-lg p-3"><strong class="text-emerald-200">✓ No allergy conflict found</strong><br><span class="text-emerald-100">No interaction with the documented allergy. The guard stays quiet when the data is safe — it only argues when it matters.</span></div>'
+  };
+  document.querySelectorAll('.rxbtn').forEach(function(b){b.addEventListener('click',function(){out.innerHTML=res[b.dataset.rx];});});
+})();
+</script>
+</body>
+</html>
