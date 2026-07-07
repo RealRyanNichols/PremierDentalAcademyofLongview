@@ -34,30 +34,26 @@
     citiesServedNote: "Campus is in Longview. Students commute from surrounding East Texas towns (also Overton, Tatum, Hallsville, Waskom, etc.). Do NOT claim campuses in other cities.",
 
     programs: {
-      inPerson: { name: "In-Person", location: "Longview campus", schedule: "Evening options", format: "Live, hands-on training" },
+      inPerson: { name: "In-Person", location: "Longview campus", schedule: "Call (903) 913-6444 for current class times", format: "Live, hands-on training" },
       online:   { name: "Online",    location: "From home",      schedule: "Self-paced",      format: "Same curriculum, fully online" }
     },
 
     pricing: {
       // July 1, 2026 price change — must match api/enroll.js (the payment engine).
       // Pay in full: $3,000. Payment plan: $3,500 total = $500 down + $3,000 balance.
-      inPerson: {
-        total: 3000, totalDisplay: "$3,000", totalCents: 300000,
-        planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000,
-        downPayment: 500, downDisplay: "$500"
-      },
+      inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000, balance: 3000, balanceDisplay: "$3,000" },
       online:   { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true, saleLabel: "limited-time sale" }
     },
 
     paymentPlan: {
-      text: "$500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments (up to 12). Plan total $3,500 — or save $500 by paying $3,000 in full.",
+      text: "Pay in full for $3,000, or go on a plan ($3,500): $500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments (up to 12). No big lump sum.",
       cadence: "weekly or monthly",
       splitPay: ["Klarna", "Afterpay", "Affirm"]
     },
 
     transferRefund: {
       online: "Online ($397) is non-refundable; 100% transfers as credit toward In-Person tuition within 90 days.",
-      inPerson: "In-Person ($3,000 paid in full, or $3,500 on a plan) is pro-rated per the Terms.",
+      inPerson: "In-Person ($3,000, or $3,500 on a plan) is pro-rated per the Terms.",
       source: "terms.html"
     },
 

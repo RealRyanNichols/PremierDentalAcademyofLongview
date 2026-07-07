@@ -9,6 +9,7 @@
   <url><loc>https://premierdentalacademyoflongview.com/study-guide</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/study-pack</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/exam-prep-course</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/exam-pro</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/contact</loc><priority>0.7</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/calendar</loc><priority>1.0</priority><changefreq>daily</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/classes</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
@@ -22,7 +23,26 @@
   <url><loc>https://premierdentalacademyoflongview.com/employers/request-graduate</loc><priority>0.5</priority></url>
   <url><loc>https://premierdentalacademyoflongview.com/teach</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog</loc><priority>0.8</priority><changefreq>daily</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/missed-july-cohort-august-options</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/anatomy-of-dental-assistant-resume</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/dental-school-with-kids-at-home</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/first-week-at-pda-what-it-looks-like</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/why-classes-capped-at-eight</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/working-while-in-dental-assistant-school</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/twelve-week-rule-monday-motivation</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/chairside-trainer-instrument-trays</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/online-rda-program-self-check</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/salary-vs-cost-of-living-east-texas</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/practice-pro-perio-chart-deep-dive</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/freedom-is-a-career-you-chose</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/savings-starter-first-500-cushion</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/small-town-dental-offices-new-rdas</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/retail-to-dental-assisting-skills-transfer</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/things-longview-gets-right</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/dental-terms-day-one-cheat-sheet</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/twelve-week-study-plan-tool</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog/rda-classes-starting-july-2026-longview</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/blog/wioa-funding-dental-assistant-training-east-texas</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog/inside-pda-practice-pro-free-trainer</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog/starting-over-in-longview-east-texas</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/blog/too-old-to-become-a-dental-assistant</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
@@ -86,6 +106,24 @@
   <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-kilgore-tx</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-henderson-tx</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-training-gladewater-tx</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/locations</loc><priority>0.9</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-hallsville-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-white-oak-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-gilmer-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-big-sandy-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-diana-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-ore-city-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-overton-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-tatum-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-carthage-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-jefferson-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-lindale-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-hughes-springs-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-pittsburg-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-mount-pleasant-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-nacogdoches-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-athens-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://premierdentalacademyoflongview.com/dental-assistant-school-palestine-tx</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://premierdentalacademyoflongview.com/night-class</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/tools/funding-finder</loc></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/tools/take-home-pay</loc></url>

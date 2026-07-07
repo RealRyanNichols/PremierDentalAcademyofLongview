@@ -15,6 +15,15 @@
   var CFG = (typeof window !== "undefined" && window.PDA_ANALYTICS_CONFIG) || {};
   var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 
+  // Named conversion events that map to the Meta STANDARD "Lead" event (used for
+  // ad optimization + retargeting/lookalike audiences). The pixel is loaded
+  // site-wide by pda-nav.js, so this fires whenever a lead form reports success.
+  var LEAD_EVENTS = {
+    application_submit: 1, waitlist_submit: 1, tour_submit: 1, study_guide_submit: 1,
+    practice_exam_lead_submit: 1, employer_request_submit: 1, night_class_lead: 1,
+    ask_premier_lead_submit: 1, lead_submit: 1,
+  };
+
   function safe(fn) { try { return fn(); } catch (e) { /* analytics must never break the page */ } }
 
   function captureUTM() {
@@ -47,8 +56,17 @@
     safe(function () { Object.assign(data, props || {}); });
     safe(function () { if (window.va) window.va("event", { name: name, data: data }); });           // Vercel
     safe(function () { if (window.gtag && CFG.ga4Id) window.gtag("event", name, data); });          // GA4
-    safe(function () { if (window.fbq && CFG.metaPixelId) window.fbq("trackCustom", name, data); }); // Meta
+    safe(function () { if (window.fbq && CFG.metaPixelId) window.fbq("trackCustom", name, data); }); // Meta (custom)
     safe(function () { if (window.ttq && CFG.tiktokPixelId) window.ttq.track(name, data); });        // TikTok
+    // Meta STANDARD event mapping — the pixel is loaded site-wide (pda-nav.js),
+    // so gate on fbq itself, not the optional PDA_ANALYTICS_CONFIG.metaPixelId.
+    // Purchase is intentionally NOT mapped here (each product/enroll path fires
+    // its own Purchase — mapping it centrally would double-count).
+    safe(function () {
+      if (window.fbq && LEAD_EVENTS[name]) {
+        window.fbq("track", "Lead", { content_name: name, value: data.value, currency: data.currency || "USD" });
+      }
+    });
     if (CFG.debug || !hasProvider()) safe(function () { console.debug("[pda-analytics]", name, data); });
   }
 

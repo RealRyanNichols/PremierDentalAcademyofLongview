@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "generate:cities": "node scripts/generate-city-pages.mjs",
     "check:facts": "node scripts/check-facts.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:analytics": "node scripts/check-analytics.mjs",

@@ -32,7 +32,7 @@
       cta: { label: 'Get the Study Pack ($19) →', href: '/study-pack' } },
 
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a payment plan** — $500 down, then weekly or monthly payments.\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
+      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a plan** ($500 down, then weekly or monthly payments).\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
@@ -44,7 +44,7 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nWe also accept **TWC vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
       cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
     { match: /\b(sponsor|sponsorship|adopt a student|can'?t afford|cant afford)\b/i,
@@ -52,7 +52,7 @@
       cta: { label: 'See the program →', href: '/sponsor-a-student' } },
 
     { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
-      reply: 'Yes! We accept **TWC vocational vouchers**, **GI Bill / veterans benefits**, and **WIOA workforce funding** — and local businesses can **sponsor a student\'s tuition** through our Sponsor-a-Student program. We help you navigate eligibility — submit a free application and we\'ll get on a call.',
+      reply: 'Yes — through **WIOA funding** with **Workforce Solutions East Texas**. You apply directly with them (not through PDA): fill out their free WIOA interest form and they\'ll contact you within about 3 business days by phone, text, or email. The process takes ~6–8 weeks, so start early to be funded in time for your class. Start here: https://www.easttexasworkforce.org/apply\n\nLocal businesses can also **sponsor a student\'s tuition** through our Sponsor-a-Student program — see /sponsor-a-student.',
       cta: { label: 'Apply for funding →', href: '/apply' } },
 
     { match: /\b(salary|pay|earn|how much.*make|income|wage)\b/i,
@@ -127,7 +127,7 @@
     { label: '⏱ How long does the program take?', q: 'How long does the program take?' },
     { label: '📅 When\'s the next class?',       q: 'When is the next class?' },
     { label: '💵 Can I pay monthly?',            q: 'Can I pay monthly?' },
-    { label: '🎖 Do you accept GI Bill / TWC?',  q: 'Do you accept GI Bill or TWC funding?' },
+    { label: '💰 Can WIOA funding cover it?',  q: 'Can WIOA funding cover my tuition?' },
     { label: '📝 I want to apply',              q: 'I want to apply' },
     { label: '👋 Talk to a real person',        q: 'I want to talk to a human' },
   ];
@@ -425,6 +425,8 @@
       if (/@/.test(contact)) rec.email = contact; else rec.phone = contact;
       addMsg((name ? name + ', y' : 'Y') + 'ou\'re all set! 🎉 Amanda or someone from PDA will reach out as quickly as possible. Ask me anything else in the meantime.', 'bot');
       try { if (sb) await sb.from('leads').insert(rec); } catch (e) {}
+      // Fire the Meta standard Lead event (pda-analytics maps this name).
+      try { if (window.PDA && window.PDA.track) window.PDA.track('ask_premier_lead_submit', { reason: reason }); } catch (e) {}
       showQuick();
     }
 

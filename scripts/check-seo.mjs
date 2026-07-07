@@ -46,10 +46,13 @@ const checks = {
 const ESSENTIAL = ["title", "description", "canonical"];
 
 const files = walk(root);
-let failPages = 0, warnPages = 0;
+let failPages = 0, warnPages = 0, noindexSkipped = 0;
 const rows = [];
 for (const f of files) {
   const h = readFileSync(f, "utf8");
+  // noindex pages (redirect stubs, paid-ads landers) are not indexable marketing
+  // pages — social/OG completeness is optional there.
+  if (/<meta[^>]+name=["']robots["'][^>]+noindex/i.test(h)) { noindexSkipped++; continue; }
   const missing = Object.keys(checks).filter((k) => !checks[k](h));
   if (!missing.length) continue;
   const essMissing = missing.filter((m) => ESSENTIAL.includes(m));
@@ -57,7 +60,7 @@ for (const f of files) {
   if (essMissing.length) failPages++; else warnPages++;
 }
 
-console.log("SEO audit: " + files.length + " indexable pages checked");
+console.log("SEO audit: " + (files.length - noindexSkipped) + " indexable pages checked (" + noindexSkipped + " noindex skipped)");
 if (rows.length) {
   for (const r of rows) {
     const tag = r.essMissing.length ? "✗" : "⚠";

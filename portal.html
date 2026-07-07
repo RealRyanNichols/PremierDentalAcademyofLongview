@@ -16,11 +16,13 @@
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
-    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-text { background: linear-gradient(90deg, #2dd4bf 0%, #22d3ee 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     /* Content stays hidden until the guard confirms access (no flash of tools). */
     #portal { display: none; }
     body.pda-ready #portal { display: block; }
     body.pda-ready #gate-loading { display: none; }
+    .tool-card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .tool-card:hover { transform: translateY(-3px); }
   </style>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 </head>
@@ -33,9 +35,9 @@
   </div>
 </div>
 
-<main id="portal" class="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+<main id="portal" class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
 
-  <div class="flex items-center justify-between gap-3 mb-2">
+  <div class="flex items-center justify-between gap-3 mb-4">
     <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
       <img src="/assets/logo-mark.png" alt="PDA" width="36" height="36" class="w-9 h-9 rounded-lg" />
       <span class="text-lg">Premier Dental Academy</span>
@@ -43,70 +45,156 @@
     <a href="/dashboard" class="text-sm font-semibold text-teal-700 hover:underline">Full dashboard →</a>
   </div>
 
-  <h1 class="display text-3xl sm:text-4xl font-extrabold leading-tight mt-6">Your <span class="gradient-text">student portal</span></h1>
-  <p class="text-slate-600 mt-2">Welcome back, <span id="member-name" class="font-semibold text-slate-900">student</span>. Here are the hands-on tools that live on the website — the stuff that can't live in your course.</p>
+  <!-- Hero band -->
+  <header class="bg-gradient-to-br from-[#0a1226] to-[#0f2a33] text-white rounded-3xl px-6 sm:px-10 py-8 sm:py-10">
+    <p class="text-xs uppercase tracking-widest text-teal-300 font-bold">Student Hub</p>
+    <h1 class="display text-3xl sm:text-4xl font-extrabold leading-tight mt-2">Welcome back, <span id="member-name" class="gradient-text">student</span> 👋</h1>
+    <p class="text-slate-300 mt-2 max-w-xl">This is your training ground — the hands-on tools that can't live inside your course. Every rep here shows up on your dashboard.</p>
 
-  <section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-    <a href="/tools/practice-pro" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">🦷</div>
-      <h2 class="font-bold text-slate-900">PDA Practice Pro</h2>
+    <!-- Real progress, from your own data -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
+      <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <div class="text-[11px] uppercase tracking-widest text-teal-200 font-semibold">Practice reps</div>
+        <div id="stat-reps" class="text-2xl font-extrabold mt-1">—</div>
+      </div>
+      <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <div class="text-[11px] uppercase tracking-widest text-teal-200 font-semibold">Best mock score</div>
+        <div id="stat-best" class="text-2xl font-extrabold mt-1">—</div>
+      </div>
+      <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <div class="text-[11px] uppercase tracking-widest text-teal-200 font-semibold">Mock attempts</div>
+        <div id="stat-attempts" class="text-2xl font-extrabold mt-1">—</div>
+      </div>
+      <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+        <div class="text-[11px] uppercase tracking-widest text-teal-200 font-semibold">Skills completed</div>
+        <div id="stat-skills" class="text-2xl font-extrabold mt-1">—</div>
+      </div>
+    </div>
+    <p id="stat-hint" class="text-teal-200/70 text-xs mt-3 hidden">Numbers fill in as you train — open a trainer below and get your first reps in today.</p>
+  </header>
+
+  <!-- Keep momentum -->
+  <section class="mt-8 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6">
+    <h2 class="font-bold text-slate-900 flex items-center gap-2">🎯 This week's moves</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-4 text-sm">
+      <a href="https://premierdentalacademyoflongview.mykajabi.com/library" class="rounded-xl border border-slate-200 hover:border-sky-400 p-3 flex items-start gap-2"><span>📚</span><span><b>Watch your next lesson</b><br><span class="text-slate-500">in Kajabi</span></span></a>
+      <a href="/tools/practice-pro" class="rounded-xl border border-slate-200 hover:border-teal-400 p-3 flex items-start gap-2"><span>🦷</span><span><b>Log practice reps</b><br><span class="text-slate-500">charting &amp; front desk</span></span></a>
+      <a href="/tools/practice-exam" class="rounded-xl border border-slate-200 hover:border-amber-400 p-3 flex items-start gap-2"><span>⏱</span><span><b>Take a timed mock</b><br><span class="text-slate-500">included with enrollment</span></span></a>
+      <a href="/skills-lab" class="rounded-xl border border-slate-200 hover:border-violet-400 p-3 flex items-start gap-2"><span>🎓</span><span><b>Check off a skill</b><br><span class="text-slate-500">Competency Passport</span></span></a>
+    </div>
+  </section>
+
+  <!-- Trainers -->
+  <h2 class="display text-2xl font-bold mt-10">Your trainers</h2>
+  <section class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+    <a href="/tools/practice-pro" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-teal-50 grid place-items-center text-2xl mb-3">🦷</div>
+      <h3 class="font-bold text-slate-900">PDA Practice Pro</h3>
       <p class="text-sm text-slate-500 mt-1">Dentrix-style practice-management trainer with the anatomical tooth chart.</p>
+      <span class="inline-block mt-3 text-teal-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
-    <a href="/tools/chairside" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">🪑</div>
-      <h2 class="font-bold text-slate-900">ChairSide</h2>
+    <a href="/tools/chairside" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-cyan-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-cyan-50 grid place-items-center text-2xl mb-3">🪑</div>
+      <h3 class="font-bold text-slate-900">ChairSide</h3>
       <p class="text-sm text-slate-500 mt-1">Chairside assisting simulator — instruments, procedures, and flow.</p>
+      <span class="inline-block mt-3 text-cyan-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
-    <a href="/tools/practice-exam" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">📝</div>
-      <h2 class="font-bold text-slate-900">Mock State Board</h2>
+    <a href="/tools/practice-exam" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-amber-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-amber-50 grid place-items-center text-2xl mb-3">📝</div>
+      <h3 class="font-bold text-slate-900">Mock State Board</h3>
       <p class="text-sm text-slate-500 mt-1">Timed practice exam built around the Texas RDA state board.</p>
+      <span class="inline-block mt-3 text-amber-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
-    <a href="/tools/flashcards" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">🃏</div>
-      <h2 class="font-bold text-slate-900">Flashcards</h2>
+    <a href="/tools/flashcards" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-violet-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-violet-50 grid place-items-center text-2xl mb-3">🃏</div>
+      <h3 class="font-bold text-slate-900">Flashcards</h3>
       <p class="text-sm text-slate-500 mt-1">Spaced-repetition decks for terminology and exam prep.</p>
+      <span class="inline-block mt-3 text-violet-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
-    <a href="/tools/how-to-chart" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">📈</div>
-      <h2 class="font-bold text-slate-900">How to Chart</h2>
+    <a href="/tools/how-to-chart" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-emerald-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-emerald-50 grid place-items-center text-2xl mb-3">📈</div>
+      <h3 class="font-bold text-slate-900">How to Chart</h3>
       <p class="text-sm text-slate-500 mt-1">Step-by-step charting walkthroughs and reference.</p>
+      <span class="inline-block mt-3 text-emerald-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
-    <a href="/tools/resume-builder" class="group bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg transition p-5">
-      <div class="text-3xl mb-2">💼</div>
-      <h2 class="font-bold text-slate-900">Résumé Builder</h2>
+    <a href="/tools/resume-builder" class="tool-card group bg-white rounded-2xl border border-slate-200 hover:border-rose-500 hover:shadow-lg p-5">
+      <div class="w-11 h-11 rounded-xl bg-rose-50 grid place-items-center text-2xl mb-3">💼</div>
+      <h3 class="font-bold text-slate-900">Résumé Builder</h3>
       <p class="text-sm text-slate-500 mt-1">Build a dental-assistant résumé ready for East-Texas offices.</p>
+      <span class="inline-block mt-3 text-rose-700 text-sm font-semibold opacity-0 group-hover:opacity-100 transition">Open →</span>
     </a>
   </section>
 
   <section class="mt-8 grid sm:grid-cols-2 gap-4">
-    <a href="https://premierdentalacademyoflongview.mykajabi.com/library" class="bg-white rounded-2xl border border-slate-200 hover:border-sky-500 transition p-5 flex items-center gap-4">
+    <a href="https://premierdentalacademyoflongview.mykajabi.com/library" class="tool-card bg-gradient-to-br from-sky-600 to-sky-700 text-white rounded-2xl p-5 flex items-center gap-4 hover:shadow-lg">
       <div class="text-3xl">📚</div>
       <div>
-        <h2 class="font-bold text-slate-900">Your course in Kajabi</h2>
-        <p class="text-sm text-slate-500 mt-0.5">Video lessons, quizzes, and curriculum. Same email.</p>
+        <h3 class="font-bold">Your course in Kajabi</h3>
+        <p class="text-sm text-sky-100 mt-0.5">Video lessons, quizzes, and curriculum. Same email you enrolled with.</p>
       </div>
+      <span class="ml-auto text-xl">→</span>
     </a>
-    <a href="/dashboard" class="bg-white rounded-2xl border border-slate-200 hover:border-teal-500 transition p-5 flex items-center gap-4">
+    <a href="/dashboard" class="tool-card bg-gradient-to-br from-teal-600 to-teal-700 text-white rounded-2xl p-5 flex items-center gap-4 hover:shadow-lg">
       <div class="text-3xl">📊</div>
       <div>
-        <h2 class="font-bold text-slate-900">My dashboard</h2>
-        <p class="text-sm text-slate-500 mt-0.5">Progress, cohort, messages, and your certificate.</p>
+        <h3 class="font-bold">My dashboard</h3>
+        <p class="text-sm text-teal-100 mt-0.5">Progress, cohort, messages, and your certificate.</p>
       </div>
+      <span class="ml-auto text-xl">→</span>
     </a>
   </section>
 
-  <p class="text-center text-xs text-slate-400 mt-10">
-    Need help? Text Amanda at <a href="tel:+19039136444" class="text-teal-700 hover:underline">(903) 913-6444</a>.
-  </p>
+  <section class="mt-8 bg-white rounded-2xl border border-slate-200 p-5 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+    <div class="text-3xl">💬</div>
+    <div class="flex-1">
+      <h3 class="font-bold text-slate-900">Stuck on anything?</h3>
+      <p class="text-sm text-slate-500">Ask Premier (the chat bubble in the corner) answers instantly — or text Amanda directly. Real teacher, real answers.</p>
+    </div>
+    <a href="tel:+19039136444" class="shrink-0 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm px-5 py-2.5 rounded-full">📞 (903) 913-6444</a>
+  </section>
+
 </main>
 
 <script>
   PDAPortal.requireEnrolled().then(function (access) {
-    var name = (access.email || 'student').split('@')[0];
-    document.getElementById('member-name').textContent = name;
+    var fallback = (access.email || 'student').split('@')[0];
+    document.getElementById('member-name').textContent = fallback;
     document.body.classList.add('pda-ready');
+
+    // Everything below is best-effort enrichment — the portal must work even if it fails.
+    try {
+      var sb = window.supabase.createClient(
+        'https://lmbsuwslsycukynzpzik.supabase.co',
+        'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'
+      );
+      var uid = access.session && access.session.user && access.session.user.id;
+      if (!uid) return;
+
+      sb.from('profiles').select('first_name').eq('id', uid).maybeSingle().then(function (r) {
+        if (r.data && r.data.first_name) document.getElementById('member-name').textContent = r.data.first_name;
+      });
+
+      Promise.all([
+        sb.from('pp_practice_log').select('id', { count: 'exact', head: true }).eq('student_id', uid),
+        sb.from('practice_exam_attempts').select('score_pct').eq('student_id', uid),
+        sb.from('skills_lab_progress').select('competencies').eq('student_id', uid).maybeSingle()
+      ]).then(function (res) {
+        var reps = res[0].count || 0;
+        var attempts = res[1].data || [];
+        var best = attempts.length ? Math.max.apply(null, attempts.map(function (a) { return a.score_pct || 0; })) : null;
+        var comp = (res[2].data && res[2].data.competencies) || {};
+        var done = Object.keys(comp).filter(function (k) {
+          var s = comp[k] && comp[k].status; return s === 'completed' || s === 'verified';
+        }).length;
+        document.getElementById('stat-reps').textContent = reps.toLocaleString();
+        document.getElementById('stat-best').textContent = best != null ? best + '%' : '—';
+        document.getElementById('stat-attempts').textContent = attempts.length;
+        document.getElementById('stat-skills').textContent = done;
+        if (!reps && !attempts.length && !done) document.getElementById('stat-hint').classList.remove('hidden');
+      }).catch(function () {});
+    } catch (e) {}
   });
 </script>
+<script defer src="/assets/pda-track.js"></script>
 </body>
 </html>

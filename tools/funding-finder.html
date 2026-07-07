@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Can you get your RDA training paid for? | Premier Dental Academy</title>
-<meta name="description" content="Answer 6 quick questions and see which funding could cover your dental-assistant training — Texas Workforce Solutions, WIOA, GI Bill, payment plans and more. Free, no signup.">
+<meta name="description" content="Answer 6 quick questions and see which funding could cover your dental-assistant training — Texas Workforce Solutions (WIOA), payment plans and more. Free, no signup.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
@@ -58,7 +58,6 @@ tailwind.config = { theme: { extend: {
   var QUESTIONS = [
     { id:'unemployed', q:'Are you currently unemployed, working part-time, or recently laid off?' },
     { id:'lowincome', q:'Do you receive any assistance (SNAP, TANF, Medicaid) or have a limited income?' },
-    { id:'military', q:'Are you a veteran, active military, or a military spouse or dependent?' },
     { id:'parent', q:'Are you a parent or the main support for your household?' },
     { id:'hsgrad', q:'Do you have a high-school diploma or GED?' },
     { id:'plan', q:'Would small weekly or monthly payments help more than paying all at once?' }
@@ -99,16 +98,13 @@ tailwind.config = { theme: { extend: {
   seeBtn.addEventListener('click', function () {
     var matches = [];
     if (ans.unemployed === 'Yes' || ans.lowincome === 'Yes') {
-      matches.push(card('🏛️', 'Texas Workforce Solutions / WIOA', 'You may qualify for workforce funding that can help cover tuition for in-demand training like dental assisting. Take your acceptance to your local Workforce Solutions office — we will help you with the paperwork.', true));
-    }
-    if (ans.military === 'Yes') {
-      matches.push(card('🎖️', 'Veterans & military benefits', 'GI Bill, VA programs, and military-spouse education benefits may apply. Bring your status to us and we will point you to the right benefit. <span class="text-slate-400">[Amanda to confirm current accepted benefits]</span>', true));
+      matches.push(card('🏛️', 'Texas Workforce Solutions / WIOA', 'You may qualify for WIOA funding that can help cover tuition. You apply directly with Workforce Solutions East Texas — start their free <a href="https://www.easttexasworkforce.org/apply" target="_blank" rel="noopener" class="underline">WIOA interest form</a>. They contact you within about 3 business days; the whole process takes ~6–8 weeks, so start early.', true));
     }
     if (ans.parent === 'Yes' || ans.lowincome === 'Yes') {
       matches.push(card('💛', 'Scholarship / hardship help', 'We never want money to be the only thing in your way. Ask Amanda about scholarship or hardship options for parents and students rebuilding. <span class="text-slate-400">[Amanda to confirm details]</span>', false));
     }
     // Always-available options
-    matches.push(card('💳', 'Simple payment plan', '$500 down holds your seat, then simple weekly or monthly payments (up to 12) — your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
+    matches.push(card('💳', 'Simple payment plan', '$3,000 paid in full, or $3,500 on a plan — $500 down holds your seat, then small weekly or monthly payments (up to 12); your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
     matches.push(card('🤝', 'Sponsor-a-Student program', 'Local businesses sponsor students through school — a full seat or part of one. Free to apply, and nothing goes public without your OK. <a href="/sponsor-a-student" class="underline font-semibold text-teal-700">Apply for a sponsorship →</a>', false));
     matches.push(card('💻', 'Online for $397', 'If upfront cost is tight, the 100% online program is a flat $397 (regularly $997) and you can start any day.', false));
 
@@ -133,5 +129,6 @@ tailwind.config = { theme: { extend: {
   });
 })();
 </script>
+<script defer src="/assets/pda-track.js"></script>
 </body>
 </html>

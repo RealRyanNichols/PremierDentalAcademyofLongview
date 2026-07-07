@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KPI Cockpit — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}
+    .display{font-family:Fraunces,serif}
+    .mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}
+    .viz-tip{position:fixed;pointer-events:none;background:#0f172a;color:#fff;font-size:12px;padding:6px 9px;border-radius:8px;z-index:60;transform:translate(-50%,calc(-100% - 10px));white-space:nowrap;box-shadow:0 4px 14px rgba(15,23,42,.25)}
+    .bar-row:hover .bar-fill{filter:brightness(0.92)}
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col pda-tinted">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+      <span>PDA Admin</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white">Home</a>
+      <a href="/admin/kpi" class="text-teal-300">KPI</a>
+      <a href="/admin/students" class="text-slate-300 hover:text-white">Students</a>
+      <a href="/admin/progress" class="text-slate-300 hover:text-white">Progress</a>
+      <a href="/admin/leads" class="text-slate-300 hover:text-white">Inbox</a>
+      <a href="/admin/chat" class="text-slate-300 hover:text-white">Chat</a>
+      <a href="/admin/feedback" class="text-slate-300 hover:text-white">Feedback</a>
+      <span id="user-label" class="text-slate-400 hidden sm:inline"></span>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Admin access only</h1>
+    <p class="text-slate-600 mt-2">Sign in with the PDA admin account.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
+  </div>
+
+  <div id="view" class="hidden">
+
+    <div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Owner cockpit</p>
+        <h1 class="display text-3xl sm:text-4xl font-bold mt-1">How's the business — and what do I do today?</h1>
+      </div>
+      <p class="text-xs text-slate-500">Live from Supabase · <span id="asof">—</span></p>
+    </div>
+
+    <!-- Fastest money -->
+    <section id="fastest-money" class="hidden mb-6 bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-5">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">💰</span>
+        <h2 class="font-bold text-lg">Fastest money today</h2>
+      </div>
+      <ol id="fastest-money-list" class="mt-3 space-y-2 text-sm list-decimal list-inside"></ol>
+    </section>
+
+    <!-- KPI tiles -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Leads (7 days)</div>
+        <div id="k-leads7" class="text-2xl font-bold mono mt-1 text-teal-700">—</div>
+        <div id="k-leads7-delta" class="text-[11px] mt-0.5 text-slate-500"></div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Leads (30 days)</div>
+        <div id="k-leads30" class="text-2xl font-bold mono mt-1 text-teal-700">—</div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Enrolled students</div>
+        <div id="k-students" class="text-2xl font-bold mono mt-1 text-cyan-700">—</div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Open seats</div>
+        <div id="k-seats" class="text-2xl font-bold mono mt-1 text-amber-700">—</div>
+        <div class="text-[11px] mt-0.5 text-slate-500">upcoming + open cohorts</div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Email list</div>
+        <div id="k-subs" class="text-2xl font-bold mono mt-1 text-cyan-700">—</div>
+      </div>
+      <div class="bg-white rounded-xl border border-slate-200 p-4">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Revenue logged*</div>
+        <div id="k-revenue" class="text-2xl font-bold mono mt-1 text-teal-700">—</div>
+        <div class="text-[11px] mt-0.5 text-slate-500">*Supabase only — Square Dashboard is the money truth</div>
+      </div>
+    </div>
+
+    <!-- Charts row -->
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">New leads per day <span class="text-slate-400 font-normal text-sm">· last 30 days</span></h2>
+        <div id="chart-leads-day" class="mt-3"></div>
+        <details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">Data table</summary><div id="table-leads-day" class="mt-2 max-h-48 overflow-y-auto"></div></details>
+      </section>
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">Leads by source <span class="text-slate-400 font-normal text-sm">· last 30 days</span></h2>
+        <div id="chart-leads-source" class="mt-4 space-y-2"></div>
+        <details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">Data table</summary><div id="table-leads-source" class="mt-2"></div></details>
+      </section>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">Pipeline right now <span class="text-slate-400 font-normal text-sm">· all open leads</span></h2>
+        <div id="chart-pipeline" class="mt-4 space-y-2"></div>
+      </section>
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">Cohort fill <span class="text-slate-400 font-normal text-sm">· current &amp; upcoming</span></h2>
+        <div id="cohort-fill" class="mt-4 space-y-3"></div>
+      </section>
+    </div>
+
+    <!-- Needs attention -->
+    <section class="bg-white rounded-2xl border border-slate-200 p-5 mb-8">
+      <h2 class="font-bold flex items-center gap-2">⚠️ Needs attention</h2>
+      <ul id="attention-list" class="mt-3 divide-y divide-slate-100 text-sm"></ul>
+      <p id="attention-empty" class="hidden text-sm text-slate-500 mt-3">Nothing urgent. Go teach. 🦷</p>
+    </section>
+
+    <p class="text-xs text-slate-400 mb-4">Site traffic lives in <a class="underline" href="https://vercel.com/realryannichols/premier-dental-academyof-longview/analytics" target="_blank" rel="noopener">Vercel Analytics</a>; email stats live in Kajabi; full payment history lives in the Square Dashboard. This page shows what's in Supabase — leads, cohorts, students, and logged purchases.</p>
+  </div>
+</main>
+
+<script>
+(async () => {
+  'use strict';
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const wall = document.getElementById('auth-wall');
+  const view = document.getElementById('view');
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  // ── Guard (same pattern as every admin page) ──
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { wall.classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin,first_name').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin,first_name').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { wall.classList.remove('hidden'); return; }
+  $('user-label').textContent = session.user.email || '';
+  $('signout').onclick = () => { location.href = '/logout?then=home'; };
+  view.classList.remove('hidden');
+  $('asof').textContent = new Date().toLocaleString();
+
+  // ── Data ──
+  const [leadsQ, cohortsQ, purchasesQ, profilesQ, subsQ, tasksQ, failedQ] = await Promise.all([
+    sb.from('leads').select('id,created_at,source,status,pipeline_stage,lead_grade,last_contact_at,first_name,last_name,phone,interest_path').order('created_at', { ascending: false }).limit(1000),
+    sb.from('cohorts').select('name,delivery_mode,start_date,capacity,enrolled_count,status'),
+    sb.from('purchases').select('amount_cents,product_label,status,created_at'),
+    sb.from('profiles').select('id,program,is_admin'),
+    sb.from('subscribers').select('id', { count: 'exact', head: true }).eq('status', 'subscribed'),
+    sb.from('admin_tasks').select('id,title,priority,status').eq('status', 'open').order('priority', { ascending: true }).limit(50),
+    sb.from('failed_payments').select('contact_name,contact_email,amount_cents,product_label,failure_reason,triage_status,created_at').order('created_at', { ascending: false }).limit(50),
+  ]);
+  const leads = leadsQ.data || [];
+  const cohorts = cohortsQ.data || [];
+  const purchases = purchasesQ.data || [];
+  const profiles = profilesQ.data || [];
+  const tasks = tasksQ.data || [];
+  // 'resolved' and 'reconciled' (auto-set when a later payment succeeds) are terminal.
+  const failed = (failedQ.data || []).filter(f => !['resolved', 'reconciled'].includes(f.triage_status || ''));
+
+  const now = Date.now();
+  const days = (iso) => (now - new Date(iso).getTime()) / 864e5;
+  // Same legacy-status fallback the other admin pages use.
+  const stageOf = (l) => l.pipeline_stage || (l.status === 'enrolled' ? 'paying' : l.status === 'contacted' ? 'contacted' : 'new');
+  // Bucket by LOCAL calendar day (Amanda is in Central time; UTC would shift evenings).
+  const dayKey = (dt) => { const d2 = new Date(dt); return d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0') + '-' + String(d2.getDate()).padStart(2, '0'); };
+  // The last N local calendar days, stepping the DATE component (never fixed 24h
+  // millis) so DST transitions can't collapse or duplicate a day.
+  const lastLocalDays = (n) => { const out = []; const base = new Date(); for (let i = n - 1; i >= 0; i--) { const dd = new Date(base.getFullYear(), base.getMonth(), base.getDate() - i); out.push(dayKey(dd)); } return out; };
+  const leads7 = leads.filter(l => days(l.created_at) <= 7);
+  const leadsPrev7 = leads.filter(l => days(l.created_at) > 7 && days(l.created_at) <= 14);
+  const leads30 = leads.filter(l => days(l.created_at) <= 30);
+
+  // ── Tiles ──
+  $('k-leads7').textContent = leads7.length;
+  const d = leads7.length - leadsPrev7.length;
+  const arrow = d > 0 ? '↑ +' : d < 0 ? '↓ ' : '→ ';
+  $('k-leads7-delta').textContent = arrow + Math.abs(d) + ' vs prior 7 days';
+  $('k-leads7-delta').className = 'text-[11px] mt-0.5 ' + (d > 0 ? 'text-teal-700' : d < 0 ? 'text-rose-600' : 'text-slate-500');
+  $('k-leads30').textContent = leads30.length;
+  $('k-students').textContent = profiles.filter(p => p.is_admin !== true && p.program && !['preview', 'staff', 'admin'].includes(p.program)).length;
+  const openCohorts = cohorts.filter(c => ['upcoming', 'open', 'current'].includes(String(c.status || '').toLowerCase()));
+  // Sellable seats = cohorts that haven't started yet (matches calendar.html's filter).
+  const todayKey = dayKey(now);
+  const seatRows = openCohorts.filter(c => c.capacity != null && c.start_date && String(c.start_date).slice(0, 10) >= todayKey);
+  $('k-seats').textContent = seatRows.length ? seatRows.reduce((s, c) => s + Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0)), 0) : '—';
+  $('k-subs').textContent = subsQ.count != null ? subsQ.count : '—';
+  const revCents = purchases.filter(p => (p.status || 'completed') === 'completed').reduce((s, p) => s + (p.amount_cents || 0), 0);
+  $('k-revenue').textContent = '$' + Math.round(revCents / 100).toLocaleString();
+
+  // Run a chart builder in isolation — one chart failing must never blank the
+  // rest of the cockpit.
+  function safeChart(id, fn) {
+    try { fn(); }
+    catch (e) { console.warn('[kpi] chart failed:', id, e); var el = $(id); if (el) el.innerHTML = '<p class="text-sm text-slate-400">This chart couldn\'t load.</p>'; }
+  }
+
+  // ── Chart 1: leads per day (SVG line + area, hover tooltip) ──
+  safeChart('chart-leads-day', function leadsPerDay() {
+    const byDay = new Map();
+    lastLocalDays(30).forEach(k => byDay.set(k, 0));
+    leads30.forEach(l => {
+      const k = dayKey(l.created_at);
+      if (byDay.has(k)) byDay.set(k, byDay.get(k) + 1);
+    });
+    const pts = [...byDay.entries()].map(([k, v]) => ({ k, v }));
+    const n = pts.length;
+    const W = 560, H = 180, PL = 28, PR = 14, PT = 12, PB = 22;
+    const max = Math.max(2, ...pts.map(p => p.v));
+    const x = (i) => PL + i * (W - PL - PR) / (Math.max(1, n - 1));
+    const y = (v) => PT + (H - PT - PB) * (1 - v / max);
+    let path = '', area = 'M' + x(0) + ',' + y(0) + ' ';
+    pts.forEach((p, i) => { const c = (i ? 'L' : 'M') + x(i).toFixed(1) + ',' + y(p.v).toFixed(1) + ' '; path += c; area += (i ? 'L' + x(i).toFixed(1) + ',' + y(p.v).toFixed(1) + ' ' : ''); });
+    area = 'M' + x(0).toFixed(1) + ',' + (H - PB) + ' ' + path.replace(/^M/, 'L') + 'L' + x(pts.length - 1).toFixed(1) + ',' + (H - PB) + ' Z';
+    const grid = [0, Math.ceil(max / 2), max].map(v => '<line x1="' + PL + '" x2="' + (W - PR) + '" y1="' + y(v) + '" y2="' + y(v) + '" stroke="#e2e8f0" stroke-width="1"/>' +
+      '<text x="' + (PL - 6) + '" y="' + (y(v) + 4) + '" text-anchor="end" font-size="10" fill="#94a3b8">' + v + '</text>').join('');
+    const last = pts[n - 1];
+    // Derive tick indices from the actual length, never a hard-coded 29.
+    const ticks = [...new Set([0, Math.floor(n / 3), Math.floor(2 * n / 3), n - 1])].filter(i => pts[i]);
+    const lbls = ticks.map(i => '<text x="' + x(i) + '" y="' + (H - 6) + '" text-anchor="middle" font-size="10" fill="#94a3b8">' + pts[i].k.slice(5) + '</text>').join('');
+    $('chart-leads-day').innerHTML =
+      '<svg viewBox="0 0 ' + W + ' ' + H + '" class="w-full" role="img" aria-label="New leads per day, last 30 days">' +
+      grid + lbls +
+      '<path d="' + area + '" fill="#0d9488" opacity="0.10"/>' +
+      '<path d="' + path + '" fill="none" stroke="#0d9488" stroke-width="2" stroke-linejoin="round"/>' +
+      '<circle cx="' + x(n - 1) + '" cy="' + y(last.v) + '" r="4" fill="#0d9488"/>' +
+      '<text x="' + (x(n - 1) - 8) + '" y="' + (y(last.v) - 8) + '" text-anchor="end" font-size="11" font-weight="600" fill="#0f766e">' + last.v + ' today</text>' +
+      pts.map((p, i) => '<rect x="' + (x(i) - 9) + '" y="' + PT + '" width="18" height="' + (H - PT - PB) + '" fill="transparent" data-tip="' + esc(p.k) + ': ' + p.v + ' lead' + (p.v === 1 ? '' : 's') + '"/>').join('') +
+      '</svg>';
+    $('table-leads-day').innerHTML = '<table class="w-full text-left"><thead><tr><th class="pr-3 py-0.5">Day</th><th>Leads</th></tr></thead><tbody>' +
+      pts.slice().reverse().map(p => '<tr><td class="pr-3 py-0.5">' + esc(p.k) + '</td><td>' + p.v + '</td></tr>').join('') + '</tbody></table>';
+  });
+
+  // ── Chart 2: leads by source (HTML bars, single hue, direct labels) ──
+  function hbars(el, entries, tint) {
+    const max = Math.max(1, ...entries.map(e => e[1]));
+    el.innerHTML = entries.map(([name, v]) =>
+      '<div class="bar-row flex items-center gap-2 text-sm" data-tip="' + esc(name) + ': ' + v + '">' +
+      '<span class="w-36 shrink-0 truncate text-slate-600" title="' + esc(name) + '">' + esc(name) + '</span>' +
+      '<span class="flex-1 bg-slate-100 rounded-full h-5 overflow-hidden"><span class="bar-fill block h-5 rounded-full" style="width:' + Math.max(2, Math.round(v / max * 100)) + '%;background:' + tint + '"></span></span>' +
+      '<span class="w-8 text-right mono font-semibold text-slate-700">' + v + '</span></div>'
+    ).join('') || '<p class="text-sm text-slate-400">No data yet.</p>';
+  }
+  safeChart('chart-leads-source', function leadsBySource() {
+    const counts = {};
+    leads30.forEach(l => { const s = (l.source || 'unknown').trim() || 'unknown'; counts[s] = (counts[s] || 0) + 1; });
+    let entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    if (entries.length > 8) { const rest = entries.slice(7).reduce((s, e) => s + e[1], 0); entries = entries.slice(0, 7); entries.push(['other', rest]); }
+    hbars($('chart-leads-source'), entries, '#0d9488');
+    $('table-leads-source').innerHTML = '<table class="w-full text-left"><thead><tr><th class="pr-3 py-0.5">Source</th><th>Leads</th></tr></thead><tbody>' +
+      entries.map(e => '<tr><td class="pr-3 py-0.5">' + esc(e[0]) + '</td><td>' + e[1] + '</td></tr>').join('') + '</tbody></table>';
+  });
+
+  // ── Chart 3: pipeline ──
+  safeChart('chart-pipeline', function pipeline() {
+    const ORDER = ['new', 'contacted', 'interested', 'tour_booked', 'paying'];
+    const LABEL = { new: 'New (uncontacted)', contacted: 'Contacted', interested: 'Interested', tour_booked: 'Tour booked', paying: 'Paying' };
+    const counts = {};
+    leads.forEach(l => { const s = stageOf(l); if (s === 'lost') return; counts[s] = (counts[s] || 0) + 1; });
+    const entries = ORDER.filter(k => counts[k]).map(k => [LABEL[k] || k, counts[k]]);
+    Object.keys(counts).forEach(k => { if (!ORDER.includes(k)) entries.push([k, counts[k]]); });
+    hbars($('chart-pipeline'), entries, '#0d9488');
+  });
+
+  // ── Cohort fill ──
+  safeChart('cohort-fill', function cohortFill() {
+    const rows = openCohorts
+      .filter(c => c.capacity)
+      .sort((a, b) => String(a.start_date || '').localeCompare(String(b.start_date || '')));
+    $('cohort-fill').innerHTML = rows.map(c => {
+      const pct = Math.min(100, Math.round((c.enrolled_count || 0) / c.capacity * 100));
+      const soon = c.start_date && (new Date(c.start_date).getTime() - now) < 21 * 864e5 && (new Date(c.start_date).getTime() - now) > 0;
+      const atRisk = soon && pct < 60;
+      return '<div>' +
+        '<div class="flex justify-between text-sm"><span class="font-medium">' + esc(c.name || 'Cohort') + ' <span class="text-slate-400">· ' + esc(c.delivery_mode || '') + (c.start_date ? ' · starts ' + esc(String(c.start_date).slice(0, 10)) : '') + '</span></span>' +
+        '<span class="mono ' + (atRisk ? 'text-amber-700 font-bold' : 'text-slate-600') + '">' + (c.enrolled_count || 0) + '/' + c.capacity + (atRisk ? ' ⚠' : '') + '</span></div>' +
+        '<div class="mt-1 bg-slate-100 rounded-full h-3 overflow-hidden"><span class="block h-3 rounded-full" style="width:' + Math.max(2, pct) + '%;background:' + (atRisk ? '#f59e0b' : '#0d9488') + '"></span></div>' +
+        '</div>';
+    }).join('') || '<p class="text-sm text-slate-400">No cohorts with capacity set.</p>';
+  });
+
+  // ── Needs attention + fastest money ──
+  // Bound the daily action lists to the last 60 days so legacy/imported leads
+  // that were never worked don't flood "today's" priorities (speed-to-lead intent).
+  const ACTION_WINDOW = 60;
+  const actionable = leads.filter(l => days(l.created_at) <= ACTION_WINDOW);
+  const attention = [];
+  const money = [];
+  const stale = actionable.filter(l => stageOf(l) === 'new' && !l.last_contact_at && days(l.created_at) > 2);
+  const hot = actionable.filter(l => l.lead_grade === 'hot' && stageOf(l) !== 'paying');
+  const name = (l) => esc([l.first_name, l.last_name].filter(Boolean).join(' ') || l.phone || 'lead');
+
+  if (hot.length) money.push('<b>Call the ' + hot.length + ' hot lead' + (hot.length > 1 ? 's' : '') + ' first:</b> ' + hot.slice(0, 5).map(name).join(', ') + ' — <a class="underline" href="/admin/leads">open inbox →</a>');
+  if (stale.length) money.push('<b>' + stale.length + ' uncontacted lead' + (stale.length > 1 ? 's' : '') + ' older than 48h.</b> Speed-to-lead is the #1 conversion lever — text them today. <a class="underline" href="/admin/leads">Inbox →</a>');
+  const risky = openCohorts.filter(c => c.capacity && c.start_date && (new Date(c.start_date).getTime() - now) > 0 && (new Date(c.start_date).getTime() - now) < 21 * 864e5 && (c.enrolled_count || 0) / c.capacity < 0.6);
+  risky.forEach(c => money.push('<b>' + esc(c.name) + '</b> starts ' + esc(String(c.start_date).slice(0, 10)) + ' with ' + Math.max(0, c.capacity - (c.enrolled_count || 0)) + ' open seats — send the class-dates broadcast + text every "interested" lead.'));
+  if (subsQ.count && subsQ.count > 0) money.push('Email the list (' + subsQ.count + ' subscribers) a one-off <b>$29 Exam Pro</b> broadcast — the buy page is live at <span class="mono">/exam-pro</span>.');
+  if (money.length) { $('fastest-money').classList.remove('hidden'); $('fastest-money-list').innerHTML = money.map(m => '<li>' + m + '</li>').join(''); }
+
+  stale.slice(0, 8).forEach(l => attention.push('📞 <b>' + name(l) + '</b> — new lead from ' + esc(l.source || '?') + ', ' + Math.floor(days(l.created_at)) + ' days old, never contacted. <a class="underline" href="/admin/leads">Open →</a>'));
+  failed.forEach(f => attention.push('💳 <b>Failed payment</b> — ' + esc(f.contact_name || f.contact_email || '?') + ', $' + Math.round((f.amount_cents || 0) / 100) + ' for ' + esc(f.product_label || '?') + (f.failure_reason ? ' (' + esc(f.failure_reason) + ')' : '') + '.'));
+  risky.forEach(c => attention.push('🪑 <b>' + esc(c.name) + '</b> under 60% full and starts within 3 weeks.'));
+  tasks.filter(t => t.priority === 1).slice(0, 5).forEach(t => attention.push('🔴 <b>Urgent task:</b> ' + esc(t.title)));
+  if (attention.length) $('attention-list').innerHTML = attention.map(a => '<li class="py-2">' + a + '</li>').join('');
+  else $('attention-empty').classList.remove('hidden');
+
+  // ── Tooltip layer (any [data-tip]) ──
+  let tip = null;
+  const hideTip = () => { if (tip) tip.style.display = 'none'; };
+  document.addEventListener('mousemove', (e) => {
+    const t = e.target.closest ? e.target.closest('[data-tip]') : null;
+    if (t) {
+      if (!tip) { tip = document.createElement('div'); tip.className = 'viz-tip'; document.body.appendChild(tip); }
+      tip.textContent = t.getAttribute('data-tip');
+      tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.style.display = 'block';
+    } else hideTip();
+  });
+  addEventListener('scroll', hideTip, { passive: true });
+  document.addEventListener('mouseleave', hideTip);
+})();
+</script>
+</body>
+</html>

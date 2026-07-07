@@ -1,19 +1,21 @@
 // Standalone $29 "Exam Pro" purchase.
 //
 // Charges $29 via Square, then flips profiles.exam_pro = true for the
-// signed-in caller. UNLAUNCHED until tested: no public "Buy" button links here
-// yet — the test page at /tools/exam-pro.html drives it manually.
+// signed-in caller. Public buy page: /exam-pro.
 //
 // SAFETY (mirrors api/enroll.js):
 //  (1) Caller MUST be a signed-in Supabase user (verify_jwt). We grant Pro to
 //      that exact user id — never trust a client-supplied id.
 //  (2) If the user is already Pro/enrolled/admin, we short-circuit and DO NOT
-//      charge.
-//  (3) Idempotency key is derived from user id + card nonce, so a re-submit
-//      dedupes at Square and can't double-charge.
+//      charge. Same if a completed exam_pro purchase already exists (covers
+//      the paid-but-ungranted warning path).
+//  (3) A pending purchases row is written BEFORE the Square charge; a retry after
+//      a lost response finds it (guard 2c) and reconciles instead of charging
+//      again, so a post-charge DB blip can't cause a double charge. The Square
+//      idempotency key (user id + nonce) additionally dedupes exact re-submits.
 //  (4) Once the card is charged we NEVER return an error: if the entitlement
-//      write fails we return ok=true with a `warning` so the buyer never sees
-//      "failed" and pays again. Amanda grants Pro manually in that rare case.
+//      write fails we return ok=true with a `warning`, record the purchase,
+//      and open an urgent admin task so Amanda grants Pro manually.
 //
 // Reads SQUARE_ACCESS_TOKEN from the public.app_secrets table (same pattern
 // as kajabi-my-courses / quo-*). SUPABASE_URL / SERVICE_ROLE_KEY / ANON_KEY
@@ -64,6 +66,46 @@ Deno.serve(async (req) => {
     return json({ ok: true, alreadyPro: true, message: "You already have Exam Pro — no charge made." });
   }
 
+  // (2b) Paid before but the entitlement flip failed (warning path)? The
+  // purchases row is the durable receipt — never charge the same buyer twice.
+  const { data: prevPurchase } = await sb
+    .from("purchases")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("product_key", "exam_pro")
+    .eq("status", "completed")
+    .limit(1);
+  if (prevPurchase && prevPurchase.length) {
+    return json({ ok: true, alreadyPro: true, message: "You already paid for Exam Pro — no new charge was made. If it isn't unlocked yet, text Amanda at (903) 913-6444." });
+  }
+
+  // (2c) A prior attempt left a PENDING marker: it charged (or is mid-flight) but
+  // never finalized because a post-charge DB write was lost. Do NOT charge again —
+  // reconcile the entitlement and flag a Square audit instead of risking a second
+  // charge. (A rare abandoned/crashed pre-charge marker with no real charge means a
+  // free grant here — acceptable vs. double-charging a paying customer; the audit
+  // task lets Amanda catch it.)
+  const { data: pendingPrev } = await sb
+    .from("purchases")
+    .select("id")
+    .eq("student_id", user.id)
+    .eq("product_key", "exam_pro")
+    .eq("status", "pending")
+    .limit(1);
+  if (pendingPrev && pendingPrev.length) {
+    let g = false;
+    try { const { data: u2 } = await sb.from("profiles").update({ exam_pro: true }).eq("id", user.id).select("id"); g = !!(u2 && u2.length); } catch (_) { /* best effort */ }
+    try {
+      await sb.from("admin_tasks").insert({
+        title: `Reconcile Exam Pro: ${user.email || user.id} has a pending purchase (payment response was lost). Verify exactly one $29 Square charge; refund any duplicate.`,
+        priority: 2,
+        status: "open",
+        notes: "A pre-charge marker exists with no completed record. The student was granted access to avoid blocking them — confirm one Square charge landed.",
+      });
+    } catch (_) { /* best effort */ }
+    return json({ ok: true, alreadyPro: true, granted: g, message: "Your payment is already being processed — no new charge was made. If Exam Pro isn't unlocked, text Amanda at (903) 913-6444." });
+  }
+
   const { sourceId } = await req.json().catch(() => ({} as { sourceId?: string }));
   if (!sourceId) return json({ error: "Missing card details." }, 400);
 
@@ -77,6 +119,33 @@ Deno.serve(async (req) => {
     .maybeSingle();
   const SQUARE_ACCESS_TOKEN = secretRow?.value || "";
   if (!SQUARE_ACCESS_TOKEN) return json({ error: "Payments are not configured yet. No charge was made." }, 500);
+
+  // Pre-charge durable marker. If a post-charge DB write is later lost, this
+  // pending row still blocks a retry from charging again (via guard 2c). If we
+  // can't even write this, fail CLOSED — never touch the card without a record.
+  let pendingId: string | null = null;
+  {
+    const { data: pend, error: pendErr } = await sb
+      .from("purchases")
+      .insert({
+        student_id: user.id,
+        product_key: "exam_pro",
+        product_label: "Exam Pro",
+        amount_cents: PRICE_CENTS,
+        payment_type: "one_time",
+        status: "pending",
+        contact_email: user.email,
+        source: "site",
+        metadata: { stage: "pre_charge" },
+      })
+      .select("id")
+      .maybeSingle();
+    if (pendErr || !pend) {
+      console.error("[buy-exam-pro] pending marker insert failed:", pendErr);
+      return json({ error: "We couldn't start checkout. No charge was made — please try again." }, 500);
+    }
+    pendingId = pend.id;
+  }
 
   // (3) Charge $29. Deterministic idempotency key dedupes re-submits.
   const ik = await idemKey(user.id, sourceId);
@@ -107,6 +176,9 @@ Deno.serve(async (req) => {
     payment = data.payment;
   } catch (err) {
     console.error("[buy-exam-pro] charge failed:", err);
+    // No charge landed — clear the pending marker so a legit retry (e.g. a
+    // different card) isn't blocked by guard (2c).
+    if (pendingId) { try { await sb.from("purchases").delete().eq("id", pendingId); } catch (_) { /* best effort */ } }
     return json({ error: (err as Error).message || "Your card was declined. No charge was made." }, 402);
   }
 
@@ -125,6 +197,36 @@ Deno.serve(async (req) => {
   }
   if (!granted) {
     warning = "Your payment went through, but we couldn't unlock Pro automatically. Amanda has been notified and will enable it within 1 business day.";
+  }
+
+  // Finalize the pre-charge marker → completed (feeds the KPI revenue tile and
+  // the (2b) double-charge guard). If this write is lost, the row stays 'pending'
+  // and guard (2c) reconciles on the buyer's next visit — no second charge.
+  try {
+    if (pendingId) {
+      await sb.from("purchases").update({
+        status: "completed",
+        external_payment_id: payment.id,
+        metadata: { receipt_url: payment.receipt_url || null, granted },
+      }).eq("id", pendingId);
+    }
+  } catch (e) {
+    console.error("[buy-exam-pro] purchases finalize failed:", e);
+  }
+
+  // Make "Amanda has been notified" true: an urgent task shows up on the
+  // admin home + KPI cockpit until she flips the flag.
+  if (!granted) {
+    try {
+      await sb.from("admin_tasks").insert({
+        title: `Grant Exam Pro: ${user.email || user.id} paid $29 but auto-grant failed (payment ${payment.id})`,
+        priority: 1,
+        status: "open",
+        notes: "Set profiles.exam_pro = true for this student, then close this task.",
+      });
+    } catch (e) {
+      console.error("[buy-exam-pro] admin_tasks insert failed:", e);
+    }
   }
 
   try {
