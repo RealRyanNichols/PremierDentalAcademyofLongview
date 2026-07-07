@@ -138,11 +138,21 @@
         <li>✓ Unlimited retakes, score history on your dashboard</li>
       </ul>
       <div class="max-w-sm mx-auto mt-6">
+        <div id="guest-fields" class="hidden space-y-3 mb-3">
+          <div>
+            <label for="buy-name" class="sr-only">Full name</label>
+            <input id="buy-name" type="text" autocomplete="name" placeholder="Full name" class="w-full border-2 border-slate-200 focus:border-teal-600 outline-none rounded-xl px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label for="buy-email" class="sr-only">Email address</label>
+            <input id="buy-email" type="email" autocomplete="email" placeholder="you@example.com — your access is sent here" class="w-full border-2 border-slate-200 focus:border-teal-600 outline-none rounded-xl px-4 py-3 text-sm" />
+          </div>
+        </div>
         <div id="card-container" class="border-2 border-slate-200 rounded-xl p-3 bg-slate-50"></div>
         <button id="pay-btn" disabled class="mt-4 w-full bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-bold px-6 py-3.5 rounded-full shadow">Pay $29 &amp; unlock</button>
         <p id="err" class="text-sm text-rose-600 mt-3" role="alert" aria-live="assertive" hidden></p>
         <p class="text-xs text-slate-400 text-center mt-3">Secure payment by Square. Questions? Text Amanda at <a href="tel:+19039136444" class="underline">(903) 913-6444</a>.</p>
-        <p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 text-center mt-2">Enrolled PDA student? It's <b>included free</b> — if checkout still asks you to pay after signing in, text Amanda before paying.</p>
+        <p class="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2 text-center mt-2">Enrolled PDA student? It's <b>included free</b> — <a href="#" id="show-signin" class="underline font-semibold">sign in here</a> and it unlocks without paying.</p>
       </div>
     </div>
 
@@ -224,15 +234,29 @@
   async function check(){
     try{
       var u=(await sb.auth.getUser()).data.user;
-      if(!u){ show(signin); return; }
+      if(!u){
+        // Guest checkout: no sign-in wall. Name+email fields appear and the
+        // buy-product engine creates their account AFTER payment succeeds.
+        document.getElementById('guest-fields').classList.remove('hidden');
+        show(sales);
+        initSquare();
+        return;
+      }
       var prof=(await sb.from('profiles').select('exam_pro,is_admin,program').eq('id',u.id).maybeSingle()).data;
       if(prof && (prof.exam_pro===true || prof.is_admin===true || (prof.program && prof.program!=='preview'))){
         show(owned); return;
       }
+      document.getElementById('guest-fields').classList.add('hidden');
       show(sales);
       initSquare();
-    }catch(e){ show(signin); }
+    }catch(e){
+      try{ document.getElementById('guest-fields').classList.remove('hidden'); show(sales); initSquare(); }
+      catch(_){ show(signin); }
+    }
   }
+  document.addEventListener('click',function(ev){
+    if(ev.target&&ev.target.id==='show-signin'){ ev.preventDefault(); show(signin); }
+  });
 
   // Magic-link sign-in that returns the buyer to this page.
   document.getElementById('otp-form').addEventListener('submit', async function(ev){
@@ -287,29 +311,44 @@
       LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
       err.textContent=e.message||'Card error.'; err.hidden=false; return;
     }
-    // Pre-flight: a valid session is required, and NO charge is possible here —
-    // so on failure just reset and let them retry, never the "call if charged" lock.
+    // Two checkout paths, both idempotent server-side:
+    //  - signed in  -> buy-exam-pro (entitlement lands on this account)
+    //  - guest      -> buy-product (charges, creates the account, emails access)
     var sess=(await sb.auth.getSession()).data.session;
+    var guestName='', guestEmail='';
     if(!sess){
-      LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
-      err.textContent='Your sign-in expired — refresh the page and sign in again, then retry. No charge was made.';
-      err.hidden=false; return;
+      guestName=(document.getElementById('buy-name').value||'').trim();
+      guestEmail=(document.getElementById('buy-email').value||'').trim().toLowerCase();
+      if(!guestName || !guestEmail || guestEmail.indexOf('@')<1){
+        LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
+        err.textContent='Enter your name and email above first — that\'s where your access goes. No charge was made.';
+        err.hidden=false; return;
+      }
     }
     track('begin_checkout',{product:'exam_pro',value:29});
     try{ if(typeof fbq==='function') fbq('track','InitiateCheckout',{content_name:'Exam Pro',value:29,currency:'USD'}); }catch(e){}
     try{
-      var resp=await fetch(SB_URL+'/functions/v1/buy-exam-pro',{
+      var resp=await fetch(SB_URL+'/functions/v1/'+(sess?'buy-exam-pro':'buy-product'),{
         method:'POST',
-        headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+sess.access_token},
-        body:JSON.stringify({ sourceId: tok.token })
+        headers:{'Content-Type':'application/json','apikey':SB_KEY,'Authorization':'Bearer '+(sess?sess.access_token:SB_KEY)},
+        body: sess
+          ? JSON.stringify({ sourceId: tok.token })
+          : JSON.stringify({ product_key:'exam_pro', sourceId: tok.token, name: guestName, email: guestEmail })
       });
       var out=await resp.json().catch(function(){return{};});
       if(resp.ok && out.ok){
-        if(out.alreadyPro){ show(owned); return; }
+        if(out.alreadyPro || out.alreadyOwned){ show(owned); return; }
         track('purchase',{product:'exam_pro',value:29,currency:'USD'});
         try{ if(typeof fbq==='function') fbq('track','Purchase',{content_name:'Exam Pro',value:29,currency:'USD'}); }catch(e){}
         if(out.warning){
           document.getElementById('owned-msg').innerHTML='Payment received ✓ — '+String(out.warning).replace(/</g,'&lt;');
+        }
+        if(!sess){
+          // Guest: their brand-new account isn't signed in on this device yet.
+          // Use the one-tap magic link from the purchase to sign them straight in.
+          document.getElementById('owned-msg').innerHTML='Payment received ✓ — your access email is on its way to <b>'+guestEmail.replace(/</g,'&lt;')+'</b>.';
+          var startBtn=owned.querySelector('a[href="/tools/practice-exam"]');
+          if(startBtn && out.magicLink){ startBtn.href=out.magicLink; startBtn.textContent='Sign in & start my exam →'; }
         }
         show(owned);
         owned.scrollIntoView({behavior:'smooth',block:'center'});
@@ -317,7 +356,7 @@
       }
       // The function's contract: 400/401/402 (and the 500 "not configured"
       // case) mean NO charge was made — safe to let the buyer fix and retry.
-      if(resp.status===400||resp.status===401||resp.status===402||(resp.status===500&&/no charge was made/i.test(out.error||''))){
+      if(resp.status===400||resp.status===401||resp.status===402||resp.status===404||(resp.status===500&&/no charge was made/i.test(out.error||''))){
         LOCK=false; btn.disabled=false; btn.textContent='Pay $29 & unlock';
         err.textContent=(out.error||'Your card was declined.')+' No charge was made — you can try another card.';
         err.hidden=false; return;
