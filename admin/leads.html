@@ -49,20 +49,38 @@
   </div>
 
   <div id="leads-view" class="hidden">
-    <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
       <div>
-        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Inbox</p>
-        <h1 class="display text-3xl font-bold mt-1">Leads &amp; pipeline</h1>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Your people</p>
+        <h1 class="display text-2xl sm:text-3xl font-bold mt-1">Leads</h1>
       </div>
       <div class="flex flex-wrap gap-2">
         <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 px-3 py-2 rounded-lg text-sm">↻ Refresh</button>
-        <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Leads CSV</button>
-        <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Subscribers CSV</button>
+        <div id="full-only-actions" class="hidden flex-wrap gap-2">
+          <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Leads CSV</button>
+          <button id="export-subs" class="bg-cyan-700 hover:bg-cyan-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Subscribers CSV</button>
+        </div>
       </div>
     </div>
 
+    <!-- ══ SIMPLE VIEW (default) — the phone-first "who needs me" screen ══ -->
+    <div id="simple-wrap">
+      <div id="simple-hello" class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl p-5 mb-4"></div>
+      <div id="simple-list"></div>
+      <div id="simple-empty" class="hidden bg-white rounded-2xl border border-slate-200 p-8 text-center">
+        <div class="text-5xl">🎉</div>
+        <p class="display text-xl font-bold mt-2">You're all caught up!</p>
+        <p class="text-slate-500 text-sm mt-1">Nobody is waiting on you right now. Go rest. 💛</p>
+      </div>
+      <button id="open-full" class="w-full mt-4 bg-white border border-slate-300 hover:border-teal-600 text-slate-600 font-semibold py-3 rounded-xl text-sm">See everyone &amp; full inbox →</button>
+    </div>
+
+    <!-- ══ FULL INBOX (everything — hidden until "See everyone") ══ -->
+    <div id="full-wrap" class="hidden">
+    <button id="back-simple" class="mb-4 text-sm font-semibold text-teal-700 hover:text-teal-900">← Back to simple view</button>
+
     <!-- Inbox tabs -->
-    <div class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4 flex-wrap">
+    <div id="full-tabs" class="bg-white rounded-2xl border border-slate-200 p-1 inline-flex gap-1 mb-4 flex-wrap">
       <button data-tab="leads" class="px-4 py-2 text-sm font-semibold rounded-lg bg-slate-900 text-white" id="tab-leads">📋 Forms &amp; applications</button>
       <button data-tab="messages" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-messages">💬 Messages <span id="tab-messages-badge" class="hidden ml-1 text-[10px] bg-rose-600 text-white font-bold px-1.5 py-0.5 rounded-full">0</span></button>
       <button data-tab="subs" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-700 hover:bg-slate-100" id="tab-subs">📧 Newsletter</button>
@@ -87,7 +105,7 @@
       </div>
 
       <!-- Filters -->
-      <div class="flex flex-wrap items-center gap-2 mb-4">
+      <div id="filter-row" class="flex flex-wrap items-center gap-2 mb-4">
         <input id="search" placeholder="Search name / email / phone / notes" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
         <select id="stage-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
           <option value="">All stages</option>
@@ -136,6 +154,7 @@
       <div id="subs-list" class="divide-y divide-slate-100"></div>
       <div id="subs-empty" class="p-10 text-center text-slate-500 hidden">No newsletter subscribers yet. The signup widget on the homepage feeds this list.</div>
     </div>
+    </div><!-- /full-wrap -->
   </div>
 </main>
 
@@ -237,6 +256,9 @@
   let density = 'calm';
   try { density = localStorage.getItem('pda.leads.density') || 'calm'; } catch (e) {}
   let expandedLeads = new Set();
+  // Super-simple phone-first view is the DEFAULT. "Full inbox" is one tap away.
+  let viewMode = 'simple';
+  try { viewMode = localStorage.getItem('pda.leads.view') || 'simple'; } catch (e) {}
 
   // A lead is "hot" (call first) if money's in motion or it's fresh & untouched.
   function isHot(l) {
@@ -323,6 +345,113 @@
     if (stage === 'tour_booked') return { text: 'Tour booked — confirm the day before.', tone: 'text-violet-700' };
     return { text: `You reached out ${timeAgo(l.last_contact_at)} — waiting on their reply.`, tone: 'text-slate-500' };
   }
+
+  // ══════════ SIMPLE VIEW — the phone-first "who needs me now" screen ══════════
+  // Only shows people who need an action, biggest-first, with giant Call/Text/Done
+  // buttons. Everything else lives behind "full inbox". Reuses the same data + DB writes.
+
+  // Who belongs in the action queue = people genuinely waiting on Amanda right
+  // now. Tapping Call or "I handled this" stamps last_contact_at, which drops
+  // them off the list — so the queue always empties as she works. Higher score
+  // = show sooner.
+  function actionScore(l) {
+    if (stageOf(l) === 'lost') return 0;
+    const daysSinceTouch = l.last_contact_at ? (Date.now() - new Date(l.last_contact_at).getTime()) / 864e5 : Infinity;
+    // Money in motion but gone quiet for 2+ days — nudge to follow up.
+    if ((stageOf(l) === 'paying' || l.pay_intent) && daysSinceTouch >= 2) return 5;
+    // Never reached out at all — the core of the queue (fresh = a touch higher).
+    if (!l.last_contact_at) {
+      const ageH = (Date.now() - new Date(l.created_at).getTime()) / 3600000;
+      return ageH <= 48 ? 4 : 3;
+    }
+    return 0; // already talked to them recently — not waiting on you
+  }
+
+  function renderSimple() {
+    const queue = allLeads
+      .map(l => ({ l, s: actionScore(l) }))
+      .filter(x => x.s > 0)
+      .sort((a, b) => b.s - a.s || new Date(a.l.created_at) - new Date(b.l.created_at)) // urgent first, then longest-waiting
+      .map(x => x.l);
+
+    const needsReply = buildThreads().filter(t => t.needsReply).length;
+    const hour = new Date().getHours();
+    const hi = (hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening')
+      + (profile?.first_name ? ', ' + esc(profile.first_name) : '');
+    const line = queue.length
+      ? `<strong>${queue.length} ${queue.length === 1 ? 'person is' : 'people are'}</strong> waiting to hear from you.`
+      : `You're all caught up. 💛`;
+    document.getElementById('simple-hello').innerHTML =
+      `<p class="text-teal-100 text-sm">${hi} 👋</p>` +
+      `<p class="text-xl font-bold mt-1 leading-snug">${line}</p>` +
+      (needsReply ? `<a href="#" id="simple-msgs" class="inline-block mt-3 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-sm font-semibold">💬 ${needsReply} text${needsReply === 1 ? '' : 's'} waiting on a reply →</a>` : '');
+
+    const emptyEl = document.getElementById('simple-empty');
+    const listEl = document.getElementById('simple-list');
+    emptyEl.classList.toggle('hidden', queue.length > 0);
+    listEl.innerHTML = queue.map(simpleCard).join('');
+
+    // Wire the big buttons.
+    const msgsLink = document.getElementById('simple-msgs');
+    if (msgsLink) msgsLink.onclick = (e) => { e.preventDefault(); goFull(); document.getElementById('tab-messages').click(); };
+    listEl.querySelectorAll('[data-sc-call]').forEach(a => a.addEventListener('click', () => stampContacted(a.dataset.scCall)));
+    listEl.querySelectorAll('[data-sc-text]').forEach(b => b.onclick = () => openSms(b.dataset.phone, b.dataset.name, b.dataset.scText));
+    listEl.querySelectorAll('[data-sc-done]').forEach(b => b.onclick = async () => {
+      await stampContacted(b.dataset.scDone, true);
+      renderSimple();
+    });
+  }
+
+  function simpleCard(l) {
+    const phone = (l.phone || '').replace(/[^\d+]/g, '');
+    const name = `${l.first_name || ''} ${l.last_name || ''}`.trim() || l.email || 'New lead';
+    const isMoney = stageOf(l) === 'paying' || l.pay_intent;
+    const why = isMoney ? '💰 Ready to pay — follow up while it\'s warm'
+      : !l.last_contact_at ? sourceStory(l).charAt(0).toUpperCase() + sourceStory(l).slice(1) + ' · ' + timeAgo(l.created_at)
+      : storyLine(l);
+    const initials = esc((l.first_name?.[0] || name[0] || '?').toUpperCase()) + esc((l.last_name?.[0] || '').toUpperCase());
+    return `
+      <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 mb-3">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold shrink-0">${initials}</div>
+          <div class="min-w-0">
+            <div class="font-bold text-lg leading-tight">${esc(name)}</div>
+            <div class="text-sm text-slate-600 mt-0.5">${esc(why)}</div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          ${phone
+            ? `<a href="tel:${phone}" data-sc-call="${l.id}" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-center text-base">📞 Call</a>
+               <button data-sc-text="${l.id}" data-phone="${phone}" data-name="${esc(name)}" class="bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-900 text-white font-bold py-3.5 rounded-xl text-base">💬 Text</button>`
+            : (l.email
+              ? `<a href="mailto:${esc(l.email)}?subject=Premier%20Dental%20Academy%20—%20following%20up" class="col-span-2 bg-slate-700 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-center text-base">✉️ Email ${esc(l.email)}</a>`
+              : `<div class="col-span-2 text-center text-sm text-slate-400 py-3">No phone or email on file</div>`)}
+        </div>
+        <button data-sc-done="${l.id}" class="w-full mt-2 text-slate-500 hover:text-teal-700 font-semibold text-sm py-2">✓ I handled this</button>
+      </div>`;
+  }
+
+  // Stamp last_contact_at (and bump a brand-new lead to "contacted"). Used by
+  // Call (fire-and-forget) and Done (awaited so the card drops off the queue).
+  async function stampContacted(id, bump) {
+    const t = allLeads.find(x => x.id === id);
+    const nowIso = new Date().toISOString();
+    const patch = { last_contact_at: nowIso };
+    if (bump && t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
+    if (t) Object.assign(t, patch);
+    try { await sb.from('leads').update(patch).eq('id', id); } catch (e) {}
+  }
+
+  function applyViewMode() {
+    const simple = viewMode === 'simple';
+    document.getElementById('simple-wrap').classList.toggle('hidden', !simple);
+    document.getElementById('full-wrap').classList.toggle('hidden', simple);
+    document.getElementById('full-only-actions').classList.toggle('hidden', simple);
+    document.getElementById('full-only-actions').classList.toggle('flex', !simple);
+    try { localStorage.setItem('pda.leads.view', viewMode); } catch (e) {}
+  }
+  function goFull() { viewMode = 'full'; applyViewMode(); }
+  function goSimple() { viewMode = 'simple'; renderSimple(); applyViewMode(); }
 
   // The story card: one honest sentence about today, then two small pictures —
   // new people over the last 14 days, and how they're finding the school.
@@ -454,6 +583,7 @@
     wireRowHandlers();
     renderStoryCard();
     renderSubs();
+    renderSimple(); // keep the simple queue in sync with any full-view edits
   }
 
   // Calm view: one friendly line per person — who they are, what they did,
@@ -784,6 +914,9 @@
     syncDensityBtn(); render();
   };
   syncDensityBtn();
+  // Simple ↔ Full inbox toggle
+  document.getElementById('open-full').onclick = goFull;
+  document.getElementById('back-simple').onclick = goSimple;
   document.getElementById('msg-search').oninput = renderMessages;
   document.getElementById('msg-needs-reply').onchange = renderMessages;
   document.getElementById('refresh').onclick = load;
@@ -868,10 +1001,12 @@
     }
   };
 
+  applyViewMode();
   load();
 
   // Deep link: /admin/leads#messages opens the Messages tab straight away.
   if (location.hash === '#messages') {
+    viewMode = 'full'; applyViewMode();
     const tb = document.getElementById('tab-messages');
     if (tb) tb.click();
   }
