@@ -50,6 +50,11 @@
         <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
           <a href="/tools" class="block px-4 py-2 font-bold text-teal-700 hover:bg-slate-50">🧰 All tools — free &amp; paid</a>
+          <p class="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-amber-600 font-bold">Paid prep — own it</p>
+          <a href="/exam-pro" class="block px-4 py-2 hover:bg-slate-50">💎 Exam Pro — mock state board</a>
+          <a href="/study-pack" class="block px-4 py-2 hover:bg-slate-50">💎 Study Pack</a>
+          <a href="/exam-prep-course" class="block px-4 py-2 hover:bg-slate-50">💎 Exam-Prep Course</a>
+          <p class="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-slate-400 font-bold border-t border-slate-100 mt-1">Free — no signup</p>
           <a href="/tools/funding-finder" class="block px-4 py-2 hover:bg-slate-50">Get it paid for</a>
           <a href="/tools/take-home-pay" class="block px-4 py-2 hover:bg-slate-50">Take-home pay</a>
           <a href="/tools/schedule-planner" class="block px-4 py-2 hover:bg-slate-50">Fit school into my life</a>
@@ -105,6 +110,11 @@
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Tools</p>
     <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 All tools — free &amp; paid</a>
+    <p class="text-[10px] uppercase tracking-widest text-amber-600 font-bold px-1 mt-3 mb-1">Paid prep — own it</p>
+    <a href="/exam-pro" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam Pro — mock state board</a>
+    <a href="/study-pack" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Study Pack</a>
+    <a href="/exam-prep-course" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam-Prep Course</a>
+    <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-1 mt-3 mb-1">Free — no signup</p>
     <a href="/tools/funding-finder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Get it paid for</a>
     <a href="/tools/take-home-pay" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Take-home pay</a>
     <a href="/tools/schedule-planner" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Fit school into my life</a>
@@ -483,13 +493,20 @@
       var left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
       var when = days <= 0 ? 'starts tonight' : days === 1 ? 'starts tomorrow'
         : 'starts ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
-      var seat = (left > 0 && left <= 6) ? ' · only ' + left + ' seat' + (left === 1 ? '' : 's') + ' left' : '';
+      var soldOut = left <= 0;
+      var seat = (!soldOut && left <= 6) ? ' · only ' + left + ' seat' + (left === 1 ? '' : 's') + ' left' : '';
       var bar = document.createElement('div');
       bar.id = 'pda-urgency-bar';
       bar.style.cssText = 'background:#001a3d;color:#fff;font:600 13px/1.3 Inter,system-ui,sans-serif;padding:8px 12px;text-align:center';
+      // Sold out? Say so honestly — no "reserve a seat" on a full class.
+      var msg = soldOut
+        ? '<span><b style="color:#f87171">RDA class ' + when + ' — SOLD OUT</b> · get first dibs on the next one</span>'
+        : '<span><b style="color:#fbbf24">RDA class ' + when + '</b>' + seat + '</span>';
+      var cta = soldOut
+        ? '<a href="/waitlist" style="background:#fbbf24;color:#001a3d;padding:4px 12px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Join the waitlist →</a>'
+        : '<a href="/enroll" style="background:#fbbf24;color:#001a3d;padding:4px 12px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Reserve a seat →</a>';
       bar.innerHTML = '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">' +
-        '<span><b style="color:#fbbf24">RDA class ' + when + '</b>' + seat + '</span>' +
-        '<a href="/enroll" style="background:#fbbf24;color:#001a3d;padding:4px 12px;border-radius:8px;font-weight:800;text-decoration:none;white-space:nowrap">Reserve a seat →</a>' +
+        msg + cta +
         '<a href="tel:+19039136444" style="color:#fff;text-decoration:underline;white-space:nowrap">or call (903) 913-6444</a>' +
         '<button type="button" aria-label="Dismiss" id="pda-urgency-x" style="background:transparent;color:#94a3b8;border:0;font-size:16px;cursor:pointer;line-height:1">×</button>' +
         '</div>';
