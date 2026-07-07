@@ -47,8 +47,9 @@
       <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
       <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
       <div class="pda-dd relative">
-        <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Free tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
+        <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
+          <a href="/tools" class="block px-4 py-2 font-bold text-teal-700 hover:bg-slate-50">🧰 All tools — free &amp; paid</a>
           <a href="/tools/funding-finder" class="block px-4 py-2 hover:bg-slate-50">Get it paid for</a>
           <a href="/tools/take-home-pay" class="block px-4 py-2 hover:bg-slate-50">Take-home pay</a>
           <a href="/tools/schedule-planner" class="block px-4 py-2 hover:bg-slate-50">Fit school into my life</a>
@@ -102,7 +103,8 @@
     <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
     <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">For offices</a>
 
-    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Free tools</p>
+    <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Tools</p>
+    <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 All tools — free &amp; paid</a>
     <a href="/tools/funding-finder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Get it paid for</a>
     <a href="/tools/take-home-pay" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Take-home pay</a>
     <a href="/tools/schedule-planner" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Fit school into my life</a>

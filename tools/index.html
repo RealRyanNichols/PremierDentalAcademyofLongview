@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dental Assistant Tools — Free Practice Tools & Prep You Can Own | Premier Dental Academy</title>
+<meta name="description" content="Every PDA tool in one place: free practice tools, calculators, and quizzes — plus the mock state-board exam, study pack, and exam-prep course you can own. Enrolled students get the paid prep included.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .tool-card{transition:transform .15s ease, box-shadow .15s ease}
+  .tool-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(15,23,42,.12)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-track.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">🧰 The PDA Toolbox</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Every tool, one place — <span class="text-amber-400 italic">free and paid.</span></h1>
+    <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Deciding, studying, practicing, getting hired — there's a tool for each step. The free ones are open to everyone, no signup. The paid prep can be yours in two minutes — and enrolled PDA students get it <b>included free</b>.</p>
+    <p id="signed-strip" class="hidden mt-4 inline-block bg-white/10 border border-white/25 rounded-full px-5 py-2 text-sm font-semibold"></p>
+  </div>
+</section>
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-12 space-y-12">
+
+  <!-- ── Paid prep: own it ── -->
+  <section>
+    <div class="flex items-end justify-between flex-wrap gap-2 mb-4">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-amber-600 font-bold">Prep you can own</p>
+        <h2 class="display text-2xl sm:text-3xl font-bold">Serious study tools — one-time price, yours forever</h2>
+      </div>
+      <p class="text-xs text-slate-500">Enrolled students: already included ✓</p>
+    </div>
+    <div id="paid-grid" class="grid sm:grid-cols-3 gap-4">
+      <p class="text-slate-400 text-sm col-span-full">Loading…</p>
+    </div>
+  </section>
+
+  <!-- ── Free: decide ── -->
+  <section>
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free · no signup</p>
+    <h2 class="display text-2xl sm:text-3xl font-bold mb-4">Deciding if this career is for you</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/tools/is-it-for-me" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🤔</div><h3 class="font-bold mt-2">Is It For Me?</h3><p class="text-sm text-slate-600 mt-1">A quick honest quiz about whether dental assisting fits your life.</p></a>
+      <a href="/tools/career-paths" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🗺️</div><h3 class="font-bold mt-2">Career Paths Explorer</h3><p class="text-sm text-slate-600 mt-1">Where dental assisting can take you — and what each step pays.</p></a>
+      <a href="/tools/funding-finder" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🏛️</div><h3 class="font-bold mt-2">Funding Finder</h3><p class="text-sm text-slate-600 mt-1">6 questions — see if WIOA or other funding could cover your tuition.</p></a>
+      <a href="/tools/take-home-pay" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">💵</div><h3 class="font-bold mt-2">Take-Home Pay Calculator</h3><p class="text-sm text-slate-600 mt-1">What an East Texas dental assistant paycheck really looks like.</p></a>
+      <a href="/tools/savings-starter" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🐖</div><h3 class="font-bold mt-2">Savings Starter</h3><p class="text-sm text-slate-600 mt-1">A simple plan to save your $500 down payment (or the whole tuition).</p></a>
+      <a href="/tools/family-talk" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🗣️</div><h3 class="font-bold mt-2">The Family Talk</h3><p class="text-sm text-slate-600 mt-1">How to explain this decision to the people who worry about you.</p></a>
+      <a href="/tools/schedule-planner" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📅</div><h3 class="font-bold mt-2">Schedule Planner</h3><p class="text-sm text-slate-600 mt-1">See how class fits around your job, your kids, and your life.</p></a>
+    </div>
+  </section>
+
+  <!-- ── Free: learn & practice ── -->
+  <section>
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free · no signup</p>
+    <h2 class="display text-2xl sm:text-3xl font-bold mb-4">Learning &amp; practicing</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/tools/practice-exam" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📝</div><h3 class="font-bold mt-2">Free Practice Exam</h3><p class="text-sm text-slate-600 mt-1">Sample RDA-style questions with instant scoring. (The full timed mock is Exam Pro.)</p></a>
+      <a href="/tools/flashcards" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🃏</div><h3 class="font-bold mt-2">RDA Flashcards</h3><p class="text-sm text-slate-600 mt-1">Instruments, terms, and infection control — flip and learn.</p></a>
+      <a href="/tools/practice-pro" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🖥️</div><h3 class="font-bold mt-2">PDA Practice Pro</h3><p class="text-sm text-slate-600 mt-1">A Dentrix-style practice-management trainer with a real tooth chart.</p></a>
+      <a href="/tools/chairside" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🦷</div><h3 class="font-bold mt-2">PDA ChairSide</h3><p class="text-sm text-slate-600 mt-1">Clinical workflow trainer — procedures, trays, and assisting steps.</p></a>
+      <a href="/tools/how-to-chart" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📈</div><h3 class="font-bold mt-2">How To Chart</h3><p class="text-sm text-slate-600 mt-1">Dental charting explained the way offices actually do it.</p></a>
+      <a href="/tools/study-plan" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🎯</div><h3 class="font-bold mt-2">Study Plan Builder</h3><p class="text-sm text-slate-600 mt-1">Build a week-by-week RDA study plan around your schedule.</p></a>
+    </div>
+  </section>
+
+  <!-- ── Free: get hired ── -->
+  <section>
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free · no signup</p>
+    <h2 class="display text-2xl sm:text-3xl font-bold mb-4">Getting hired</h2>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/tools/resume-builder" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📄</div><h3 class="font-bold mt-2">Resume Builder</h3><p class="text-sm text-slate-600 mt-1">A dental-assistant resume that reads right to office managers.</p></a>
+      <a href="/tools/interview-prep" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🎤</div><h3 class="font-bold mt-2">Interview Prep</h3><p class="text-sm text-slate-600 mt-1">The questions East Texas offices ask — and strong answers.</p></a>
+      <a href="/tools/first-30-days" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🚀</div><h3 class="font-bold mt-2">First 30 Days</h3><p class="text-sm text-slate-600 mt-1">How to crush your first month in a dental office.</p></a>
+      <a href="/tools/share-your-win" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🏆</div><h3 class="font-bold mt-2">Share Your Win</h3><p class="text-sm text-slate-600 mt-1">Celebrate your milestone and inspire the next student.</p></a>
+      <a href="/tools/resource-hub" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📚</div><h3 class="font-bold mt-2">Resource Hub</h3><p class="text-sm text-slate-600 mt-1">Guides, checklists, and links for every stage of the journey.</p></a>
+    </div>
+  </section>
+
+  <!-- ── Enroll band ── -->
+  <section class="bg-navy-900 text-white rounded-3xl p-8 text-center">
+    <h2 class="display text-2xl font-bold">Want all of it — plus a teacher in the room?</h2>
+    <p class="text-slate-300 mt-2 text-sm max-w-lg mx-auto">Enrolled students get every paid prep tool included, real chair time on real equipment in Longview, and job-placement support across East Texas. In-person $3,000 paid in full ($500 down on a plan).</p>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center">
+      <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Enroll →</a>
+      <a href="/classes" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">See class dates</a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-12">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center space-y-2">
+    <div class="flex flex-wrap gap-x-4 gap-y-1 justify-center">
+      <a href="/" class="hover:text-white">Home</a>
+      <a href="/enroll" class="hover:text-white">Enroll</a>
+      <a href="/classes" class="hover:text-white">Classes</a>
+      <a href="/blog" class="hover:text-white">Blog</a>
+      <a href="/contact" class="hover:text-white">Contact</a>
+      <a href="/login" class="hover:text-white">Student Login</a>
+    </div>
+    <div>© 2026 Premier Dental Academy of Longview · 2800 Gilmer Rd, Suite 106, Longview, TX 75604</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  'use strict';
+  var SB_URL='https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY='sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+  // Static details per product key; name + live price come from the database
+  // so this page can never disagree with checkout.
+  var META = {
+    exam_pro:         { emoji:'🎯', url:'/exam-pro',         flag:'exam_pro',   blurb:'The timed 50-question mock state board. Per-topic scoring, full explanations, unlimited retakes.' },
+    study_pack:       { emoji:'📚', url:'/study-pack',       flag:'study_pack', blurb:'Cheat sheets + study guide covering the topics RDA candidates get tripped up on.' },
+    exam_prep_course: { emoji:'🎓', url:'/exam-prep-course', flag:'exam_prep',  blurb:'The guided mini-course: lessons, quizzes, and a plan that walks you to exam day.' }
+  };
+
+  function money(cents){ return '$' + Math.round(cents/100); }
+
+  async function load(){
+    var grid = document.getElementById('paid-grid');
+    var owned = {}, enrolled = false, email = null;
+
+    try{
+      var u = (await sb.auth.getUser()).data.user;
+      if(u){
+        email = u.email;
+        var prof = (await sb.from('profiles').select('exam_pro,study_pack,exam_prep,is_admin,program,first_name').eq('id', u.id).maybeSingle()).data || {};
+        enrolled = prof.is_admin === true || (prof.program && prof.program !== 'preview');
+        owned = { exam_pro: !!prof.exam_pro, study_pack: !!prof.study_pack, exam_prep: !!prof.exam_prep };
+        var strip = document.getElementById('signed-strip');
+        strip.textContent = '👋 Signed in as ' + (prof.first_name || email) + (enrolled ? ' — enrolled student: paid prep is included, look for the ✓' : ' — anything you own is marked ✓');
+        strip.classList.remove('hidden');
+      }
+    }catch(e){ /* signed-out view is fine */ }
+
+    var products = [];
+    try{
+      var res = await fetch(SB_URL + '/rest/v1/products?select=key,name,price_cents&active=eq.true&order=price_cents.asc', { headers:{ 'apikey':SB_KEY, 'Authorization':'Bearer '+SB_KEY } });
+      products = await res.json();
+    }catch(e){ products = []; }
+
+    if(!Array.isArray(products) || !products.length){
+      grid.innerHTML = '<p class="text-slate-500 text-sm col-span-full">Prep tools are being restocked — check back shortly or <a class="underline" href="/contact">ask us</a>.</p>';
+      return;
+    }
+
+    grid.innerHTML = products.filter(function(p){ return META[p.key]; }).map(function(p){
+      var m = META[p.key];
+      var has = enrolled || owned[m.flag];
+      var badge = has
+        ? '<span class="inline-block bg-teal-600 text-white text-[11px] font-bold rounded-full px-3 py-1">✓ ' + (enrolled && !owned[m.flag] ? 'Included with enrollment' : 'You own this') + '</span>'
+        : '<span class="inline-block bg-amber-100 text-amber-700 text-[11px] font-bold rounded-full px-3 py-1">One-time ' + money(p.price_cents) + '</span>';
+      var cta = has
+        ? '<span class="mt-4 inline-block bg-teal-700 group-hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm">Open it →</span>'
+        : '<span class="mt-4 inline-block bg-amber-500 group-hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full text-sm">Get it — ' + money(p.price_cents) + ' →</span>';
+      return '<a href="' + m.url + '" class="tool-card group bg-white rounded-2xl border-2 ' + (has ? 'border-teal-600' : 'border-amber-300') + ' p-5 block">' +
+        '<div class="flex items-start justify-between"><div class="text-3xl">' + m.emoji + '</div>' + badge + '</div>' +
+        '<h3 class="font-bold mt-3">' + p.name + '</h3>' +
+        '<p class="text-sm text-slate-600 mt-1">' + m.blurb + '</p>' + cta + '</a>';
+    }).join('');
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
