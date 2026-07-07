@@ -57,6 +57,21 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
   installment invoice (clean round amounts). Idempotency keys are derived from
   the card nonce so a re-submit can't double-charge. Never errors after a charge.
 
+## CRITICAL — schedule facts (per Amanda, July 6, 2026)
+- PDA NO LONGER OFFERS NIGHT/EVENING CLASSES. Never state or imply evening/night class
+  times anywhere (site, blog, emails, ads). The old "Tue/Thu 5:30–9pm" and "MWF 6–9pm
+  + Sat 9–1" schedules are DEAD COPY — do not reuse them from old posts or git history.
+- Supabase `cohorts.schedule` strings were neutralized on Jul 6, 2026 to "Call or text
+  (903) 913-6444 for current class days & times". Do not restore old schedule strings.
+- /night-class is a redirect stub → /classes. The blog post night-class-training-after-work
+  was published and removed the same day. Do not recreate night-class content.
+- Until Amanda supplies the real current schedule, point readers to /calendar or the phone
+  number for days/times. NEVER invent class times.
+- AWAITING AMANDA: the actual current schedule; whether Aug 17 / Aug 25 cohort dates and
+  the (MWF)/(T/Th) day patterns in cohort names still hold; what to do with the
+  weekend-evening-dental-assistant-classes-texas post and the index.html testimonial that
+  mentions an "evenings-and-weekends schedule".
+
 ## HELD — do not ship
 - The night-class "$200 down / $1,497" offer section stays OUT of production
   until Ryan provides a REAL Square/Stripe $200-deposit checkout link for the
