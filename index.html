@@ -391,7 +391,7 @@
           <div class="text-right text-sm text-slate-400" id="pdacalc-count">6 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot →</a>
-        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. WIOA funding through Workforce Solutions East Texas.</p>
+        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.</p>
       </div>
     </div>
   </div>
@@ -412,7 +412,7 @@
   var ipDown=document.getElementById("pdacalc-ip-down"),ipSub=document.getElementById("pdacalc-ip-sub"),note=document.getElementById("pdacalc-note"),totLbl=document.getElementById("pdacalc-totlbl");
   if(ipDown)ipDown.textContent="$"+IP.down;
   if(ipSub)ipSub.textContent=NEW?("$"+IP.planTotal.toLocaleString()+" plan / $"+IP.pif.toLocaleString()+" paid in full"):("$"+IP.planTotal.toLocaleString()+" total · weekly or monthly");
-  if(note)note.textContent=NEW?"Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.":"Paid in full by graduation — within 12 weeks. Need longer? Klarna or Afterpay. WIOA funding through Workforce Solutions East Texas.";
+  if(note)note.textContent="Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.";
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
   function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
