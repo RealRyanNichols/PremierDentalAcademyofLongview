@@ -65,6 +65,21 @@ dental-assisting career in East Texas and routes them to **/apply** and **/enrol
 - how-to-hire-a-dental-assistant-east-texas
 - what-to-look-for-in-a-new-rda-hire
 
+## ARTICLE STANDARD (July 2026 — applies to EVERY new post, no exceptions)
+Template: copy `blog/what-is-four-handed-dentistry.html` (the gold standard). Every post ships with:
+1. **BlogPosting JSON-LD** in `<head>` (update headline/description/dates/mainEntityOfPage per post).
+2. **One interactive element** (self-contained vanilla JS, no libs/localStorage): tappable checklist
+   w/ progress bar, user-input calculator (never invented data), click-to-reveal steps, or a
+   pick-per-section builder — see five-habits / longview-tyler-commute / how-dental-insurance-works /
+   smartdoc posts for working patterns. Inline SVG diagrams welcome (never fake data).
+3. Visual richness: stat-card opener row, 2–4 colored callout boxes, varied section colors.
+4. **Facts fresh each time**: daytime classes ("call or text (903) 913-6444 for exact hours" — never
+   specific hours), pricing from index.html date-gate + site-facts.js, cohort dates from Supabase.
+5. SEO topic strategy: long-tail local intent, cost/requirements/exam queries, honest comparison and
+   fear-query content ("what if I fail…"), verify-a-school authority content. Never name competitors
+   negatively; win by being more useful.
+These rules are also coded into the daily scheduled task (daily-blog-publisher) and CLAUDE.md.
+
 ## Cadence
 Publish new posts on an ongoing basis (target: several per week, working down the backlog
 newest-intent-first). Each publish updates `blog.html` + `sitemap.xml`. The blog index is

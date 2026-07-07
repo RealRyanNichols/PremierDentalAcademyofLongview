@@ -17,18 +17,11 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
   root-level HTML served without `.html` (e.g. `/night-class`).
 
 ## Repo layout (flattened — pages at the repo root)
-- `*.html` (root)       pages: /, /dashboard, /login, /enroll, /admin, /about,
-                        /classes, /calendar, /graduates, /salary,
-                        /sponsor-a-student, the East-Texas city landing pages,
-                        etc. (/night-class is a redirect stub → /classes)
-- `go/`                 noindex ad funnels: /go/dental-assistant (general) +
-                        persona funnels (moms, single-moms, fresh-start,
-                        career-change, laid-off) on assets/funnel-kit.js/css.
-- `assets/`             shared JS: pda-nav (marketing shell), admin-nav +
-                        student-nav (admin/student shells), pda-track
-                        (first-party analytics → page_visits, rolled up nightly
-                        into daily_stats), pda-seo, ask-premier, funnel-kit,
-                        social proof, feedback + logos/favicons/og images.
+- `*.html` (root)       pages: /, /night-class, /dashboard, /login, /enroll,
+                        /admin, /about, /classes, /calendar, /graduates,
+                        /salary, the East-Texas city landing pages, etc.
+- `assets/`             shared JS (pda-nav, pda-seo, ask-premier, social proof,
+                        feedback) + logos/favicons/og-cover.
 - `auth.js` (root)      Supabase auth shim.
 - `tools/`              student tools: practice-pro (Dentrix-style trainer with
                         the anatomical tooth chart), chairside, flashcards,
@@ -59,18 +52,10 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 
 ## Payments (api/enroll.js)
 - Vercel serverless function; reads `SQUARE_ACCESS_TOKEN` from Vercel env.
-- Square location id `2P2ZE3FJNEYTV`. Since July 1, 2026: in-person **$3,000
-  paid in full** OR **$3,500 on a plan** ($500 down + $3,000 balance, weekly or
-  monthly, up to ~13 installments / 12 months; certificate issued when tuition
-  is paid in full). Online $397 (sale; reg $997). Idempotency keys are derived
-  from the card nonce so a re-submit can't double-charge. Never errors after a
-  charge.
-- `supabase/functions/buy-product` is the one checkout engine for every item
-  in `public.products` (guest checkout, entitlement grant, Kajabi sync, Resend
-  access email). Dormant `ms_*` mini-products stay `active=false` until they
-  have a delivery PDF + page — see docs/mini-products-launch-checklist.md.
-- Deploy checklist: `npm test` (includes `check:pricing`, which fails on any
-  page contradicting the payment engine) + one-line entry in CHANGELOG.md.
+- Square location id `2P2ZE3FJNEYTV`. Plans: in-person $1,997, online $397.
+- Takes a $200+ down payment now and schedules the balance as a Square auto-pay
+  installment invoice (clean round amounts). Idempotency keys are derived from
+  the card nonce so a re-submit can't double-charge. Never errors after a charge.
 
 ## CRITICAL — schedule facts (per Amanda, July 6, 2026)
 - PDA NO LONGER OFFERS NIGHT/EVENING CLASSES. Never state or imply evening/night class
@@ -152,6 +137,24 @@ admin-visible `message`. New-lead emails are built but OFF until deployed —
 
 NOTE: hosting/CI is on GitHub now (PRs auto-deploy via Vercel); the GitLab notes above
 are historical.
+
+## Growth memory (July 7, 2026 — battle report; full backlog in Airtable "PDA Content Engine" → Growth To-Dos)
+- TWC Career School License **#S5316** VERIFIED (TWC directory schoolId 5316) — badge shipped in the
+  shared footer (pda-nav.js). Keep it there.
+- PRICING RULE (Amanda, 7/7/26): **NO marketed discounts on the $3,000 in-person price.** Discounts
+  are case-by-case only if a student raises it — never advertised, no promo codes.
+- Online $397 sale has NO end date in code. When Amanda picks the $997 flip date, build a date-gated
+  auto-flip (same pattern as the July 1 in-person cutover) — never a fake countdown.
+- Google Business Profile exists but shows the OLD address (1405 McCann Rd) and is not yet under
+  Amanda's control. Until fixed, expect address confusion in Maps/Waze. Correct: 2800 Gilmer Rd Ste 106.
+- Old domain premierdentalacademy.net is still live — 301-redirect it to the main domain when Amanda
+  locates the registrar.
+- INSTRUCTOR GAP: no dedicated instructor yet; course currently self-taught (Kajabi + site). Do not
+  overstate "instructor-led" in new marketing until Amanda confirms what happens in the room. Two
+  instructor applications sit in admin (May 27 + July 6, status new). Plan: office hours + group chat
+  now → recruit from 17 hiring partners → film modules with a working RDA.
+- Main competitor: longviewdentalassistant.com (Zollege franchise; Saturdays-only 8-12:30, reviews +
+  citations power their #1). Never name competitors negatively in content; win by being more useful.
 
 ## To continue building
 Describe what you want. This file is your memory: read the repo, propose a short
