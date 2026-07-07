@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Day-One Enrollment Paperwork | Premier Dental Academy of Longview</title>
+<meta name="description" content="Fill out your Premier Dental Academy enrollment paperwork electronically — it creates your student account and gets you set up on day one.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/paperwork">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .payopt input{position:absolute;opacity:0}
+  .payopt .box{border:2px solid #e2e8f0;border-radius:14px;transition:.12s}
+  .payopt input:checked + .box{border-color:#0d9488;background:#f0fdfa}
+</style>
+<script defer src="/assets/pda-track.js"></script>
+</head>
+<body class="min-h-screen">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14 text-center">
+    <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="48" height="48" class="w-12 h-12 rounded-xl mx-auto">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase mt-4">Welcome to class · Day-One Paperwork</p>
+    <h1 class="display text-3xl sm:text-4xl font-bold mt-2">Let's make it <span class="text-amber-400 italic">official.</span></h1>
+    <p class="text-slate-200 mt-3 text-sm sm:text-base max-w-lg mx-auto">Fill this out once, right from your phone. It creates your student account, records your enrollment paperwork, and sends your welcome email with everything you need. Takes about 3 minutes.</p>
+  </div>
+</section>
+
+<main class="max-w-2xl mx-auto px-4 sm:px-6 py-8">
+  <form id="pw-form" class="space-y-6">
+    <input type="text" name="website" tabindex="-1" autocomplete="off" class="hidden" aria-hidden="true" />
+
+    <!-- 1. About you -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <h2 class="display text-lg font-bold">1 · About you</h2>
+      <div class="grid sm:grid-cols-2 gap-3 mt-3 text-sm">
+        <label class="block"><span class="font-semibold text-slate-700">First name *</span>
+          <input name="first_name" required autocomplete="given-name" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Last name *</span>
+          <input name="last_name" required autocomplete="family-name" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Email * <span class="font-normal text-slate-500">(becomes your student login)</span></span>
+          <input name="email" type="email" required autocomplete="email" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Phone *</span>
+          <input name="phone" type="tel" required autocomplete="tel" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Date of birth</span>
+          <input name="dob" type="date" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Home address</span>
+          <input name="address" autocomplete="street-address" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Street, town, TX, zip"></label>
+      </div>
+    </div>
+
+    <!-- 2. Emergency contact -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <h2 class="display text-lg font-bold">2 · Emergency contact</h2>
+      <div class="grid sm:grid-cols-2 gap-3 mt-3 text-sm">
+        <label class="block"><span class="font-semibold text-slate-700">Name</span>
+          <input name="emergency_name" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+        <label class="block"><span class="font-semibold text-slate-700">Phone</span>
+          <input name="emergency_phone" type="tel" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>
+      </div>
+    </div>
+
+    <!-- 3. Your class -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <h2 class="display text-lg font-bold">3 · Your class</h2>
+      <label class="block mt-3 text-sm"><span class="font-semibold text-slate-700">Which class are you starting? *</span>
+        <select id="cohort" name="cohort" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 bg-white">
+          <option value="">Loading classes…</option>
+        </select></label>
+      <p class="text-xs text-slate-500 mt-2">Not sure? Ask Amanda — she's right there. 🙂</p>
+    </div>
+
+    <!-- 4. Tuition -->
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+      <h2 class="display text-lg font-bold">4 · Tuition</h2>
+      <p class="text-sm text-slate-600 mt-1">In-person tuition is <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> ($500 down, then the $3,000 balance weekly or monthly, up to 12 payments). How are you handling it? *</p>
+      <div class="grid gap-2.5 mt-3 text-sm">
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="cash_paid_full" required>
+          <span class="box block px-4 py-3"><strong>💵 I already paid in full — cash</strong><span class="block text-xs text-slate-500 mt-0.5">Amanda will log your payment and receipt it in Square.</span></span></label>
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="cash_deposit_plan">
+          <span class="box block px-4 py-3"><strong>💵 I paid a cash deposit — rest on a plan</strong><span class="block text-xs text-slate-500 mt-0.5">Amanda will set your payment schedule up with you.</span></span></label>
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="card_plan">
+          <span class="box block px-4 py-3"><strong>💳 Card — $500 down + payment plan</strong><span class="block text-xs text-slate-500 mt-0.5">After this form you'll go straight to secure checkout to pick your exact payment dates.</span></span></label>
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="card_full">
+          <span class="box block px-4 py-3"><strong>💳 Card — $3,000 pay in full</strong><span class="block text-xs text-slate-500 mt-0.5">Saves $500 vs. the plan. Secure checkout after this form.</span></span></label>
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="wioa">
+          <span class="box block px-4 py-3"><strong>🏛️ WIOA / Workforce Solutions funding</strong><span class="block text-xs text-slate-500 mt-0.5">Tell us where your application stands in the notes below.</span></span></label>
+        <label class="payopt relative block cursor-pointer"><input type="radio" name="payment_choice" value="other">
+          <span class="box block px-4 py-3"><strong>💬 Something else / not sure</strong><span class="block text-xs text-slate-500 mt-0.5">Explain below and Amanda will sort it with you.</span></span></label>
+      </div>
+      <label class="block mt-3 text-sm"><span class="font-semibold text-slate-700">Payment notes (optional)</span>
+        <textarea name="payment_notes" rows="2" maxlength="500" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="e.g. paid $500 cash today with Amanda, WIOA application submitted last week…"></textarea></label>
+    </div>
+
+    <!-- 5. Agreement & signature -->
+    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-sm p-5 sm:p-6">
+      <h2 class="display text-lg font-bold">5 · Agreement &amp; signature</h2>
+      <label class="flex items-start gap-2.5 mt-3 text-sm cursor-pointer">
+        <input type="checkbox" id="agree" required class="mt-1 accent-teal-600 w-4 h-4">
+        <span>I have read and agree to the Premier Dental Academy <a href="/terms" target="_blank" class="text-teal-700 font-semibold underline">enrollment terms, and refund &amp; transfer policy</a>, and I confirm the information on this form is accurate.</span>
+      </label>
+      <label class="block mt-4 text-sm"><span class="font-semibold text-slate-700">Type your full legal name as your signature *</span>
+        <input name="signature" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 display italic text-lg" placeholder="Your full legal name">
+        <span class="text-xs text-slate-500">Signed electronically on <span id="today-label"></span> · your device and time are recorded with this form.</span></label>
+      <p class="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg px-3 py-2 mt-4">📄 <strong>Bring with you</strong> (if you haven't already): your driver's license and high-school diploma or equivalent — Amanda will copy them for your file.</p>
+      <button type="submit" id="pw-submit" class="mt-5 w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3.5 rounded-full shadow-md disabled:opacity-50">Sign &amp; finish my enrollment →</button>
+      <div id="pw-msg" class="hidden mt-3 text-sm font-semibold"></div>
+    </div>
+  </form>
+
+  <!-- Success screen -->
+  <div id="pw-done" class="hidden bg-white rounded-2xl border-2 border-emerald-400 shadow-sm p-6 sm:p-8 text-center">
+    <div class="text-5xl">🎉</div>
+    <h2 class="display text-2xl font-bold mt-2">You're officially enrolled<span id="done-name"></span>!</h2>
+    <p class="text-slate-600 mt-2 text-sm max-w-md mx-auto">Your paperwork is filed and your student account is ready. Check your email — your <strong>welcome email</strong> has your supply list and a one-tap sign-in link to your Student Hub.</p>
+    <div id="done-checkout" class="hidden mt-5 bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900">
+      <strong>One more step:</strong> tap below to finish tuition on our secure checkout — you'll pick your exact payment dates there.
+      <a id="done-checkout-link" href="/enroll" class="block mt-3 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-full">Finish tuition checkout →</a>
+    </div>
+    <div class="mt-5 flex flex-wrap gap-3 justify-center text-sm">
+      <a href="/dashboard" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Open my Student Hub →</a>
+      <a href="tel:+19039136444" class="bg-white border border-slate-300 text-slate-700 font-semibold px-5 py-2.5 rounded-full">📞 (903) 913-6444</a>
+    </div>
+  </div>
+
+  <p class="text-center text-xs text-slate-400 mt-8">Premier Dental Academy of Longview · 2800 Gilmer Rd, Suite 106, Longview, TX 75604</p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+
+  document.getElementById('today-label').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+  // Class dropdown — real upcoming in-person cohorts; the one starting soonest
+  // (today included) is preselected.
+  (async function () {
+    var sel = document.getElementById('cohort');
+    try {
+      var since = new Date(Date.now() - 21 * 864e5).toISOString().slice(0, 10); // include a class that started this month
+      var r = await fetch(SUPABASE_URL + '/rest/v1/cohorts?select=name,start_date&delivery_mode=eq.in_person&status=eq.upcoming&start_date=gte.' + since + '&order=start_date.asc&limit=8',
+        { headers: { apikey: SUPABASE_KEY, Authorization: 'Bearer ' + SUPABASE_KEY } });
+      var rows = await r.json();
+      if (!Array.isArray(rows) || !rows.length) { sel.innerHTML = '<option value="">Ask Amanda which class</option>'; return; }
+      sel.innerHTML = rows.map(function (c, i) {
+        var d = new Date(c.start_date + 'T12:00:00');
+        return '<option value="' + c.name.replace(/"/g, '&quot;') + '" data-start="' + c.start_date + '"' + (i === 0 ? ' selected' : '') + '>' +
+          c.name + ' — starts ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) + '</option>';
+      }).join('');
+    } catch (e) { sel.innerHTML = '<option value="">Ask Amanda which class</option>'; }
+  })();
+
+  var form = document.getElementById('pw-form');
+  form.onsubmit = async function (e) {
+    e.preventDefault();
+    var btn = document.getElementById('pw-submit');
+    var msg = document.getElementById('pw-msg');
+    var fd = new FormData(form);
+    var cohortOpt = document.getElementById('cohort').selectedOptions[0];
+    btn.disabled = true; btn.textContent = 'Filing your paperwork…';
+    msg.classList.add('hidden');
+    var payload = {
+      website: fd.get('website'),
+      first_name: fd.get('first_name'), last_name: fd.get('last_name'),
+      email: fd.get('email'), phone: fd.get('phone'),
+      dob: fd.get('dob') || null, address: fd.get('address') || null,
+      emergency_name: fd.get('emergency_name') || null, emergency_phone: fd.get('emergency_phone') || null,
+      cohort_name: fd.get('cohort') || null,
+      start_date: cohortOpt ? (cohortOpt.getAttribute('data-start') || null) : null,
+      payment_choice: fd.get('payment_choice'),
+      payment_notes: fd.get('payment_notes') || null,
+      agreed_terms: document.getElementById('agree').checked,
+      signature: fd.get('signature'),
+    };
+    var out = null;
+    try {
+      var r = await fetch(SUPABASE_URL + '/functions/v1/enroll-paperwork', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload),
+      });
+      out = await r.json();
+      if (!r.ok || !out.ok) throw new Error((out && out.error) || 'Something went wrong.');
+    } catch (err) {
+      btn.disabled = false; btn.textContent = 'Sign & finish my enrollment →';
+      msg.textContent = '✗ ' + (err.message || 'Something went wrong.') + ' Try again, or hand your phone to Amanda.';
+      msg.className = 'mt-3 text-sm font-semibold text-rose-600';
+      return;
+    }
+    form.classList.add('hidden');
+    var done = document.getElementById('pw-done');
+    done.classList.remove('hidden');
+    document.getElementById('done-name').textContent = payload.first_name ? ', ' + payload.first_name : '';
+    if (out.next && out.next.action === 'checkout') {
+      document.getElementById('done-checkout').classList.remove('hidden');
+      document.getElementById('done-checkout-link').href = out.next.url;
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+})();
+</script>
+</body>
+</html>

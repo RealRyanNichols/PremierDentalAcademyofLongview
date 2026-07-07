@@ -19,6 +19,7 @@
     ['/admin',             '🏠', 'Home'],
     ['/admin/kpi',         '📈', 'KPI'],
     ['/admin/leads',       '📥', 'Leads'],
+    ['/admin/paperwork',   '📋', 'Paperwork'],
     ['/admin/questions',   '🙋', 'Questions'],
     ['/admin/students',    '🎓', 'Students'],
     ['/admin/progress',    '📊', 'Progress'],

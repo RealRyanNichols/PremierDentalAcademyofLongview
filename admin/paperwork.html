@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Day-One Paperwork — PDA Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    @media print { nav, .no-print { display: none !important; } }
+  </style>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span><span>PDA Admin</span></a>
+    <div class="flex items-center gap-4 text-sm"><span id="user-label" class="text-slate-400"></span><button id="signout" class="text-slate-300 hover:text-white">Sign out</button></div>
+  </div>
+</nav>
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">🔒</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to view enrollment paperwork.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in →</a>
+</div>
+
+<main id="view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-end justify-between flex-wrap gap-3 mb-6 no-print">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Signed electronically at /paperwork</p>
+      <h1 class="display text-3xl font-bold">Day-One Paperwork</h1>
+      <p class="text-slate-600 text-sm mt-1">Every electronic enrollment form — account created, welcome email sent, payment method recorded. Cash payments still need logging in Square.</p>
+    </div>
+    <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold text-sm px-4 py-2 rounded-lg">↻ Refresh</button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 no-print">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Today</div><div id="s-today" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">This week</div><div id="s-week" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Cash to log in Square</div><div id="s-cash" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Total forms</div><div id="s-total" class="text-2xl font-bold text-slate-900 mt-1">0</div></div>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+  <div id="empty" class="hidden text-center text-slate-500 py-12">No paperwork yet. Send students to <span class="font-mono font-semibold">premierdentalacademyoflongview.com/paperwork</span> 📋</div>
+</main>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  const PAY = {
+    cash_paid_full:   ['💵 PAID IN FULL — CASH', 'bg-amber-100 text-amber-800', 'Log it in Square'],
+    cash_deposit_plan:['💵 Cash deposit + plan', 'bg-amber-100 text-amber-800', 'Set the plan up in Square'],
+    card_plan:        ['💳 Card — $500 down + plan', 'bg-teal-100 text-teal-700', 'Sent to /enroll checkout'],
+    card_full:        ['💳 Card — paid in full', 'bg-teal-100 text-teal-700', 'Sent to /enroll checkout'],
+    wioa:             ['🏛️ WIOA funding', 'bg-violet-100 text-violet-700', 'Track the WIOA application'],
+    other:            ['💬 Other', 'bg-slate-100 text-slate-600', 'See notes'],
+  };
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let rows = [];
+
+  async function loadData() {
+    const { data } = await sb.from('enrollment_forms').select('*').order('created_at', { ascending: false }).limit(200);
+    rows = data || [];
+    const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
+    const weekAgo = Date.now() - 7 * 864e5;
+    document.getElementById('s-today').textContent = rows.filter(r => new Date(r.created_at) >= dayStart).length;
+    document.getElementById('s-week').textContent = rows.filter(r => new Date(r.created_at).getTime() > weekAgo).length;
+    document.getElementById('s-cash').textContent = rows.filter(r => r.payment_choice === 'cash_paid_full' || r.payment_choice === 'cash_deposit_plan').length;
+    document.getElementById('s-total').textContent = rows.length;
+    render();
+  }
+
+  function row(label, value) {
+    return value ? '<tr><td class="pr-4 text-slate-500 align-top whitespace-nowrap">' + label + '</td><td class="font-medium">' + esc(value) + '</td></tr>' : '';
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    document.getElementById('empty').classList.toggle('hidden', rows.length > 0);
+    list.innerHTML = rows.map(r => {
+      const p = PAY[r.payment_choice] || PAY.other;
+      return '<details class="bg-white rounded-xl border border-slate-200 open:shadow-md">' +
+        '<summary class="px-4 py-3.5 flex items-center gap-2 flex-wrap cursor-pointer">' +
+          '<span class="font-bold">' + esc(r.first_name + ' ' + r.last_name) + '</span>' +
+          '<span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ' + p[1] + '">' + p[0] + '</span>' +
+          (r.cohort_name ? '<span class="text-xs text-slate-500">' + esc(r.cohort_name) + '</span>' : '') +
+          '<span class="ml-auto text-xs text-slate-400">' + new Date(r.created_at).toLocaleString() + '</span>' +
+        '</summary>' +
+        '<div class="px-4 pb-4">' +
+          '<div class="text-xs font-bold text-amber-700 mb-2">→ ' + p[2] + '</div>' +
+          '<table class="text-sm w-full">' +
+            row('Email', r.email) + row('Phone', r.phone) + row('DOB', r.dob) + row('Address', r.address) +
+            row('Emergency contact', (r.emergency_name || '') + (r.emergency_phone ? ' · ' + r.emergency_phone : '')) +
+            row('Class', (r.cohort_name || '') + (r.start_date ? ' — starts ' + r.start_date : '')) +
+            row('Payment notes', r.payment_notes) +
+            row('Signature', r.signature + ' · signed ' + new Date(r.signed_at).toLocaleString()) +
+          '</table>' +
+          '<div class="mt-3 flex gap-2 no-print">' +
+            (r.phone ? '<a href="tel:' + esc((r.phone || '').replace(/[^\\d+]/g, '')) + '" class="text-xs bg-emerald-700 text-white font-semibold px-2.5 py-1.5 rounded">📞 Call</a>' : '') +
+            (r.email ? '<a href="mailto:' + esc(r.email) + '" class="text-xs bg-slate-700 text-white font-semibold px-2.5 py-1.5 rounded">✉️ Email</a>' : '') +
+            '<button onclick="window.print()" class="text-xs bg-white border border-slate-300 text-slate-700 font-semibold px-2.5 py-1.5 rounded">🖨 Print</button>' +
+          '</div>' +
+        '</div></details>';
+    }).join('');
+  }
+
+  document.getElementById('refresh').onclick = loadData;
+  await loadData();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>

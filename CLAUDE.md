@@ -72,6 +72,19 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 - Deploy checklist: `npm test` (includes `check:pricing`, which fails on any
   page contradicting the payment engine) + one-line entry in CHANGELOG.md.
 
+## STANDING PRIORITY — automation-first for Amanda (July 2026 →)
+- Amanda has very limited hands-on availability through fall 2026. Default to
+  AUTOMATION: anything she'd do manually (onboarding, notifications, follow-ups,
+  reporting) should become a self-serve flow or scheduled job. Batch questions
+  for her; never build things that require her daily clicking.
+- Day-One enrollment is electronic: students fill /paperwork on their phones →
+  account created, signed form stored (enrollment_forms, admin-only), welcome
+  email + supply list + magic link sent, payment routed (cash flagged for
+  Square, card → /enroll checkout). Staff view: /admin/paperwork.
+- Browser/manual tasks (Meta tokens, Kajabi admin, ads) go on a Cowork request
+  doc — see docs/COWORK-REQUEST-2026-07-07.md for the pattern. Do NOT ask Ryan
+  or Amanda to do these one-by-one.
+
 ## CRITICAL — schedule facts (per Amanda, July 6, 2026)
 - PDA NO LONGER OFFERS NIGHT/EVENING CLASSES. Never state or imply evening/night class
   times anywhere (site, blog, emails, ads). The old "Tue/Thu 5:30–9pm" and "MWF 6–9pm
