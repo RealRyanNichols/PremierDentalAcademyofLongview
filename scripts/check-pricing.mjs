@@ -4,6 +4,7 @@
 //
 // Forbidden on PUBLIC pages (root/blog/tools/go/employers html + assets js):
 //   - "$1,997" / "$2,120" / "$200 down"   → pre-July-1 pricing
+//   - "$1,497"                            → HELD night-class offer (do not ship)
 //   - "paid in full by graduation"        → dead policy (certificate-when-paid)
 //   - old plan installments "$640/mo" or "$160/wk" phrasing
 // Allowed exceptions: api/enroll.js + assets/pda-nav.js + index.html carry the
@@ -20,6 +21,7 @@ const FORBIDDEN = [
   [/\$1,997/, 'old in-person price $1,997'],
   [/\$2,120/, 'old plan total $2,120'],
   [/\$200 down/i, 'old down payment "$200 down"'],
+  [/\$1,?497/, 'HELD night-class $1,497 offer — must not ship until a real checkout link exists'],
   [/paid in full by graduation/i, 'dead policy "paid in full by graduation"'],
   [/\$640\s*\/?\s*mo/i, 'old monthly installment $640/mo'],
   [/\$160\s*\/?\s*wk/i, 'old weekly installment $160/wk'],

@@ -35,7 +35,7 @@ button, a link to an interactive website tool, "call/text Amanda" CTAs, and a sh
 | 9 | `day-09-offices-hiring.html` | East Texas offices are hiring — and they call us | /graduates | Enroll |
 | 10 | `day-10-resume-builder.html` | Build your dental-assistant résumé free | /tools/resume-builder | Enroll |
 | 11 | `day-11-funding.html` | Veteran or qualify for funding? You may train for $0 | /apply | Apply for funding |
-| 12 | `day-12-evening-classes.html` | Evening classes in Longview — keep your job | /night-class | Enroll (in-person) |
+| 12 | `day-12-evening-classes.html` | Keep your job — train on your own schedule | /classes | Enroll (online or in-person) |
 | 13 | `day-13-no-experience-faq.html` | No experience? No degree? The honest answer. | FAQ → /enroll | Enroll |
 | 14 | `day-14-last-call.html` | Seats are filling for our next class — let's talk | /enroll | Call/Text + Enroll |
 
@@ -50,7 +50,7 @@ button, a link to an interactive website tool, "call/text Amanda" CTAs, and a sh
 | 20 | `day-20-front-desk.html` | Run a real dental front desk — practice free | /tools/practice-pro |
 | 21 | `day-21-flashcards.html` | Master dental terms in 10 minutes a day (free) | /tools/flashcards |
 | 22 | `day-22-employers-hire.html` | Why East Texas offices hire our graduates | /employers |
-| 23 | `day-23-night-class.html` | Train at night, keep your paycheck | /night-class |
+| 23 | `day-23-night-class.html` | Train on your own time, keep your paycheck | /classes |
 | 24 | `day-24-how-long-faq.html` | How long does it take to become a dental assistant? | /classes |
 | 25 | `day-25-radiology.html` | Dental X-rays made simple — test yourself free | /skills-lab/quizzes |
 | 26 | `day-26-chairside.html` | Chairside assisting: try the SmartDoc trainer free | /tools/chairside |
