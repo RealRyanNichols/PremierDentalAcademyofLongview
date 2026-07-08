@@ -174,8 +174,11 @@ are historical.
   are case-by-case only if a student raises it — never advertised, no promo codes.
 - Online $397 sale has NO end date in code. When Amanda picks the $997 flip date, build a date-gated
   auto-flip (same pattern as the July 1 in-person cutover) — never a fake countdown.
-- Google Business Profile exists but shows the OLD address (1405 McCann Rd) and is not yet under
-  Amanda's control. Until fixed, expect address confusion in Maps/Waze. Correct: 2800 Gilmer Rd Ste 106.
+- Google Business Profile CHECKED LIVE 7/7/26 — it's actually correct (2800 Gilmer Rd Ste 106, right
+  phone/site) and Amanda's Google account HAS management access. 5.0★, 21 reviews. Remaining GBP work:
+  photos are stale (711+ days old — upload fresh ones), use "Add update" weekly. The OLD 1405 McCann Rd
+  address only survives in THIRD-PARTY listings (BBB, Longview Chamber/GrowthZone, Waze/HERE, Instagram
+  bio) — see the NAP-cleanup item in Airtable Growth To-Dos for the fix list.
 - Old domain premierdentalacademy.net is still live — 301-redirect it to the main domain when Amanda
   locates the registrar.
 - INSTRUCTOR GAP: no dedicated instructor yet; course currently self-taught (Kajabi + site). Do not
