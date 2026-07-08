@@ -493,7 +493,7 @@
       var days = Math.round((d - today) / 86400000);
       if (days < 0 || days > 10) return; // only when genuinely soon
       var left = Math.max(0, (c.capacity || 0) - (c.enrolled_count || 0));
-      var when = days <= 0 ? 'starts tonight' : days === 1 ? 'starts tomorrow'
+      var when = days <= 0 ? 'starts today' : days === 1 ? 'starts tomorrow'
         : 'starts ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
       var soldOut = left <= 0;
       var seat = (!soldOut && left <= 6) ? ' · only ' + left + ' seat' + (left === 1 ? '' : 's') + ' left' : '';
