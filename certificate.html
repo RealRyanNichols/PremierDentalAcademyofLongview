@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Certificate — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Your Premier Dental Academy course completion certificate." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    #cert { aspect-ratio: 1.414 / 1; }
+    @media print {
+      body { background: #fff !important; }
+      .no-print { display: none !important; }
+      #cert-wrap { max-width: none !important; padding: 0 !important; margin: 0 !important; }
+      #cert { border-radius: 0 !important; box-shadow: none !important; }
+      @page { size: landscape; margin: 0.4in; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+<div id="gate" class="min-h-screen flex items-center justify-center text-slate-500 text-sm">
+  <div class="text-center">
+    <div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+    Checking your completion…
+  </div>
+</div>
+
+<div id="not-done" class="hidden min-h-screen flex items-center justify-center p-6">
+  <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center max-w-md">
+    <div class="text-4xl mb-3">📚</div>
+    <h1 class="display text-2xl font-bold">Almost there!</h1>
+    <p id="not-done-msg" class="text-slate-500 mt-2 text-sm">Finish every lesson in the course and your certificate unlocks right here.</p>
+    <a id="back-to-course" href="/learn" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">Keep learning →</a>
+  </div>
+</div>
+
+<main id="cert-wrap" class="hidden max-w-5xl mx-auto p-4 sm:p-8">
+  <div class="no-print flex items-center justify-between gap-3 mb-5 flex-wrap">
+    <a href="/learn" class="text-sm text-slate-500 hover:text-teal-700">← Back to my courses</a>
+    <button onclick="window.print()" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">🖨 Print / save as PDF</button>
+  </div>
+
+  <div id="cert" class="bg-white rounded-lg shadow-xl border-[10px] border-double border-[#16294a] px-8 sm:px-16 py-10 sm:py-14 flex flex-col items-center text-center relative overflow-hidden">
+    <div class="absolute inset-3 border border-[#c9a961] rounded pointer-events-none"></div>
+    <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" class="w-16 h-16 rounded-xl" />
+    <p class="mt-4 text-[11px] uppercase tracking-[0.3em] text-slate-500 font-semibold">Premier Dental Academy of Longview</p>
+    <h1 class="display text-3xl sm:text-5xl font-extrabold text-[#16294a] mt-3">Certificate of Completion</h1>
+    <p class="text-slate-500 mt-5 text-sm">This certifies that</p>
+    <p id="cert-name" class="display text-2xl sm:text-4xl font-bold text-teal-800 mt-1 border-b-2 border-[#c9a961] px-8 pb-1">&nbsp;</p>
+    <p class="text-slate-500 mt-4 text-sm">has successfully completed all lessons of</p>
+    <p id="cert-course" class="display text-xl sm:text-2xl font-bold text-[#16294a] mt-1 max-w-2xl"></p>
+    <div class="flex items-end justify-between w-full mt-auto pt-10 text-left">
+      <div>
+        <p id="cert-date" class="font-semibold text-sm border-t border-slate-300 pt-1 px-2"></p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 px-2">Date completed</p>
+      </div>
+      <div class="text-center">
+        <p class="display text-lg text-[#16294a] italic px-4">Amanda Williams</p>
+        <p class="text-[10px] uppercase tracking-widest text-slate-400 border-t border-slate-300 pt-1 px-4">Director, Premier Dental Academy</p>
+      </div>
+    </div>
+    <p class="text-[9px] text-slate-400 mt-6">Premier Dental Academy of Longview · 2800 Gilmer Rd Ste 106, Longview, TX · (903) 913-6444 · TWC Career School License #S5316</p>
+  </div>
+
+  <p class="no-print text-xs text-slate-400 text-center mt-4">Tip: use “Print → Save as PDF” on your phone or computer to keep a copy. Employers can verify completion with us at (903) 913-6444.</p>
+</main>
+
+<script>
+(async function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+  function show(id) {
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById(id).classList.remove('hidden');
+  }
+
+  var slug = new URLSearchParams(location.search).get('c');
+  if (!slug) { location.href = '/learn'; return; }
+
+  var session = (await sb.auth.getSession()).data.session;
+  if (!session) { location.href = '/login'; return; }
+  var uid = session.user.id;
+
+  var course = (await sb.from('courses').select('id,slug,title,cert_enabled').eq('slug', slug).maybeSingle()).data;
+  if (!course || course.cert_enabled === false) { location.href = '/learn'; return; }
+
+  // All active lessons in the course, in module/lesson-number space.
+  var mods = (await sb.from('course_modules').select('id,module_number').eq('course_id', course.id)).data || [];
+  var modIds = mods.map(function (m) { return m.id; });
+  var byId = {}; mods.forEach(function (m) { byId[m.id] = m.module_number; });
+  var lessons = modIds.length ? (await sb.from('course_lessons').select('module_id,lesson_number,active').in('module_id', modIds)).data || [] : [];
+  var required = lessons.filter(function (l) { return l.active !== false; })
+    .map(function (l) { return byId[l.module_id] + ':' + l.lesson_number; });
+
+  var prog = (await sb.from('module_progress').select('module_number,lesson_number,completed_at').eq('student_id', uid)).data || [];
+  var done = new Set(prog.filter(function (p) { return p.completed_at; }).map(function (p) { return p.module_number + ':' + p.lesson_number; }));
+  var missing = required.filter(function (k) { return !done.has(k); });
+
+  if (!required.length || missing.length) {
+    document.getElementById('not-done-msg').textContent =
+      'You’ve completed ' + (required.length - missing.length) + ' of ' + required.length +
+      ' lessons in this course. Finish the rest and your certificate unlocks right here.';
+    document.getElementById('back-to-course').href = '/learn?c=' + encodeURIComponent(slug);
+    show('not-done');
+    return;
+  }
+
+  // Completed — render it.
+  var prof = (await sb.from('profiles').select('first_name,last_name').eq('id', uid).maybeSingle()).data || {};
+  var name = ((prof.first_name || '') + ' ' + (prof.last_name || '')).trim() || session.user.email;
+  var latest = prog.filter(function (p) { return p.completed_at && done.has(p.module_number + ':' + p.lesson_number); })
+    .map(function (p) { return new Date(p.completed_at); }).sort(function (a, b) { return b - a; })[0] || new Date();
+
+  document.getElementById('cert-name').textContent = name;
+  document.getElementById('cert-course').textContent = course.title;
+  document.getElementById('cert-date').textContent = latest.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  document.title = 'Certificate — ' + course.title;
+  show('cert-wrap');
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>
