@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Email Center — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .fld { width:100%; border:1px solid #e2e8f0; border-radius:.6rem; padding:.5rem .7rem; font:inherit; }
+    .fld:focus { outline:none; border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+    .btn { background:#0f766e; color:#fff; font-weight:600; border-radius:9999px; padding:.45rem 1rem; font-size:.8rem; }
+    .btn:hover { background:#115e59; }
+    .btn-ghost { border:1px solid #cbd5e1; border-radius:9999px; padding:.4rem .9rem; font-size:.75rem; font-weight:600; }
+    .pill { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:.15rem .55rem; border-radius:9999px; }
+    .tab-btn.active { background:#0f766e; color:#fff; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<div id="auth-wall" class="hidden min-h-screen grid place-items-center p-6 text-center">
+  <div>
+    <div class="text-4xl mb-3">🔒</div>
+    <h1 class="display text-2xl font-bold">Admin sign-in required</h1>
+    <a href="/login" class="btn inline-block mt-5">Sign in</a>
+  </div>
+</div>
+<div id="loading" class="min-h-screen grid place-items-center text-slate-500 text-sm">
+  <div class="text-center"><div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>Loading…</div>
+</div>
+
+<main id="app" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center justify-between gap-3 flex-wrap mb-2">
+    <div>
+      <h1 class="display text-2xl sm:text-3xl font-extrabold">Email Center</h1>
+      <p class="text-slate-500 text-sm">Broadcasts send within 15 minutes of their scheduled time; drips advance hourly. Nothing sends while a campaign is a <b>draft</b>.</p>
+    </div>
+    <button id="signout" class="btn-ghost">Sign out</button>
+  </div>
+
+  <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5"></div>
+
+  <div class="flex gap-2 mb-4">
+    <button data-tab="campaigns" class="tab-btn active btn-ghost">📧 Broadcasts</button>
+    <button data-tab="sequences" class="tab-btn btn-ghost">🔁 Drip sequences</button>
+    <button data-tab="log" class="tab-btn btn-ghost">📜 Send log</button>
+  </div>
+
+  <section id="tab-campaigns"></section>
+  <section id="tab-sequences" class="hidden"></section>
+  <section id="tab-log" class="hidden"></section>
+</main>
+
+<!-- Preview modal -->
+<div id="preview-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 p-4 sm:p-10" role="dialog" aria-modal="true">
+  <div class="bg-white rounded-2xl max-w-3xl mx-auto h-full flex flex-col overflow-hidden">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+      <div>
+        <p id="pv-subject" class="font-bold text-sm"></p>
+        <p id="pv-preview" class="text-xs text-slate-500"></p>
+      </div>
+      <button id="pv-close" class="btn-ghost">Close</button>
+    </div>
+    <iframe id="pv-frame" class="flex-1 w-full" sandbox=""></iframe>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fmt(ts){ if(!ts) return '—'; var d=new Date(ts); return d.toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/Chicago'})+' CT'; }
+  function toLocalInput(ts){ if(!ts) return ''; var d=new Date(ts); var p=function(n){return String(n).padStart(2,'0');}; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes()); }
+
+  // ---------- Stats ----------
+  async function loadStats(){
+    var subs = await sb.from('subscribers').select('id',{count:'exact',head:true}).neq('status','unsubscribed');
+    var unsubs = await sb.from('subscribers').select('id',{count:'exact',head:true}).eq('status','unsubscribed');
+    var drafts = await sb.from('email_campaigns').select('id',{count:'exact',head:true}).eq('status','draft');
+    var scheduled = await sb.from('email_campaigns').select('id',{count:'exact',head:true}).eq('status','scheduled');
+    var cells = [
+      ['Subscribers', subs.count||0, 'text-teal-700'],
+      ['Unsubscribed', unsubs.count||0, 'text-slate-400'],
+      ['Draft broadcasts', drafts.count||0, 'text-amber-600'],
+      ['Scheduled', scheduled.count||0, 'text-sky-700'],
+    ];
+    document.getElementById('stats').innerHTML = cells.map(function(c){
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">'+c[0]+'</div><div class="text-2xl font-extrabold mt-1 '+c[2]+'">'+c[1]+'</div></div>';
+    }).join('');
+  }
+
+  // ---------- Campaigns ----------
+  var campaigns = [];
+  async function loadCampaigns(){
+    var r = await sb.from('email_campaigns').select('id,internal_title,subject,preview_text,audience,scheduled_at,status,sent_count,created_at').order('scheduled_at',{ascending:true,nullsFirst:false});
+    campaigns = r.data || [];
+    var box = document.getElementById('tab-campaigns');
+    if (!campaigns.length) {
+      box.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No broadcasts yet. Import the 30-day calendar with <code>npm run import:emails</code> — campaigns land here as drafts.</div>';
+      return;
+    }
+    var rows = campaigns.map(function(c){
+      var pill = c.status==='sent' ? '<span class="pill bg-teal-100 text-teal-800">sent</span>'
+        : c.status==='scheduled' ? '<span class="pill bg-sky-100 text-sky-800">scheduled</span>'
+        : c.status==='sending' ? '<span class="pill bg-amber-100 text-amber-800">sending</span>'
+        : '<span class="pill bg-slate-100 text-slate-600">draft</span>';
+      var actions = '';
+      if (c.status==='draft') actions = '<button class="btn act" data-act="schedule" data-id="'+c.id+'">Schedule</button>';
+      else if (c.status==='scheduled') actions = '<button class="btn-ghost act" data-act="unschedule" data-id="'+c.id+'">Back to draft</button>';
+      return '<tr class="border-t border-slate-100 hover:bg-slate-50">'+
+        '<td class="px-4 py-3"><div class="font-semibold text-sm">'+esc(c.internal_title)+'</div><div class="text-xs text-slate-500">'+esc(c.subject)+'</div></td>'+
+        '<td class="px-3 py-3 text-xs whitespace-nowrap">'+fmt(c.scheduled_at)+'</td>'+
+        '<td class="px-3 py-3 text-xs">'+esc(c.audience)+'</td>'+
+        '<td class="px-3 py-3">'+pill+(c.sent_count?'<div class="text-[10px] text-slate-400 mt-0.5">'+c.sent_count+' sent</div>':'')+'</td>'+
+        '<td class="px-3 py-3 text-right whitespace-nowrap"><button class="btn-ghost act" data-act="preview" data-id="'+c.id+'">Preview</button> '+actions+'</td>'+
+      '</tr>';
+    }).join('');
+    box.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 overflow-x-auto">'+
+      '<table class="w-full text-left min-w-[640px]"><thead><tr class="text-[11px] uppercase tracking-widest text-slate-400">'+
+      '<th class="px-4 py-3">Campaign</th><th class="px-3 py-3">Sends at</th><th class="px-3 py-3">Audience</th><th class="px-3 py-3">Status</th><th class="px-3 py-3"></th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+      '<p class="text-xs text-slate-400 mt-3">⚠️ “Schedule” arms a real send to the whole audience at the shown time (requires RESEND_API_KEY + CRON_SECRET set in Vercel). Past-dated campaigns send on the next 15-minute tick.</p>';
+  }
+
+  async function scheduleCampaign(id){
+    var c = campaigns.find(function(x){return x.id===id;});
+    if (!c) return;
+    var when = prompt('Send "'+c.internal_title+'" at (your local time):', toLocalInput(c.scheduled_at) || toLocalInput(new Date(Date.now()+3600000).toISOString()));
+    if (when==null) return;
+    var ts = new Date(when);
+    if (isNaN(+ts)) { alert('Could not read that date — use the YYYY-MM-DDTHH:MM format shown.'); return; }
+    var warn = ts.getTime() < Date.now() ? '\n\n⚠️ That time is in the PAST — it will send on the next 15-minute tick.' : '';
+    if (!confirm('Arm "'+c.internal_title+'" to send at '+ts.toLocaleString()+' to audience "'+c.audience+'"?'+warn)) return;
+    var r = await sb.from('email_campaigns').update({ status:'scheduled', scheduled_at: ts.toISOString() }).eq('id', id);
+    if (r.error) return alert(r.error.message);
+    loadCampaigns(); loadStats();
+  }
+  async function unscheduleCampaign(id){
+    var r = await sb.from('email_campaigns').update({ status:'draft' }).eq('id', id);
+    if (r.error) return alert(r.error.message);
+    loadCampaigns(); loadStats();
+  }
+  async function previewCampaign(id){
+    var r = await sb.from('email_campaigns').select('subject,preview_text,html').eq('id', id).maybeSingle();
+    if (!r.data) return;
+    document.getElementById('pv-subject').textContent = r.data.subject;
+    document.getElementById('pv-preview').textContent = r.data.preview_text || '';
+    document.getElementById('pv-frame').srcdoc = r.data.html;
+    document.getElementById('preview-modal').classList.remove('hidden');
+  }
+
+  // ---------- Sequences ----------
+  async function loadSequences(){
+    var seqs = (await sb.from('email_sequences').select('id,key,name,description,active').order('created_at')).data || [];
+    var box = document.getElementById('tab-sequences');
+    var cards = [];
+    for (var i=0;i<seqs.length;i++){
+      var s = seqs[i];
+      var emails = await sb.from('sequence_emails').select('id',{count:'exact',head:true}).eq('sequence_id', s.id);
+      var active = await sb.from('sequence_subscriptions').select('id',{count:'exact',head:true}).eq('sequence_id', s.id).eq('status','active');
+      var done = await sb.from('sequence_subscriptions').select('id',{count:'exact',head:true}).eq('sequence_id', s.id).eq('status','completed');
+      cards.push('<div class="bg-white rounded-2xl border border-slate-200 p-5">'+
+        '<div class="flex items-center justify-between gap-2">'+
+          '<h3 class="font-bold text-sm">'+esc(s.name)+'</h3>'+
+          '<button class="seq-toggle pill '+(s.active?'bg-teal-100 text-teal-800':'bg-slate-100 text-slate-500')+'" data-id="'+s.id+'" data-active="'+s.active+'">'+(s.active?'active':'paused')+'</button>'+
+        '</div>'+
+        '<p class="text-xs text-slate-400 mt-1">key: <code>'+esc(s.key)+'</code></p>'+
+        (s.description?'<p class="text-xs text-slate-500 mt-1">'+esc(s.description)+'</p>':'')+
+        '<div class="flex gap-4 mt-3 text-xs text-slate-600">'+
+          '<span><b>'+(emails.count||0)+'</b> emails'+((emails.count||0)===0?' <span class="text-amber-600">(empty — nothing sends)</span>':'')+'</span>'+
+          '<span><b>'+(active.count||0)+'</b> in progress</span>'+
+          '<span><b>'+(done.count||0)+'</b> completed</span>'+
+        '</div>'+
+      '</div>');
+    }
+    box.innerHTML = '<div class="grid sm:grid-cols-2 gap-4">'+cards.join('')+'</div>'+
+      '<p class="text-xs text-slate-400 mt-3">Sequence email content is imported from Kajabi in the content pass — an empty sequence never sends, even when active. Automations enroll people automatically (form → tag → drip; purchase → buyer drip).</p>';
+  }
+  async function toggleSequence(id, cur){
+    var r = await sb.from('email_sequences').update({ active: !(cur==='true') }).eq('id', id);
+    if (r.error) return alert(r.error.message);
+    loadSequences();
+  }
+
+  // ---------- Send log ----------
+  async function loadLog(){
+    var r = await sb.from('email_sends').select('email,status,error,sent_at,created_at,campaign_id').order('created_at',{ascending:false}).limit(100);
+    var rows = (r.data||[]).map(function(s){
+      var pill = s.status==='sent' ? '<span class="pill bg-teal-100 text-teal-800">sent</span>' : '<span class="pill bg-rose-100 text-rose-700">'+esc(s.status)+'</span>';
+      return '<tr class="border-t border-slate-100"><td class="px-4 py-2 text-sm">'+esc(s.email)+'</td><td class="px-3 py-2">'+pill+'</td><td class="px-3 py-2 text-xs whitespace-nowrap">'+fmt(s.sent_at||s.created_at)+'</td><td class="px-3 py-2 text-xs text-rose-600">'+esc(s.error||'')+'</td></tr>';
+    }).join('');
+    document.getElementById('tab-log').innerHTML = rows
+      ? '<div class="bg-white rounded-2xl border border-slate-200 overflow-x-auto"><table class="w-full text-left min-w-[560px]"><thead><tr class="text-[11px] uppercase tracking-widest text-slate-400"><th class="px-4 py-3">To</th><th class="px-3 py-3">Status</th><th class="px-3 py-3">When</th><th class="px-3 py-3">Error</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+      : '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No sends yet. The log fills in as broadcasts go out.</div>';
+  }
+
+  // ---------- Wiring ----------
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (t.classList && t.classList.contains('tab-btn')) {
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      t.classList.add('active');
+      ['campaigns','sequences','log'].forEach(function(k){ document.getElementById('tab-'+k).classList.toggle('hidden', t.getAttribute('data-tab')!==k); });
+      if (t.getAttribute('data-tab')==='sequences') loadSequences();
+      if (t.getAttribute('data-tab')==='log') loadLog();
+      return;
+    }
+    if (t.classList && t.classList.contains('act')) {
+      var act = t.getAttribute('data-act'), id = t.getAttribute('data-id');
+      if (act==='schedule') scheduleCampaign(id);
+      if (act==='unschedule') unscheduleCampaign(id);
+      if (act==='preview') previewCampaign(id);
+      return;
+    }
+    if (t.classList && t.classList.contains('seq-toggle')) { toggleSequence(t.getAttribute('data-id'), t.getAttribute('data-active')); return; }
+    if (t.id==='pv-close') document.getElementById('preview-modal').classList.add('hidden');
+  });
+
+  // ---------- Boot (same admin gate as the other admin pages) ----------
+  (async function(){
+    var session = (await sb.auth.getSession()).data.session;
+    if (!session) { document.getElementById('loading').classList.add('hidden'); document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    var profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+    var isAdmin = (profile && profile.is_admin === true) || (session.user.app_metadata && session.user.app_metadata.is_admin === true);
+    document.getElementById('loading').classList.add('hidden');
+    if (!isAdmin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('signout').onclick = function(){ location.href='/logout?then=home'; };
+    loadStats(); loadCampaigns();
+  })();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>
