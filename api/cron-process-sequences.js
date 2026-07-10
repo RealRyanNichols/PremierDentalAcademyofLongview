@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   for (const sub of due) {
     try {
       // Global unsubscribe / missing subscriber → stop the drip.
-      const people = await sb('subscribers', { query: { email: `eq.${encodeURIComponent(sub.email)}`, select: 'status,unsubscribe_token', limit: '1' } });
+      const people = await sb('subscribers', { query: { email: `eq.${encodeURIComponent(sub.email)}`, select: 'status,unsubscribe_token,first_name', limit: '1' } });
       const person = Array.isArray(people) ? people[0] : null;
       if (person && person.status === 'unsubscribed') {
         await sb(`sequence_subscriptions?id=eq.${sub.id}`, { method: 'PATCH', body: { status: 'stopped' } });
@@ -51,7 +51,15 @@ export default async function handler(req, res) {
       }
 
       const email = list[idx];
-      await resendSend({ to: sub.email, subject: email.subject, html: email.html, headers: unsubHeaders(person?.unsubscribe_token) });
+      // Merge tags: {{FIRST_NAME}} and {{UNSUB_URL}} (visible unsubscribe link in the body).
+      const firstName = (person && person.first_name) || sub.email.split('@')[0];
+      const unsubUrl = person?.unsubscribe_token
+        ? `https://www.premierdentalacademyoflongview.com/unsubscribe?token=${encodeURIComponent(person.unsubscribe_token)}`
+        : 'https://www.premierdentalacademyoflongview.com/unsubscribe';
+      const html = String(email.html)
+        .replaceAll('{{FIRST_NAME}}', firstName)
+        .replaceAll('{{UNSUB_URL}}', unsubUrl);
+      await resendSend({ to: sub.email, subject: email.subject, html, headers: unsubHeaders(person?.unsubscribe_token) });
       sent++;
 
       const nextIdx = idx + 1;

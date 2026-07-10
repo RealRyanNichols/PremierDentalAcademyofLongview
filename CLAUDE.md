@@ -20,8 +20,9 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 - `*.html` (root)       pages: /, /dashboard, /login, /enroll, /admin, /about,
                         /classes, /calendar, /graduates, /salary,
                         /sponsor-a-student, /paperwork (day-one e-enrollment),
-                        the East-Texas city landing pages, etc. (/night-class
-                        is a redirect stub → /classes)
+                        /learn (course platform), /career-vault (sales page),
+                        /certificate (completion certs), the East-Texas city
+                        landing pages, etc. (/night-class is a redirect stub → /classes)
 - `go/`                 noindex ad funnels: /go/dental-assistant (general) +
                         persona funnels (moms, single-moms, fresh-start,
                         career-change, laid-off) on assets/funnel-kit.js/css.
@@ -187,6 +188,35 @@ are historical.
   now → recruit from 17 hiring partners → film modules with a working RDA.
 - Main competitor: longviewdentalassistant.com (Zollege franchise; Saturdays-only 8-12:30, reviews +
   citations power their #1). Never name competitors negatively in content; win by being more useful.
+
+## COURSE PLATFORM + EMAIL ENGINE — NATIVE, LIVE (July 10, 2026)
+The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migration-phase1.md):
+- **/learn** — student course platform (catalog → outline → lesson player: YouTube,
+  Mux, quizzes, tool links; mark-complete → module_progress; progress bars; certificate
+  button at 100%). Gated by entitlement: `courses.entitlement_flag` → `online_program`
+  = enrolled members, `career_vault` = profiles.career_vault buyers.
+- **/certificate?c=slug** — printable completion certificate (auto-unlocks when every
+  active lesson in the course is complete).
+- **/career-vault** — LIVE sales page, real Square checkout via buy-product
+  (products.career_vault, $147 founding / reg $247).
+- **/admin/courses** — Amanda's course builder (create course + product row, module/
+  lesson editor, direct-to-Mux upload, publish). **/admin/emails** — Email Center
+  (broadcast schedule/preview, drip toggles, send log).
+- **Email engine**: api/cron-send-scheduled.js (15-min broadcasts) +
+  api/cron-process-sequences.js (hourly drips) — Resend, merge tags {{FIRST_NAME}}/
+  {{UNSUB_URL}}, List-Unsubscribe headers. DORMANT until Vercel env vars are set
+  (RESEND_API_KEY, RESEND_FROM, CRON_SECRET) — campaigns stay draft, nothing sends.
+- **Automations (Kajabi-parity, LIVE)**: public.automations rules run natively —
+  purchases (buy-product v2 edge fn) add buyer_<flag> tags + enroll drip sequences;
+  new leads WITH email (trg_automate_new_lead → run-automations edge fn) map
+  facebook_lead_ad→fb-lead-ad and homepage→get-class-info. Verified end-to-end live.
+  4 buyer onboarding drips (exam_prep, money_plan, survival_planner, career_vault ×3
+  emails) are written and in sequence_emails.
+- Nav cutover done: student "My courses" → /learn; Kajabi library remains a fallback
+  link in /portal during the parallel run.
+- STILL PENDING (see docs/claude-code-next-session-prompt.md): Vercel env vars, Resend
+  domain verify, Mux tokens, 30 broadcast email bodies import, Kajabi contacts CSV,
+  lesson content_html/quizzes for weeks 10–12, Mux signed playback for paid videos.
 
 ## To continue building
 Describe what you want. This file is your memory: read the repo, propose a short

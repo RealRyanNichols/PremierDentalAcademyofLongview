@@ -50,10 +50,17 @@ export default async function handler(req, res) {
     for (const s of batch) {
       let row = { campaign_id: c.id, subscriber_id: s.id, email: s.email, status: 'sent' };
       try {
+        // Merge tags: {{FIRST_NAME}} + {{UNSUB_URL}} (visible unsubscribe link in the body).
+        const unsubUrl = s.unsubscribe_token
+          ? `https://www.premierdentalacademyoflongview.com/unsubscribe?token=${encodeURIComponent(s.unsubscribe_token)}`
+          : 'https://www.premierdentalacademyoflongview.com/unsubscribe';
+        const html = String(c.html)
+          .replaceAll('{{FIRST_NAME}}', s.first_name || s.email.split('@')[0])
+          .replaceAll('{{UNSUB_URL}}', unsubUrl);
         const r = await resendSend({
           to: s.email,
           subject: c.subject,
-          html: c.html,
+          html,
           headers: unsubHeaders(s.unsubscribe_token),
         });
         row.resend_id = r?.id || null;
