@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Dental Assistant Courses &amp; Curriculum — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Look inside every course we teach: the full 12-week RDA curriculum, the online program, and the Career Vault — every module and lesson, free to browse. Enroll to unlock." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/courses" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg,#2dd4bf 0%,#22d3ee 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    .card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .card:hover { transform: translateY(-3px); }
+    .lesson-row { cursor: pointer; }
+    .flash { animation: flash 1.2s ease 2; }
+    @keyframes flash { 0%,100%{box-shadow:0 0 0 0 rgba(13,148,136,0)} 50%{box-shadow:0 0 0 6px rgba(13,148,136,.25)} }
+    details.mod > summary { list-style: none; cursor: pointer; }
+    details.mod > summary::-webkit-details-marker { display: none; }
+    details.mod[open] .chev { transform: rotate(90deg); }
+    .chev { transition: transform .15s ease; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/courses" />
+  <meta property="og:title" content="Dental Assistant Courses &amp; Curriculum — free to browse" />
+  <meta property="og:description" content="Every module and lesson of our RDA training, in the open. Browse the full curriculum free — enroll to unlock the lessons." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Dental Assistant Courses &amp; Curriculum — free to browse" />
+  <meta name="twitter:description" content="Every module and lesson of our RDA training, in the open. Browse the full curriculum free — enroll to unlock the lessons." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-cyan-50/40 to-teal-50/40 pda-tinted">
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <div id="view">
+    <div class="min-h-[40vh] grid place-items-center text-slate-500 text-sm">
+      <div class="text-center"><div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>Loading the curriculum…</div>
+    </div>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY);
+  var view = document.getElementById('view');
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function mins(sec){ if(!sec) return null; var m=Math.round(sec/60); return m<60 ? (m+' min') : (Math.floor(m/60)+'h '+(m%60)+'m'); }
+
+  // Pricing comes from site-facts (single source of truth); values mirror api/enroll.js.
+  function facts(){ return (window.PDA_FACTS && window.PDA_FACTS.pricing) || null; }
+  function priceCard(flag){
+    var f = facts();
+    var online = f && f.online ? f.online : { priceDisplay:'$397', regularDisplay:'$997' };
+    var ip = f && f.inPerson ? f.inPerson : { pifDisplay:'$3,000', planTotalDisplay:'$3,500', downDisplay:'$500' };
+    if (flag === 'career_vault') {
+      return { rows: [
+        { label:'PDA Career Vault', price:'$147', sub:'founding price · reg. <s>$247</s> · keep access', href:'/career-vault', cta:'Get the Vault — $147', style:'bg-teal-700 hover:bg-teal-800' }
+      ]};
+    }
+    return { rows: [
+      { label:'Online program', price:online.priceDisplay, sub:'limited-time sale · reg. <s>'+online.regularDisplay+'</s> · train from home', href:'/enroll', cta:'Enroll online — '+online.priceDisplay, style:'bg-teal-700 hover:bg-teal-800' },
+      { label:'In-person program (Longview)', price:ip.pifDisplay, sub:'paid in full — or '+ip.planTotalDisplay+' on a plan ('+ip.downDisplay+' down)', href:'/enroll', cta:'Enroll in person', style:'bg-[#16294a] hover:bg-[#1e355e]' }
+    ]};
+  }
+
+  var COPY = {
+    'rda-program':        { icon:'🦷', tag:'The flagship — includes hands-on training' },
+    'online-rda-12-week': { icon:'💻', tag:'Train from home, on your schedule' },
+    'career-vault':       { icon:'🗝️', tag:'4 career tracks · self-paced' }
+  };
+
+  async function loadCatalog(){
+    var r = await sb.from('course_catalog').select('*').order('course_sort').order('module_sort').order('lesson_sort');
+    return r.data || [];
+  }
+
+  function groupCourses(rows){
+    var courses = {};
+    rows.forEach(function(x){
+      var c = courses[x.course_slug] = courses[x.course_slug] || { slug:x.course_slug, title:x.course_title, description:x.course_description, flag:x.entitlement_flag, cert:x.cert_enabled, sort:x.course_sort, modules:{}, lessons:0, videos:0, quizzes:0, seconds:0 };
+      var m = c.modules[x.module_number] = c.modules[x.module_number] || { number:x.module_number, title:x.module_title, subtitle:x.module_subtitle, sort:x.module_sort, lessons:[] };
+      if (x.lesson_title != null) {
+        m.lessons.push(x);
+        c.lessons++;
+        if (x.has_video) c.videos++;
+        if (x.has_quiz) c.quizzes++;
+        c.seconds += x.duration_seconds || 0;
+      }
+    });
+    return Object.values(courses).sort(function(a,b){ return a.sort-b.sort; });
+  }
+
+  // ── Catalog ──────────────────────────────────────────────────────────────
+  function renderCatalog(courses){
+    var totalLessons = courses.reduce(function(a,c){ return a+c.lessons; },0);
+    var totalModules = courses.reduce(function(a,c){ return a+Object.keys(c.modules).length; },0);
+    var html = ''+
+      '<header class="bg-gradient-to-br from-[#0a1226] to-[#0f2a33] text-white rounded-3xl px-6 sm:px-12 py-10 sm:py-14 text-center">'+
+        '<p class="text-xs uppercase tracking-widest text-teal-300 font-bold">Course catalog · free to browse</p>'+
+        '<h1 class="display text-3xl sm:text-5xl font-extrabold leading-tight mt-3">Look inside <span class="gradient-text">every course</span> we teach.</h1>'+
+        '<p class="text-slate-300 mt-4 max-w-2xl mx-auto">Most schools hide their curriculum. Ours is in the open — every module, every lesson title, before you spend a dollar. Enroll to unlock the lessons themselves.</p>'+
+        '<div class="flex flex-wrap justify-center gap-3 mt-7 text-sm">'+
+          '<span class="bg-white/10 border border-white/10 rounded-full px-4 py-1.5">'+courses.length+' courses</span>'+
+          '<span class="bg-white/10 border border-white/10 rounded-full px-4 py-1.5">'+totalModules+' modules</span>'+
+          '<span class="bg-white/10 border border-white/10 rounded-full px-4 py-1.5">'+totalLessons+' lessons</span>'+
+          '<span class="bg-white/10 border border-white/10 rounded-full px-4 py-1.5">🎓 certificates included</span>'+
+        '</div>'+
+      '</header>';
+
+    html += '<div class="grid md:grid-cols-3 gap-5 mt-10">';
+    courses.forEach(function(c){
+      var meta = COPY[c.slug] || { icon:'🎓', tag:'' };
+      html += '<a href="/courses?c='+encodeURIComponent(c.slug)+'" class="card bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg p-6 flex flex-col">'+
+        '<div class="w-12 h-12 rounded-xl bg-teal-50 grid place-items-center text-3xl mb-3">'+meta.icon+'</div>'+
+        (meta.tag?'<p class="text-[11px] uppercase tracking-widest text-teal-700 font-bold">'+esc(meta.tag)+'</p>':'')+
+        '<h2 class="font-bold text-slate-900 leading-snug mt-1">'+esc(c.title)+'</h2>'+
+        '<p class="text-sm text-slate-500 mt-2 line-clamp-3 flex-1">'+esc(c.description||'')+'</p>'+
+        '<div class="flex flex-wrap gap-2 mt-4 text-[11px] font-semibold text-slate-600">'+
+          '<span class="bg-slate-100 rounded-full px-2.5 py-1">'+Object.keys(c.modules).length+' modules</span>'+
+          '<span class="bg-slate-100 rounded-full px-2.5 py-1">'+c.lessons+' lessons</span>'+
+          (c.quizzes?'<span class="bg-slate-100 rounded-full px-2.5 py-1">'+c.quizzes+' quizzes</span>':'')+
+          (c.cert?'<span class="bg-amber-100 text-amber-800 rounded-full px-2.5 py-1">🎓 certificate</span>':'')+
+        '</div>'+
+        '<span class="mt-4 text-teal-700 text-sm font-semibold">See the full curriculum →</span>'+
+      '</a>';
+    });
+    html += '</div>';
+
+    html += ''+
+      '<section class="mt-12 grid sm:grid-cols-3 gap-4 text-center">'+
+        '<div class="bg-white rounded-2xl border border-slate-200 p-6"><div class="text-3xl">👀</div><h3 class="font-bold mt-2">1. Browse free</h3><p class="text-sm text-slate-500 mt-1">Open any course and read the full module-by-module curriculum.</p></div>'+
+        '<div class="bg-white rounded-2xl border border-slate-200 p-6"><div class="text-3xl">🔓</div><h3 class="font-bold mt-2">2. Enroll to unlock</h3><p class="text-sm text-slate-500 mt-1">Your lessons, videos, quizzes, and trainers open the moment you\'re in.</p></div>'+
+        '<div class="bg-white rounded-2xl border border-slate-200 p-6"><div class="text-3xl">🎓</div><h3 class="font-bold mt-2">3. Finish certified</h3><p class="text-sm text-slate-500 mt-1">Complete every lesson and print your certificate the same day.</p></div>'+
+      '</section>'+
+      '<section class="mt-10 bg-white rounded-2xl border border-slate-200 p-6 flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">'+
+        '<div class="text-3xl">💬</div>'+
+        '<div class="flex-1"><h3 class="font-bold">Not sure which fits?</h3><p class="text-sm text-slate-500">Text Amanda what you\'re trying to do — real teacher, real answer, no pressure.</p></div>'+
+        '<a href="sms:+19039136444" class="shrink-0 bg-teal-700 hover:bg-teal-800 text-white font-semibold text-sm px-5 py-2.5 rounded-full">Text (903) 913-6444</a>'+
+      '</section>';
+    view.innerHTML = html;
+    injectSchema(courses);
+  }
+
+  // ── Course preview ───────────────────────────────────────────────────────
+  function renderPreview(courses, slug){
+    var c = courses.find(function(x){ return x.slug===slug; });
+    if (!c) { renderCatalog(courses); return; }
+    var meta = COPY[c.slug] || { icon:'🎓', tag:'' };
+    var mods = Object.values(c.modules).sort(function(a,b){ return a.sort-b.sort; });
+    var pc = priceCard(c.flag);
+    var totalTime = mins(c.seconds);
+
+    var buyRows = pc.rows.map(function(r){
+      return '<div class="flex items-center justify-between gap-3 py-3 border-t border-slate-100 first:border-t-0">'+
+        '<div><p class="font-semibold text-sm">'+r.label+'</p><p class="text-xs text-slate-500">'+r.sub+'</p></div>'+
+        '<a href="'+r.href+'" data-event="cta_click" data-label="courses-preview-'+esc(c.slug)+'" class="'+r.style+' text-white text-sm font-bold px-4 py-2 rounded-full whitespace-nowrap">'+r.cta+'</a>'+
+      '</div>';
+    }).join('');
+    var buyBox = '<div id="buy-box" class="bg-white rounded-2xl border-2 border-teal-600 shadow-lg p-5">'+
+      '<p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Unlock this course</p>'+buyRows+
+      '<p class="text-[11px] text-slate-400 mt-3">Already enrolled? <a href="/learn?c='+encodeURIComponent(c.slug)+'" class="text-teal-700 font-semibold hover:underline">Sign in and open it →</a></p>'+
+    '</div>';
+
+    var html = ''+
+      '<a href="/courses" class="text-sm text-slate-500 hover:text-teal-700">← All courses</a>'+
+      '<div class="grid lg:grid-cols-[1fr_340px] gap-6 mt-3 items-start">'+
+      '<div>'+
+        '<div class="bg-gradient-to-br from-[#0a1226] to-[#0f2a33] text-white rounded-3xl px-6 sm:px-10 py-8 sm:py-10">'+
+          '<p class="text-xs uppercase tracking-widest text-teal-300 font-bold">Full curriculum · free preview</p>'+
+          '<h1 class="display text-2xl sm:text-4xl font-extrabold leading-tight mt-2">'+esc(c.title)+'</h1>'+
+          (c.description?'<p class="text-slate-300 mt-3 max-w-2xl">'+esc(c.description)+'</p>':'')+
+          '<div class="flex flex-wrap gap-2.5 mt-5 text-xs font-semibold">'+
+            '<span class="bg-white/10 border border-white/10 rounded-full px-3 py-1">'+mods.length+' modules</span>'+
+            '<span class="bg-white/10 border border-white/10 rounded-full px-3 py-1">'+c.lessons+' lessons</span>'+
+            (c.videos?'<span class="bg-white/10 border border-white/10 rounded-full px-3 py-1">▶ '+c.videos+' video lessons</span>':'')+
+            (c.quizzes?'<span class="bg-white/10 border border-white/10 rounded-full px-3 py-1">📝 '+c.quizzes+' quizzes</span>':'')+
+            (totalTime?'<span class="bg-white/10 border border-white/10 rounded-full px-3 py-1">⏱ '+totalTime+' of video</span>':'')+
+            (c.cert?'<span class="bg-amber-400/20 border border-amber-300/30 text-amber-200 rounded-full px-3 py-1">🎓 certificate on completion</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div class="lg:hidden mt-5">'+buyBox+'</div>'+
+        '<div class="mt-6 space-y-3" id="curriculum">';
+
+    mods.forEach(function(m, mi){
+      var lessonRows = m.lessons.map(function(l){
+        var icon = l.lesson_type==='quiz' ? '📝' : (l.has_video ? '▶' : '📄');
+        var badges = (l.has_video?'<span class="text-[10px] bg-slate-100 text-slate-500 rounded px-1.5 py-0.5 ml-1">video</span>':'')+
+                     (l.has_quiz?'<span class="text-[10px] bg-slate-100 text-slate-500 rounded px-1.5 py-0.5 ml-1">quiz</span>':'')+
+                     (l.duration_seconds?'<span class="text-[10px] text-slate-400 ml-1">'+mins(l.duration_seconds)+'</span>':'');
+        return '<div class="lesson-row flex items-start gap-3 px-4 py-2.5 border-t border-slate-100 hover:bg-slate-50" role="button" tabindex="0" aria-label="Locked lesson — enroll to unlock">'+
+          '<span class="w-5 text-center shrink-0 mt-0.5">'+icon+'</span>'+
+          '<span class="flex-1 min-w-0"><span class="text-sm text-slate-800 font-medium">'+esc(l.lesson_title)+'</span>'+badges+
+          (l.lesson_overview?'<span class="block text-xs text-slate-400 truncate">'+esc(l.lesson_overview)+'</span>':'')+
+          '</span>'+
+          '<span class="text-slate-300 shrink-0" aria-hidden="true">🔒</span>'+
+        '</div>';
+      }).join('');
+      html += '<details class="mod bg-white rounded-2xl border border-slate-200 overflow-hidden"'+(mi===0?' open':'')+'>'+
+        '<summary class="flex items-center gap-3 px-5 py-4">'+
+          '<span class="chev text-teal-600 text-sm">▶</span>'+
+          '<span class="flex-1"><span class="font-bold text-slate-900"><span class="text-teal-600">Module '+esc(m.number)+'</span> '+esc(m.title)+'</span>'+
+          (m.subtitle?'<span class="block text-xs text-slate-500">'+esc(m.subtitle)+'</span>':'')+'</span>'+
+          '<span class="text-xs text-slate-400 whitespace-nowrap">'+m.lessons.length+' lessons</span>'+
+        '</summary>'+lessonRows+
+      '</details>';
+    });
+
+    html += '</div>'+
+        '<div class="mt-6 bg-white rounded-2xl border border-slate-200 p-5 text-center">'+
+          '<p class="font-bold">That\'s the whole curriculum — nothing hidden.</p>'+
+          '<p class="text-sm text-slate-500 mt-1">Every 🔒 opens the moment you enroll.</p>'+
+          '<button id="jump-buy" class="mt-4 bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full text-sm">Unlock this course →</button>'+
+        '</div>'+
+      '</div>'+
+      '<aside class="hidden lg:block sticky top-24">'+buyBox+'</aside>'+
+      '</div>';
+    view.innerHTML = html;
+    document.title = esc(c.title) + ' — Curriculum Preview | Premier Dental Academy';
+
+    function jump(){ var b=document.getElementById('buy-box'); b.scrollIntoView({behavior:'smooth',block:'center'}); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); }
+    document.querySelectorAll('.lesson-row').forEach(function(row){ row.addEventListener('click', jump); row.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); jump(); } }); });
+    var jb=document.getElementById('jump-buy'); if(jb) jb.addEventListener('click', jump);
+  }
+
+  // Real structured data for search (schema.org Course list).
+  function injectSchema(courses){
+    try {
+      var items = courses.map(function(c, i){
+        return { '@type':'ListItem', position: i+1, item: {
+          '@type':'Course', name: c.title, description: c.description || undefined,
+          provider: { '@type':'EducationalOrganization', name:'Premier Dental Academy of Longview', sameAs:'https://www.premierdentalacademyoflongview.com' },
+          numberOfCredits: undefined,
+          hasCourseInstance: { '@type':'CourseInstance', courseMode: c.slug==='rda-program' ? 'onsite' : 'online' }
+        }};
+      });
+      var s = document.createElement('script'); s.type='application/ld+json';
+      s.textContent = JSON.stringify({ '@context':'https://schema.org', '@type':'ItemList', itemListElement: items });
+      document.head.appendChild(s);
+    } catch(e){}
+  }
+
+  (async function(){
+    try {
+      var rows = await loadCatalog();
+      if (!rows.length) { view.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">Curriculum is loading — check back in a moment, or <a href="/classes" class="text-teal-700 font-semibold">see our programs</a>.</div>'; return; }
+      var courses = groupCourses(rows);
+      var slug = new URLSearchParams(location.search).get('c');
+      if (slug) renderPreview(courses, slug); else renderCatalog(courses);
+    } catch(e) {
+      view.innerHTML = '<div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-500">Couldn\'t load the catalog — <a href="/classes" class="text-teal-700 font-semibold">see our programs instead</a>.</div>';
+    }
+  })();
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>

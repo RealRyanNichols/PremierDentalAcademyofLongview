@@ -45,6 +45,7 @@
     </a>
     <div class="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-slate-700">
       <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
+      <a href="/courses"   data-nav-link class="hover:text-teal-700">Courses</a>
       <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
       <div class="pda-dd relative">
         <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
@@ -106,6 +107,7 @@
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
   <div class="px-5 py-4 flex flex-col">
     <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
+    <a href="/courses"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Courses</a>
     <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
     <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">For offices</a>
 
