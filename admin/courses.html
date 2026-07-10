@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Course Builder — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    input, textarea, select { font: inherit; }
+    .fld { width:100%; border:1px solid #e2e8f0; border-radius:.6rem; padding:.5rem .7rem; }
+    .fld:focus { outline:none; border-color:#0d9488; box-shadow:0 0 0 3px rgba(13,148,136,.12); }
+    .btn { background:#0f766e; color:#fff; font-weight:600; border-radius:9999px; padding:.5rem 1.1rem; font-size:.875rem; }
+    .btn:hover { background:#115e59; }
+    .btn-ghost { border:1px solid #cbd5e1; border-radius:9999px; padding:.4rem 1rem; font-size:.8rem; font-weight:600; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<div id="auth-wall" class="hidden min-h-screen grid place-items-center p-6 text-center">
+  <div>
+    <div class="text-4xl mb-3">🔒</div>
+    <h1 class="display text-2xl font-bold">Admin sign-in required</h1>
+    <p class="text-slate-500 mt-2 text-sm">This page is for Premier Dental Academy staff.</p>
+    <a href="/login" class="btn inline-block mt-5">Sign in</a>
+  </div>
+</div>
+
+<div id="loading" class="min-h-screen grid place-items-center text-slate-500 text-sm">
+  <div class="text-center"><div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>Loading…</div>
+</div>
+
+<main id="app" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center justify-between gap-3 mb-6">
+    <div>
+      <h1 class="display text-2xl sm:text-3xl font-extrabold">Course Builder</h1>
+      <p class="text-slate-500 text-sm">Create courses, add modules &amp; lessons, upload video, publish. Students see published courses at <a href="/learn" class="text-teal-700 underline">/learn</a>.</p>
+    </div>
+    <button id="signout" class="btn-ghost">Sign out</button>
+  </div>
+
+  <div class="grid lg:grid-cols-[320px_1fr] gap-6">
+    <!-- Course list + create -->
+    <aside>
+      <div class="bg-white rounded-2xl border border-slate-200 p-4">
+        <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wide">Courses</h2>
+        <div id="course-list" class="mt-3 space-y-1.5"></div>
+        <button id="new-course-btn" class="btn w-full mt-4">+ New course</button>
+      </div>
+    </aside>
+
+    <!-- Editor -->
+    <section id="editor">
+      <div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">Select a course, or create one.</div>
+    </section>
+  </div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  var token = null, courses = [], current = null;
+  var listEl = document.getElementById('course-list');
+  var editorEl = document.getElementById('editor');
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function slugify(s){ return String(s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60); }
+  function sleep(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+  async function authHeader(){ var s=(await sb.auth.getSession()).data.session; token=s&&s.access_token; return { 'Authorization':'Bearer '+token, 'Content-Type':'application/json' }; }
+
+  // ---------- Course list ----------
+  async function refreshCourses(){
+    var r = await sb.from('courses').select('*').order('sort');
+    courses = r.data || [];
+    listEl.innerHTML = courses.map(function(c){
+      var active = current && current.id===c.id;
+      return '<button data-id="'+c.id+'" class="course-pick w-full text-left rounded-xl px-3 py-2 text-sm '+(active?'bg-teal-50 border border-teal-300':'hover:bg-slate-50 border border-transparent')+'">'+
+        '<span class="font-semibold text-slate-800">'+esc(c.title)+'</span>'+
+        '<span class="ml-1 text-[10px] uppercase tracking-wide '+(c.active?'text-teal-600':'text-amber-600')+'">'+(c.active?'live':'draft')+'</span>'+
+        '<span class="block text-[11px] text-slate-400">'+esc(c.slug)+' · '+esc(c.entitlement_flag||'no flag')+'</span>'+
+      '</button>';
+    }).join('') || '<p class="text-slate-400 text-xs">No courses yet.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll('.course-pick'), function(b){
+      b.onclick = function(){ openCourse(b.getAttribute('data-id')); };
+    });
+  }
+
+  // ---------- New course ----------
+  function showNewCourse(){
+    current = null; refreshCourses();
+    editorEl.innerHTML =
+      '<div class="bg-white rounded-2xl border border-slate-200 p-6 max-w-xl">'+
+        '<h2 class="display text-xl font-bold">Create a course</h2>'+
+        '<div class="mt-4 space-y-3">'+
+          '<label class="block text-sm font-medium">Title<input id="nc-title" class="fld mt-1" placeholder="e.g. RDA Exam Bootcamp"></label>'+
+          '<label class="block text-sm font-medium">URL slug<input id="nc-slug" class="fld mt-1" placeholder="rda-exam-bootcamp"></label>'+
+          '<label class="block text-sm font-medium">Description<textarea id="nc-desc" rows="3" class="fld mt-1"></textarea></label>'+
+          '<label class="block text-sm font-medium">Who can open it (entitlement)'+
+            '<select id="nc-flag" class="fld mt-1">'+
+              '<option value="online_program">Enrolled students (online_program)</option>'+
+              '<option value="career_vault">Career Vault buyers (career_vault)</option>'+
+              '<option value="">Any enrolled member (no flag)</option>'+
+            '</select></label>'+
+          '<label class="flex items-center gap-2 text-sm mt-1"><input type="checkbox" id="nc-sell"> Also create a sellable product row</label>'+
+          '<div id="nc-price-wrap" class="hidden"><label class="block text-sm font-medium">Price (USD)<input id="nc-price" type="number" min="0" step="1" class="fld mt-1" placeholder="147"></label></div>'+
+        '</div>'+
+        '<div class="mt-5 flex items-center gap-3"><button id="nc-save" class="btn">Create draft</button><span id="nc-msg" class="text-sm"></span></div>'+
+        '<p class="text-xs text-slate-400 mt-3">Courses are created as <b>drafts</b> (hidden from students) until you publish.</p>'+
+      '</div>';
+    document.getElementById('nc-title').addEventListener('input', function(e){ document.getElementById('nc-slug').value = slugify(e.target.value); });
+    document.getElementById('nc-sell').addEventListener('change', function(e){ document.getElementById('nc-price-wrap').classList.toggle('hidden', !e.target.checked); });
+    document.getElementById('nc-save').onclick = createCourse;
+  }
+
+  async function createCourse(){
+    var msg = document.getElementById('nc-msg');
+    var title = document.getElementById('nc-title').value.trim();
+    var slug = slugify(document.getElementById('nc-slug').value || title);
+    var desc = document.getElementById('nc-desc').value.trim();
+    var flag = document.getElementById('nc-flag').value || null;
+    if (!title || !slug) { msg.textContent = 'Title and slug required.'; msg.className='text-sm text-rose-600'; return; }
+    msg.textContent = 'Creating…'; msg.className='text-sm text-slate-500';
+    var maxSort = courses.reduce(function(a,c){ return Math.max(a, c.sort||0); }, 0);
+    var ins = await sb.from('courses').insert({ slug:slug, title:title, description:desc||null, entitlement_flag:flag, active:false, sort:maxSort+1 }).select().maybeSingle();
+    if (ins.error) { msg.textContent = ins.error.message; msg.className='text-sm text-rose-600'; return; }
+
+    if (document.getElementById('nc-sell').checked) {
+      var price = Math.round(Number(document.getElementById('nc-price').value||0) * 100);
+      var prod = await sb.from('products').upsert({ key:slug, name:title, blurb:desc||null, price_cents:price||0, entitlement_flag:flag, sales_url:'/'+slug, active:false }, { onConflict:'key' });
+      if (prod.error) { msg.textContent = 'Course made, but product row failed: '+prod.error.message; msg.className='text-sm text-amber-600'; }
+    }
+    await refreshCourses();
+    openCourse(ins.data.id);
+  }
+
+  // ---------- Course editor ----------
+  async function openCourse(id){
+    current = courses.find(function(c){ return c.id===id; });
+    if (!current) return;
+    refreshCourses();
+    editorEl.innerHTML = '<div class="text-slate-400 text-sm p-4">Loading course…</div>';
+    var mods = (await sb.from('course_modules').select('*').eq('course_id', id).order('sort')).data || [];
+    var ids = mods.map(function(m){ return m.id; });
+    var lessons = ids.length ? (await sb.from('course_lessons').select('*').in('module_id', ids).order('sort')).data || [] : [];
+    var byMod = {}; lessons.forEach(function(l){ (byMod[l.module_id]=byMod[l.module_id]||[]).push(l); });
+
+    var html = '<div class="bg-white rounded-2xl border border-slate-200 p-6">'+
+      '<div class="flex items-start justify-between gap-3 flex-wrap">'+
+        '<div><h2 class="display text-xl font-bold">'+esc(current.title)+'</h2>'+
+        '<p class="text-xs text-slate-400">/learn?c='+esc(current.slug)+' · '+lessons.length+' lessons in '+mods.length+' modules</p></div>'+
+        '<div class="flex items-center gap-2">'+
+          '<button id="toggle-active" class="btn-ghost">'+(current.active?'Unpublish':'Publish course')+'</button>'+
+          '<a href="/learn?c='+esc(current.slug)+'" target="_blank" class="btn-ghost">Preview →</a>'+
+        '</div>'+
+      '</div>'+
+      (current.active?'':'<p class="mt-2 text-xs text-amber-600">Draft — not visible to students until published.</p>')+
+    '</div>';
+
+    mods.forEach(function(m){
+      html += '<div class="bg-white rounded-2xl border border-slate-200 p-5 mt-4" data-mod="'+m.id+'">'+
+        '<div class="flex items-center justify-between gap-2">'+
+          '<h3 class="font-bold text-slate-900"><span class="text-teal-600">Module '+esc(m.module_number)+'</span> '+esc(m.title)+'</h3>'+
+        '</div>'+
+        (m.subtitle?'<p class="text-sm text-slate-500">'+esc(m.subtitle)+'</p>':'')+
+        '<div class="mt-3 divide-y divide-slate-100 border border-slate-100 rounded-xl overflow-hidden">';
+      (byMod[m.id]||[]).forEach(function(l){
+        var badge = l.mux_playback_id ? '🎬 Mux' : (l.video_url ? '▶ video' : '📄');
+        html += '<div class="px-4 py-2.5 flex items-center gap-3 text-sm hover:bg-slate-50">'+
+          '<span class="w-5 text-center text-[11px]">'+(l.active?'✓':'·')+'</span>'+
+          '<span class="flex-1">L'+esc(l.lesson_number)+'. '+esc(l.title)+' <span class="text-[11px] text-slate-400">'+badge+'</span>'+(l.active?'':' <span class="text-[10px] text-amber-600 uppercase">draft</span>')+'</span>'+
+          '<button class="edit-lesson text-teal-700 text-xs font-semibold" data-id="'+l.id+'">Edit</button>'+
+        '</div>';
+      });
+      html += '</div>'+
+        '<button class="add-lesson btn-ghost mt-3" data-mod="'+m.id+'" data-modnum="'+m.module_number+'" data-next="'+((byMod[m.id]||[]).length+1)+'">+ Add lesson</button>'+
+        '<div class="lesson-form mt-3"></div>'+
+      '</div>';
+    });
+
+    html += '<div class="bg-white rounded-2xl border border-dashed border-slate-300 p-5 mt-4">'+
+      '<h3 class="font-bold text-slate-900 text-sm">Add a module</h3>'+
+      '<div class="grid sm:grid-cols-[100px_1fr] gap-2 mt-2">'+
+        '<input id="nm-num" type="number" class="fld" placeholder="#" value="'+(mods.length+1)+'">'+
+        '<input id="nm-title" class="fld" placeholder="Module title">'+
+      '</div>'+
+      '<input id="nm-sub" class="fld mt-2" placeholder="Subtitle (optional)">'+
+      '<button id="nm-add" class="btn mt-3">Add module</button> <span id="nm-msg" class="text-sm"></span>'+
+    '</div>';
+
+    editorEl.innerHTML = html;
+    wireEditor(mods, byMod);
+  }
+
+  function wireEditor(mods, byMod){
+    document.getElementById('toggle-active').onclick = async function(){
+      var r = await sb.from('courses').update({ active: !current.active }).eq('id', current.id).select().maybeSingle();
+      if (r.error) return alert(r.error.message);
+      current.active = r.data.active; await refreshCourses(); openCourse(current.id);
+    };
+    document.getElementById('nm-add').onclick = async function(){
+      var num = Number(document.getElementById('nm-num').value||0);
+      var title = document.getElementById('nm-title').value.trim();
+      var sub = document.getElementById('nm-sub').value.trim();
+      var msg = document.getElementById('nm-msg');
+      if (!num || !title) { msg.textContent='Number and title required.'; msg.className='text-sm text-rose-600'; return; }
+      var r = await sb.from('course_modules').insert({ course_id:current.id, module_number:num, title:title, subtitle:sub||null, sort:num }).select();
+      if (r.error) { msg.textContent=r.error.message; msg.className='text-sm text-rose-600'; return; }
+      openCourse(current.id);
+    };
+    Array.prototype.forEach.call(document.querySelectorAll('.add-lesson'), function(b){
+      b.onclick = function(){ lessonForm(b.closest('[data-mod]').querySelector('.lesson-form'), { module_id:b.getAttribute('data-mod'), module_number:Number(b.getAttribute('data-modnum')), lesson_number:Number(b.getAttribute('data-next')) }); };
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.edit-lesson'), function(b){
+      b.onclick = async function(){
+        var l = (await sb.from('course_lessons').select('*').eq('id', b.getAttribute('data-id')).maybeSingle()).data;
+        lessonForm(b.closest('[data-mod]').querySelector('.lesson-form'), l);
+      };
+    });
+  }
+
+  // ---------- Lesson editor ----------
+  function lessonForm(container, lesson){
+    var isNew = !lesson.id;
+    container.innerHTML =
+      '<div class="border border-teal-200 bg-teal-50/40 rounded-xl p-4">'+
+        '<div class="grid sm:grid-cols-[90px_1fr] gap-2">'+
+          '<input id="lf-num" type="number" class="fld" value="'+esc(lesson.lesson_number||'')+'" placeholder="#">'+
+          '<input id="lf-title" class="fld" value="'+esc(lesson.title||'')+'" placeholder="Lesson title">'+
+        '</div>'+
+        '<input id="lf-overview" class="fld mt-2" value="'+esc(lesson.overview||'')+'" placeholder="One-line overview (optional)">'+
+        '<textarea id="lf-content" rows="4" class="fld mt-2" placeholder="Lesson body (HTML allowed)">'+esc(lesson.content_html||'')+'</textarea>'+
+        '<div class="grid sm:grid-cols-2 gap-2 mt-2">'+
+          '<input id="lf-video" class="fld" value="'+esc(lesson.video_url||'')+'" placeholder="YouTube URL (optional)">'+
+          '<input id="lf-mux" class="fld" value="'+esc(lesson.mux_playback_id||'')+'" placeholder="Mux playback ID (optional)">'+
+        '</div>'+
+        '<div class="grid sm:grid-cols-2 gap-2 mt-2">'+
+          '<input id="lf-toolurl" class="fld" value="'+esc(lesson.tool_url||'')+'" placeholder="Trainer link (optional)">'+
+          '<input id="lf-toollabel" class="fld" value="'+esc(lesson.tool_label||'')+'" placeholder="Trainer label (optional)">'+
+        '</div>'+
+        '<textarea id="lf-quiz" rows="2" class="fld mt-2 font-mono text-xs" placeholder=\'Quiz JSON (optional): [{"question":"","choices":["a","b"],"correct_index":0,"explanation":""}]\'>'+esc(lesson.quiz_json?JSON.stringify(lesson.quiz_json):'')+'</textarea>'+
+        '<div class="mt-3 p-3 bg-white border border-slate-200 rounded-lg">'+
+          '<label class="text-xs font-semibold text-slate-600">Upload a video to Mux</label>'+
+          '<div class="flex items-center gap-2 mt-1"><input id="lf-file" type="file" accept="video/*" class="text-xs"><button id="lf-upload" class="btn-ghost">Upload</button></div>'+
+          '<p id="lf-upmsg" class="text-xs text-slate-500 mt-1"></p>'+
+        '</div>'+
+        '<label class="flex items-center gap-2 text-sm mt-3"><input type="checkbox" id="lf-active" '+(lesson.active!==false?'checked':'')+'> Published (visible to students)</label>'+
+        '<div class="mt-3 flex items-center gap-3">'+
+          '<button id="lf-save" class="btn">'+(isNew?'Add lesson':'Save lesson')+'</button>'+
+          (isNew?'':'<button id="lf-del" class="btn-ghost text-rose-600">Delete</button>')+
+          '<span id="lf-msg" class="text-sm"></span>'+
+        '</div>'+
+      '</div>';
+
+    document.getElementById('lf-upload').onclick = async function(){
+      var f = document.getElementById('lf-file').files[0];
+      var um = document.getElementById('lf-upmsg');
+      if (!f) { um.textContent='Choose a file first.'; return; }
+      um.textContent='Requesting upload…';
+      try {
+        var signed = current.signed_playback === true;
+        var res = await fetch('/api/admin-mux-upload', { method:'POST', headers: await authHeader(), body: JSON.stringify({ signed:signed, cors_origin: location.origin }) });
+        var up = await res.json();
+        if (!up.configured) { um.textContent='Mux not configured yet — set MUX_TOKEN_ID / MUX_TOKEN_SECRET in Vercel. (You can paste a Mux playback ID manually instead.)'; return; }
+        if (up.error) { um.textContent=up.error; return; }
+        um.textContent='Uploading '+f.name+'…';
+        await fetch(up.url, { method:'PUT', body:f });
+        um.textContent='Processing video…';
+        for (var i=0;i<80;i++){
+          await sleep(3000);
+          var a = await (await fetch('/api/admin-mux-asset?upload='+encodeURIComponent(up.upload_id), { headers: await authHeader() })).json();
+          if (a.ready && a.playback_id) { document.getElementById('lf-mux').value = a.playback_id; um.textContent='✓ Video ready ('+(a.duration_seconds||'?')+'s). Save the lesson.'; lesson._muxAsset = a; return; }
+        }
+        um.textContent='Still processing — check back and paste the playback ID if needed.';
+      } catch(e){ um.textContent='Upload failed: '+e.message; }
+    };
+
+    document.getElementById('lf-save').onclick = async function(){
+      var msg = document.getElementById('lf-msg');
+      var quizRaw = document.getElementById('lf-quiz').value.trim();
+      var quiz = null;
+      if (quizRaw) { try { quiz = JSON.parse(quizRaw); } catch(e){ msg.textContent='Quiz JSON invalid: '+e.message; msg.className='text-sm text-rose-600'; return; } }
+      var mux = document.getElementById('lf-mux').value.trim();
+      var row = {
+        module_id: lesson.module_id,
+        lesson_number: Number(document.getElementById('lf-num').value||0),
+        title: document.getElementById('lf-title').value.trim(),
+        overview: document.getElementById('lf-overview').value.trim() || null,
+        content_html: document.getElementById('lf-content').value || null,
+        video_url: document.getElementById('lf-video').value.trim() || null,
+        mux_playback_id: mux || null,
+        mux_asset_id: (lesson._muxAsset && lesson._muxAsset.asset_id) || lesson.mux_asset_id || null,
+        duration_seconds: (lesson._muxAsset && lesson._muxAsset.duration_seconds) || lesson.duration_seconds || null,
+        video_status: mux ? 'ready' : (lesson.video_status || 'none'),
+        tool_url: document.getElementById('lf-toolurl').value.trim() || null,
+        tool_label: document.getElementById('lf-toollabel').value.trim() || null,
+        quiz_json: quiz,
+        lesson_type: (quiz && !document.getElementById('lf-video').value && !mux) ? 'quiz' : 'lesson',
+        active: document.getElementById('lf-active').checked,
+        sort: Number(document.getElementById('lf-num').value||0)
+      };
+      if (!row.title || !row.lesson_number) { msg.textContent='Number and title required.'; msg.className='text-sm text-rose-600'; return; }
+      msg.textContent='Saving…'; msg.className='text-sm text-slate-500';
+      var r = lesson.id
+        ? await sb.from('course_lessons').update(row).eq('id', lesson.id)
+        : await sb.from('course_lessons').insert(row);
+      if (r.error) { msg.textContent=r.error.message; msg.className='text-sm text-rose-600'; return; }
+      openCourse(current.id);
+    };
+
+    if (!isNew) document.getElementById('lf-del').onclick = async function(){
+      if (!confirm('Delete this lesson?')) return;
+      var r = await sb.from('course_lessons').delete().eq('id', lesson.id);
+      if (r.error) return alert(r.error.message);
+      openCourse(current.id);
+    };
+  }
+
+  // ---------- Boot ----------
+  (async function(){
+    var session = (await sb.auth.getSession()).data.session;
+    if (!session) { document.getElementById('loading').classList.add('hidden'); document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    var profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+    var isAdmin = (profile && profile.is_admin === true) || (session.user.app_metadata && session.user.app_metadata.is_admin === true);
+    document.getElementById('loading').classList.add('hidden');
+    if (!isAdmin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('signout').onclick = function(){ location.href='/logout?then=home'; };
+    document.getElementById('new-course-btn').onclick = showNewCourse;
+    await refreshCourses();
+  })();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>

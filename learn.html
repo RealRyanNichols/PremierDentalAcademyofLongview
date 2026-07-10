@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>My Courses — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Your Premier Dental Academy courses — video lessons, quizzes, and hands-on trainers, all in one place." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/learn" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/pda-portal-guard.js"></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="/assets/student-nav.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg,#2dd4bf 0%,#22d3ee 100%); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+    #app { display: none; }
+    body.pda-ready #app { display: block; }
+    body.pda-ready #gate-loading { display: none; }
+    .card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+    .card:hover { transform: translateY(-3px); }
+    .lesson-body { line-height: 1.7; }
+    .lesson-body h2 { font-weight: 700; font-size: 1.25rem; margin: 1.25rem 0 .5rem; }
+    .lesson-body h3 { font-weight: 700; margin: 1rem 0 .35rem; }
+    .lesson-body p { margin: .6rem 0; }
+    .lesson-body ul { list-style: disc; padding-left: 1.4rem; margin: .6rem 0; }
+    .lesson-body ol { list-style: decimal; padding-left: 1.4rem; margin: .6rem 0; }
+    .lesson-body a { color: #0d9488; text-decoration: underline; }
+    .aspect-video-box { position: relative; padding-top: 56.25%; }
+    .aspect-video-box > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-cyan-50/40 to-teal-50/40 min-h-screen pda-tinted">
+
+<div id="gate-loading" class="min-h-screen flex items-center justify-center text-slate-500 text-sm">
+  <div class="text-center">
+    <div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+    Loading your courses…
+  </div>
+</div>
+
+<main id="app" class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+  <div class="flex items-center justify-between gap-3 mb-6">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="PDA" width="36" height="36" class="w-9 h-9 rounded-lg" />
+      <span class="text-lg">Premier Dental Academy</span>
+    </a>
+    <nav class="flex items-center gap-4 text-sm font-semibold">
+      <a href="/learn" class="text-teal-700 hover:underline">My Courses</a>
+      <a href="/dashboard" class="text-slate-600 hover:text-teal-700">Dashboard →</a>
+    </nav>
+  </div>
+  <div id="view"></div>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+  var view = document.getElementById('view');
+  var access = null, uid = null;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]; }); }
+  function qp() { return new URLSearchParams(location.search); }
+
+  // Which courses can this person open?
+  function entitledToCourse(c) {
+    if (access.is_admin) return true;
+    if (c.entitlement_flag === 'career_vault') return access.career_vault === true;
+    if (c.entitlement_flag === 'online_program') return !!access.enrolled;
+    // No/unknown flag = open to any enrolled member.
+    return !!access.enrolled;
+  }
+
+  function youtubeId(url) {
+    if (!url) return null;
+    var m = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|v\/|shorts\/))([\w-]{11})/.exec(url);
+    return m ? m[1] : null;
+  }
+
+  // ---- Data ----
+  async function loadCourses() {
+    var q = sb.from('courses').select('id,slug,title,description,entitlement_flag,active,sort').order('sort');
+    var r = await q;
+    return (r.data || []);
+  }
+  async function loadOutline(slug) {
+    var cr = await sb.from('courses').select('*').eq('slug', slug).maybeSingle();
+    if (!cr.data) return null;
+    var mods = await sb.from('course_modules').select('id,module_number,title,subtitle,sort').eq('course_id', cr.data.id).order('sort');
+    var modList = mods.data || [];
+    var ids = modList.map(function (m) { return m.id; });
+    var lessons = ids.length
+      ? (await sb.from('course_lessons').select('id,module_id,lesson_number,title,overview,lesson_type,video_url,mux_playback_id,sort,active').in('module_id', ids).order('sort')).data || []
+      : [];
+    return { course: cr.data, modules: modList, lessons: lessons };
+  }
+  async function loadProgress() {
+    if (!uid) return {};
+    var r = await sb.from('module_progress').select('module_number,lesson_number,completed_at,quiz_score').eq('student_id', uid);
+    var map = {};
+    (r.data || []).forEach(function (row) { if (row.completed_at) map[row.module_number + ':' + row.lesson_number] = row; });
+    return map;
+  }
+
+  // ---- Views ----
+  async function renderCatalog() {
+    var courses = await loadCourses();
+    var mine = courses.filter(entitledToCourse);
+    var name = (access.email || 'student').split('@')[0];
+    var html = '' +
+      '<header class="bg-gradient-to-br from-[#0a1226] to-[#0f2a33] text-white rounded-3xl px-6 sm:px-10 py-8 sm:py-10 mb-8">' +
+        '<p class="text-xs uppercase tracking-widest text-teal-300 font-bold">Your Courses</p>' +
+        '<h1 class="display text-3xl sm:text-4xl font-extrabold mt-2">Welcome back, <span class="gradient-text">' + esc(name) + '</span> 👋</h1>' +
+        '<p class="text-slate-300 mt-2 max-w-xl">Pick up where you left off. Every lesson you complete shows up on your dashboard.</p>' +
+      '</header>';
+
+    if (!mine.length) {
+      html += '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center">' +
+        '<div class="text-4xl mb-3">📚</div>' +
+        '<h2 class="display text-xl font-bold">No courses on your account yet</h2>' +
+        '<p class="text-slate-500 mt-2 text-sm">Once you enroll, your program appears here automatically.</p>' +
+        '<div class="mt-5 flex flex-wrap gap-3 justify-center">' +
+          '<a href="/enroll" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">See enrollment options</a>' +
+          '<a href="/dashboard" class="border border-slate-300 hover:border-teal-500 font-semibold px-5 py-2.5 rounded-full text-sm">Go to dashboard</a>' +
+        '</div></div>';
+      view.innerHTML = html;
+      return;
+    }
+
+    html += '<div class="grid sm:grid-cols-2 gap-5">';
+    mine.forEach(function (c) {
+      var draft = c.active === false ? '<span class="ml-2 text-[11px] uppercase tracking-wide bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Draft</span>' : '';
+      html += '<a href="/learn?c=' + encodeURIComponent(c.slug) + '" class="card bg-white rounded-2xl border border-slate-200 hover:border-teal-500 hover:shadow-lg p-6 block">' +
+        '<div class="w-11 h-11 rounded-xl bg-teal-50 grid place-items-center text-2xl mb-3">🎓</div>' +
+        '<h3 class="font-bold text-slate-900 leading-snug">' + esc(c.title) + draft + '</h3>' +
+        '<p class="text-sm text-slate-500 mt-1 line-clamp-3">' + esc(c.description || '') + '</p>' +
+        '<span class="inline-block mt-4 text-teal-700 text-sm font-semibold">Open course →</span>' +
+      '</a>';
+    });
+    html += '</div>';
+    view.innerHTML = html;
+  }
+
+  async function renderOutline(slug) {
+    var data = await loadOutline(slug);
+    if (!data) { view.innerHTML = notFound(); return; }
+    if (!entitledToCourse(data.course)) { view.innerHTML = locked(data.course); return; }
+    var progress = await loadProgress();
+
+    var byModule = {};
+    data.lessons.forEach(function (l) { (byModule[l.module_id] = byModule[l.module_id] || []).push(l); });
+
+    var total = 0, done = 0, resume = null;
+    data.modules.forEach(function (m) {
+      (byModule[m.id] || []).forEach(function (l) {
+        if (l.active === false && !access.is_admin) return;
+        total++;
+        var completed = !!progress[m.module_number + ':' + l.lesson_number];
+        if (completed) done++; else if (!resume) resume = { m: m.module_number, l: l.lesson_number };
+      });
+    });
+    var pct = total ? Math.round(done / total * 100) : 0;
+
+    var html = '' +
+      '<a href="/learn" class="text-sm text-slate-500 hover:text-teal-700">← All courses</a>' +
+      '<div class="mt-3 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">' +
+        '<h1 class="display text-2xl sm:text-3xl font-extrabold">' + esc(data.course.title) + '</h1>' +
+        (data.course.description ? '<p class="text-slate-500 mt-2 max-w-2xl">' + esc(data.course.description) + '</p>' : '') +
+        '<div class="mt-5 flex items-center gap-4">' +
+          '<div class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-teal-500" style="width:' + pct + '%"></div></div>' +
+          '<div class="text-sm font-semibold text-slate-700 whitespace-nowrap">' + done + ' / ' + total + ' done</div>' +
+        '</div>' +
+        (resume ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + resume.m + '&l=' + resume.l + '" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">' + (done ? 'Resume' : 'Start') + ' course →</a>' : '<p class="mt-5 text-teal-700 font-semibold text-sm">🎉 Course complete!</p>') +
+      '</div>';
+
+    data.modules.forEach(function (m) {
+      var ls = (byModule[m.id] || []).filter(function (l) { return access.is_admin || l.active !== false; });
+      if (!ls.length && !access.is_admin) return;
+      html += '<section class="mt-6">' +
+        '<h2 class="font-bold text-slate-900 flex items-baseline gap-2"><span class="text-teal-600">Module ' + esc(m.module_number) + '</span> ' + esc(m.title) + '</h2>' +
+        (m.subtitle ? '<p class="text-sm text-slate-500">' + esc(m.subtitle) + '</p>' : '') +
+        '<div class="mt-3 bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 overflow-hidden">';
+      ls.forEach(function (l) {
+        var completed = !!progress[m.module_number + ':' + l.lesson_number];
+        var icon = completed ? '<span class="text-teal-600">✓</span>' : (l.lesson_type === 'quiz' ? '📝' : (youtubeId(l.video_url) || l.mux_playback_id ? '▶' : '📄'));
+        html += '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + m.module_number + '&l=' + l.lesson_number + '" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50">' +
+          '<span class="w-6 text-center">' + icon + '</span>' +
+          '<span class="flex-1 text-sm ' + (completed ? 'text-slate-500' : 'text-slate-800 font-medium') + '">' + esc(l.title) + '</span>' +
+          (l.active === false ? '<span class="text-[10px] uppercase bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">draft</span>' : '') +
+        '</a>';
+      });
+      html += '</div></section>';
+    });
+    view.innerHTML = html;
+  }
+
+  async function renderLesson(slug, mNum, lNum) {
+    var data = await loadOutline(slug);
+    if (!data) { view.innerHTML = notFound(); return; }
+    if (!entitledToCourse(data.course)) { view.innerHTML = locked(data.course); return; }
+
+    // Flatten in outline order for prev/next.
+    var flat = [];
+    data.modules.forEach(function (m) {
+      data.lessons.filter(function (l) { return l.module_id === m.id && (access.is_admin || l.active !== false); })
+        .sort(function (a, b) { return a.sort - b.sort; })
+        .forEach(function (l) { flat.push({ m: m, l: l }); });
+    });
+    var idx = flat.findIndex(function (x) { return x.m.module_number === mNum && x.l.lesson_number === lNum; });
+    if (idx < 0) { view.innerHTML = notFound(); return; }
+    var cur = flat[idx], prev = flat[idx - 1], next = flat[idx + 1];
+
+    // Full lesson row (needs content_html, tool_url, quiz_json).
+    var full = (await sb.from('course_lessons').select('*').eq('id', cur.l.id).maybeSingle()).data || cur.l;
+    var progress = await loadProgress();
+    var completed = !!progress[mNum + ':' + lNum];
+
+    var media = '';
+    var yt = youtubeId(full.video_url);
+    if (yt) {
+      media = '<div class="aspect-video-box rounded-xl overflow-hidden bg-black mb-5"><iframe src="https://www.youtube-nocookie.com/embed/' + yt + '" title="Lesson video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen frameborder="0"></iframe></div>';
+    } else if (full.mux_playback_id) {
+      media = '<div class="rounded-xl overflow-hidden bg-black mb-5"><mux-player playback-id="' + esc(full.mux_playback_id) + '" stream-type="on-demand" style="width:100%;aspect-ratio:16/9;--controls:auto"></mux-player></div>';
+      if (!document.getElementById('mux-player-js')) {
+        var s = document.createElement('script'); s.id = 'mux-player-js'; s.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player'; document.head.appendChild(s);
+      }
+    } else if (full.video_url) {
+      media = '<div class="aspect-video-box rounded-xl overflow-hidden bg-black mb-5"><iframe src="' + esc(full.video_url) + '" title="Lesson video" allowfullscreen frameborder="0"></iframe></div>';
+    }
+
+    var tool = full.tool_url ? '<a href="' + esc(full.tool_url) + '" class="card inline-flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 mt-4 text-teal-800 font-semibold text-sm">🧰 ' + esc(full.tool_label || 'Open the trainer') + ' →</a>' : '';
+
+    var html = '' +
+      '<a href="/learn?c=' + encodeURIComponent(slug) + '" class="text-sm text-slate-500 hover:text-teal-700">← ' + esc(data.course.title) + '</a>' +
+      '<article class="mt-3 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">' +
+        '<p class="text-xs uppercase tracking-widest text-teal-600 font-bold">Module ' + esc(mNum) + ' · Lesson ' + esc(lNum) + '</p>' +
+        '<h1 class="display text-2xl sm:text-3xl font-extrabold mt-1">' + esc(full.title) + '</h1>' +
+        (full.overview ? '<p class="text-slate-500 mt-2">' + esc(full.overview) + '</p>' : '') +
+        '<div class="mt-5">' + media + '</div>' +
+        (full.content_html ? '<div class="lesson-body text-slate-700">' + full.content_html + '</div>' : (!media && !full.overview ? '<p class="text-slate-400 text-sm italic">Lesson content is being added.</p>' : '')) +
+        tool +
+        '<div id="quiz"></div>' +
+        '<div class="mt-8 flex items-center gap-3 flex-wrap">' +
+          '<button id="complete-btn" class="' + (completed ? 'bg-teal-100 text-teal-800' : 'bg-teal-700 hover:bg-teal-800 text-white') + ' font-semibold px-5 py-2.5 rounded-full text-sm">' + (completed ? '✓ Completed' : 'Mark complete') + '</button>' +
+          (next ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + next.m.module_number + '&l=' + next.l.lesson_number + '" class="border border-slate-300 hover:border-teal-500 font-semibold px-5 py-2.5 rounded-full text-sm">Next lesson →</a>' : '') +
+        '</div>' +
+      '</article>' +
+      '<div class="mt-4 flex justify-between text-sm">' +
+        (prev ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + prev.m.module_number + '&l=' + prev.l.lesson_number + '" class="text-slate-500 hover:text-teal-700">← ' + esc(prev.l.title) + '</a>' : '<span></span>') +
+        (next ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + next.m.module_number + '&l=' + next.l.lesson_number + '" class="text-slate-500 hover:text-teal-700 text-right">' + esc(next.l.title) + ' →</a>' : '<span></span>') +
+      '</div>';
+    view.innerHTML = html;
+
+    renderQuiz(full, mNum, lNum);
+    document.getElementById('complete-btn').addEventListener('click', function () { markComplete(mNum, lNum, null, next, slug); });
+  }
+
+  function renderQuiz(lesson, mNum, lNum) {
+    var quiz = lesson.quiz_json;
+    if (!quiz || !Array.isArray(quiz) || !quiz.length) return;
+    var box = document.getElementById('quiz');
+    var html = '<section class="mt-8 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-6"><h2 class="font-bold text-slate-900">Quick check</h2><form id="quiz-form" class="mt-4 space-y-5">';
+    quiz.forEach(function (q, qi) {
+      html += '<fieldset><legend class="font-semibold text-slate-800 text-sm">' + (qi + 1) + '. ' + esc(q.question) + '</legend><div class="mt-2 space-y-1.5">';
+      (q.choices || []).forEach(function (ch, ci) {
+        html += '<label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="q' + qi + '" value="' + ci + '" class="text-teal-600"> ' + esc(ch) + '</label>';
+      });
+      html += '</div><p class="quiz-fb text-xs mt-1 hidden" data-q="' + qi + '"></p></fieldset>';
+    });
+    html += '<button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2 rounded-full text-sm">Check answers</button><p id="quiz-score" class="text-sm font-semibold mt-2"></p></form></section>';
+    box.innerHTML = html;
+
+    document.getElementById('quiz-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var correct = 0;
+      quiz.forEach(function (q, qi) {
+        var sel = document.querySelector('input[name="q' + qi + '"]:checked');
+        var fb = document.querySelector('.quiz-fb[data-q="' + qi + '"]');
+        var ok = sel && Number(sel.value) === Number(q.correct_index);
+        if (ok) correct++;
+        fb.classList.remove('hidden');
+        fb.className = 'quiz-fb text-xs mt-1 ' + (ok ? 'text-teal-700' : 'text-rose-600');
+        fb.textContent = (ok ? '✓ Correct. ' : '✗ Not quite. ') + (q.explanation || '');
+      });
+      var score = Math.round(correct / quiz.length * 100);
+      document.getElementById('quiz-score').textContent = 'Score: ' + correct + '/' + quiz.length + ' (' + score + '%)';
+      // Save best quiz score alongside completion.
+      markComplete(mNum, lNum, score, null, null, true);
+    });
+  }
+
+  async function markComplete(mNum, lNum, quizScore, next, slug, silent) {
+    if (!uid) return;
+    var row = { student_id: uid, module_number: mNum, lesson_number: lNum, completed_at: new Date().toISOString() };
+    if (quizScore != null) row.quiz_score = quizScore;
+    try {
+      await sb.from('module_progress').upsert(row, { onConflict: 'student_id,module_number,lesson_number' });
+      if (!silent) {
+        var btn = document.getElementById('complete-btn');
+        if (btn) { btn.textContent = '✓ Completed'; btn.className = 'bg-teal-100 text-teal-800 font-semibold px-5 py-2.5 rounded-full text-sm'; }
+      }
+    } catch (e) { if (!silent) alert('Could not save progress: ' + e.message); }
+  }
+
+  function notFound() { return '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center"><div class="text-4xl mb-3">🔍</div><h2 class="display text-xl font-bold">Course not found</h2><a href="/learn" class="inline-block mt-4 text-teal-700 font-semibold">← Back to my courses</a></div>'; }
+  function locked(course) {
+    // Career Vault sales page (/career-vault) ships with the launch; until then send
+    // Vault interest to the existing waitlist so this is never a dead link.
+    var buy = course.entitlement_flag === 'career_vault' ? '/waitlist' : '/enroll';
+    return '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center"><div class="text-4xl mb-3">🔒</div><h2 class="display text-xl font-bold">This course isn\'t on your account yet</h2><p class="text-slate-500 mt-2 text-sm">' + esc(course.title) + ' is available once you have access.</p><a href="' + buy + '" class="inline-block mt-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">Get access →</a></div>';
+  }
+
+  function route() {
+    var p = qp();
+    var c = p.get('c'), m = p.get('m'), l = p.get('l');
+    if (c && m && l) return renderLesson(c, Number(m), Number(l));
+    if (c) return renderOutline(c);
+    return renderCatalog();
+  }
+
+  // Boot: need a session; enrolled/career_vault decide what shows.
+  PDAPortal.getAccess().then(function (a) {
+    if (!a.ok || !a.session) { location.href = '/login'; return; }
+    access = a; uid = a.session.user.id;
+    // Load career_vault flag (not part of the portal RPC).
+    sb.from('profiles').select('career_vault').eq('id', uid).maybeSingle().then(function (r) {
+      access.career_vault = !!(r.data && r.data.career_vault);
+      document.body.classList.add('pda-ready');
+      route();
+      window.addEventListener('popstate', route);
+    });
+  });
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>
