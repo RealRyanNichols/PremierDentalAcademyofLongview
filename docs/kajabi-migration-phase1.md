@@ -1,4 +1,15 @@
-# Kajabi migration — Phase 1 (course platform + email engine on the site)
+# Kajabi migration — Phases 1 & 2 (course platform + email engine on the site)
+
+> **Phase 2 (shipped July 10, 2026, same day):** `/career-vault` sales page with REAL
+> Square checkout through the `buy-product` engine (products row `career_vault`, $147
+> founding / reg $247, `entitlement_flag='career_vault'`, active). `buy-product` v2
+> DEPLOYED to production: access emails now deep-link to `/learn?c=<slug>` when the
+> entitlement matches a website course, and purchases fire the automations engine
+> (subscriber upsert + `buyer_<flag>` tag + sequence rules) — all post-charge,
+> best-effort, never-error-after-charge preserved. `/admin/emails` Email Center
+> (broadcast scheduling, drip sequence toggles, send log). Nav cutover: student
+> "My courses" → `/learn` (Kajabi library remains linked in the portal footer during
+> the parallel run); admin nav gains Courses + Emails.
 
 Ships the student course player, the admin course builder, and the email/automation
 engine **natively in this repo's stack** so PremierDentalAcademyofLongview.com can host

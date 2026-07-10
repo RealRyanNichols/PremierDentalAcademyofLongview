@@ -22,6 +22,8 @@
     ['/admin/paperwork',   '📋', 'Paperwork'],
     ['/admin/questions',   '🙋', 'Questions'],
     ['/admin/students',    '🎓', 'Students'],
+    ['/admin/courses',     '📚', 'Courses'],
+    ['/admin/emails',      '📧', 'Emails'],
     ['/admin/progress',    '📊', 'Progress'],
     ['/admin/instructors', '👩‍🏫', 'Instructors'],
     ['/admin/chat',        '🗨️', 'Chat'],

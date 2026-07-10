@@ -18,7 +18,7 @@
     ['/dashboard',                '🎒', 'Dashboard'],
     ['/skills-lab',               '🦷', 'Skills Lab'],
     ['/tools',                    '🧰', 'Tools'],
-    ['/dashboard#kajabi-section', '🎓', 'My courses'],
+    ['/learn',                    '🎓', 'My courses'],
     ['/dashboard#ask-teacher',    '💬', 'Ask teacher'],
   ];
 

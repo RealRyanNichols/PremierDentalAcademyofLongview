@@ -314,9 +314,7 @@
 
   function notFound() { return '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center"><div class="text-4xl mb-3">🔍</div><h2 class="display text-xl font-bold">Course not found</h2><a href="/learn" class="inline-block mt-4 text-teal-700 font-semibold">← Back to my courses</a></div>'; }
   function locked(course) {
-    // Career Vault sales page (/career-vault) ships with the launch; until then send
-    // Vault interest to the existing waitlist so this is never a dead link.
-    var buy = course.entitlement_flag === 'career_vault' ? '/waitlist' : '/enroll';
+    var buy = course.entitlement_flag === 'career_vault' ? '/career-vault' : '/enroll';
     return '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center"><div class="text-4xl mb-3">🔒</div><h2 class="display text-xl font-bold">This course isn\'t on your account yet</h2><p class="text-slate-500 mt-2 text-sm">' + esc(course.title) + ' is available once you have access.</p><a href="' + buy + '" class="inline-block mt-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full text-sm">Get access →</a></div>';
   }
 

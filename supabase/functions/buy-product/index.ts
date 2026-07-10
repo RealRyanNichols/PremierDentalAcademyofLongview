@@ -1,14 +1,22 @@
-// CAPTURED FROM PRODUCTION 2026-07-07: this function was deployed live
-// (slug buy-product, v1, verify_jwt=false) but its source was never committed.
-// This file is the verbatim deployed source so the repo is the source of
-// truth again. If you change it, redeploy via Supabase MCP/CLI.
+// buy-product v2 (deployed 2026-07-10; v1 captured from production 2026-07-07).
+// This file is the deployed source of truth — if you change it, redeploy via
+// Supabase MCP/CLI.
 //
 // buy-product: one checkout engine for every item in public.products.
 // Charges via Square -> creates/loads the member's Supabase account -> unlocks the
 // website entitlement -> auto-grants the matching Kajabi offer(s) (the sync) ->
-// emails access (magic link + download/Kajabi link). Guest checkout (no pre-login):
-// the buyer pays with their own card token, so verify_jwt is off. Idempotent at Square.
+// emails access (magic link + download/Kajabi/course link). Guest checkout (no
+// pre-login): the buyer pays with their own card token, so verify_jwt is off.
+// Idempotent at Square.
 // Reads SQUARE_ACCESS_TOKEN + RESEND_API_KEY + Kajabi creds from public.app_secrets.
+//
+// v2 additions (ALL post-charge + best-effort — the never-error-after-charge rule holds):
+//  - If the entitlement matches a website course (courses.entitlement_flag), the
+//    access email links straight to /learn?c=<slug> instead of the generic member area.
+//  - Purchase automations: upserts the buyer into public.subscribers, adds the
+//    "buyer_<entitlement_flag>" tag, and runs the public.automations rules for the
+//    purchase + tag_added triggers (subscribe/unsubscribe sequences, cascade tags).
+//    This replicates the Kajabi buyer automations natively.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -52,6 +60,65 @@ async function grantKajabiOffers(cfg: Record<string,string>, email: string, name
     const gr = await fetch(KAJABI_API + "/contacts/" + contactId + "/relationships/offers", { method: "POST", headers: { ...H, "Content-Type": "application/vnd.api+json", Accept: "application/vnd.api+json" }, body: JSON.stringify({ data: offerIds.map((id) => ({ type: "offers", id })), meta: { send_customer_welcome_email: false } }) });
     return { ok: gr.ok, status: gr.status, offers: offerIds };
   } catch (e) { return { ok: false, error: String(e) }; }
+}
+
+// ── Purchase automations (post-charge, best-effort). Mirrors api/_automations.mjs. ──
+async function ensureSubscriber(sb: any, email: string, firstName: string) {
+  const { data: found } = await sb.from("subscribers").select("id,email,tags,status").eq("email", email).maybeSingle();
+  if (found) return found;
+  const { data: ins } = await sb.from("subscribers").insert({ email, first_name: firstName || null, source: "purchase" }).select("id,email,tags,status").maybeSingle();
+  return ins;
+}
+
+async function applyRules(sb: any, triggerType: string, triggerValues: (string | null)[], subscriber: any, depth = 0): Promise<void> {
+  if (depth > 4 || !subscriber) return;
+  const { data: rules } = await sb.from("automations").select("id,name,trigger_value,action_type,action_value,runs").eq("active", true).eq("trigger_type", triggerType);
+  const vals = triggerValues.filter(Boolean);
+  const matched = (rules || []).filter((r: any) => r.trigger_value == null || vals.includes(r.trigger_value));
+  for (const rule of matched) {
+    try {
+      if (rule.action_type === "add_tag") {
+        const tags: string[] = Array.isArray(subscriber.tags) ? subscriber.tags : [];
+        if (!tags.includes(rule.action_value)) {
+          subscriber.tags = [...tags, rule.action_value];
+          await sb.from("subscribers").update({ tags: subscriber.tags }).eq("id", subscriber.id);
+          await applyRules(sb, "tag_added", [rule.action_value], subscriber, depth + 1);
+        }
+      } else if (rule.action_type === "subscribe_sequence") {
+        const { data: seq } = await sb.from("email_sequences").select("id,key").eq("key", rule.action_value).maybeSingle();
+        if (seq) {
+          const { data: existing } = await sb.from("sequence_subscriptions").select("id").eq("sequence_id", seq.id).eq("email", subscriber.email).eq("status", "active").limit(1);
+          if (!existing || !existing.length) {
+            const { data: first } = await sb.from("sequence_emails").select("delay_days").eq("sequence_id", seq.id).eq("active", true).order("position", { ascending: true }).limit(1);
+            const delayDays = first && first[0] ? Number(first[0].delay_days || 0) : 0;
+            await sb.from("sequence_subscriptions").insert({ sequence_id: seq.id, subscriber_id: subscriber.id, email: subscriber.email, current_position: 0, status: "active", next_send_at: new Date(Date.now() + delayDays * 86400000).toISOString() });
+          }
+        }
+      } else if (rule.action_type === "unsubscribe_sequence") {
+        const { data: seq } = await sb.from("email_sequences").select("id").eq("key", rule.action_value).maybeSingle();
+        if (seq) await sb.from("sequence_subscriptions").update({ status: "stopped" }).eq("sequence_id", seq.id).eq("email", subscriber.email).eq("status", "active");
+      }
+      await sb.from("automations").update({ runs: (rule.runs || 0) + 1 }).eq("id", rule.id);
+    } catch (_) { /* each rule is best-effort */ }
+  }
+}
+
+async function runPurchaseAutomations(sb: any, email: string, firstName: string, productKey: string, flag: string | null) {
+  const subscriber = await ensureSubscriber(sb, email, firstName);
+  if (!subscriber) return;
+  // Buyer tag convention: buyer_<entitlement_flag> (matches the seeded tag_added rules),
+  // added directly so its cascades fire even without an explicit purchase rule.
+  if (flag) {
+    const tag = "buyer_" + flag;
+    const tags: string[] = Array.isArray(subscriber.tags) ? subscriber.tags : [];
+    if (!tags.includes(tag)) {
+      subscriber.tags = [...tags, tag];
+      await sb.from("subscribers").update({ tags: subscriber.tags }).eq("id", subscriber.id);
+      await applyRules(sb, "tag_added", [tag], subscriber, 1);
+    }
+  }
+  // Purchase rules match on either the product key or the entitlement flag.
+  await applyRules(sb, "purchase", [productKey, flag], subscriber, 0);
 }
 
 Deno.serve(async (req) => {
@@ -131,6 +198,18 @@ Deno.serve(async (req) => {
   let kajabi: unknown = null;
   if (offerIds.length) kajabi = await grantKajabiOffers(cfg, email, name, offerIds);
 
+  // Website course for this entitlement? Access email should land there.
+  let learnUrl: string | null = null;
+  if (flag) {
+    try {
+      const { data: course } = await sb.from("courses").select("slug").eq("entitlement_flag", flag).eq("active", true).order("sort").limit(1).maybeSingle();
+      if (course?.slug) learnUrl = SITE_URL + "/learn?c=" + course.slug;
+    } catch (_) { /* fall back to member-area link */ }
+  }
+
+  // Purchase automations (buyer tag + sequences) — never blocks the purchase.
+  try { await runPurchaseAutomations(sb, email, first, productKey, flag); } catch (_) {}
+
   // Optional signed download (private bucket) for downloadable products.
   let downloadUrl: string | null = null;
   if (product.storage_path) {
@@ -150,7 +229,9 @@ Deno.serve(async (req) => {
   try { const { data: link } = await sb.auth.admin.generateLink({ type: "magiclink", email, options: { redirectTo: SITE_URL + "/dashboard" } }); magicLink = link?.properties?.action_link || magicLink; } catch (_) {}
 
   // Access email.
-  const accessLine = product.delivery === "kajabi"
+  const accessLine = learnUrl
+    ? '<p style="font-size:14px;color:#1f3a63;margin:0 0 10px;">Your course lives right on our website — sign in with this same email any time.</p><a href="' + learnUrl + '" style="display:inline-block;background:#0d9488;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;">Start learning →</a>'
+    : product.delivery === "kajabi"
     ? '<p style="font-size:14px;color:#1f3a63;margin:0 0 10px;">Your course is in Kajabi — open it any time with this same email.</p><a href="' + KAJABI_LIBRARY + '" style="display:inline-block;background:#2b4a7a;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;">Open my course →</a>'
     : downloadUrl
     ? '<a href="' + downloadUrl + '" style="display:inline-block;background:#0d9488;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;">Download now →</a><p style="font-size:12px;color:#64748b;margin:8px 0 0;">It’s also saved in your member area.</p>'
@@ -161,5 +242,5 @@ Deno.serve(async (req) => {
 
   try { await sb.from("communications").insert({ contact_email: email, contact_name: name, channel: "email", direction: "outbound", body: "[AUTO] Purchased " + product.name + " ($" + (product.price_cents/100).toFixed(2) + "). Granted: " + granted + ". Email " + (emailed?"sent":"not sent") + ".", source: "buy-product", metadata: { payment_id: payment.id, product: productKey, kajabi } }); } catch (_) {}
 
-  return J({ ok: true, product: product.name, granted, kajabi, downloadUrl, receiptUrl: payment.receipt_url || null, magicLink, emailed, warning });
+  return J({ ok: true, product: product.name, granted, kajabi, downloadUrl, learnUrl, receiptUrl: payment.receipt_url || null, magicLink, emailed, warning });
 });
