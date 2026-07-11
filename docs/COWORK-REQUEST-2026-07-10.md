@@ -72,7 +72,23 @@ directly where each step says.
   `emails/campaign-meta.json` if present and include them in the same PR (reference
   material — the live sales page is already built).
 
-### 6. Report back
+### 6. Kajabi lesson export — the verbatim mirror (owner feedback July 11)
+Ryan & Amanda compared the site lessons against Kajabi and want the site to MIRROR the
+original Kajabi lessons (same info, same order), then improve on them. Two ways to get
+the originals out — do (a) if the option exists, else (b):
+- **(a) API scopes (10 min):** Kajabi → Settings → API / third-party integrations → open
+  the existing API credential (the one whose client id starts `oMDx6...`) and enable
+  read access to **Courses/Products/Posts** if scope checkboxes exist. Then tell the
+  next Claude Code session "Kajabi API course scope is on" — its exporter pulls every
+  lesson body + the true lesson ORDER automatically. (The current credential returns
+  403 on /v1/courses; contacts work.)
+- **(b) Browser export:** for BOTH courses (in-person `2149312762`, online `2149362906`),
+  open each lesson in the Kajabi editor, copy the lesson body HTML (and any downloads'
+  file URLs), and paste into a doc per week — or use a local Cowork agent to script it.
+  Also capture each course's exact lesson ORDER (screenshot of each week's outline is
+  enough) and download the attached files (Resume Pack etc.) for re-hosting.
+
+### 7. Report back
 Post a summary: Kajabi paid? CSV saved where? Resend verified (domain status)? Which
 Vercel env vars are set? Cron verify result? PR link for the emails folder. Flag anything
 you couldn't finish and why.
