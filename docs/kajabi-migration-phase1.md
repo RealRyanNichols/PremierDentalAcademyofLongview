@@ -1,4 +1,19 @@
-# Kajabi migration — Phases 1 & 2 (course platform + email engine on the site)
+# Kajabi migration — Phases 1–5 (course platform + email engine on the site)
+
+> **Phase 5 (July 11, 2026): the courses are FULL and purchasable end-to-end.**
+> Every lesson of both 12-week RDA courses now has real content in Supabase:
+> weeks 7–10 imported from the repo's `kajabi-weeks-7-12/` package (md5-verified),
+> weeks 0–7 authored + adversarially verified by a multi-agent workflow (chapter
+> content follows the standard Modern Dental Assisting curriculum; every lesson has
+> learning objectives, key terms, chairside notes, exam focus; quizzes are 8-question
+> banks in the player's format; Texas-specific rules are NEVER stated as fact —
+> lessons point to tsbde.texas.gov), weeks 11–12 created in BOTH courses (career
+> week + state-board week, wired to the real site tools). The online $397 purchase
+> now routes through buy-product v3 (deployed): account creation, program grant
+> (career_track + active portal, what the Kajabi webhook used to do), already-
+> enrolled double-charge guard, magic-link email, buyer automations, and an
+> enroll-success "Start my course now →" door into /learn. products.online_program
+> row is live.
 
 > **Phase 2 (shipped July 10, 2026, same day):** `/career-vault` sales page with REAL
 > Square checkout through the `buy-product` engine (products row `career_vault`, $147
