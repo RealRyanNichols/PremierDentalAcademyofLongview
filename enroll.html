@@ -895,6 +895,49 @@ async function submit() {
 
   // From here on, we may have sent a charge to Square. NEVER re-enable
   // the button. NEVER show "Payment failed" if the server returns ok=true.
+
+  // ── ONLINE program: one-time $397 through the buy-product engine ──
+  // buy-product charges Square AND creates the student's account, activates the
+  // portal, unlocks /learn, fires the buyer automations, and emails a magic link —
+  // so an online buyer lands in their course with zero manual steps. In-person
+  // (deposits + payment plans) stays on /api/enroll below.
+  if (state.plan === 'online') {
+    try {
+      const resp = await fetch('https://lmbsuwslsycukynzpzik.supabase.co/functions/v1/buy-product', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh' },
+        body: JSON.stringify({ product_key: 'online_program', sourceId: tokenRes.token, email, name, phone }),
+      });
+      const out = await resp.json().catch(() => ({}));
+      if (resp.ok && (out.ok || out.alreadyOwned)) {
+        try {
+          if (window.PDA && window.PDA.track) window.PDA.track('purchase', {
+            plan: 'online', value: 397, currency: 'USD',
+          });
+        } catch (e) {}
+        const params = new URLSearchParams({
+          plan: 'online', total: '39700', down: out.alreadyOwned ? '0' : '39700', remaining: '0',
+          receipt: out.receiptUrl || '', course: '1', warning: out.warning || '',
+        });
+        window.location.href = '/enroll-success?' + params.toString();
+        return;
+      }
+      btn.textContent = '⛔ Stopped — call (903) 913-6444';
+      btn.classList.add('bg-rose-700');
+      err.innerHTML = `
+        <strong>Hold on — don't try again.</strong> ${(out.error || 'Something went wrong with checkout.').replace(/</g,'&lt;')}<br><br>
+        We may or may not have captured your card. To avoid any double-charge, <strong>call Amanda at (903) 913-6444</strong> right now — she'll confirm in Square in 30 seconds.
+      `;
+      err.hidden = false;
+    } catch (e) {
+      btn.textContent = '⛔ Stopped — call (903) 913-6444';
+      btn.classList.add('bg-rose-700');
+      err.innerHTML = '<strong>Connection problem.</strong> The page couldn\'t confirm whether your card was charged. Call Amanda at (903) 913-6444 before trying again.';
+      err.hidden = false;
+    }
+    return;
+  }
+
   try {
     const body = {
       plan: state.plan,
