@@ -243,6 +243,12 @@
 
     var tool = full.tool_url ? '<a href="' + esc(full.tool_url) + '" class="card inline-flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 mt-4 text-teal-800 font-semibold text-sm">🧰 ' + esc(full.tool_label || 'Open the trainer') + ' →</a>' : '';
 
+    // Downloads (Kajabi parity): private course-assets files, opened via signed URLs.
+    var att = Array.isArray(full.attachments) ? full.attachments : [];
+    var attHtml = att.length ? '<div class="mt-4 space-y-2">' + att.map(function (a, ai) {
+      return '<button data-att="' + ai + '" class="att-btn card w-full sm:w-auto inline-flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-amber-900 font-semibold text-sm text-left">📖 ' + esc(a.label || 'Download') + ' <span class="text-amber-500">↓</span></button>';
+    }).join('') + '</div>' : '';
+
     var html = '' +
       '<a href="/learn?c=' + encodeURIComponent(slug) + '" class="text-sm text-slate-500 hover:text-teal-700">← ' + esc(data.course.title) + '</a>' +
       '<article class="mt-3 bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">' +
@@ -251,7 +257,7 @@
         (full.overview ? '<p class="text-slate-500 mt-2">' + esc(full.overview) + '</p>' : '') +
         '<div class="mt-5">' + media + '</div>' +
         (full.content_html ? '<div class="lesson-body text-slate-700">' + full.content_html + '</div>' : (!media && !full.overview ? '<p class="text-slate-400 text-sm italic">Lesson content is being added.</p>' : '')) +
-        tool +
+        tool + attHtml +
         '<div id="quiz"></div>' +
         '<div class="mt-8 flex items-center gap-3 flex-wrap">' +
           '<button id="complete-btn" class="' + (completed ? 'bg-teal-100 text-teal-800' : 'bg-teal-700 hover:bg-teal-800 text-white') + ' font-semibold px-5 py-2.5 rounded-full text-sm">' + (completed ? '✓ Completed' : 'Mark complete') + '</button>' +
@@ -266,6 +272,19 @@
 
     renderQuiz(full, mNum, lNum);
     document.getElementById('complete-btn').addEventListener('click', function () { markComplete(mNum, lNum, null, next, slug); });
+    Array.prototype.forEach.call(document.querySelectorAll('.att-btn'), function (b) {
+      b.addEventListener('click', async function () {
+        var a = att[Number(b.getAttribute('data-att'))];
+        if (!a || !a.path) return;
+        b.disabled = true; var old = b.innerHTML; b.innerHTML = 'Opening…';
+        try {
+          var r = await sb.storage.from('course-assets').createSignedUrl(a.path, 3600);
+          if (r.data && r.data.signedUrl) window.open(r.data.signedUrl, '_blank');
+          else alert('Could not open this file — text (903) 913-6444 and we\'ll send it to you.');
+        } catch (e) { alert('Could not open this file — text (903) 913-6444.'); }
+        b.disabled = false; b.innerHTML = old;
+      });
+    });
   }
 
   function renderQuiz(lesson, mNum, lNum) {
