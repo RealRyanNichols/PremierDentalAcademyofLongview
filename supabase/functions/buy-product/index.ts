@@ -157,10 +157,19 @@ Deno.serve(async (req) => {
   const flag = product.entitlement_flag as string | null;
 
   // Already owns this entitlement? Don't charge again.
+  // 'online_program' is the PROGRAM itself (no boolean column): ownership = enrolled
+  // member (real program + active portal), same definition my_portal_access uses.
   if (user && flag) {
-    const { data: prof } = await sb.from("profiles").select(flag + ",is_admin").eq("id", user.id).maybeSingle();
-    if (prof && ((prof as any)[flag] === true || (prof as any).is_admin === true)) {
-      return J({ ok: true, alreadyOwned: true, product: product.name, message: "You already own this — no charge made." });
+    if (flag === "online_program") {
+      const { data: prof } = await sb.from("profiles").select("program,portal_status,is_admin").eq("id", user.id).maybeSingle();
+      const enrolled = !!prof && ((prof as any).is_admin === true ||
+        ((prof as any).program && (prof as any).program !== "preview" && ((prof as any).portal_status || "active") === "active"));
+      if (enrolled) return J({ ok: true, alreadyOwned: true, product: product.name, message: "You're already enrolled — no charge made." });
+    } else {
+      const { data: prof } = await sb.from("profiles").select(flag + ",is_admin").eq("id", user.id).maybeSingle();
+      if (prof && ((prof as any)[flag] === true || (prof as any).is_admin === true)) {
+        return J({ ok: true, alreadyOwned: true, product: product.name, message: "You already own this — no charge made." });
+      }
     }
   }
 
@@ -185,10 +194,15 @@ Deno.serve(async (req) => {
   let granted = false;
   if (user && flag) {
     try {
-      const patch: Record<string, unknown> = {}; patch[flag] = true;
+      // 'online_program' enrolls the buyer as a member (mirrors the old Kajabi
+      // webhook: online purchase -> career_track + active portal). Other flags are
+      // simple boolean entitlements.
+      const patch: Record<string, unknown> = flag === "online_program"
+        ? { program: "career_track", portal_status: "active", enrolled_at: new Date().toISOString() }
+        : { [flag]: true };
       const { data: upd } = await sb.from("profiles").update(patch).eq("id", user.id).select("id");
       granted = !!(upd && upd.length);
-      if (!granted) { const ins: Record<string, unknown> = { id: user.id, email }; ins[flag] = true; const { error: insErr } = await sb.from("profiles").insert(ins); granted = !insErr; }
+      if (!granted) { const ins: Record<string, unknown> = { id: user.id, email, ...patch }; const { error: insErr } = await sb.from("profiles").insert(ins); granted = !insErr; }
     } catch (_) { /* fall through to warning */ }
     if (!granted) warning = "Your payment went through, but we couldn't auto-unlock it. Amanda has been notified and will enable it within 1 business day.";
   }
@@ -199,8 +213,11 @@ Deno.serve(async (req) => {
   if (offerIds.length) kajabi = await grantKajabiOffers(cfg, email, name, offerIds);
 
   // Website course for this entitlement? Access email should land there.
+  // online_program unlocks the whole course library -> land on the catalog.
   let learnUrl: string | null = null;
-  if (flag) {
+  if (flag === "online_program") {
+    learnUrl = SITE_URL + "/learn";
+  } else if (flag) {
     try {
       const { data: course } = await sb.from("courses").select("slug").eq("entitlement_flag", flag).eq("active", true).order("sort").limit(1).maybeSingle();
       if (course?.slug) learnUrl = SITE_URL + "/learn?c=" + course.slug;

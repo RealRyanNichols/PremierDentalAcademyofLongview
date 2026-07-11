@@ -63,15 +63,14 @@ lmbsuwslsycukynzpzik. Do these in order:
    (check email_sends + her inbox including the List-Unsubscribe header), then clean up.
    Confirm both cron endpoints return 200 with CRON_SECRET and 401 without.
 
-3. KAJABI CONTENT EXPORT (browser session while Kajabi is alive). For each lesson of the
-   two courses (kajabi course outlines are already mirrored in course_modules/
-   course_lessons with kajabi_post_id where known): copy the lesson body into
-   course_lessons.content_html, quizzes into quiz_json
-   ([{question,choices[],correct_index,explanation}]), and note any Kajabi-hosted
-   (non-YouTube) videos in a list for Mux migration. Also export the sequence email
-   bodies for "PDA 30 Day Follow Up" and "FB Lead — 30-Day Enrollment Drip" into
-   sequence_emails (the buyer sequences are already written natively — don't overwrite).
-   Weeks 10–12 of online-rda-12-week are thin in Kajabi too — flag gaps, don't invent.
+3. KAJABI EXPORT — REDUCED SCOPE (browser session while Kajabi is alive). The lesson
+   bodies + quizzes are NOW FULLY BUILT natively (Phase 5) — do NOT overwrite them.
+   What still only exists in Kajabi: (a) the sequence email bodies for "PDA 30 Day
+   Follow Up" and "FB Lead — 30-Day Enrollment Drip" -> export into sequence_emails
+   (the 4 buyer sequences are native — don't touch); (b) an inventory of any
+   Kajabi-HOSTED (non-YouTube) lesson videos -> list them for Mux migration;
+   (c) spot-compare a handful of Kajabi lessons against /learn and note anywhere
+   Amanda prefers the original wording — patch those individually.
 
 4. MUX SIGNED PLAYBACK for paid courses. Env vars MUX_SIGNING_KEY_ID /
    MUX_SIGNING_KEY_PRIVATE exist now. Add api/mux-token.js (entitled-user check → mint
