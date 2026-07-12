@@ -2,12 +2,28 @@
 // the lesson text + Texas RDA context. The browser logs the Q&A to tutor_questions
 // (RLS: students insert their own), so this function only needs the Anthropic key.
 // Env (set in Vercel): ANTHROPIC_API_KEY.  Optional: ANTHROPIC_MODEL.
+async function getKey() {
+  if (process.env.ANTHROPIC_API_KEY) return process.env.ANTHROPIC_API_KEY;
+  // Fallback: read from the app_secrets table (service role) so the key can be
+  // added in one place without touching Vercel. Requires SUPABASE_SERVICE_ROLE_KEY.
+  try {
+    const svc = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const url = process.env.SUPABASE_URL || 'https://lmbsuwslsycukynzpzik.supabase.co';
+    if (!svc) return null;
+    const r = await fetch(url + '/rest/v1/app_secrets?key=eq.ANTHROPIC_API_KEY&select=value', {
+      headers: { apikey: svc, Authorization: 'Bearer ' + svc },
+    });
+    const rows = await r.json().catch(() => []);
+    return (Array.isArray(rows) && rows[0] && rows[0].value) ? rows[0].value : null;
+  } catch { return null; }
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
-  const key = process.env.ANTHROPIC_API_KEY;
+  const key = await getKey();
   if (!key) {
     res.status(200).json({ answer: "The Ask-a-question tutor isn't switched on yet. Please ask your instructor at the weekly Q&A, or text (903) 913-6444." });
     return;
