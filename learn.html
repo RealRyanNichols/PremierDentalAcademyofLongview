@@ -259,6 +259,7 @@
         (full.content_html ? '<div class="lesson-body text-slate-700">' + full.content_html + '</div>' : (!media && !full.overview ? '<p class="text-slate-400 text-sm italic">Lesson content is being added.</p>' : '')) +
         tool + attHtml +
         '<div id="pda-interactive"></div>' +
+        '<div id="pda-practice"></div>' +
         '<div id="quiz"></div>' +
         '<div id="pda-extras"></div>' +
         '<div class="mt-8 flex items-center gap-3 flex-wrap">' +
@@ -274,6 +275,7 @@
 
     renderQuiz(full, mNum, lNum, slug);
     renderInteractive(full);
+    renderPractice(full);
     renderExtras(full, mNum, lNum, slug);
     document.getElementById('complete-btn').addEventListener('click', function () { markComplete(mNum, lNum, null, next, slug); });
     Array.prototype.forEach.call(document.querySelectorAll('.att-btn'), function (b) {
@@ -426,6 +428,42 @@
         b.className = 'tn h-9 w-9 rounded-md border border-teal-500 bg-teal-500 text-xs font-bold text-white';
         var n = Number(b.getAttribute('data-n'));
         out.innerHTML = '<span class="font-bold text-slate-900">Tooth #' + n + '</span> — ' + name(n) + ' <span class="text-slate-400">(' + (n <= 16 ? 'upper' : 'lower') + ')</span>';
+      };
+    });
+  }
+
+  // Ungraded practice check. Multiple choice, shows right/wrong instantly, but
+  // NEVER gates progress — the graded Knowledge Check is separate. (Per Amanda.)
+  function renderPractice(lesson) {
+    var host = document.getElementById('pda-practice');
+    var pr = lesson.practice_json;
+    if (!host || !pr || !Array.isArray(pr) || !pr.length) return;
+    var h = '<section class="mt-8 bg-white rounded-2xl border border-slate-200 p-5 sm:p-6"><div class="flex items-center justify-between"><h2 class="font-bold text-slate-900">Check your understanding</h2><span class="text-xs text-slate-400 font-semibold">Practice · not graded</span></div><p class="text-sm text-slate-500 mt-1">Try these to test yourself. They don\'t count toward your grade and won\'t hold you back — the graded quiz is below.</p><div class="mt-4 space-y-5">';
+    pr.forEach(function (q, qi) {
+      h += '<div><p class="font-semibold text-slate-800 text-sm">' + (qi + 1) + '. ' + esc(q.question) + '</p><div class="mt-2 space-y-1.5" data-pq="' + qi + '">';
+      (q.choices || []).forEach(function (ch, ci) {
+        h += '<button class="pp-opt w-full text-left flex items-center gap-2 text-sm text-slate-700 border border-slate-200 rounded-lg px-3 py-2 hover:bg-slate-50" data-q="' + qi + '" data-c="' + ci + '">' + esc(ch) + '</button>';
+      });
+      h += '</div><p class="pp-fb text-xs mt-1.5 hidden" data-fb="' + qi + '"></p></div>';
+    });
+    h += '</div></section>';
+    host.innerHTML = h;
+    Array.prototype.forEach.call(host.querySelectorAll('.pp-opt'), function (b) {
+      b.onclick = function () {
+        var qi = Number(b.getAttribute('data-q')), ci = Number(b.getAttribute('data-c'));
+        var q = pr[qi];
+        var ok = ci === Number(q.correct_index);
+        var group = host.querySelector('[data-pq="' + qi + '"]');
+        Array.prototype.forEach.call(group.querySelectorAll('.pp-opt'), function (x) {
+          var xc = Number(x.getAttribute('data-c'));
+          x.className = 'pp-opt w-full text-left flex items-center gap-2 text-sm border rounded-lg px-3 py-2 ' +
+            (xc === Number(q.correct_index) ? 'border-teal-400 bg-teal-50 text-teal-800' : (x === b ? 'border-rose-300 bg-rose-50 text-rose-700' : 'border-slate-200 text-slate-400'));
+          x.disabled = true;
+        });
+        var fb = host.querySelector('[data-fb="' + qi + '"]');
+        fb.className = 'pp-fb text-xs mt-1.5 ' + (ok ? 'text-teal-700' : 'text-rose-600');
+        fb.textContent = (ok ? '✓ Correct. ' : '✗ Not quite. ') + (q.explanation || '');
+        fb.classList.remove('hidden');
       };
     });
   }
