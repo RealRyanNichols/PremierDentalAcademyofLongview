@@ -24,6 +24,7 @@
     ['/admin/students',    '🎓', 'Students'],
     ['/admin/courses',     '📚', 'Courses'],
     ['/admin/emails',      '📧', 'Emails'],
+    ['/admin/insights',    '💡', 'Insights'],
     ['/admin/progress',    '📊', 'Progress'],
     ['/admin/instructors', '👩‍🏫', 'Instructors'],
     ['/admin/chat',        '🗨️', 'Chat'],

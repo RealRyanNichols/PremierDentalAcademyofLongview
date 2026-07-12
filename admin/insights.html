@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Student Insights — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .btn-ghost { border:1px solid #cbd5e1; border-radius:9999px; padding:.4rem .9rem; font-size:.75rem; font-weight:600; }
+    .pill { font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:.15rem .55rem; border-radius:9999px; }
+    .tab-btn.active { background:#0f766e; color:#fff; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<div id="auth-wall" class="hidden min-h-screen grid place-items-center p-6 text-center">
+  <div><div class="text-4xl mb-3">🔒</div><h1 class="display text-2xl font-bold">Admin sign-in required</h1>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 text-white font-semibold px-5 py-2.5 rounded-full text-sm">Sign in</a></div>
+</div>
+<div id="loading" class="min-h-screen grid place-items-center text-slate-500 text-sm">
+  <div class="text-center"><div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>Loading…</div>
+</div>
+
+<main id="app" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-center justify-between gap-3 flex-wrap mb-2">
+    <div>
+      <h1 class="display text-2xl sm:text-3xl font-extrabold">Student Insights</h1>
+      <p class="text-slate-500 text-sm">What students ask the tutor (your content gaps), how each week lands, and who needs you.</p>
+    </div>
+    <button id="signout" class="btn-ghost">Sign out</button>
+  </div>
+
+  <div id="stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-5"></div>
+
+  <div class="flex gap-2 mb-4 flex-wrap">
+    <button data-tab="alerts" class="tab-btn active btn-ghost">🚨 Needs you</button>
+    <button data-tab="tutor" class="tab-btn btn-ghost">🤖 Tutor questions</button>
+    <button data-tab="feedback" class="tab-btn btn-ghost">📝 Week feedback</button>
+    <button data-tab="testimonials" class="tab-btn btn-ghost">⭐ Testimonials</button>
+  </div>
+
+  <section id="tab-alerts"></section>
+  <section id="tab-tutor" class="hidden"></section>
+  <section id="tab-feedback" class="hidden"></section>
+  <section id="tab-testimonials" class="hidden"></section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function fmt(ts){ if(!ts) return '—'; return new Date(ts).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/Chicago'}); }
+  function stars(n){ n=Number(n)||0; var s=''; for(var i=1;i<=5;i++) s+= i<=n?'★':'☆'; return s; }
+
+  async function loadStats(){
+    var alerts = await sb.from('admin_alerts').select('id',{count:'exact',head:true}).eq('resolved',false);
+    var tq = await sb.from('tutor_questions').select('id',{count:'exact',head:true});
+    var fb = await sb.from('week_feedback').select('id',{count:'exact',head:true});
+    var tst = await sb.from('week_feedback').select('id',{count:'exact',head:true}).ilike('what_helped','%[TESTIMONIAL OK]%');
+    var cells = [
+      ['Open alerts', alerts.count||0, (alerts.count||0)>0?'text-rose-600':'text-teal-700'],
+      ['Tutor questions', tq.count||0, 'text-slate-800'],
+      ['Feedback entries', fb.count||0, 'text-slate-800'],
+      ['Testimonials', tst.count||0, 'text-amber-600'],
+    ];
+    document.getElementById('stats').innerHTML = cells.map(function(c){
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">'+c[0]+'</div><div class="text-2xl font-extrabold mt-1 '+c[2]+'">'+c[1]+'</div></div>';
+    }).join('');
+  }
+
+  async function loadAlerts(){
+    var r = await sb.from('admin_alerts').select('id,kind,title,detail,resolved,created_at').order('created_at',{ascending:false}).limit(80);
+    var rows = (r.data||[]).map(function(a){
+      var pill = a.resolved ? '<span class="pill bg-slate-100 text-slate-500">resolved</span>' : '<span class="pill bg-rose-100 text-rose-700">open</span>';
+      var act = a.resolved ? '' : '<button class="btn-ghost resolve" data-id="'+a.id+'">Mark resolved</button>';
+      return '<div class="bg-white rounded-2xl border '+(a.resolved?'border-slate-200':'border-rose-200')+' p-4 flex items-start gap-3">'+
+        '<div class="flex-1"><div class="flex items-center gap-2 flex-wrap"><span class="font-semibold text-sm">'+esc(a.title||a.kind)+'</span>'+pill+'</div>'+
+        '<p class="text-xs text-slate-500 mt-1">'+esc(a.detail||'')+'</p><p class="text-[11px] text-slate-400 mt-1">'+fmt(a.created_at)+'</p></div>'+act+'</div>';
+    }).join('');
+    document.getElementById('tab-alerts').innerHTML = rows || '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No alerts — quiet is good. Failed quizzes and system flags land here (and email you hourly until resolved).</div>';
+    Array.prototype.forEach.call(document.querySelectorAll('.resolve'), function(b){
+      b.onclick = async function(){ await sb.from('admin_alerts').update({resolved:true}).eq('id', b.getAttribute('data-id')); loadAlerts(); loadStats(); };
+    });
+  }
+
+  async function loadTutor(){
+    var r = await sb.from('tutor_questions').select('question,answer,lesson_title,course_slug,module_number,helpful,created_at').order('created_at',{ascending:false}).limit(100);
+    var rows = (r.data||[]).map(function(q){
+      return '<details class="bg-white rounded-2xl border border-slate-200 p-4"><summary class="cursor-pointer text-sm"><span class="font-semibold">'+esc(q.question)+'</span><span class="block text-[11px] text-slate-400 mt-0.5">'+esc(q.lesson_title||'')+' · wk '+esc(q.module_number)+' · '+fmt(q.created_at)+(q.helpful===true?' · 👍':q.helpful===false?' · 👎':'')+'</span></summary><p class="text-xs text-slate-600 mt-2 whitespace-pre-wrap">'+esc(q.answer||'')+'</p></details>';
+    }).join('');
+    document.getElementById('tab-tutor').innerHTML =
+      '<p class="text-xs text-slate-400 mb-3">Every question is a signal: if three students ask the tutor the same thing, that lesson needs a clearer paragraph, a diagram, or a practice question.</p>'+
+      (rows || '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No tutor questions yet.</div>');
+  }
+
+  async function loadFeedback(){
+    var r = await sb.from('week_feedback').select('course_slug,module_number,overall_rating,clarity_rating,pace,what_helped,what_confused,suggestions,created_at').order('created_at',{ascending:false}).limit(100);
+    var rows = (r.data||[]).map(function(f){
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-4">'+
+        '<div class="flex items-center gap-3 flex-wrap text-sm"><span class="font-semibold">Week '+esc(f.module_number)+'</span>'+
+        '<span class="text-amber-500">'+stars(f.overall_rating)+'</span>'+
+        '<span class="text-[11px] text-slate-400">clarity '+esc(f.clarity_rating||'—')+'/5 · pace: '+esc(f.pace||'—')+' · '+fmt(f.created_at)+'</span></div>'+
+        (f.what_confused?'<p class="text-xs mt-2"><span class="font-semibold text-rose-600">Confused by:</span> '+esc(f.what_confused)+'</p>':'')+
+        (f.what_helped?'<p class="text-xs mt-1"><span class="font-semibold text-teal-700">Helped:</span> '+esc(f.what_helped)+'</p>':'')+
+        (f.suggestions?'<p class="text-xs mt-1"><span class="font-semibold text-slate-600">Suggests:</span> '+esc(f.suggestions)+'</p>':'')+
+      '</div>';
+    }).join('');
+    document.getElementById('tab-feedback').innerHTML = rows || '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No feedback yet — it collects at the end of each week.</div>';
+  }
+
+  async function loadTestimonials(){
+    var r = await sb.from('week_feedback').select('module_number,overall_rating,what_helped,created_at').ilike('what_helped','%[TESTIMONIAL OK]%').order('created_at',{ascending:false}).limit(50);
+    var rows = (r.data||[]).map(function(f){
+      var text = String(f.what_helped||'').replace('[TESTIMONIAL OK]','').trim();
+      return '<div class="bg-white rounded-2xl border border-amber-200 p-4"><p class="text-sm text-slate-700">&ldquo;'+esc(text)+'&rdquo;</p><p class="text-[11px] text-slate-400 mt-2">'+stars(f.overall_rating)+' · week '+esc(f.module_number)+' · '+fmt(f.created_at)+' · student consented to sharing</p></div>';
+    }).join('');
+    document.getElementById('tab-testimonials').innerHTML =
+      '<p class="text-xs text-slate-400 mb-3">These students checked the &ldquo;OK to share&rdquo; box — use them on /opportunity, the homepage, and social. Copy is word-for-word; never edit their meaning.</p>'+
+      (rows || '<div class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-400 text-sm">No consented testimonials yet.</div>');
+  }
+
+  document.addEventListener('click', function(ev){
+    var t = ev.target;
+    if (t.classList && t.classList.contains('tab-btn')) {
+      document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+      t.classList.add('active');
+      ['alerts','tutor','feedback','testimonials'].forEach(function(k){ document.getElementById('tab-'+k).classList.toggle('hidden', t.getAttribute('data-tab')!==k); });
+      if (t.getAttribute('data-tab')==='tutor') loadTutor();
+      if (t.getAttribute('data-tab')==='feedback') loadFeedback();
+      if (t.getAttribute('data-tab')==='testimonials') loadTestimonials();
+    }
+  });
+
+  (async function(){
+    var session = (await sb.auth.getSession()).data.session;
+    if (!session) { document.getElementById('loading').classList.add('hidden'); document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    var profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+    var isAdmin = (profile && profile.is_admin === true) || (session.user.app_metadata && session.user.app_metadata.is_admin === true);
+    document.getElementById('loading').classList.add('hidden');
+    if (!isAdmin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('signout').onclick = function(){ location.href='/logout?then=home'; };
+    loadStats(); loadAlerts();
+  })();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>

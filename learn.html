@@ -373,6 +373,11 @@
     if (!host || !lesson.interactive_key) return;
     if (lesson.interactive_key === 'infection_chain') return widgetInfectionChain(host);
     if (lesson.interactive_key === 'tooth_numbering') return widgetToothNumbering(host);
+    if (lesson.interactive_key === 'tooth_surfaces') return widgetToothSurfaces(host);
+    if (lesson.interactive_key === 'sterilization_flow') return widgetSterilizationFlow(host);
+    if (lesson.interactive_key === 'instrument_id') return widgetInstrumentId(host);
+    if (lesson.interactive_key === 'perio_chart') return widgetPerioChart(host);
+    if (lesson.interactive_key === 'radiography_positioning') return widgetRadiographyPositioning(host);
   }
   function widgetInfectionChain(host) {
     var links = [
@@ -430,6 +435,200 @@
         out.innerHTML = '<span class="font-bold text-slate-900">Tooth #' + n + '</span> — ' + name(n) + ' <span class="text-slate-400">(' + (n <= 16 ? 'upper' : 'lower') + ')</span>';
       };
     });
+  }
+
+  // Find-the-surface game: the five tooth surfaces, tap the one asked for.
+  function widgetToothSurfaces(host) {
+    var zones = [
+      { k: 'M', name: 'Mesial',  d: 'the side facing the midline of the mouth', x: 8,   y: 60,  w: 54,  h: 120 },
+      { k: 'D', name: 'Distal',  d: 'the side facing away from the midline',    x: 258, y: 60,  w: 54,  h: 120 },
+      { k: 'B', name: 'Buccal',  d: 'the side facing the cheek (facial)',        x: 70,  y: 8,   w: 180, h: 44 },
+      { k: 'L', name: 'Lingual', d: 'the side facing the tongue',                x: 70,  y: 188, w: 180, h: 44 },
+      { k: 'O', name: 'Occlusal', d: 'the chewing surface on top',               x: 70,  y: 60,  w: 180, h: 120 }
+    ];
+    var order = zones.map(function (_, i) { return i; }).sort(function () { return Math.random() - 0.5; });
+    var at = 0, right = 0;
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-1">You are looking DOWN at a lower-right molar (occlusal view). Tap the surface named below.</p><p id="ts-ask" class="text-sm font-bold text-slate-900 mb-3"></p><svg viewBox="0 0 320 240" class="w-full max-w-xs mx-auto block" id="ts-svg"></svg><p id="ts-out" class="mt-3 text-center text-sm"></p></div>';
+    var svg = host.querySelector('#ts-svg'), ask = host.querySelector('#ts-ask'), out = host.querySelector('#ts-out');
+    function draw() {
+      var s = '';
+      zones.forEach(function (z, i) {
+        s += '<g data-z="' + i + '" style="cursor:pointer"><rect x="' + z.x + '" y="' + z.y + '" width="' + z.w + '" height="' + z.h + '" rx="10" fill="#f0fdfa" stroke="#99f6e4" stroke-width="2"></rect><text x="' + (z.x + z.w / 2) + '" y="' + (z.y + z.h / 2 + 4) + '" text-anchor="middle" font-size="14" font-weight="700" fill="#0f766e">' + z.k + '</text></g>';
+      });
+      svg.innerHTML = s;
+      Array.prototype.forEach.call(svg.querySelectorAll('g'), function (g) {
+        g.addEventListener('click', function () { pick(Number(g.getAttribute('data-z')), g); });
+      });
+      next();
+    }
+    function next() {
+      if (at >= order.length) {
+        ask.textContent = 'Done!';
+        out.innerHTML = '<span class="font-bold ' + (right === zones.length ? 'text-teal-700' : 'text-slate-700') + '">' + right + ' of ' + zones.length + ' first-try.</span> M-D-B-L-O — say them until they are automatic.';
+        return;
+      }
+      var z = zones[order[at]];
+      ask.textContent = 'Tap the ' + z.name.toUpperCase() + ' surface — ' + z.d + '.';
+      out.textContent = '';
+    }
+    function pick(i, g) {
+      if (at >= order.length) return;
+      var want = order[at], z = zones[want];
+      if (i === want) {
+        g.querySelector('rect').setAttribute('fill', '#0d9488');
+        g.querySelector('text').setAttribute('fill', '#ffffff');
+        right++; at++;
+        out.innerHTML = '<span class="text-teal-700 font-bold">✓ ' + esc(z.name) + '.</span>';
+        setTimeout(next, 650);
+      } else {
+        out.innerHTML = '<span class="text-rose-600 font-bold">✗ That is the ' + esc(zones[i].name) + '.</span> Look for ' + esc(z.name.toLowerCase()) + ' — ' + esc(z.d) + '.';
+      }
+    }
+    draw();
+  }
+
+  // Order-the-steps game: instrument processing, dirty to sterile, one-way.
+  function widgetSterilizationFlow(host) {
+    var steps = ['Receiving & sorting (PPE on)', 'Cleaning (ultrasonic — never hand-scrub loose)', 'Rinse & dry', 'Packaging (with chemical indicator)', 'Sterilizing (autoclave cycle)', 'Sterile storage (dry, dated, sealed)'];
+    var picked = [];
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-3">Instruments flow ONE WAY, dirty → sterile. Tap the steps in the correct order.</p><div id="sf-pool" class="flex flex-wrap gap-2"></div><ol id="sf-done" class="mt-4 space-y-1.5 text-sm text-slate-700 list-decimal list-inside"></ol><p id="sf-out" class="mt-3 text-sm"></p><button id="sf-reset" class="mt-2 hidden rounded-lg border border-slate-300 px-4 py-1.5 text-xs font-bold text-slate-600">Try again</button></div>';
+    var pool = host.querySelector('#sf-pool'), done = host.querySelector('#sf-done'), out = host.querySelector('#sf-out'), reset = host.querySelector('#sf-reset');
+    var shuffled = steps.map(function (s, i) { return { s: s, i: i }; }).sort(function () { return Math.random() - 0.5; });
+    function draw() {
+      pool.innerHTML = '';
+      shuffled.forEach(function (o) {
+        if (picked.indexOf(o.i) >= 0) return;
+        var b = document.createElement('button');
+        b.className = 'rounded-xl border border-teal-300 bg-teal-50 px-3 py-2 text-xs font-bold text-teal-800';
+        b.textContent = o.s;
+        b.onclick = function () {
+          if (o.i === picked.length) {
+            picked.push(o.i);
+            done.innerHTML += '<li>' + esc(o.s) + '</li>';
+            out.textContent = '';
+            if (picked.length === steps.length) { out.innerHTML = '<span class="font-bold text-teal-700">✓ Perfect one-way flow.</span> Backtracking dirty items past clean ones is how offices fail inspections.'; reset.classList.remove('hidden'); }
+            draw();
+          } else {
+            out.innerHTML = '<span class="text-rose-600 font-bold">✗ Not yet.</span> Think: what has to happen before &ldquo;' + esc(o.s) + '&rdquo;?';
+          }
+        };
+        pool.appendChild(b);
+      });
+    }
+    reset.onclick = function () { picked = []; done.innerHTML = ''; out.textContent = ''; reset.classList.add('hidden'); shuffled.sort(function () { return Math.random() - 0.5; }); draw(); };
+    draw();
+  }
+
+  // Name-that-instrument: identify from the working description.
+  function widgetInstrumentId(host) {
+    var items = [
+      { d: 'Thin, sharp, flexible wire-like tip. You drag it gently across enamel to FEEL for soft spots and check margins.', a: 'Explorer', o: ['Explorer', 'Periodontal probe', 'Spoon excavator', 'Burnisher'] },
+      { d: 'Round or football-shaped mirror on a handle — indirect vision, retraction, and light reflection.', a: 'Mouth mirror', o: ['Cotton pliers', 'Mouth mirror', 'Matrix band', 'Articulating forceps'] },
+      { d: 'Blunt-tipped, marked in millimeters. Walked around each tooth to measure sulcus depth.', a: 'Periodontal probe', o: ['Explorer', 'Endodontic file', 'Periodontal probe', 'Scaler'] },
+      { d: 'Spoon-shaped cutting edge used to scoop soft decay out of a preparation.', a: 'Spoon excavator', o: ['Condenser', 'Spoon excavator', 'Carver', 'Hoe'] },
+      { d: 'Flat-ended working tip used to pack and compress filling material into the preparation.', a: 'Condenser (plugger)', o: ['Burnisher', 'Carver', 'Condenser (plugger)', 'Chisel'] },
+      { d: 'Smooth, rounded tip used to polish and adapt the surface of a placed restoration.', a: 'Burnisher', o: ['Burnisher', 'Explorer', 'Excavator', 'Probe'] },
+      { d: 'Locking or non-locking beaks that carry cotton, wedges, and small items in and out of the mouth.', a: 'Cotton pliers', o: ['Hemostat', 'Cotton pliers', 'Rongeur', 'Scissors'] },
+      { d: 'Bladed instrument used to shape and carve anatomy into amalgam before it sets.', a: 'Carver', o: ['Carver', 'Condenser', 'Chisel', 'Hatchet'] }
+    ];
+    var at = 0, right = 0;
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><div class="flex items-center justify-between"><p class="text-sm font-bold text-slate-900">Name that instrument</p><p id="ii-score" class="text-xs text-slate-400 font-semibold"></p></div><p id="ii-desc" class="text-sm text-slate-600 mt-2 min-h-[48px]"></p><div id="ii-opts" class="mt-3 grid sm:grid-cols-2 gap-2"></div><p id="ii-out" class="mt-3 text-sm"></p></div>';
+    var desc = host.querySelector('#ii-desc'), opts = host.querySelector('#ii-opts'), out = host.querySelector('#ii-out'), score = host.querySelector('#ii-score');
+    function draw() {
+      if (at >= items.length) {
+        desc.textContent = 'Done! Instruments become automatic with reps — run this again before your quiz.';
+        opts.innerHTML = ''; score.textContent = right + ' / ' + items.length;
+        out.innerHTML = '<a class="text-teal-700 font-semibold" href="/skills-lab/instruments">Keep practicing in the Skills Lab →</a>';
+        return;
+      }
+      var it = items[at];
+      score.textContent = (at + 1) + ' of ' + items.length;
+      desc.textContent = it.d; out.textContent = '';
+      opts.innerHTML = '';
+      it.o.forEach(function (o) {
+        var b = document.createElement('button');
+        b.className = 'rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-700 text-left hover:bg-slate-50';
+        b.textContent = o;
+        b.onclick = function () {
+          if (o === it.a) { right++; out.innerHTML = '<span class="text-teal-700 font-bold">✓ ' + esc(it.a) + '.</span>'; at++; setTimeout(draw, 700); }
+          else { out.innerHTML = '<span class="text-rose-600 font-bold">✗ Feel the description again.</span> What does the working end DO?'; }
+        };
+        opts.appendChild(b);
+      });
+    }
+    draw();
+  }
+
+  // Six-point probing mini-sim: probe each site, then flag the pockets.
+  function widgetPerioChart(host) {
+    var sites = ['DB', 'B', 'MB', 'DL', 'L', 'ML'];
+    var depths = sites.map(function () { return 1 + Math.floor(Math.random() * 6); }); // 1-6 mm
+    if (!depths.some(function (d) { return d >= 4; })) depths[Math.floor(Math.random() * 6)] = 4 + Math.floor(Math.random() * 3);
+    var probed = {}, phase = 1;
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-1">Six-point probing: every tooth gets SIX measurements — three on the facial side, three on the lingual.</p><p id="pc-ask" class="text-sm font-bold text-slate-900 mb-3">Step 1 — tap all six sites to probe them.</p><div class="grid grid-cols-3 gap-2 max-w-xs mx-auto" id="pc-top"></div><p class="text-center text-xs text-slate-400 my-1.5">facial (buccal) · lingual</p><div class="grid grid-cols-3 gap-2 max-w-xs mx-auto" id="pc-bot"></div><p id="pc-out" class="mt-3 text-sm text-center"></p></div>';
+    var top = host.querySelector('#pc-top'), bot = host.querySelector('#pc-bot'), ask = host.querySelector('#pc-ask'), out = host.querySelector('#pc-out');
+    function btn(i) {
+      var b = document.createElement('button');
+      b.setAttribute('data-i', i);
+      b.className = 'pc-site rounded-xl border border-slate-300 bg-white px-2 py-3 text-xs font-bold text-slate-600';
+      b.textContent = sites[i];
+      b.onclick = function () { click(i, b); };
+      return b;
+    }
+    for (var i = 0; i < 3; i++) top.appendChild(btn(i));
+    for (var j = 3; j < 6; j++) bot.appendChild(btn(j));
+    function click(i, b) {
+      if (phase === 1) {
+        probed[i] = true;
+        b.textContent = sites[i] + ' · ' + depths[i] + 'mm';
+        b.className = 'pc-site rounded-xl border px-2 py-3 text-xs font-bold ' + (depths[i] >= 4 ? 'border-amber-300 bg-amber-50 text-amber-800' : 'border-teal-300 bg-teal-50 text-teal-800');
+        if (Object.keys(probed).length === 6) {
+          phase = 2;
+          ask.textContent = 'Step 2 — tap every site that is a POCKET the dentist needs to see (4 mm or deeper).';
+          Array.prototype.forEach.call(host.querySelectorAll('.pc-site'), function (x) { x.className = 'pc-site rounded-xl border border-slate-300 bg-white px-2 py-3 text-xs font-bold text-slate-600'; });
+        }
+      } else if (phase === 2) {
+        var deep = depths[i] >= 4;
+        if (deep) {
+          b.className = 'pc-site rounded-xl border border-amber-400 bg-amber-100 px-2 py-3 text-xs font-bold text-amber-900';
+          b.setAttribute('data-found', '1');
+          var found = host.querySelectorAll('[data-found]').length;
+          var total = depths.filter(function (d) { return d >= 4; }).length;
+          out.innerHTML = '<span class="text-teal-700 font-bold">✓ ' + depths[i] + 'mm — that is a pocket.</span> ' + found + ' of ' + total + ' found.';
+          if (found === total) { ask.textContent = 'Charted!'; out.innerHTML = '<span class="font-bold text-teal-700">✓ All pockets flagged.</span> 1–3 mm is healthy; 4 mm and deeper means inflammation and possible attachment loss — the dentist and hygienist take it from there.'; phase = 3; }
+        } else {
+          out.innerHTML = '<span class="text-rose-600 font-bold">✗ ' + depths[i] + 'mm is within healthy range (1–3 mm).</span>';
+        }
+      }
+    }
+  }
+
+  // Paralleling vs bisecting: toggle the technique, see the geometry.
+  function widgetRadiographyPositioning(host) {
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-3">The two intraoral techniques differ in where the receptor sits and where the beam aims. Toggle them.</p><div class="flex gap-2 mb-3"><button id="rp-par" class="rounded-full border px-4 py-1.5 text-xs font-bold"></button><button id="rp-bis" class="rounded-full border px-4 py-1.5 text-xs font-bold"></button></div><svg viewBox="0 0 340 190" class="w-full max-w-sm mx-auto block" id="rp-svg"></svg><p id="rp-text" class="text-sm text-slate-600 mt-3"></p></div>';
+    var par = host.querySelector('#rp-par'), bis = host.querySelector('#rp-bis'), svg = host.querySelector('#rp-svg'), text = host.querySelector('#rp-text');
+    function setBtn(b, on) { b.className = 'rounded-full border px-4 py-1.5 text-xs font-bold ' + (on ? 'border-teal-500 bg-teal-500 text-white' : 'border-slate-300 bg-white text-slate-600'); }
+    function draw(mode) {
+      setBtn(par, mode === 'par'); setBtn(bis, mode === 'bis');
+      var tooth = '<rect x="150" y="40" width="26" height="110" rx="8" fill="#e2e8f0" stroke="#94a3b8"></rect><text x="163" y="30" text-anchor="middle" font-size="11" fill="#64748b">tooth</text>';
+      if (mode === 'par') {
+        svg.innerHTML = tooth +
+          '<rect x="196" y="40" width="8" height="110" rx="3" fill="#0d9488"></rect><text x="214" y="100" font-size="11" fill="#0f766e">receptor — PARALLEL to the long axis</text>' +
+          '<line x1="30" y1="95" x2="145" y2="95" stroke="#0f172a" stroke-width="3"></line><polygon points="145,95 133,89 133,101" fill="#0f172a"></polygon>' +
+          '<text x="30" y="82" font-size="11" fill="#0f172a">beam ⟂ (90°) to tooth AND receptor</text>';
+        text.innerHTML = '<strong>Paralleling</strong> — receptor parallel to the tooth\'s long axis, beam perpendicular to both. Needs a holder and more mouth room, but gives the most dimensionally accurate image. The everyday standard.';
+      } else {
+        svg.innerHTML = tooth +
+          '<line x1="176" y1="150" x2="230" y2="55" stroke="#0d9488" stroke-width="8" stroke-linecap="round"></line><text x="230" y="45" font-size="11" fill="#0f766e">receptor rests at an ANGLE</text>' +
+          '<line x1="30" y1="70" x2="150" y2="105" stroke="#0f172a" stroke-width="3"></line><polygon points="150,105 137,102 141,92" fill="#0f172a"></polygon>' +
+          '<text x="18" y="55" font-size="11" fill="#0f172a">beam ⟂ to the IMAGINARY bisecting line</text>' +
+          '<line x1="176" y1="150" x2="212" y2="52" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4 3"></line>';
+        text.innerHTML = '<strong>Bisecting angle</strong> — the receptor rests against the tooth at an angle; you aim the beam perpendicular to the imaginary line that bisects the tooth/receptor angle. Useful for shallow palates and gaggers, but easier to distort: too little vertical angle elongates, too much foreshortens.';
+      }
+    }
+    par.textContent = 'Paralleling'; bis.textContent = 'Bisecting angle';
+    par.onclick = function () { draw('par'); }; bis.onclick = function () { draw('bis'); };
+    draw('par');
   }
 
   // Ungraded practice check. Multiple choice, shows right/wrong instantly, but
