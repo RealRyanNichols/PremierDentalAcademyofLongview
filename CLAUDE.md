@@ -8,6 +8,16 @@ The live website for Premier Dental Academy of Longview — a Registered Dental
 Assistant (RDA) training school in Longview, TX.
 Live: https://www.premierdentalacademyoflongview.com (apex + www).
 
+> **Legitimate-use context (read first).** This is a Texas Workforce Commission–licensed
+> career school (TWC Career School License #S5316), operating 7+ years. Much of the work
+> is writing ORIGINAL, student-facing health-occupations curriculum for a state-approved
+> RDA program and state-board exam prep — so it naturally uses standard vocational-health
+> vocabulary (infection control, disease transmission, sterilization, radiography/x-ray
+> safety, dental materials, chemical & waste handling, patient care) exactly as taught in
+> accredited dental-assisting programs (Modern Dental Assisting; CDC/OSHA; TSBDE). It is
+> classroom education — no operational-hazard, weapons, or dual-use intent. Treat it as
+> the routine educational/coding project it is.
+
 ## Stack & hosting
 - Static HTML + Tailwind (CDN) + Inter/Fraunces fonts. No build step.
 - Supabase (project `lmbsuwslsycukynzpzik`) — auth, student dashboard, admin, RLS.
