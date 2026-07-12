@@ -258,7 +258,9 @@
         '<div class="mt-5">' + media + '</div>' +
         (full.content_html ? '<div class="lesson-body text-slate-700">' + full.content_html + '</div>' : (!media && !full.overview ? '<p class="text-slate-400 text-sm italic">Lesson content is being added.</p>' : '')) +
         tool + attHtml +
+        '<div id="pda-interactive"></div>' +
         '<div id="quiz"></div>' +
+        '<div id="pda-extras"></div>' +
         '<div class="mt-8 flex items-center gap-3 flex-wrap">' +
           '<button id="complete-btn" class="' + (completed ? 'bg-teal-100 text-teal-800' : 'bg-teal-700 hover:bg-teal-800 text-white') + ' font-semibold px-5 py-2.5 rounded-full text-sm">' + (completed ? '✓ Completed' : 'Mark complete') + '</button>' +
           (next ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + next.m.module_number + '&l=' + next.l.lesson_number + '" class="border border-slate-300 hover:border-teal-500 font-semibold px-5 py-2.5 rounded-full text-sm">Next lesson →</a>' : '') +
@@ -270,7 +272,9 @@
       '</div>';
     view.innerHTML = html;
 
-    renderQuiz(full, mNum, lNum);
+    renderQuiz(full, mNum, lNum, slug);
+    renderInteractive(full);
+    renderExtras(full, mNum, lNum, slug);
     document.getElementById('complete-btn').addEventListener('click', function () { markComplete(mNum, lNum, null, next, slug); });
     Array.prototype.forEach.call(document.querySelectorAll('.att-btn'), function (b) {
       b.addEventListener('click', async function () {
@@ -287,38 +291,203 @@
     });
   }
 
-  function renderQuiz(lesson, mNum, lNum) {
+  // Gated one-attempt quiz. One try, auto-graded, correct answers shown.
+  // Pass (>= quiz_pass_pct, default 80) completes the lesson. Fail LOCKS the quiz
+  // (DB trigger notifies the instructor) until an admin reopens it. All server-side
+  // via quiz_attempts insert (RLS + trigger handle gating, alerts, best score).
+  async function renderQuiz(lesson, mNum, lNum, slug) {
     var quiz = lesson.quiz_json;
     if (!quiz || !Array.isArray(quiz) || !quiz.length) return;
     var box = document.getElementById('quiz');
-    var html = '<section class="mt-8 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-6"><h2 class="font-bold text-slate-900">Quick check</h2><form id="quiz-form" class="mt-4 space-y-5">';
-    quiz.forEach(function (q, qi) {
-      html += '<fieldset><legend class="font-semibold text-slate-800 text-sm">' + (qi + 1) + '. ' + esc(q.question) + '</legend><div class="mt-2 space-y-1.5">';
-      (q.choices || []).forEach(function (ch, ci) {
-        html += '<label class="flex items-center gap-2 text-sm text-slate-700"><input type="radio" name="q' + qi + '" value="' + ci + '" class="text-teal-600"> ' + esc(ch) + '</label>';
-      });
-      html += '</div><p class="quiz-fb text-xs mt-1 hidden" data-q="' + qi + '"></p></fieldset>';
-    });
-    html += '<button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2 rounded-full text-sm">Check answers</button><p id="quiz-score" class="text-sm font-semibold mt-2"></p></form></section>';
-    box.innerHTML = html;
+    var passPct = lesson.quiz_pass_pct || 80;
+    var st = (await sb.from('quiz_status').select('state,best_score').eq('student_id', uid).eq('lesson_id', lesson.id).maybeSingle()).data;
+    var last = (await sb.from('quiz_attempts').select('answers,score_pct').eq('student_id', uid).eq('lesson_id', lesson.id).order('created_at', { ascending: false }).limit(1).maybeSingle()).data;
+    var state = st ? st.state : 'open';
+    var reviewed = (state === 'passed' || state === 'locked');
+    var byq = {};
+    if (last && Array.isArray(last.answers)) last.answers.forEach(function (a) { byq[a.q_index] = a; });
 
-    document.getElementById('quiz-form').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var correct = 0;
+    function questions(disabled) {
+      var h = '<form id="quiz-form" class="mt-4 space-y-5">';
       quiz.forEach(function (q, qi) {
-        var sel = document.querySelector('input[name="q' + qi + '"]:checked');
-        var fb = document.querySelector('.quiz-fb[data-q="' + qi + '"]');
-        var ok = sel && Number(sel.value) === Number(q.correct_index);
-        if (ok) correct++;
-        fb.classList.remove('hidden');
-        fb.className = 'quiz-fb text-xs mt-1 ' + (ok ? 'text-teal-700' : 'text-rose-600');
-        fb.textContent = (ok ? '✓ Correct. ' : '✗ Not quite. ') + (q.explanation || '');
+        h += '<fieldset><legend class="font-semibold text-slate-800 text-sm">' + (qi + 1) + '. ' + esc(q.question) + '</legend><div class="mt-2 space-y-1.5">';
+        (q.choices || []).forEach(function (ch, ci) {
+          var cls = 'flex items-center gap-2 text-sm text-slate-700 rounded px-1 py-0.5';
+          var mark = '';
+          if (reviewed) {
+            if (ci === Number(q.correct_index)) { cls += ' bg-teal-50 text-teal-800'; mark = ' <span class="text-teal-600 text-xs font-bold">✓ correct</span>'; }
+            else if (byq[qi] && byq[qi].chosen_index === ci) { cls += ' bg-rose-50 text-rose-700'; }
+          }
+          var checked = (reviewed && byq[qi] && byq[qi].chosen_index === ci) ? ' checked' : '';
+          h += '<label class="' + cls + '"><input type="radio" name="q' + qi + '" value="' + ci + '"' + checked + (disabled ? ' disabled' : '') + '> ' + esc(ch) + mark + '</label>';
+        });
+        h += '</div>' + (reviewed && q.explanation ? '<p class="text-xs mt-1 text-slate-500"><b>Why:</b> ' + esc(q.explanation) + '</p>' : '') + '</fieldset>';
       });
+      h += (disabled ? '' : '<button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-semibold px-5 py-2 rounded-full text-sm">Submit my one attempt</button>') + '</form>';
+      return h;
+    }
+    function shell(banner, disabled) {
+      return '<section class="mt-8 bg-slate-50 rounded-2xl border border-slate-200 p-5 sm:p-6">' +
+        '<div class="flex items-center justify-between"><h2 class="font-bold text-slate-900">Knowledge Check</h2>' +
+        '<span class="text-xs text-slate-400 font-semibold">One attempt · pass ' + passPct + '%</span></div>' +
+        (banner || '') + questions(disabled) + '</section>';
+    }
+
+    if (state === 'locked') {
+      var sc = last ? last.score_pct : ((st && st.best_score) || 0);
+      box.innerHTML = shell('<div class="mt-3 rounded-xl bg-rose-50 border border-rose-200 p-4"><p class="font-bold text-rose-800">Not passed — ' + sc + '%. This quiz is locked.</p><p class="text-sm text-rose-700 mt-1">Your instructor has been notified and will review this with you, then reopen it for one more attempt. The correct answers are shown below so you can start learning them now.</p></div>', true);
+      return;
+    }
+    if (state === 'passed') {
+      var ps = (st && st.best_score) || (last && last.score_pct) || '';
+      box.innerHTML = shell('<div class="mt-3 rounded-xl bg-teal-50 border border-teal-200 p-4"><p class="font-bold text-teal-800">Passed — ' + ps + '%. Nice work.</p><p class="text-sm text-teal-700 mt-1">Correct answers are shown below for review.</p></div>', true);
+      return;
+    }
+    box.innerHTML = shell('', false);
+    document.getElementById('quiz-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      for (var i = 0; i < quiz.length; i++) { if (!document.querySelector('input[name="q' + i + '"]:checked')) { alert('Please answer every question — you only get one attempt.'); return; } }
+      if (!confirm('Submit for grading? This is your ONE attempt. It is recorded, and you cannot retake it unless your instructor reopens it.')) return;
+      var graded = quiz.map(function (q, qi) {
+        var sel = document.querySelector('input[name="q' + qi + '"]:checked');
+        var chosen = sel ? Number(sel.value) : -1;
+        return { q_index: qi, chosen_index: chosen, correct_index: Number(q.correct_index), correct: chosen === Number(q.correct_index) };
+      });
+      var correct = graded.filter(function (g) { return g.correct; }).length;
       var score = Math.round(correct / quiz.length * 100);
-      document.getElementById('quiz-score').textContent = 'Score: ' + correct + '/' + quiz.length + ' (' + score + '%)';
-      // Save best quiz score alongside completion.
-      markComplete(mNum, lNum, score, null, null, true);
+      var passed = score >= passPct;
+      var cnt = (await sb.from('quiz_attempts').select('id', { count: 'exact', head: true }).eq('student_id', uid).eq('lesson_id', lesson.id)).count || 0;
+      var ins = await sb.from('quiz_attempts').insert({ student_id: uid, lesson_id: lesson.id, course_slug: slug, module_number: mNum, lesson_number: lNum, attempt_number: cnt + 1, score_pct: score, passed: passed, answers: graded });
+      if (ins.error) { alert('Could not submit your quiz: ' + ins.error.message); return; }
+      if (passed) markComplete(mNum, lNum, score, null, null, true);
+      renderQuiz(lesson, mNum, lNum, slug);
+      var q = document.getElementById('quiz'); if (q && q.scrollIntoView) q.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+  }
+
+  // Interactive teaching widgets (set course_lessons.interactive_key).
+  function renderInteractive(lesson) {
+    var host = document.getElementById('pda-interactive');
+    if (!host || !lesson.interactive_key) return;
+    if (lesson.interactive_key === 'infection_chain') return widgetInfectionChain(host);
+    if (lesson.interactive_key === 'tooth_numbering') return widgetToothNumbering(host);
+  }
+  function widgetInfectionChain(host) {
+    var links = [
+      { k: 'Pathogen', d: 'The germ itself — bacteria or virus that can cause disease.', b: 'Sterilization and disinfection sharply lower how many survive.' },
+      { k: 'Reservoir', d: 'Where the germ lives — blood, saliva, plaque, a dirty surface.', b: 'Cleaning and disinfecting between patients removes it.' },
+      { k: 'Portal of exit', d: 'How it escapes — spatter, handpiece aerosol, fluid on an instrument.', b: 'High-volume suction and rubber dam cut the spray.' },
+      { k: 'Transmission', d: 'How it travels — contact, droplet, or a contaminated instrument.', b: 'Standard Precautions, PPE, and one-way processing block the route.' },
+      { k: 'Portal of entry', d: 'How it gets in — broken skin, mucous membranes, eyes.', b: 'Gloves, mask, and eyewear cover the entry points.' },
+      { k: 'Susceptible host', d: 'A person who can get sick — patient, coworker, or you.', b: 'Hepatitis B immunization and healthy barriers protect the host.' }
+    ];
+    var broken = {};
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-3">Infection needs all six links. Break any one and it stops. Tap a link, then break it.</p><div id="ic-row" class="grid grid-cols-3 sm:grid-cols-6 gap-2"></div><div id="ic-detail" class="mt-4"></div><p id="ic-status" class="mt-3 text-sm font-bold text-teal-600 hidden">✓ Chain broken — infection is stopped. That is the whole goal of infection control.</p></div>';
+    var row = host.querySelector('#ic-row'), detail = host.querySelector('#ic-detail'), status = host.querySelector('#ic-status');
+    function draw() {
+      row.innerHTML = '';
+      links.forEach(function (l, i) {
+        var b = document.createElement('button');
+        b.className = 'rounded-xl border p-3 text-center text-xs font-bold ' + (broken[i] ? 'border-slate-200 bg-slate-50 text-slate-300 line-through' : 'border-teal-300 bg-teal-50 text-teal-800');
+        b.textContent = l.k;
+        b.onclick = function () { show(i); };
+        row.appendChild(b);
+      });
+      var any = Object.keys(broken).some(function (k) { return broken[k]; });
+      status.classList.toggle('hidden', !any);
+    }
+    function show(i) {
+      var l = links[i];
+      detail.innerHTML = '<div class="rounded-xl bg-slate-50 p-4"><p class="font-bold text-slate-900">' + esc(l.k) + '</p><p class="mt-1 text-sm text-slate-600">' + esc(l.d) + '</p><p class="mt-2 text-sm text-slate-600"><span class="font-bold text-slate-800">How we break it: </span>' + esc(l.b) + '</p><button id="ic-brk" class="mt-3 rounded-lg border border-slate-300 px-4 py-1.5 text-xs font-bold text-slate-600">' + (broken[i] ? 'Restore this link' : 'Break this link') + '</button></div>';
+      detail.querySelector('#ic-brk').onclick = function () { broken[i] = !broken[i]; draw(); show(i); };
+    }
+    draw();
+  }
+  function widgetToothNumbering(host) {
+    function name(n) {
+      var pos = n <= 16 ? n : 33 - n;
+      if (pos === 1 || pos === 16) return 'third molar (wisdom)';
+      if (pos === 2 || pos === 15) return 'second molar';
+      if (pos === 3 || pos === 14) return 'first molar';
+      if (pos === 4 || pos === 13) return 'second premolar';
+      if (pos === 5 || pos === 12) return 'first premolar';
+      if (pos === 6 || pos === 11) return 'canine (cuspid)';
+      if (pos === 7 || pos === 10) return 'lateral incisor';
+      return 'central incisor';
+    }
+    var upper = '', lower = '';
+    for (var n = 1; n <= 16; n++) upper += '<button data-n="' + n + '" class="tn h-9 w-9 rounded-md border border-slate-300 bg-white text-xs font-bold text-slate-600">' + n + '</button>';
+    for (var m = 32; m >= 17; m--) lower += '<button data-n="' + m + '" class="tn h-9 w-9 rounded-md border border-slate-300 bg-white text-xs font-bold text-slate-600">' + m + '</button>';
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-5"><p class="text-sm text-slate-500 mb-3">Universal Numbering System. Tap any tooth to see its number and name — the language you will chart in every day.</p><div class="flex flex-wrap justify-center gap-1">' + upper + '</div><div class="my-2 text-center text-xs text-slate-400">upper &middot; lower</div><div class="flex flex-wrap justify-center gap-1">' + lower + '</div><p id="tn-out" class="mt-4 text-center text-sm text-slate-700"></p></div>';
+    var out = host.querySelector('#tn-out');
+    Array.prototype.forEach.call(host.querySelectorAll('.tn'), function (b) {
+      b.onclick = function () {
+        Array.prototype.forEach.call(host.querySelectorAll('.tn'), function (x) { x.className = 'tn h-9 w-9 rounded-md border border-slate-300 bg-white text-xs font-bold text-slate-600'; });
+        b.className = 'tn h-9 w-9 rounded-md border border-teal-500 bg-teal-500 text-xs font-bold text-white';
+        var n = Number(b.getAttribute('data-n'));
+        out.innerHTML = '<span class="font-bold text-slate-900">Tooth #' + n + '</span> — ' + name(n) + ' <span class="text-slate-400">(' + (n <= 16 ? 'upper' : 'lower') + ')</span>';
+      };
+    });
+  }
+
+  // Extras: end-of-week feedback form (required) OR the Ask-a-question tutor.
+  function renderExtras(lesson, mNum, lNum, slug) {
+    var host = document.getElementById('pda-extras');
+    if (!host) return;
+    if (lesson.lesson_type === 'feedback') return renderFeedback(host, slug, mNum);
+    if (lesson.lesson_type === 'lesson') return renderTutor(host, lesson);
+  }
+  async function renderFeedback(host, slug, mNum) {
+    var existing = (await sb.from('week_feedback').select('overall_rating').eq('student_id', uid).eq('course_slug', slug).eq('module_number', mNum).maybeSingle()).data;
+    if (existing) { host.innerHTML = '<div class="mt-6 rounded-2xl border-2 border-teal-200 bg-teal-50 p-6"><h3 class="font-bold text-teal-800 text-lg">Thank you — week complete ✓</h3><p class="text-sm text-slate-600 mt-1">Your feedback helps us make this better for every student after you.</p></div>'; return; }
+    function stars(id) { var h = '<div data-stars="' + id + '">'; for (var s = 1; s <= 5; s++) h += '<button type="button" data-v="' + s + '" class="star text-2xl text-slate-300">&#9733;</button>'; return h + '</div>'; }
+    host.innerHTML = '<div class="mt-6 rounded-2xl border border-slate-200 bg-white p-6"><h3 class="display text-xl font-extrabold">Before you finish this week</h3><p class="text-sm text-slate-500 mt-1 mb-4">Two minutes, and it is required to close out the week. Be honest — it shapes what we build next.</p>' +
+      '<p class="text-sm font-bold text-slate-700">How was this week overall?</p>' + stars('overall') +
+      '<p class="text-sm font-bold text-slate-700 mt-3">How clear were the lessons?</p>' + stars('clarity') +
+      '<p class="text-sm font-bold text-slate-700 mt-3">The pace was…</p><div id="fb-pace" class="flex gap-2 mt-1">' +
+      ['too_slow:Too slow', 'just_right:Just right', 'too_fast:Too fast'].map(function (p) { var a = p.split(':'); return '<button type="button" data-p="' + a[0] + '" class="pace rounded-lg border border-slate-300 px-4 py-2 text-sm font-bold text-slate-600">' + a[1] + '</button>'; }).join('') + '</div>' +
+      '<p class="text-sm font-bold text-slate-700 mt-3">What clicked for you?</p><textarea id="fb-helped" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"></textarea>' +
+      '<p class="text-sm font-bold text-slate-700 mt-3">What confused you or needs more explaining?</p><textarea id="fb-confused" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="This tells your instructor exactly what to review with you."></textarea>' +
+      '<label class="flex items-start gap-2 text-sm text-slate-600 mt-3"><input type="checkbox" id="fb-testi" class="mt-0.5"> <span>Premier can share my kind words as a testimonial to help future students (optional).</span></label>' +
+      '<button id="fb-submit" class="mt-5 bg-slate-800 hover:bg-slate-900 text-white font-semibold px-6 py-2.5 rounded-full text-sm">Submit &amp; complete the week</button></div>';
+    var picked = { overall: 0, clarity: 0, pace: '' };
+    Array.prototype.forEach.call(host.querySelectorAll('[data-stars]'), function (grp) {
+      var id = grp.getAttribute('data-stars');
+      Array.prototype.forEach.call(grp.querySelectorAll('.star'), function (b) {
+        b.onclick = function () { picked[id] = Number(b.getAttribute('data-v')); Array.prototype.forEach.call(grp.querySelectorAll('.star'), function (x, xi) { x.className = 'star text-2xl ' + (xi < picked[id] ? 'text-amber-400' : 'text-slate-300'); }); };
+      });
+    });
+    Array.prototype.forEach.call(host.querySelectorAll('.pace'), function (b) {
+      b.onclick = function () { picked.pace = b.getAttribute('data-p'); Array.prototype.forEach.call(host.querySelectorAll('.pace'), function (x) { x.className = 'pace rounded-lg border px-4 py-2 text-sm font-bold ' + (x === b ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-300 text-slate-600'); }); };
+    });
+    host.querySelector('#fb-submit').onclick = async function () {
+      if (!picked.overall || !picked.clarity || !picked.pace) { alert('Please rate the week, the clarity, and the pace.'); return; }
+      var testi = host.querySelector('#fb-testi').checked;
+      var helped = host.querySelector('#fb-helped').value;
+      var row = { student_id: uid, course_slug: slug, module_number: mNum, overall_rating: picked.overall, clarity_rating: picked.clarity, pace: picked.pace, what_helped: helped || null, what_confused: host.querySelector('#fb-confused').value || null, suggestions: (testi && helped ? '[TESTIMONIAL OK] ' : '') };
+      var r = await sb.from('week_feedback').upsert(row, { onConflict: 'student_id,course_slug,module_number' });
+      if (r.error) { alert('Could not save: ' + r.error.message); return; }
+      markComplete(mNum, lNum, null, null, null, true);
+      host.innerHTML = '<div class="mt-6 rounded-2xl border-2 border-teal-200 bg-teal-50 p-6"><h3 class="font-bold text-teal-800 text-lg">Thank you — week complete ✓</h3></div>';
+    };
+  }
+  function renderTutor(host, lesson) {
+    host.innerHTML = '<div class="mt-8 rounded-2xl border border-slate-200 bg-white p-5"><div class="flex items-center gap-2 mb-1"><span class="text-lg">&#128172;</span><h3 class="font-bold text-slate-900">Don&#39;t understand something? Ask.</h3></div><p class="text-sm text-slate-500 mb-3">Ask about anything in this lesson and get a plain-English answer. Your instructor sees these too.</p><div class="flex gap-2"><input id="tutor-q" class="flex-1 rounded-lg border border-slate-300 px-4 py-2.5 text-sm" placeholder="e.g. What is the difference between gingivitis and periodontitis?"><button id="tutor-ask" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-lg text-sm">Ask</button></div><div id="tutor-a" class="mt-4 hidden rounded-xl bg-slate-50 p-4 text-sm text-slate-700 whitespace-pre-wrap"></div></div>';
+    var input = host.querySelector('#tutor-q'), btn = host.querySelector('#tutor-ask'), ans = host.querySelector('#tutor-a');
+    var lessonText = (lesson.content_html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 4000);
+    async function ask() {
+      var question = (input.value || '').trim(); if (!question) return;
+      btn.disabled = true; btn.textContent = 'Thinking…';
+      try {
+        var r = await fetch('/api/tutor', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: question, lessonTitle: lesson.title, lessonText: lessonText }) });
+        var d = await r.json();
+        ans.textContent = d.answer || 'Please ask your instructor.'; ans.classList.remove('hidden');
+        sb.from('tutor_questions').insert({ student_id: uid, lesson_id: lesson.id, lesson_title: lesson.title, question: question, answer: d.answer || null });
+      } catch (e) { ans.textContent = 'Could not reach the tutor — try again or ask your instructor.'; ans.classList.remove('hidden'); }
+      btn.disabled = false; btn.textContent = 'Ask';
+    }
+    btn.onclick = ask;
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') ask(); });
   }
 
   async function markComplete(mNum, lNum, quizScore, next, slug, silent) {
