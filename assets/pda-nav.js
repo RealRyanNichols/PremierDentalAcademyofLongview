@@ -36,6 +36,11 @@
     }
   } catch (e) { /* pixel must never break the nav */ }
 
+  // Enrolled student / portal pages load their own student-nav.js — skip the
+  // marketing nav, CTA bar, urgency, and exit-intent chrome so students see a
+  // single clean nav (no double header / no enrollment popups inside the course).
+  if (document.querySelector('script[src*="student-nav"]')) return;
+
   const NAV_HTML = `
 <nav aria-label="Primary" class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
