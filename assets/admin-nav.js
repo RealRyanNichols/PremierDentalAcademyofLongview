@@ -37,6 +37,18 @@
   }
 
   function build() {
+    // Keep the admin top clean: hide any leftover/duplicate page nav, tighten the
+    // top spacing, and shrink oversized page headlines so the controls/options sit
+    // right under the menu (Amanda usability).
+    if (!document.getElementById('pda-admin-nav-css')) {
+      var css = document.createElement('style');
+      css.id = 'pda-admin-nav-css';
+      css.textContent =
+        'body > nav:not([data-pda-admin-nav]){display:none !important}' +
+        'nav[data-pda-admin-nav] ~ main{padding-top:1rem !important}' +
+        'nav[data-pda-admin-nav] ~ main h1.display,nav[data-pda-admin-nav] ~ main h1{font-size:1.375rem !important;line-height:1.9rem !important;margin-top:.25rem !important}';
+      document.head.appendChild(css);
+    }
     var here = currentPath();
     var nav = document.createElement('nav');
     nav.setAttribute('data-pda-admin-nav', '');
