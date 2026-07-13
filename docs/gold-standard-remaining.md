@@ -16,18 +16,21 @@ lessons to 8k–12k. **Compliance:** concepts only — no specific TSBDE rule nu
 fees stated as fact (one earlier lesson cited "Rule 108.24"; scan for and soften any
 such citations across ALL rewritten lessons in the final verify pass).
 
-## DONE (do not touch): Ch 2, 3, 4, 11, 12, 16, 19, 20, 21, 27, 34, 35, 38, 40, 43, 44, 48, 49(wk7), 46, 50, 52, 55; Specialties/Duties companions; State Board Game Plan.
+## DONE (do not touch): Ch 2, 3, 4, 5, 11, 12, 16, 19, 20, 21, 23, 27, 33, 34, 35, 38, 39, 40, 41, 43, 44, 48, 49(wk7+wk8), 46, 50, 52, 55; Specialties/Duties companions; State Board Game Plan.
+
+### WAVE 2026-07-13 (Opus main-thread, both course IDs, dollar-quoted SQL):
+- Ch 5 Jurisprudence — 17.3k, 6 MCQs, concepts-only, no rule numbers ✅
+- Ch 39 Imaging & Processing — 14.2k, 6 MCQs ✅
+- Ch 41 Intraoral Imaging — 13.3k, 6 MCQs, interactive_key=radiography_positioning ✅
+- Ch 23 Chemical & Waste Management — 12.4k, 6 MCQs ✅
+- Ch 33 Delivering Dental Care — 11.9k, 6 MCQs ✅
+- Ch 49 Review (wk8, online only) — copied from wk7 Ch 49 ✅
 
 ## REMAINING (online id · rda id)
 
-### Full chapters (15k–25k)
-- Ch 5 Jurisprudence (EXAM-CRITICAL, concepts-only) — `72f11fb5-6647-4b74-882a-d3ed145cbef8` · `8f9cbcfc-4af3-4e0d-91a4-806eedbe9452`
+### Full chapters (12k–20k)
 - Ch 28 Oral Diagnosis & Treatment Planning — `2afaa478-76d2-47b8-b31d-9f769d627d50` · `81a4e85c-c044-4814-a703-ead2ae52eeda`
-- Ch 23 Chemical & Waste Management — `6d4f2bca-22f4-4f79-b1f7-17221736e494` · `8f71b1bb-96cd-4a67-a514-cc3e258bed87`
 - Ch 32 The Dental Office — `5be03507-4fb3-46b2-9655-ea4b3a51c322` · `cdacb424-7629-4124-9421-d7b78e380896`
-- Ch 33 Delivering Dental Care — `3ea8d372-1af0-421d-851e-9d971ac9c9c6` · `aee7fb85-1e1d-402d-beb0-95758901bee8`
-- Ch 39 Imaging & Processing (EXAM-CRITICAL radiology) — `4e32e5b4-2695-434b-9078-50eeb25ee3c7` · `ac2f0467-3ba9-4fda-b077-09523af0cc13`
-- Ch 41 Intraoral Imaging (EXAM-CRITICAL; interactive_key radiography_positioning) — `1d2dd906-f3e1-47a6-a5fa-1ecf800924d2` · `70423069-abdc-488e-9dad-8ffb4eb3cd72`
 - Ch 47 Laboratory Materials & Procedures — `20e18008-3ea6-449a-94a1-8a4ada2be462` · `0f3d9273-516f-4d71-aeb9-88d3e8d519cd`
 - Ch 51 Provisional Coverage — `2efc0d75-6d62-47bd-92d3-6eb7c18f6f94` · `5ded17ab-5dc7-42e8-bca4-ce0836f8c011`
 - Ch 54 Endodontics — `16912307-1bc7-4e3e-8140-038f63dc0087` · `5e76edb5-7243-4425-96e1-692f21e3d035`
