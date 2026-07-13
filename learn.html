@@ -238,7 +238,17 @@
         var s = document.createElement('script'); s.id = 'mux-player-js'; s.src = 'https://cdn.jsdelivr.net/npm/@mux/mux-player'; document.head.appendChild(s);
       }
     } else if (full.video_url) {
-      media = '<div class="aspect-video-box rounded-xl overflow-hidden bg-black mb-5"><iframe src="' + esc(full.video_url) + '" title="Lesson video" allowfullscreen frameborder="0"></iframe></div>';
+      var vsrc = String(full.video_url).trim();
+      if (/^</.test(vsrc) || /<iframe|<video|<script|<div/i.test(vsrc)) {
+        // Admin pasted a full embed code (Vimeo, Wistia, Loom, etc.) — render as-is (admin-authored, trusted).
+        media = '<div class="video-embed rounded-xl overflow-hidden bg-black mb-5">' + vsrc + '</div>';
+      } else if (/\.(mp4|webm|ogg|mov)(\?|#|$)/i.test(vsrc)) {
+        // Direct uploaded / hosted video file.
+        media = '<div class="rounded-xl overflow-hidden bg-black mb-5"><video src="' + esc(vsrc) + '" controls playsinline preload="metadata" style="width:100%;aspect-ratio:16/9;background:#000"></video></div>';
+      } else {
+        // Any other link (Vimeo, Wistia, Loom, etc.) — embed via iframe.
+        media = '<div class="aspect-video-box rounded-xl overflow-hidden bg-black mb-5"><iframe src="' + esc(vsrc) + '" title="Lesson video" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen frameborder="0"></iframe></div>';
+      }
     }
 
     var tool = full.tool_url ? '<a href="' + esc(full.tool_url) + '" class="card inline-flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-xl px-4 py-3 mt-4 text-teal-800 font-semibold text-sm">🧰 ' + esc(full.tool_label || 'Open the trainer') + ' →</a>' : '';
