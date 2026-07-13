@@ -291,6 +291,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('.att-btn'), function (b) {
       b.addEventListener('click', async function () {
         var a = att[Number(b.getAttribute('data-att'))];
+        if (a && a.url) { window.open(a.url, '_blank'); return; }
         if (!a || !a.path) return;
         b.disabled = true; var old = b.innerHTML; b.innerHTML = 'Opening…';
         try {
