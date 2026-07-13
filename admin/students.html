@@ -50,6 +50,7 @@
         <h1 class="display text-3xl font-bold mt-1">All students <span id="count" class="text-slate-400 font-normal">—</span></h1>
       </div>
       <div class="flex gap-2 items-center">
+        <button id="enroll-open" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2 rounded-full text-sm shrink-0">+ Enroll a student</button>
         <input id="search" placeholder="Search name / email / phone" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm w-64" />
         <select id="program-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
           <option value="">All programs</option>
@@ -68,6 +69,35 @@
     </div>
   </div>
 </main>
+
+<!-- Enroll modal -->
+<div id="enroll-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Manual enrollment</div>
+        <h3 class="display text-lg font-bold">Give a student access</h3>
+      </div>
+      <button id="enroll-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <p class="text-xs text-slate-500 mb-3">Creates the account if it doesn't exist, unlocks the course at <b>/learn</b>, and emails them a one-tap sign-in link. No charge.</p>
+    <label class="block text-sm font-medium">Student email<input id="en-email" type="email" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm" placeholder="student@example.com" /></label>
+    <label class="block text-sm font-medium mt-2">Name (optional)<input id="en-name" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm" placeholder="First Last" /></label>
+    <label class="block text-sm font-medium mt-2">Grant access to
+      <select id="en-action" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+        <option value="online">Online RDA program (12-week)</option>
+        <option value="in_person">In-person RDA program</option>
+        <option value="career_vault">Career Vault</option>
+        <option value="remove">Revoke portal access</option>
+      </select>
+    </label>
+    <div class="flex justify-between items-center mt-4">
+      <span id="en-status" class="text-xs text-slate-500"></span>
+      <button id="en-submit" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Grant access →</button>
+    </div>
+    <div id="en-result" class="hidden mt-3 text-xs bg-teal-50 border border-teal-200 rounded-lg p-3"></div>
+  </div>
+</div>
 
 <!-- SMS modal -->
 <div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
@@ -199,6 +229,39 @@
 
   document.getElementById('search').oninput = render;
   document.getElementById('program-filter').onchange = render;
+
+  // ---- Manual enrollment ----
+  const enModal = document.getElementById('enroll-modal');
+  document.getElementById('enroll-open').onclick = () => {
+    document.getElementById('en-result').classList.add('hidden');
+    document.getElementById('en-status').textContent = '';
+    enModal.classList.remove('hidden');
+  };
+  document.getElementById('enroll-close').onclick = () => enModal.classList.add('hidden');
+  document.getElementById('en-submit').onclick = async () => {
+    const email = document.getElementById('en-email').value.trim();
+    const name = document.getElementById('en-name').value.trim();
+    const action = document.getElementById('en-action').value;
+    const status = document.getElementById('en-status');
+    const result = document.getElementById('en-result');
+    if (!email || !email.includes('@')) { status.textContent = 'Enter a valid email.'; status.className = 'text-xs text-rose-600'; return; }
+    status.textContent = 'Working…'; status.className = 'text-xs text-slate-500';
+    try {
+      const tok = (await sb.auth.getSession()).data.session.access_token;
+      const resp = await fetch('/api/admin-enroll', { method: 'POST', headers: { 'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, name, action }) });
+      const out = await resp.json();
+      if (!resp.ok || !out.ok) throw new Error(out.error || 'Something went wrong.');
+      status.textContent = '✓ Done.'; status.className = 'text-xs text-teal-700';
+      result.classList.remove('hidden');
+      const did = action === 'remove' ? 'Access revoked' : (out.created ? 'Account created + access granted' : 'Access granted');
+      result.innerHTML = '<b>' + did + '</b> for ' + email.replace(/</g,'&lt;') + '.' +
+        (action !== 'remove' ? '<br>' + (out.emailed ? 'A sign-in link was emailed to them.' : 'Email isn\'t configured yet — copy their one-tap sign-in link:') +
+        (!out.emailed && out.magicLink ? '<br><input readonly onclick="this.select()" value="' + out.magicLink.replace(/"/g,'&quot;') + '" class="mt-2 w-full text-[11px] px-2 py-1 border border-teal-300 rounded">' : '') : '');
+      load();
+    } catch (e) {
+      status.textContent = e.message; status.className = 'text-xs text-rose-600';
+    }
+  };
 
   load();
 })();
