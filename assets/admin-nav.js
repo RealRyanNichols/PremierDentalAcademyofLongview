@@ -22,6 +22,7 @@
     ['/admin/paperwork',   '📋', 'Paperwork'],
     ['/admin/questions',   '🙋', 'Questions'],
     ['/admin/students',    '🎓', 'Students'],
+    ['/admin/cohorts',     '🗓️', 'Cohorts'],
     ['/admin/courses',     '📚', 'Courses'],
     ['/admin/emails',      '📧', 'Emails'],
     ['/admin/progress',    '📊', 'Progress'],

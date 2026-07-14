@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cohorts &amp; Classes — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}
+    .display{font-family:Fraunces,serif}
+    .mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}
+    .seat{transition:transform .08s ease, box-shadow .08s ease}
+    .seat:hover{transform:translateY(-1px);box-shadow:0 4px 14px -6px rgba(15,23,42,.25)}
+    #drawer{transition:transform .22s ease}
+    .seg-on{background:#0f766e;color:#fff}
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col pda-tinted">
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>
+      <span>PDA Admin</span>
+      <span class="text-slate-400 text-sm font-normal">/ Cohorts</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin" class="text-slate-300 hover:text-white">Home</a>
+      <a href="/admin/students" class="text-slate-300 hover:text-white">Students</a>
+      <a href="/admin/progress" class="text-slate-300 hover:text-white">Progress</a>
+      <button id="signout" class="text-slate-300 hover:text-white">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Admin access only</h1>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
+  </div>
+
+  <div id="loading" class="text-center text-slate-500 py-20">Loading classes…</div>
+
+  <div id="view" class="hidden">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Cohort CRM</p>
+        <h1 class="display text-3xl font-bold mt-1">Cohorts &amp; Classes</h1>
+        <p class="text-slate-500 text-sm mt-1">Every class, every seat, who's in it. Click a student to open their full profile and text, call, or email them.</p>
+      </div>
+      <div class="flex gap-2 items-center">
+        <input id="search" placeholder="Find a student…" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm w-56" />
+      </div>
+    </div>
+
+    <div id="stats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6"></div>
+
+    <div class="flex flex-wrap gap-2 mb-5">
+      <div class="inline-flex rounded-lg border border-slate-300 bg-white p-0.5 text-slate-600" id="seg-status">
+        <button data-v="active" class="px-3 py-1.5 text-sm font-semibold rounded-md">Current + Upcoming</button>
+        <button data-v="current" class="px-3 py-1.5 text-sm font-semibold rounded-md">Current</button>
+        <button data-v="upcoming" class="px-3 py-1.5 text-sm font-semibold rounded-md">Upcoming</button>
+        <button data-v="all" class="px-3 py-1.5 text-sm font-semibold rounded-md">All</button>
+      </div>
+      <div class="inline-flex rounded-lg border border-slate-300 bg-white p-0.5 text-slate-600" id="seg-delivery">
+        <button data-v="all" class="px-3 py-1.5 text-sm font-semibold rounded-md">All</button>
+        <button data-v="in_person" class="px-3 py-1.5 text-sm font-semibold rounded-md">🏫 In-Person</button>
+        <button data-v="online" class="px-3 py-1.5 text-sm font-semibold rounded-md">💻 Online</button>
+      </div>
+    </div>
+
+    <div id="cohorts" class="grid md:grid-cols-2 gap-4"></div>
+    <div id="cohorts-empty" class="hidden text-center text-slate-500 py-10">No classes match this filter.</div>
+
+    <div id="online-wrap" class="mt-8 hidden">
+      <h2 class="display text-xl font-bold mb-1">💻 Online — Self-Paced</h2>
+      <p class="text-slate-500 text-sm mb-3">Online students not tied to a fixed class date. Click any name to open their profile.</p>
+      <div id="online-list" class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap gap-2"></div>
+    </div>
+
+    <div id="unassigned-wrap" class="mt-8 hidden">
+      <h2 class="display text-xl font-bold mb-1">🧩 Enrolled — not on a current class roster</h2>
+      <p class="text-slate-500 text-sm mb-3">Student accounts with no seat in the classes above. Confirm with Amanda, then place them into a cohort.</p>
+      <div id="unassigned-list" class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap gap-2"></div>
+    </div>
+  </div>
+</main>
+
+<!-- student drawer -->
+<div id="drawer-backdrop" class="hidden fixed inset-0 bg-slate-900/40 z-40"></div>
+<aside id="drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-50 translate-x-full overflow-y-auto">
+  <div id="drawer-body" class="p-6"></div>
+</aside>
+
+<!-- SMS modal -->
+<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-[60] grid place-items-center p-4">
+  <div class="bg-white rounded-2xl max-w-md w-full p-6">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Send SMS</div>
+        <h3 id="sms-target" class="display text-lg font-bold">—</h3>
+      </div>
+      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+    </div>
+    <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
+    <div class="flex justify-between items-center mt-3">
+      <span id="sms-status" class="text-xs text-slate-500"></span>
+      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
+    </div>
+  </div>
+</div>
+
+<script>(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => (s==null?'':String(s)).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const digits = (s) => (s||'').replace(/[^\d+]/g,'');
+
+  // ---- admin gate (same pattern as other /admin pages)
+  const { data:{ session } } = await sb.auth.getSession();
+  if (!session) { $('loading').classList.add('hidden'); $('auth-wall').classList.remove('hidden'); return; }
+  let me = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!me) { try { await sb.auth.refreshSession(); } catch(e){} me = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(me?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { $('loading').classList.add('hidden'); $('auth-wall').classList.remove('hidden'); return; }
+  $('signout').onclick = () => location.href = '/logout?then=home';
+
+  // ---- load data
+  const [cohRes, enrRes, profRes] = await Promise.all([
+    sb.from('cohorts').select('*').order('start_date', { ascending:true }),
+    sb.from('enrollments').select('id, student_id, cohort_id, status, progress_percent, student_name, delivery, source, roster_note, enrolled_at'),
+    sb.from('profiles').select('id, first_name, last_name, email, phone, city, state, program, cohort, enrolled_at, created_at, is_admin, tags, kajabi_id, portal_status').neq('is_admin', true)
+  ]);
+  const cohorts = cohRes.data || [];
+  const enrollments = (enrRes.data || []).map((e,i)=>({ ...e, _i:i }));
+  const profiles = {}; (profRes.data||[]).forEach(p => profiles[p.id]=p);
+
+  $('loading').classList.add('hidden');
+  $('view').classList.remove('hidden');
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const fmtDate = (d) => d ? new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : '—';
+  const fmtDateShort = (d) => d ? new Date(d+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}) : '—';
+  const fullName = (p) => p ? ((`${p.first_name||''} ${p.last_name||''}`).trim() || p.email || 'Unnamed') : 'Unnamed';
+  const initials = (name) => { const t=(name||'').trim().split(/\s+/); return ((t[0]&&t[0][0]||'?')+(t[1]&&t[1][0]||'')).toUpperCase(); };
+  const schedTag = (c) => { const n=c.name||''; if (/MWF/.test(n)) return 'MWF'; if (/T\/Th|T-Th|TTh/.test(n)) return 'T/Th'; return ''; };
+  const progOf = (e) => (e && e.progress_percent!=null) ? e.progress_percent : null;
+
+  // seats grouped
+  const seatsByCohort = {};
+  enrollments.forEach(e => { if (e.cohort_id) (seatsByCohort[e.cohort_id] = seatsByCohort[e.cohort_id]||[]).push(e); });
+  const onlineSeats = enrollments.filter(e => !e.cohort_id && e.delivery==='online');
+  const assignedIds = new Set(enrollments.filter(e=>e.student_id).map(e=>e.student_id));
+
+  const STAFF = new Set(['ryan@realryannichols.com','hello@premierdentalacademyoflongview.com','test@premierdentalacademyoflongview.com']);
+  const unassigned = Object.values(profiles).filter(p => {
+    if (assignedIds.has(p.id)) return false;
+    if (STAFF.has((p.email||'').toLowerCase())) return false;
+    return ['foundation','career_track'].includes(p.program||'') || !!p.enrolled_at;
+  }).sort((a,b)=> fullName(a).localeCompare(fullName(b)));
+
+  // filter state
+  let fStatus='active', fDelivery='all', fSearch='';
+
+  // ---------- stats
+  function renderStats(){
+    const nonCancelled = cohorts.filter(c=>c.status!=='cancelled');
+    const filled = enrollments.filter(e => (e.status||'active')==='active').length;
+    const pipeline = nonCancelled.filter(c => (seatsByCohort[c.id]||[]).length > 0);
+    const openSeats = pipeline.reduce((s,c)=> s + Math.max((c.capacity||0) - (seatsByCohort[c.id]||[]).length, 0), 0);
+    const running = cohorts.filter(c=>c.status==='current').length;
+    const next = nonCancelled.filter(c => c.start_date && new Date(c.start_date+'T00:00:00')>=today)
+                             .sort((a,b)=> a.start_date.localeCompare(b.start_date))[0];
+    const cards = [
+      { label:'Students enrolled', val:filled, sub:'seats filled across all classes', tone:'from-teal-700 to-teal-600 text-white', subc:'text-teal-50' },
+      { label:'Open seats', val:openSeats, sub:'in classes now filling', tone:'bg-white border border-slate-200', subc:'text-slate-500' },
+      { label:'Classes running', val:running, sub:'marked current', tone:'bg-white border border-slate-200', subc:'text-slate-500' },
+      { label:'Next class starts', val: next?fmtDateShort(next.start_date):'—', sub: next?((next.delivery_mode==='online'?'Online ':'In-Person ')+(schedTag(next)||'')).trim():'nothing scheduled', tone:'bg-white border border-slate-200', subc:'text-slate-500' },
+    ];
+    $('stats').innerHTML = cards.map(c => `
+      <div class="rounded-2xl p-4 ${c.tone.includes('white')?c.tone:'bg-gradient-to-br '+c.tone}">
+        <div class="text-[11px] uppercase tracking-widest font-semibold ${c.tone.includes('white')?'text-slate-500':'text-teal-50'}">${esc(c.label)}</div>
+        <div class="text-3xl font-bold mono mt-1">${esc(c.val)}</div>
+        <div class="text-xs mt-0.5 ${c.subc}">${esc(c.sub)}</div>
+      </div>`).join('');
+  }
+
+  // ---------- seat + cohort rendering
+  function seatChip(e){
+    const name = e.student_name || (e.student_id && fullName(profiles[e.student_id])) || 'Student';
+    const warn = e.roster_note ? '<span class="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full border-2 border-white" title="Has a note"></span>' : '';
+    const noAcct = !e.student_id;
+    return `<button class="seat relative text-left inline-flex items-center gap-2 rounded-xl border ${noAcct?'border-dashed border-slate-300 bg-slate-50':'border-slate-200 bg-white'} pl-1.5 pr-3 py-1.5" data-enr="${e._i}">
+        <span class="w-7 h-7 rounded-full ${noAcct?'bg-slate-300 text-slate-700':'bg-gradient-to-br from-teal-500 to-cyan-600 text-white'} grid place-items-center text-[11px] font-bold shrink-0">${esc(initials(name))}</span>
+        <span class="min-w-0">
+          <span class="block text-sm font-semibold leading-tight truncate max-w-[10rem]">${esc(name)}</span>
+          ${noAcct?'<span class="block text-[10px] text-slate-400 leading-tight">no login yet</span>':''}
+        </span>${warn}
+      </button>`;
+  }
+  function openSeatChip(){
+    return `<span class="inline-flex items-center gap-2 rounded-xl border border-dashed border-slate-300 text-slate-400 pl-1.5 pr-3 py-1.5">
+        <span class="w-7 h-7 rounded-full border border-dashed border-slate-300 grid place-items-center text-slate-300 shrink-0">+</span>
+        <span class="text-sm">Open seat</span></span>`;
+  }
+
+  function cohortMatchesSearch(c){
+    if (!fSearch) return true;
+    return (seatsByCohort[c.id]||[]).some(e => {
+      const nm = (e.student_name || (e.student_id && fullName(profiles[e.student_id])) || '').toLowerCase();
+      return nm.includes(fSearch);
+    });
+  }
+  function statusOk(c){
+    if (fStatus==='all') return true;
+    if (fStatus==='current') return c.status==='current';
+    if (fStatus==='upcoming') return c.status==='upcoming';
+    return c.status==='current' || c.status==='upcoming';
+  }
+  function deliveryOk(mode){ return fDelivery==='all' || fDelivery===mode; }
+
+  function renderCohorts(){
+    const list = cohorts.filter(c => statusOk(c) && deliveryOk(c.delivery_mode) && cohortMatchesSearch(c) && (fStatus==='all' || c.status!=='cancelled'));
+    $('cohorts-empty').classList.toggle('hidden', list.length>0);
+    $('cohorts').innerHTML = list.map(c => {
+      const seats = (seatsByCohort[c.id]||[]).slice().sort((a,b)=>{
+        const an=(a.student_name||'').toLowerCase(), bn=(b.student_name||'').toLowerCase(); return an.localeCompare(bn);
+      });
+      const cap = c.capacity||0;
+      const filled = seats.length;
+      const open = Math.max(cap - filled, 0);
+      const pct = cap ? Math.round(filled/cap*100) : 0;
+      const isOnline = c.delivery_mode==='online';
+      const statusPill = c.status==='current'
+        ? '<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">● Current</span>'
+        : c.status==='upcoming'
+        ? '<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-100 text-sky-700">Upcoming</span>'
+        : `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">${esc(c.status||'—')}</span>`;
+      const sched = schedTag(c);
+      const fullBadge = (open===0 && cap>0) ? '<span class="text-[11px] font-bold px-2 py-0.5 rounded-full bg-rose-100 text-rose-700">FULL</span>' : '';
+      const barColor = pct>=100?'bg-rose-500':pct>=62?'bg-amber-500':'bg-teal-600';
+      const searchDim = (chip,e)=>{ if(!fSearch) return chip; const nm=(e.student_name||(e.student_id&&fullName(profiles[e.student_id]))||'').toLowerCase(); return nm.includes(fSearch)?chip:chip.replace('class="seat ','class="seat opacity-30 '); };
+      return `<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${isOnline?'bg-indigo-100 text-indigo-700':'bg-teal-50 text-teal-700'}">${isOnline?'💻 Online':'🏫 In-Person'}</span>
+              ${sched?`<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">${esc(sched)}</span>`:''}
+              ${statusPill} ${fullBadge}
+            </div>
+            <h3 class="display text-xl font-bold mt-2">${esc(fmtDate(c.start_date))}</h3>
+            <p class="text-xs text-slate-500 mt-0.5">${esc((c.schedule||'').replace(/ \+ Sat.*/,'').slice(0,60))}</p>
+          </div>
+          <div class="text-right shrink-0">
+            <div class="text-2xl font-bold mono">${filled}<span class="text-slate-300">/${cap}</span></div>
+            <div class="text-[11px] text-slate-500">${open} open</div>
+          </div>
+        </div>
+        <div class="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full ${barColor}" style="width:${Math.min(pct,100)}%"></div></div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          ${seats.map(e=> searchDim(seatChip(e), e)).join('')}
+          ${Array.from({length: Math.min(open, Math.max(cap,0))}).map(openSeatChip).join('')}
+        </div>
+      </div>`;
+    }).join('');
+    bindSeatButtons($('cohorts'));
+  }
+
+  function renderOnline(){
+    const show = (fDelivery==='all' || fDelivery==='online') && onlineSeats.length>0;
+    $('online-wrap').classList.toggle('hidden', !show);
+    if (!show) return;
+    const seats = onlineSeats.slice().sort((a,b)=> (a.student_name||'').localeCompare(b.student_name||''))
+      .filter(e=>{ if(!fSearch) return true; const nm=(e.student_name||(e.student_id&&fullName(profiles[e.student_id]))||'').toLowerCase(); return nm.includes(fSearch); });
+    $('online-list').innerHTML = seats.length? seats.map(seatChip).join('') : '<span class="text-sm text-slate-400">No online students match.</span>';
+    bindSeatButtons($('online-list'));
+  }
+
+  function renderUnassigned(){
+    const rows = unassigned.filter(p=>{ if(!fSearch) return true; return fullName(p).toLowerCase().includes(fSearch) || (p.email||'').toLowerCase().includes(fSearch); });
+    const show = rows.length>0 && (fStatus!=='current'); // hide the pile when narrowly viewing only current classes
+    $('unassigned-wrap').classList.toggle('hidden', !show);
+    if (!show) return;
+    $('unassigned-list').innerHTML = rows.map(p=>{
+      const name = fullName(p);
+      return `<button class="seat text-left inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white pl-1.5 pr-3 py-1.5" data-pid="${esc(p.id)}">
+        <span class="w-7 h-7 rounded-full bg-slate-400 text-white grid place-items-center text-[11px] font-bold shrink-0">${esc(initials(name))}</span>
+        <span class="text-sm font-semibold truncate max-w-[10rem]">${esc(name)}</span></button>`;
+    }).join('');
+    bindSeatButtons($('unassigned-list'));
+  }
+
+  function renderAll(){ renderStats(); renderCohorts(); renderOnline(); renderUnassigned(); }
+
+  // ---------- drawer / student profile
+  function bindSeatButtons(root){
+    root.querySelectorAll('[data-enr]').forEach(b=> b.onclick = ()=> openFromEnrollment(enrollments[+b.dataset.enr]));
+    root.querySelectorAll('[data-pid]').forEach(b=> b.onclick = ()=> openFromProfile(profiles[b.dataset.pid]));
+  }
+  const drawer = $('drawer'), backdrop = $('drawer-backdrop');
+  function showDrawer(){ backdrop.classList.remove('hidden'); requestAnimationFrame(()=> drawer.classList.remove('translate-x-full')); }
+  function hideDrawer(){ drawer.classList.add('translate-x-full'); backdrop.classList.add('hidden'); }
+  backdrop.onclick = hideDrawer;
+
+  function cohortName(id){ const c=cohorts.find(x=>x.id===id); return c?c.name:null; }
+
+  function drawerHTML(v){
+    const actions = `
+      <div class="grid grid-cols-3 gap-2 mt-4">
+        ${v.phone?`<a href="tel:${esc(digits(v.phone))}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold px-3 py-2 rounded-lg text-center">📞 Call</a>`:'<span class="bg-slate-100 text-slate-300 text-sm px-3 py-2 rounded-lg text-center">📞 Call</span>'}
+        ${v.phone?`<button id="d-text" class="bg-cyan-700 hover:bg-cyan-800 text-white text-sm font-semibold px-3 py-2 rounded-lg">💬 Text</button>`:'<span class="bg-slate-100 text-slate-300 text-sm px-3 py-2 rounded-lg text-center">💬 Text</span>'}
+        ${v.email?`<a href="mailto:${esc(v.email)}?subject=Premier%20Dental%20Academy" class="bg-slate-800 hover:bg-slate-900 text-white text-sm font-semibold px-3 py-2 rounded-lg text-center">✉️ Email</a>`:'<span class="bg-slate-100 text-slate-300 text-sm px-3 py-2 rounded-lg text-center">✉️ Email</span>'}
+      </div>`;
+    const row = (label,val)=> val?`<div class="flex justify-between gap-3 py-2 border-b border-slate-100"><span class="text-slate-500 text-sm">${esc(label)}</span><span class="text-sm font-medium text-right">${val}</span></div>`:'';
+    const note = v.note?`<div class="mt-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl p-3 text-sm">⚠ ${esc(v.note)}</div>`:'';
+    const noAcct = !v.hasAccount?`<div class="mt-4 bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm text-slate-600">No student portal account yet. Create one from <a href="/admin/paperwork" class="text-teal-700 font-semibold underline">Paperwork</a> or <a href="/admin/students" class="text-teal-700 font-semibold underline">Students</a>.</div>`:'';
+    const prog = (v.progress!=null)?`<div class="mt-4"><div class="flex justify-between text-xs text-slate-500 mb-1"><span>Course progress</span><span>${v.progress}%</span></div><div class="h-2 rounded-full bg-slate-100 overflow-hidden"><div class="h-full bg-teal-600" style="width:${Math.min(v.progress,100)}%"></div></div></div>`:'';
+    const tags = (v.tags&&v.tags.length)?`<div class="mt-3 flex flex-wrap gap-1.5">${v.tags.map(t=>`<span class="text-[11px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(t)}</span>`).join('')}</div>`:'';
+    const deliveryPill = v.delivery? `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full ${v.delivery==='online'?'bg-indigo-100 text-indigo-700':'bg-teal-50 text-teal-700'}">${v.delivery==='online'?'💻 Online':'🏫 In-Person'}</span>`:'';
+    return `
+      <div class="flex items-start justify-between">
+        <div class="flex items-center gap-3">
+          <span class="w-14 h-14 rounded-full ${v.hasAccount?'bg-gradient-to-br from-teal-500 to-cyan-600 text-white':'bg-slate-300 text-slate-700'} grid place-items-center text-lg font-bold">${esc(initials(v.name))}</span>
+          <div>
+            <h3 class="display text-xl font-bold leading-tight">${esc(v.name)}</h3>
+            <div class="flex items-center gap-1.5 mt-1 flex-wrap">${deliveryPill}${v.cohortLabel?`<span class="text-xs text-slate-500">${esc(v.cohortLabel)}</span>`:''}</div>
+          </div>
+        </div>
+        <button id="d-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+      </div>
+      ${actions}
+      ${prog}
+      <div class="mt-5">
+        ${row('Email', v.email?`<a href="mailto:${esc(v.email)}" class="text-teal-700 hover:underline">${esc(v.email)}</a>`:'')}
+        ${row('Phone', v.phone?`<a href="tel:${esc(digits(v.phone))}" class="text-teal-700 hover:underline">${esc(v.phone)}</a>`:'')}
+        ${row('Program', v.programLabel)}
+        ${row('Cohort', v.cohortLabel?esc(v.cohortLabel):'')}
+        ${row('Location', [v.city,v.state].filter(Boolean).map(esc).join(', '))}
+        ${row('Enrolled', v.enrolled_at?fmtDate(String(v.enrolled_at).slice(0,10)):'')}
+        ${row('Joined', v.created_at?fmtDate(String(v.created_at).slice(0,10)):'')}
+        ${row('Portal', v.portal_status?esc(v.portal_status):'')}
+        ${row('Kajabi', v.kajabi_id?'Linked':'')}
+      </div>
+      ${tags}
+      ${note}
+      ${noAcct}
+      ${v.hasAccount?`<div class="mt-5 flex gap-2">
+        <a href="/admin/progress" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold px-3 py-2 rounded-lg">📊 Gradebook</a>
+        <a href="/admin/students" class="flex-1 text-center bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold px-3 py-2 rounded-lg">🎓 Students</a>
+      </div>`:''}`;
+  }
+
+  const PROGRAM_LABEL = { foundation:'🏫 In-Person (Foundation)', career_track:'💻 Online (Career Track)', preview:'🔍 Preview only', staff:'🛠 Staff' };
+
+  function renderDrawer(v){
+    $('drawer-body').innerHTML = drawerHTML(v);
+    $('d-close').onclick = hideDrawer;
+    const t = $('d-text'); if (t) t.onclick = ()=> openSms(digits(v.phone), v.name, v.pid);
+    showDrawer();
+  }
+  function openFromEnrollment(e){
+    if (!e) return;
+    const p = e.student_id ? profiles[e.student_id] : null;
+    const name = e.student_name || fullName(p);
+    const cohLabel = e.cohort_id ? cohortName(e.cohort_id) : (e.delivery==='online'?'Online — Self-Paced':(p&&p.cohort)||null);
+    renderDrawer({
+      pid: p?p.id:null, name,
+      email: p?p.email:null, phone: p?p.phone:null,
+      city: p?p.city:null, state: p?p.state:null,
+      programLabel: p?(PROGRAM_LABEL[p.program]||p.program||''):'',
+      cohortLabel: cohLabel,
+      delivery: e.delivery || (p? (p.program==='career_track'?'online':'in_person'):null),
+      enrolled_at: (p&&p.enrolled_at)||e.enrolled_at, created_at: p?p.created_at:null,
+      portal_status: p?p.portal_status:null, kajabi_id: p?p.kajabi_id:null,
+      tags: p?p.tags:null, progress: progOf(e),
+      note: e.roster_note, hasAccount: !!p
+    });
+  }
+  function openFromProfile(p){
+    if (!p) return;
+    renderDrawer({
+      pid:p.id, name:fullName(p), email:p.email, phone:p.phone, city:p.city, state:p.state,
+      programLabel: PROGRAM_LABEL[p.program]||p.program||'', cohortLabel: p.cohort||null,
+      delivery: p.program==='career_track'?'online':(p.program==='foundation'?'in_person':null),
+      enrolled_at:p.enrolled_at, created_at:p.created_at, portal_status:p.portal_status, kajabi_id:p.kajabi_id,
+      tags:p.tags, progress:null, note:null, hasAccount:true
+    });
+  }
+
+  // ---------- SMS modal (same engine as /admin/students)
+  const modal=$('sms-modal'); let smsTo=null, smsId=null;
+  $('sms-close').onclick=()=>modal.classList.add('hidden');
+  modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.add('hidden'); });
+  function openSms(phone,name,id){ smsTo=phone; smsId=id; $('sms-target').textContent=`${name} · ${phone}`; $('sms-body').value=''; $('sms-status').textContent=''; modal.classList.remove('hidden'); setTimeout(()=>$('sms-body').focus(),50); }
+  $('sms-send').onclick=async()=>{
+    const body=$('sms-body').value.trim(); if(!body||!smsTo) return;
+    $('sms-status').textContent='Sending…';
+    const resp=await sb.functions.invoke('quo-send-sms',{ body:{ to:smsTo, body, related_student_id:smsId } });
+    if(resp?.error||resp?.data?.error){ $('sms-status').textContent='✗ '+(resp?.data?.error||resp?.error?.message||'failed'); }
+    else { $('sms-status').textContent='✓ Sent'; setTimeout(()=>modal.classList.add('hidden'),700); }
+  };
+
+  // ---------- segmented controls + search
+  function wireSeg(id, set){
+    const seg=$(id);
+    seg.querySelectorAll('button').forEach(b=> b.onclick=()=>{ set(b.dataset.v); paintSeg(seg); renderAll(); });
+    paintSeg(seg);
+  }
+  function paintSeg(seg){
+    const cur = seg.id==='seg-status'?fStatus:fDelivery;
+    seg.querySelectorAll('button').forEach(b=> b.classList.toggle('seg-on', b.dataset.v===cur));
+  }
+  wireSeg('seg-status', v=>fStatus=v);
+  wireSeg('seg-delivery', v=>fDelivery=v);
+  $('search').oninput = (e)=>{ fSearch=(e.target.value||'').toLowerCase().trim(); renderAll(); };
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ hideDrawer(); modal.classList.add('hidden'); } });
+
+  renderAll();
+})();</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body></html>
