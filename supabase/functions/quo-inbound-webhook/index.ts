@@ -17,7 +17,7 @@
 //            standing setting per Amanda). Logging happens regardless.
 //
 // PRICING (single source of truth — do NOT drift):
-//   In-Person $1,997 · Online $397 · $200 min down, build-your-own plan.
+//   In-Person $3,000 · Online $397 · $200 min down, build-your-own plan.
 //
 // Auth: ?secret= must equal SECRET below (matches the live Quo subscription).
 
@@ -30,7 +30,7 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SITE_URL = "https://premierdentalacademyoflongview.com";
 const PDA_DIGITS = "9039136444"; // our Quo number, used to pick the "other" party
 
-const PRICE_IN_PERSON = 1997;
+const PRICE_IN_PERSON = 3000;
 const PRICE_ONLINE = 397;
 const MIN_DOWN = 200;
 

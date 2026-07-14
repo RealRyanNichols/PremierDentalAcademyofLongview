@@ -32,7 +32,7 @@ const newPricing = () => Date.now() >= CUTOVER_MS;
 const NEW_IN_PERSON = { pifCents: 300000, planTotalCents: 350000, downCents: 50000, balanceCents: 300000 };
 
 const PLANS = {
-  'in-person': { name: 'PDA RDA Program — In-Person', totalCents: 199700 },
+  'in-person': { name: 'PDA RDA Program — In-Person', totalCents: 300000 },
   'online':    { name: 'PDA RDA Program — Online (Limited Time Sale)', totalCents: 39700 },
 };
 

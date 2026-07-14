@@ -403,7 +403,7 @@
   var CUTOVER=Date.parse('2026-07-01T05:00:00Z');
   var ov=new URLSearchParams(location.search).get('pricing');
   var NEW=ov==='new'?true:ov==='old'?false:(Date.now()>=CUTOVER);
-  var IP=NEW?{down:500,planTotal:3500,pif:3000,balance:3000}:{down:200,planTotal:1997,pif:1997,balance:1797};
+  var IP=NEW?{down:500,planTotal:3500,pif:3000,balance:3000}:{down:500,planTotal:3500,pif:3000,balance:3000};
   var plan="inperson",mode="monthly";
   var root=document.getElementById("pdacalc-plans");if(!root)return;
   var body=document.getElementById("pdacalc-body"),term=document.getElementById("pdacalc-term");

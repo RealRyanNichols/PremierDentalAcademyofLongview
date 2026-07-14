@@ -637,9 +637,9 @@
     var ov = new URLSearchParams(location.search).get('pricing');
     var NEW = ov === 'new' ? true : ov === 'old' ? false : (Date.now() >= CUT);
     var M = {
-      'ip-total': NEW ? '$3,000' : '$1,997',
-      'ip-pif':   NEW ? '$3,000' : '$1,997',
-      'ip-plan':  NEW ? '$3,500' : '$1,997',
+      'ip-total': NEW ? '$3,000' : '$3,000',
+      'ip-pif':   NEW ? '$3,000' : '$3,000',
+      'ip-plan':  NEW ? '$3,500' : '$3,500',
       'ip-down':  NEW ? '$500'   : '$200'
     };
     function go() {

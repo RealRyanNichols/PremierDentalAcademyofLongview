@@ -18,7 +18,7 @@ Pages consume the facts at runtime:
 <script src="/assets/site-facts.js"></script>
 <script>
   const F = window.PDA_FACTS || {};
-  el.textContent = F.pricing.inPerson.totalDisplay; // "$1,997"
+  el.textContent = F.pricing.inPerson.totalDisplay; // "$3,000"
 </script>
 ```
 
