@@ -20,7 +20,8 @@
     </a>
     <div class="hidden md:flex items-center gap-5 lg:gap-7 text-sm font-medium text-slate-700">
       <a href="/#programs" data-nav-link class="hover:text-teal-700">Programs</a>
-      <a href="/calendar"  data-nav-link class="hover:text-teal-700">Calendar</a>
+      <a href="/curriculum" data-nav-link class="hover:text-teal-700">Curriculum</a>
+      <a href="/calendar"  data-nav-link class="hover:text-teal-700">Class dates</a>
       <div class="pda-dd relative">
         <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Free tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
@@ -74,7 +75,8 @@
 <div id="pda-mobile-menu" hidden class="fixed inset-x-0 top-16 bottom-0 z-50 bg-white overflow-y-auto md:hidden">
   <div class="px-5 py-4 flex flex-col">
     <a href="/#programs" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Programs</a>
-    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
+    <a href="/curriculum" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Curriculum</a>
+    <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Class dates</a>
     <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">For offices</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Free tools</p>
@@ -501,9 +503,11 @@
     </div>
     <nav aria-label="Programs" class="space-y-2">
       <p class="text-white font-semibold">Programs</p>
+      <a href="/curriculum" class="block hover:text-white">Curriculum — what you'll learn</a>
       <a href="/enroll?plan=in-person" class="block hover:text-white">In-person (Longview)</a>
       <a href="/enroll?plan=online" class="block hover:text-white">Online</a>
-      <a href="/calendar" class="block hover:text-white">Class calendar</a>
+      <a href="/night-class" class="block hover:text-white">Evening night class</a>
+      <a href="/calendar" class="block hover:text-white">Class dates</a>
       <a href="/apply" class="block hover:text-white">Apply free</a>
       <a href="/tour" class="block hover:text-white">Schedule a tour</a>
       <a href="/waitlist" class="block hover:text-white">Join the waitlist</a>

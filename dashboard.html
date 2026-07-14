@@ -185,7 +185,7 @@
         <h2 class="display text-xl font-bold">My courses</h2>
         <p class="text-sm text-slate-600 mt-0.5">Pulled live from your Kajabi account.</p>
       </div>
-      <a id="kajabi-library-btn" href="#" target="_blank" rel="noopener" class="hidden text-sm font-semibold text-teal-700 hover:text-teal-900">Open Kajabi library →</a>
+      <a id="kajabi-library-btn" href="https://premierdentalacademyoflongview.mykajabi.com/library" target="_blank" rel="noopener" class="text-sm font-semibold text-teal-700 hover:text-teal-900">Open my lessons in Kajabi →</a>
     </div>
     <div id="kajabi-loading" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
       <div class="animate-pulse bg-slate-100 rounded-xl h-28"></div>
@@ -694,7 +694,7 @@
     grid.innerHTML = courses.map(c => {
       const title = (c.title || 'Course').replace(/</g, '&lt;');
       const desc  = (c.description || '').replace(/<[^>]+>/g, '').slice(0, 120);
-      const href  = c.deep_link || data.library_url || '#';
+      const href  = c.deep_link || data.library_url || 'https://premierdentalacademyoflongview.mykajabi.com/library';
       return `<a href="${href}" target="_blank" rel="noopener" class="block bg-gradient-to-br from-cyan-700 to-teal-700 text-white rounded-xl p-4 hover:shadow-xl transition group">
         <div class="flex items-start gap-2 mb-2">
           <span class="w-8 h-8 bg-white/20 rounded grid place-items-center text-base">🎓</span>
