@@ -60,6 +60,7 @@
           <a href="/exam-pro" class="block px-4 py-2 hover:bg-slate-50">💎 Exam Pro — mock state board</a>
           <a href="/study-pack" class="block px-4 py-2 hover:bg-slate-50">💎 Study Pack</a>
           <a href="/exam-prep-course" class="block px-4 py-2 hover:bg-slate-50">💎 Exam-Prep Course</a>
+          <a href="/career-vault" class="block px-4 py-2 hover:bg-slate-50">💎 Career Vault — 4 tracks</a>
           <p class="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-slate-400 font-bold border-t border-slate-100 mt-1">Free — no signup</p>
           <a href="/tools/funding-finder" class="block px-4 py-2 hover:bg-slate-50">Get it paid for</a>
           <a href="/tools/take-home-pay" class="block px-4 py-2 hover:bg-slate-50">Take-home pay</a>
@@ -122,6 +123,7 @@
     <a href="/exam-pro" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam Pro — mock state board</a>
     <a href="/study-pack" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Study Pack</a>
     <a href="/exam-prep-course" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam-Prep Course</a>
+    <a href="/career-vault" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Career Vault — 4 tracks</a>
     <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-1 mt-3 mb-1">Free — no signup</p>
     <a href="/tools/funding-finder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Get it paid for</a>
     <a href="/tools/take-home-pay" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Take-home pay</a>
