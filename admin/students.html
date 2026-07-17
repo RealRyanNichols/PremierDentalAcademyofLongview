@@ -95,9 +95,9 @@
 
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
-  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
-  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
-  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || profile?.is_instructor === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   document.getElementById('view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
@@ -108,6 +108,7 @@
     const { data } = await sb.from('profiles')
       .select('id, email, first_name, last_name, phone, city, state, program, cohort, enrollment_path, enrolled_at, created_at, is_admin, kajabi_id')
       .neq('is_admin', true)
+      .neq('is_instructor', true)
       .order('created_at', { ascending: false });
     all = data || [];
     render();

@@ -122,9 +122,9 @@
 
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
-  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
-  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
-  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || profile?.is_instructor === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
   document.getElementById('loading').classList.remove('hidden');
