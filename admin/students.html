@@ -253,7 +253,7 @@
     document.getElementById('add-status').textContent = '';
     addModal.classList.remove('hidden');
     if (!cohortRows.length) {
-      const { data } = await sb.from('cohorts').select('id,name,start_date').eq('status', 'upcoming').order('start_date');
+      const { data } = await sb.from('cohorts').select('id,name,start_date').eq('status', 'upcoming').neq('delivery_mode', 'online').order('start_date');
       cohortRows = data || [];
       const sel = document.getElementById('add-cohort');
       cohortRows.forEach(c => {

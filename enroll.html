@@ -588,6 +588,7 @@ async function loadCohorts() {
   const { data } = await sb.from('cohorts')
     .select('id,name,delivery_mode,start_date,end_date,status,capacity,enrolled_count')
     .eq('status', 'upcoming')
+    .neq('delivery_mode', 'online') // online is self-paced — no dated classes
     .order('start_date', { ascending: true });
   state.cohorts = data || [];
 }
