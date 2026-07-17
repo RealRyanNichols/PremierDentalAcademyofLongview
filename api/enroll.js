@@ -358,6 +358,10 @@ export default async function handler(req, res) {
       customer_id: customer.id,
       location_id: LOCATION_ID,
       autocomplete: true,
+      // buyer_email_address matters: the square-webhook reads it to send the
+      // welcome + grant access. Without it (pre-Jul-16 bug) paid-in-full and
+      // down-payment students were silently skipped (case: Blythe S.).
+      buyer_email_address: email,
       note: `${planDef.name} — ${paidInFull ? 'Paid in full' : 'Down payment'}${cohortName ? ` (${cohortName})` : ''}`,
     })).payment;
   } catch (err) {
