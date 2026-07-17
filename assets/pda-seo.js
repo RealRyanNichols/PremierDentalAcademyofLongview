@@ -91,13 +91,13 @@
     const ORG = {
       '@context': 'https://schema.org',
       '@type': ['EducationalOrganization', 'LocalBusiness'],
-      '@id': 'https://premierdentalacademyoflongview.com/#org',
+      '@id': 'https://www.premierdentalacademyoflongview.com/#org',
       name: 'Premier Dental Academy of Longview',
       alternateName: 'PDA Longview',
       description: META.description,
-      url: 'https://premierdentalacademyoflongview.com/',
-      logo: 'https://premierdentalacademyoflongview.com/assets/logo-mark.png',
-      image: 'https://premierdentalacademyoflongview.com/assets/og-cover.png',
+      url: 'https://www.premierdentalacademyoflongview.com/',
+      logo: 'https://www.premierdentalacademyoflongview.com/assets/logo-mark.png',
+      image: 'https://www.premierdentalacademyoflongview.com/assets/og-cover.png',
       telephone: '+1-903-913-6444',
       priceRange: '$397–$3,500',
       address: {
