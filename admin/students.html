@@ -111,8 +111,20 @@
       <select id="add-cohort" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
         <option value="">No class / self-paced</option>
       </select>
+      <div class="col-span-2 border-t border-slate-200 pt-3 mt-1">
+        <div class="text-xs uppercase tracking-widest text-amber-600 font-semibold mb-2">Payment collected now? (optional)</div>
+        <div class="grid grid-cols-2 gap-3">
+          <input id="add-amount" type="number" min="0" step="0.01" placeholder="Amount collected ($)" class="px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm" />
+          <select id="add-method" class="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white">
+            <option value="cash">Cash</option>
+            <option value="check">Check</option>
+            <option value="other">Other (in person)</option>
+          </select>
+        </div>
+        <p class="text-[11px] text-slate-400 mt-1.5">Leave the amount blank if no money changed hands — the payment is recorded to the ledger so cash students show in your revenue like everyone else.</p>
+      </div>
     </div>
-    <p class="text-xs text-slate-500 mt-3">The student signs in with Google or "Forgot password" on their first visit — no password to hand out. If a class is picked, chapters stay locked until its start date.</p>
+    <p class="text-xs text-slate-500 mt-3">The student gets Amanda's welcome email with a one-tap sign-in link automatically. After that they sign in with Google or "Forgot password" — no password to hand out. If a class is picked, chapters stay locked until its start date.</p>
     <div class="flex justify-between items-center mt-3">
       <span id="add-status" class="text-xs text-slate-500"></span>
       <button id="add-save" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Add student →</button>
@@ -278,21 +290,55 @@
       return;
     }
     // Link to the class roster (drives seat counts + the class-date content lock).
-    if (cohort) {
+    let studentId = null;
+    try {
+      const { data: prof } = await sb.from('profiles').select('id').eq('email', email).maybeSingle();
+      studentId = prof ? prof.id : null;
+    } catch (e) {}
+    if (cohort && studentId) {
       try {
-        const { data: prof } = await sb.from('profiles').select('id').eq('email', email).maybeSingle();
-        if (prof) {
-          const { data: existingEnr } = await sb.from('enrollments').select('id').eq('student_id', prof.id).eq('cohort_id', cohort.id).maybeSingle();
-          if (!existingEnr) {
-            await sb.from('enrollments').insert({ student_id: prof.id, cohort_id: cohort.id, status: 'active', student_name: (first + ' ' + last).trim(), source: 'admin_manual' });
-            const { data: co } = await sb.from('cohorts').select('enrolled_count').eq('id', cohort.id).maybeSingle();
-            if (co) await sb.from('cohorts').update({ enrolled_count: (co.enrolled_count || 0) + 1 }).eq('id', cohort.id);
-          }
+        const { data: existingEnr } = await sb.from('enrollments').select('id').eq('student_id', studentId).eq('cohort_id', cohort.id).maybeSingle();
+        if (!existingEnr) {
+          await sb.from('enrollments').insert({ student_id: studentId, cohort_id: cohort.id, status: 'active', student_name: (first + ' ' + last).trim(), source: 'admin_manual' });
+          const { data: co } = await sb.from('cohorts').select('enrolled_count').eq('id', cohort.id).maybeSingle();
+          if (co) await sb.from('cohorts').update({ enrolled_count: (co.enrolled_count || 0) + 1 }).eq('id', cohort.id);
         }
       } catch (e) { /* enrollment linking is best-effort; the student account exists */ }
     }
-    statusEl.textContent = '✓ Added';
-    setTimeout(() => { addModal.classList.add('hidden'); ['add-first','add-last','add-email','add-phone'].forEach(id => document.getElementById(id).value = ''); load(); }, 700);
+
+    // Record an in-person payment so cash/check students show in revenue.
+    const amount = parseFloat(document.getElementById('add-amount').value);
+    const method = document.getElementById('add-method').value;
+    let paidNote = '';
+    if (amount > 0) {
+      try {
+        const label = (program === 'foundation' ? 'In-Person RDA Program' : program === 'career_track' ? 'Online RDA Program' : 'PDA') + ' — paid in person (' + method + ')';
+        const { error: payErr } = await sb.from('purchases').insert({
+          student_id: studentId,
+          product_key: program === 'foundation' ? 'in_person_manual' : 'online_manual',
+          product_label: label,
+          amount_cents: Math.round(amount * 100),
+          payment_type: method,
+          contact_email: email,
+          source: 'in_person',
+          status: 'completed',
+          metadata: { recorded_by: 'admin_add_student', cohort: cohort ? cohort.name : null }
+        });
+        paidNote = payErr ? ' · ⚠ payment NOT recorded (' + payErr.message + ')' : ' · $' + amount.toFixed(2) + ' ' + method + ' recorded';
+      } catch (e) { paidNote = ' · ⚠ payment NOT recorded'; }
+    }
+
+    // Fire Amanda's branded welcome email (magic sign-in link) for real students.
+    let mailNote = '';
+    if (program !== 'preview') {
+      try {
+        const wr = await sb.functions.invoke('send-welcome-email', { body: { email, first_name: first } });
+        mailNote = (wr && wr.data && wr.data.ok) ? ' · welcome email sent ✓' : ' · ⚠ welcome email failed — send manually';
+      } catch (e) { mailNote = ' · ⚠ welcome email failed — send manually'; }
+    }
+
+    statusEl.textContent = '✓ Added' + paidNote + mailNote;
+    setTimeout(() => { addModal.classList.add('hidden'); ['add-first','add-last','add-email','add-phone','add-amount'].forEach(id => document.getElementById(id).value = ''); load(); }, 2200);
   };
 
   load();
