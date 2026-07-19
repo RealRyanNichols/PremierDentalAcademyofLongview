@@ -45,6 +45,198 @@
         <input name="password" type="password" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
       </label>
       <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Sign in →</button>
+      <p class="text-center text-sm"><a href="#" id="forgot-link" class="text-teal-700 hover:underline">Forgot password?</a></p>
+    </form>
+
+    <!-- Forgot password -->
+    <form id="form-forgot" class="space-y-4 hidden">
+      <p class="text-sm text-slate-600">Enter your email and we'll send you a link to set a new password.</p>
+      <label class="block">
+        <span class="text-sm font-medium">Email</span>
+        <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+      </label>
+      <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Send reset link →</button>
+      <p class="text-center text-sm"><a href="#" id="back-to-signin" class="text-teal-700 hover:underline">← Back to sign in</a></p>
+    </form>
+
+    <!-- Sign up -->
+    <form id="form-signup" class="space-y-4 hidden">
+      <div class="grid grid-cols-2 gap-3">
+        <label class="block">
+          <span class="text-sm font-medium">First</span>
+          <input name="first_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Last</span>
+          <input name="last_name" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+      </div>
+      <label class="block">
+        <span class="text-sm font-medium">Email</span>
+        <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-medium">Password</span>
+        <input name="password" type="password" required minlength="8" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+        <span class="text-xs text-slate-500">At least 8 characters</span>
+      </label>
+      <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Create account →</button>
+      <p class="text-xs text-slate-500 text-center">Already enrolled? Use the email Amanda set you up with.</p>
+    </form>
+
+    <!-- Magic link -->
+    <form id="form-magic" class="space-y-4 hidden">
+      <p class="text-sm text-slate-600">We'll email you a one-time sign-in link. No password to remember.</p>
+      <label class="block">
+        <span class="text-sm font-medium">Email</span>
+        <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+      </label>
+      <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Email me a link →</button>
+    </form>
+
+    <div id="msg" class="hidden mt-4 p-3 rounded-lg text-sm"></div>
+  </div>
+
+  <p class="text-center text-sm text-slate-500 mt-6">
+    Not enrolled yet? <a href="/enroll" class="text-teal-700 hover:underline font-semibold">Enroll →</a>
+    &nbsp;·&nbsp;
+    <a href="/" class="text-teal-700 hover:underline">Back to home</a>
+  </p>
+</main>
+
+<script>
+(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const msg = document.getElementById('msg');
+  const show = (text, tone = 'info') => {
+    msg.textContent = text;
+    msg.className = `mt-4 p-3 rounded-lg text-sm ${tone === 'error' ? 'bg-rose-50 text-rose-900 border border-rose-200' : tone === 'success' ? 'bg-emerald-50 text-emerald-900 border border-emerald-200' : 'bg-slate-50 text-slate-700 border border-slate-200'}`;
+    msg.classList.remove('hidden');
+  };
+
+  // Tab switching
+  document.querySelectorAll('[data-tab]').forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll('[data-tab]').forEach(x => { x.classList.remove('bg-white', 'shadow-sm', 'text-slate-900'); x.classList.add('text-slate-600'); });
+      b.classList.add('bg-white', 'shadow-sm', 'text-slate-900');
+      b.classList.remove('text-slate-600');
+      document.querySelectorAll('form').forEach(f => f.classList.add('hidden'));
+      document.getElementById('form-' + b.dataset.tab).classList.remove('hidden');
+      msg.classList.add('hidden');
+    };
+  });
+
+  // Auto-redirect if already signed in
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) location.href = '/dashboard';
+
+  document.getElementById('form-signin').onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const { error } = await sb.auth.signInWithPassword({ email: fd.get('email'), password: fd.get('password') });
+    if (error) return show(error.message, 'error');
+    show('Welcome back. Redirecting…', 'success');
+    setTimeout(() => location.href = '/dashboard', 600);
+  };
+
+  document.getElementById('form-signup').onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const { error } = await sb.auth.signUp({
+      email: fd.get('email'),
+      password: fd.get('password'),
+      options: { data: { first_name: fd.get('first_name'), last_name: fd.get('last_name') } },
+    });
+    if (error) return show(error.message, 'error');
+    show('Account created! Check your email for the confirmation link.', 'success');
+  };
+
+  document.getElementById('forgot-link').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('form-signin').classList.add('hidden');
+    document.getElementById('form-forgot').classList.remove('hidden');
+    msg.classList.add('hidden');
+  };
+  document.getElementById('back-to-signin').onclick = (e) => {
+    e.preventDefault();
+    document.getElementById('form-forgot').classList.add('hidden');
+    document.getElementById('form-signin').classList.remove('hidden');
+    msg.classList.add('hidden');
+  };
+  document.getElementById('form-forgot').onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const { error } = await sb.auth.resetPasswordForEmail(fd.get('email'), {
+      redirectTo: location.origin + '/reset-password',
+    });
+    if (error) return show(error.message, 'error');
+    show('Reset link sent. Check your email (and spam folder).', 'success');
+  };
+
+  document.getElementById('form-magic').onsubmit = async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const { error } = await sb.auth.signInWithOtp({
+      email: fd.get('email'),
+      options: { emailRedirectTo: location.origin + '/dashboard' },
+    });
+    if (error) return show(error.message, 'error');
+    show('Sign-in link sent. Check your email.', 'success');
+  };
+})();
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign in — Premier Dental Academy of Longview</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-cyan-50/40 to-teal-50/40 min-h-screen flex items-center">
+
+<main class="max-w-md w-full mx-auto p-6">
+  <a href="/" class="flex items-center justify-center gap-2 font-bold text-slate-900 mb-8">
+    <span class="inline-block w-9 h-9 rounded-lg bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-lg grid place-items-center">P</span>
+    <span class="text-lg">Premier Dental Academy</span>
+  </a>
+
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-lg p-8">
+    <h1 class="display text-2xl font-bold mb-1">Welcome back</h1>
+    <p class="text-sm text-slate-500 mb-6">Sign in to access the full trainers and save your progress.</p>
+
+    <div id="login-tabs" class="flex gap-1 mb-5 bg-slate-100 p-1 rounded-lg text-sm font-medium">
+      <button type="button" data-tab="signin" class="flex-1 py-2 rounded-md bg-white shadow-sm text-slate-900">Sign in</button>
+      <button type="button" data-tab="signup" class="flex-1 py-2 rounded-md text-slate-600 hover:text-slate-900">Create account</button>
+      <button type="button" data-tab="magic"  class="flex-1 py-2 rounded-md text-slate-600 hover:text-slate-900">Magic link</button>
+    </div>
+
+    <!-- Sign in -->
+    <form id="form-signin" class="space-y-4">
+      <label class="block">
+        <span class="text-sm font-medium">Email</span>
+        <input name="email" type="email" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+      </label>
+      <label class="block">
+        <span class="text-sm font-medium">Password</span>
+        <input name="password" type="password" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+      </label>
+      <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Sign in →</button>
     </form>
 
     <!-- Sign up -->
