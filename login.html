@@ -64,6 +64,25 @@
       </div>
     </div>
 
+    <!-- Set-new-password panel (shown when arriving from a password-reset email) -->
+    <div id="recovery-card" class="hidden bg-white rounded-2xl border border-slate-200 shadow-2xl p-7 sm:p-8">
+      <div class="text-5xl mb-3">🔑</div>
+      <h1 class="display text-2xl font-bold">Set a new password</h1>
+      <p class="text-slate-600 mt-2 text-sm">Choose a new password for <span id="recovery-email" class="font-semibold text-slate-900"></span>. You'll use it to sign in from now on.</p>
+      <form id="form-recovery" class="space-y-4 mt-5 text-left">
+        <label class="block">
+          <span class="text-sm font-medium">New password</span>
+          <input name="password" type="password" required minlength="8" autocomplete="new-password" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+          <span class="text-xs text-slate-500">At least 8 characters</span>
+        </label>
+        <label class="block">
+          <span class="text-sm font-medium">Confirm new password</span>
+          <input name="confirm" type="password" required minlength="8" autocomplete="new-password" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600" />
+        </label>
+        <button type="submit" id="recovery-save" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-2.5 rounded-lg">Save password →</button>
+      </form>
+    </div>
+
     <div id="signin-card" class="bg-white rounded-2xl border border-slate-200 shadow-2xl p-7 sm:p-8 hidden">
 
       <h1 class="display text-3xl font-extrabold leading-tight">Welcome <span class="gradient-text">back</span>.</h1>
@@ -175,6 +194,24 @@
 
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true },
+  });
+
+  // ── Password-recovery detection ──
+  // Supabase appends "#...type=recovery" when the user clicks a reset-password email link.
+  // In that case we must show a "set new password" form instead of bouncing to the dashboard.
+  let recoveryMode = /type=recovery/.test(location.hash);
+  function showRecoveryCard(email) {
+    recoveryMode = true;
+    var rc = document.getElementById('recovery-card');
+    var sc = document.getElementById('signin-card');
+    var sp = document.getElementById('signed-in-panel');
+    if (email) document.getElementById('recovery-email').textContent = email;
+    if (sc) sc.classList.add('hidden');
+    if (sp) sp.classList.add('hidden');
+    if (rc) rc.classList.remove('hidden');
+  }
+  sb.auth.onAuthStateChange((event, session) => {
+    if (event === 'PASSWORD_RECOVERY') showRecoveryCard(session && session.user && session.user.email);
   });
 
   // ── UI helpers ──
@@ -316,13 +353,35 @@
     show('Password reset link sent to ' + email + '.', 'success');
   };
 
+  // ── Set-new-password form (recovery flow) ──
+  document.getElementById('form-recovery').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const password = fd.get('password');
+    if (password !== fd.get('confirm')) return show('Passwords do not match.', 'error');
+    const btn = document.getElementById('recovery-save');
+    lockButton(btn, 'Saving…');
+    const { error } = await sb.auth.updateUser({ password });
+    if (error) { unlockButton(btn); return show(error.message, 'error'); }
+    // Clear the "needs password setup" flag on their profile (best effort).
+    try {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) await sb.from('profiles').update({ needs_password_setup: false }).eq('id', user.id);
+    } catch (_) {}
+    show('Password saved! Taking you to your dashboard…', 'success');
+    setTimeout(() => location.href = '/dashboard', 900);
+  });
+
   // ── Reveal the appropriate panel based on session state.
+  //    Recovery   →  show the "set new password" card (from a reset-password email).
   //    Signed in  →  show the "already signed in / sign out" card (no bounce).
   //    Signed out →  show the normal sign-in form card.
   (async () => {
     try {
       const { data: { session } } = await sb.auth.getSession();
-      if (session) {
+      if (recoveryMode) {
+        showRecoveryCard(session && session.user && session.user.email);
+      } else if (session) {
         document.getElementById('signed-in-email').textContent = session.user?.email || 'your account';
         document.getElementById('signed-in-panel').classList.remove('hidden');
         document.getElementById('signin-card').classList.add('hidden');
@@ -331,7 +390,8 @@
       }
     } catch (e) {
       // If the session check errors, fall back to showing the sign-in form.
-      document.getElementById('signin-card').classList.remove('hidden');
+      if (recoveryMode) showRecoveryCard();
+      else document.getElementById('signin-card').classList.remove('hidden');
     }
   })();
 })();
