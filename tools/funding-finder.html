@@ -101,7 +101,7 @@ tailwind.config = { theme: { extend: {
       matches.push(card('🏛️', 'Texas Workforce Solutions / WIOA', 'You may qualify for WIOA funding that can help cover tuition. You apply directly with Workforce Solutions East Texas — start their free <a href="https://www.easttexasworkforce.org/apply" target="_blank" rel="noopener" class="underline">WIOA interest form</a>. They contact you within about 3 business days; the whole process takes ~6–8 weeks, so start early.', true));
     }
     if (ans.parent === 'Yes' || ans.lowincome === 'Yes') {
-      matches.push(card('💛', 'Scholarship / hardship help', 'We never want money to be the only thing in your way. Ask Amanda about scholarship or hardship options for parents and students rebuilding. <span class="text-slate-400">[Amanda to confirm details]</span>', false));
+      matches.push(card('💛', 'WIOA funding & payment plans', 'We never want money to be the only thing in your way. WIOA funding through Workforce Solutions East Texas can cover tuition for eligible students, and we offer affordable weekly payment plans. Ask Amanda where to start.', false));
     }
     // Always-available options
     matches.push(card('💳', 'Simple payment plan', '$3,000 paid in full, or $3,500 on a plan — $500 down holds your seat, then small weekly or monthly payments (up to 12); your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
