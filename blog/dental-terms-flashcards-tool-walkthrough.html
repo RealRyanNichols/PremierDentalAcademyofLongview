@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A Walkthrough of the Free Dental Terms Flashcards Tool</title>
+  <meta name="description" content="A guided tour of our free dental terminology flashcards — how spaced repetition works, how to build a 10-minute daily habit, and a mini demo you can try right in this post." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/dental-terms-flashcards-tool-walkthrough" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/dental-terms-flashcards-tool-walkthrough" />
+  <meta property="og:title" content="A Walkthrough of the Free Dental Terms Flashcards Tool" />
+  <meta property="og:description" content="How spaced repetition locks in dental terminology — with a mini flashcard demo you can try right in the post." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Free Dental Terms Flashcards Tool" />
+  <meta name="twitter:description" content="A guided tour of our free terminology flashcards — plus a mini demo." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"A Walkthrough of the Free Dental Terms Flashcards Tool","description":"How spaced repetition locks in dental terminology — with a mini flashcard demo you can try right in the post.","datePublished":"2026-07-22","dateModified":"2026-07-22","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og-cover.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/dental-terms-flashcards-tool-walkthrough"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Feature spotlight · Free tools</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">A walkthrough of the free dental terms flashcards tool</h1>
+  <p class="text-slate-500 mt-3 text-lg">Half of feeling confident in a dental office is simply knowing what everything is called. Our free flashcards tool turns that mountain of vocabulary into a ten-minute daily habit — here's how it works, plus a mini demo you can try without leaving this page.</p>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">Why terminology is half the battle</h2>
+    <p>Walk into any operatory and the language comes fast: "Pass me the explorer." "Chart a distal on 30." "Set up for a prophy." None of it is hard once you know it — but until you do, even simple instructions feel like a foreign language. That's why terminology is one of the first things we drill in training, and why we built a free tool anyone can use to start early, before class even begins.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">What the flashcards tool is</h2>
+    <p>The <a href="/tools/flashcards" class="text-teal-700 font-semibold">flashcards tool</a> is a free, browser-based deck of the dental terms our students actually use — instruments, tooth surfaces, procedures, abbreviations. No app to install, no account required, works on your phone. Tap a card to flip it, tell it whether you knew the answer, and it does the rest.</p>
+    <div class="bg-slate-50 border-l-4 border-cyan-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">Made for pockets of time</div>
+      <p class="mt-1 mb-0">The whole tool is designed around real life: five minutes in the school pickup line, ten on lunch break, a few cards while supper cooks. Little and often is the entire strategy.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">How spaced repetition works (in plain English)</h2>
+    <p>Your brain forgets on a schedule — steep at first, flatter each time you successfully recall something. Spaced repetition works with that curve instead of against it: cards you miss come back quickly, cards you know come back less and less often. So your limited study minutes get spent almost entirely on the terms you haven't locked in yet, instead of re-reading the ones you already know. It's the difference between studying a list and actually training your memory.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Try it: a four-card mini demo</h2>
+    <p>Tap a card to flip it. These four are pulled straight from the kind of terms you'll meet in week one.</p>
+    <div class="not-prose">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button class="fc bg-teal-50 border border-teal-200 rounded-xl p-5 text-center min-h-[110px]" data-f="0"><span class="block font-bold text-teal-800 text-lg fc-face">mesial</span><span class="block text-xs text-slate-500 mt-2 fc-hint">tap to flip</span></button>
+        <button class="fc bg-amber-50 border border-amber-200 rounded-xl p-5 text-center min-h-[110px]" data-f="1"><span class="block font-bold text-amber-700 text-lg fc-face">occlusal</span><span class="block text-xs text-slate-500 mt-2 fc-hint">tap to flip</span></button>
+        <button class="fc bg-cyan-50 border border-cyan-200 rounded-xl p-5 text-center min-h-[110px]" data-f="2"><span class="block font-bold text-cyan-700 text-lg fc-face">HVE</span><span class="block text-xs text-slate-500 mt-2 fc-hint">tap to flip</span></button>
+        <button class="fc bg-slate-50 border border-slate-200 rounded-xl p-5 text-center min-h-[110px]" data-f="3"><span class="block font-bold text-slate-700 text-lg fc-face">prophylaxis</span><span class="block text-xs text-slate-500 mt-2 fc-hint">tap to flip</span></button>
+      </div>
+      <p class="text-sm text-slate-500 mt-3">Like these? The full tool has whole decks of them — <a href="/tools/flashcards" class="text-teal-700 font-semibold">open the flashcards tool free</a>.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Build the ten-minute habit</h2>
+    <p>Pick a trigger you already do daily — morning coffee, lunch, the couch after the kids are down — and attach ten minutes of cards to it. Same time, same place, phone timer on. Within a couple of weeks the vocabulary that felt overwhelming starts sounding like plain English, and class time gets easier because you're not translating in your head while trying to learn a skill with your hands.</p>
+    <div class="bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">Start before day one</div>
+      <p class="mt-1 mb-0">Enrolled for an upcoming cohort — or still deciding? The flashcards are free either way. Students who show up on day one already knowing twenty terms feel the difference immediately. Pair it with the <a href="/blog/dental-terms-day-one-cheat-sheet" class="text-teal-700 font-semibold">day-one cheat sheet</a>.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Where it fits with the rest of the free tools</h2>
+    <p>Flashcards handle the words; the rest of our free tools handle the doing. The <a href="/skills-lab" class="text-teal-700 font-semibold">Skills Lab</a> covers competencies and simulators, the <a href="/tools/practice-exam" class="text-teal-700 font-semibold">practice exam</a> shows you where you stand, and <a href="/tools/practice-pro" class="text-teal-700 font-semibold">Practice Pro</a> lets you try real charting and front-desk workflows. Together they're a genuine head start on training — and they're all free because we'd rather show you how we teach than tell you.</p>
+
+    <div class="not-prose" data-pda-lead data-topic="dental-terms-flashcards-tool-walkthrough" data-heading="Questions about the free tools or the program? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">Learn the language. Then learn the career.</h2>
+      <p class="text-teal-100 mb-5">Start with the free flashcards today — and when you're ready, train hands-on in Longview or online.</p>
+      <a href="/tools/flashcards" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Open the free flashcards →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/dental-terms-day-one-cheat-sheet" class="text-teal-700 font-semibold">Dental terms day-one cheat sheet</a> · <a href="/blog/free-dental-assistant-practice-resources" class="text-teal-700 font-semibold">All the free practice resources</a> · <a href="/blog/study-25-minutes-a-day-busy-parents" class="text-teal-700 font-semibold">Study 25 minutes a day</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var cards=[
+    {front:"mesial",back:"The tooth surface facing toward the midline of the mouth."},
+    {front:"occlusal",back:"The chewing surface of a back tooth (molars and premolars)."},
+    {front:"HVE",back:"High-volume evacuator — the strong suction the assistant controls chairside."},
+    {front:"prophylaxis",back:"A professional dental cleaning — 'prophy' for short."}
+  ];
+  var flipped=[false,false,false,false];
+  document.querySelectorAll('.fc').forEach(function(el){
+    el.addEventListener('click',function(){
+      var i=+el.dataset.f; flipped[i]=!flipped[i];
+      var face=el.querySelector('.fc-face'),hint=el.querySelector('.fc-hint');
+      if(flipped[i]){face.textContent=cards[i].back;face.classList.remove('text-lg');face.classList.add('text-sm');hint.textContent='tap to flip back';}
+      else{face.textContent=cards[i].front;face.classList.remove('text-sm');face.classList.add('text-lg');hint.textContent='tap to flip';}
+    });
+  });
+})();
+</script>
+</body>
+</html>
