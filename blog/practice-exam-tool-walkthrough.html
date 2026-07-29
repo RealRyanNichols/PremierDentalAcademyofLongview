@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>A Walkthrough of the Free RDA Practice Exam Tool</title>
+  <meta name="description" content="A guided tour of Premier Dental Academy's free Texas RDA practice exam — how it works, what your score really means, and how to turn one practice run into a study plan." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .chk-item.done { background:#f0fdfa; border-color:#0f766e; }
+    .chk-item.done .chk-box { background:#0f766e; border-color:#0f766e; color:#fff; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/practice-exam-tool-walkthrough" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/practice-exam-tool-walkthrough" />
+  <meta property="og:title" content="A Walkthrough of the Free RDA Practice Exam Tool" />
+  <meta property="og:description" content="How the free practice exam works, what your score really means, and how to turn one practice run into a study plan." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-practice-exam-tool-walkthrough.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="A Walkthrough of the Free RDA Practice Exam Tool" />
+  <meta name="twitter:description" content="How it works, what your score means, and what to do next." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-practice-exam-tool-walkthrough.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"A Walkthrough of the Free RDA Practice Exam Tool","description":"How the free practice exam works, what your score really means, and how to turn one practice run into a study plan.","datePublished":"2026-07-29","dateModified":"2026-07-29","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og/blog-practice-exam-tool-walkthrough.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/practice-exam-tool-walkthrough"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Feature Spotlight · Free tools</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">A walkthrough of the free RDA practice exam tool</h1>
+  <p class="text-slate-500 mt-3 text-lg">Before you sit for anything official in Texas, you should know exactly where you stand. Our free practice exam exists for one reason: to show you your soft spots while they're still cheap to fix. Here's how to use it well.</p>
+
+  <div class="grid grid-cols-3 gap-3 mt-8 not-prose">
+    <div class="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-teal-700">$0</div><div class="text-xs text-slate-600 mt-1">what the practice exam costs — it's free</div></div>
+    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-amber-600">3</div><div class="text-xs text-slate-600 mt-1">course areas Texas requires: radiology, jurisprudence, infection control</div></div>
+    <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-cyan-700">1</div><div class="text-xs text-slate-600 mt-1">honest sitting is all it takes to find your soft spots</div></div>
+  </div>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">What this tool is — and what it isn't</h2>
+    <p>The <a href="/tools/practice-exam" class="text-teal-700 font-semibold">free RDA practice exam</a> is a set of original practice questions built around the material Texas expects a Registered Dental Assistant to know — the same territory covered by the required radiology, jurisprudence, and infection control coursework. You answer multiple-choice questions, get a score, and see where you were shaky.</p>
+    <div class="bg-slate-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">This is practice, not the state exam.</div>
+      <p class="mt-1 mb-0">These are our own study questions — not official state exam questions, and a score here doesn't predict or guarantee anything official. For the real requirements, the authority is the <a href="https://tsbde.texas.gov" class="text-teal-700 font-semibold" rel="noopener">Texas State Board of Dental Examiners</a>. Think of our tool as the scrimmage before the game.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Starting your first practice run</h2>
+    <p>Go to <a href="/tools/practice-exam" class="text-teal-700 font-semibold">the practice exam page</a>, unlock it with your name and email, and start answering. There's nothing to install and nothing to pay. It works fine on a phone, though if you have a laptop handy, the bigger screen makes it easier to read each question slowly — and reading slowly matters more than you'd think, because most missed questions are misread questions.</p>
+    <p>One piece of advice for the first run: <strong>don't study first.</strong> That sounds backwards, but the whole value of a first attempt is getting an honest baseline. If you cram the night before your own practice test, you've only measured your short-term memory. Take it cold, and the result tells you the truth.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">What your score actually means</h2>
+    <p>The number matters less than what's underneath it. A rough score on a cold first attempt is <em>normal</em> — most people researching dental assisting haven't studied radiation physics or Texas dental law yet, and there's no reason they'd score well. What you're looking for is the shape of your misses: were they clustered in one subject, or scattered everywhere? Clustered misses mean one focused study block can move your score a lot. Scattered misses usually mean vocabulary is the real problem — you can't answer questions written in a language you haven't learned yet.</p>
+    <p>We wrote a whole companion piece on this — <a href="/blog/free-rda-practice-exam-what-your-score-means" class="text-teal-700 font-semibold">what your practice exam score means</a> — if you want to go deeper on reading your result.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Read your misses like an instructor would</h2>
+    <p>When an instructor reviews a practice test, they don't count the misses — they sort them. Try sorting yours into three piles:</p>
+    <div class="bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg">
+      <p class="mb-2"><strong>1. Didn't know it.</strong> You'd never seen the material. That's a study-plan item, not a failure — nobody is born knowing what ALARA stands for.</p>
+      <p class="mb-2"><strong>2. Knew it, second-guessed it.</strong> Your first instinct was right and you changed it. This pile shrinks with confidence, and confidence comes from repetition.</p>
+      <p class="mb-0"><strong>3. Misread the question.</strong> You knew the answer to the question they <em>didn't</em> ask. The fix is slowing down and re-reading the stem — especially words like "except," "first," and "most."</p>
+    </div>
+    <p>Ten minutes of sorting turns a discouraging number into a to-do list. And a to-do list is something you can actually work.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Turning one practice run into a study plan</h2>
+    <p>Once you know your piles, the plan almost writes itself. Pile one becomes your reading list. Pile two becomes flashcard reps — our free <a href="/tools/flashcards" class="text-teal-700 font-semibold">dental terminology flashcards</a> are built for exactly this. Pile three becomes a habit: on every future practice question, underline the operative word in the stem before you look at the answers. Then schedule a second practice run a week or two out and compare. The trend line matters far more than any single score.</p>
+    <p>If you want a structured version of this, we've laid one out in <a href="/blog/how-to-pass-the-rda-exam-study-plan" class="text-teal-700 font-semibold">our RDA exam study plan</a>.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Before you hit start: a 60-second setup</h2>
+    <p>A practice score is only useful if the conditions were honest. Tap each item as you set up — the bar fills as you go:</p>
+    <div class="not-prose">
+      <div class="w-full bg-slate-100 rounded-full h-3 mb-4"><div id="chkBar" class="bg-teal-600 h-3 rounded-full transition-all" style="width:0%"></div></div>
+      <div class="space-y-2" id="chkList">
+        <button class="chk-item w-full text-left flex items-start gap-3 border border-slate-200 rounded-xl p-3"><span class="chk-box shrink-0 w-6 h-6 mt-0.5 border-2 border-slate-300 rounded-md text-sm font-bold flex items-center justify-center">✓</span><span class="text-[15px] text-slate-700"><strong>Set aside one quiet, unhurried stretch.</strong> Rushing produces pile-three misses that aren't really misses.</span></button>
+        <button class="chk-item w-full text-left flex items-start gap-3 border border-slate-200 rounded-xl p-3"><span class="chk-box shrink-0 w-6 h-6 mt-0.5 border-2 border-slate-300 rounded-md text-sm font-bold flex items-center justify-center">✓</span><span class="text-[15px] text-slate-700"><strong>Phone on do-not-disturb.</strong> One text mid-question is worth about two wrong answers.</span></button>
+        <button class="chk-item w-full text-left flex items-start gap-3 border border-slate-200 rounded-xl p-3"><span class="chk-box shrink-0 w-6 h-6 mt-0.5 border-2 border-slate-300 rounded-md text-sm font-bold flex items-center justify-center">✓</span><span class="text-[15px] text-slate-700"><strong>No notes, no Googling.</strong> An assisted score measures nothing. Cold and honest is the goal.</span></button>
+        <button class="chk-item w-full text-left flex items-start gap-3 border border-slate-200 rounded-xl p-3"><span class="chk-box shrink-0 w-6 h-6 mt-0.5 border-2 border-slate-300 rounded-md text-sm font-bold flex items-center justify-center">✓</span><span class="text-[15px] text-slate-700"><strong>Keep paper next to you.</strong> Jot every topic that made you hesitate — that list is the real product of today.</span></button>
+        <button class="chk-item w-full text-left flex items-start gap-3 border border-slate-200 rounded-xl p-3"><span class="chk-box shrink-0 w-6 h-6 mt-0.5 border-2 border-slate-300 rounded-md text-sm font-bold flex items-center justify-center">✓</span><span class="text-[15px] text-slate-700"><strong>Pick your rematch date now.</strong> A second run in one to two weeks turns a score into a trend.</span></button>
+      </div>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Where this fits in real training</h2>
+    <p>The practice exam is a mirror, not a teacher. It shows you where you stand; it can't put the knowledge in. That part happens in training — working through radiology, jurisprudence, and infection control properly, practicing chairside skills, and charting in the same kinds of tools real offices use. That's what our roughly 12-week program in Longview is built around, with classes in the daytime — <a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> for exact hours, or browse <a href="/calendar" class="text-teal-700 font-semibold">upcoming start dates</a>. Prefer to start from home? The <a href="/enroll" class="text-teal-700 font-semibold">online program</a> is self-paced and starts any day.</p>
+    <p>Either way, the practice exam stays free the whole time. Use it before you enroll to see where you're starting, and during training to watch the line go up. Watching your own score climb is one of the most motivating things in the entire program — because it's proof, in your own numbers, that you're becoming the person who can do this job.</p>
+
+    <div class="not-prose" data-pda-lead data-topic="practice-exam-tool-walkthrough" data-heading="Took a practice run and have questions about your result? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">See where you stand — free, in one sitting.</h2>
+      <p class="text-teal-100 mb-5">Take the practice exam, sort your misses, and know exactly what to work on next.</p>
+      <a href="/tools/practice-exam" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Take the free practice exam →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/free-rda-practice-exam-what-your-score-means" class="text-teal-700 font-semibold">What your score means</a> · <a href="/blog/how-to-pass-the-rda-exam-study-plan" class="text-teal-700 font-semibold">The RDA exam study plan</a> · <a href="/blog/dental-terms-flashcards-tool-walkthrough" class="text-teal-700 font-semibold">The flashcards tool walkthrough</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var items=document.querySelectorAll('.chk-item'),bar=document.getElementById('chkBar');
+  items.forEach(function(b){b.addEventListener('click',function(){
+    b.classList.toggle('done');
+    var done=document.querySelectorAll('.chk-item.done').length;
+    bar.style.width=Math.round(done/items.length*100)+'%';
+  });});
+})();
+</script>
+</body>
+</html>
