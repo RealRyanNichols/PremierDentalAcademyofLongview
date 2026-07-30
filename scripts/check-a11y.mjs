@@ -10,7 +10,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 const SKIP_DIRS = [".git", "node_modules", "scripts", "assets", "admin", "marketing",
   "templates", "tools", "skills-lab", "db", "supabase", ".vercel", "kajabi-weeks-7-12",
-  "design-reference"];
+  "design-reference",
+  'googlef6ce92f7fc9aa025.html', // GSC verification file
+];
 const SKIP_FILES = new Set(["login.html", "logout.html", "dashboard.html", "portal.html",
   "enroll-success.html", "congrats.html", "thank-you.html", "unsubscribe.html",
   "404.html", "feed.html", "admin.html"]);

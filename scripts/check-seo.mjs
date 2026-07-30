@@ -12,7 +12,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 // App-like, admin, transactional, and non-page dirs are not indexable marketing pages.
 const SKIP_DIRS = [".git", "node_modules", "scripts", "assets", "admin", "marketing",
   "templates", "tools", "skills-lab", "db", "supabase", ".vercel", "kajabi-weeks-7-12",
-  "design-reference"];
+  "design-reference",
+  'googlef6ce92f7fc9aa025.html', // Google Search Console verification file — must stay bare
+];
 // Utility / auth / transactional / noindex pages that don't need marketing SEO.
 const SKIP_FILES = new Set(["login.html", "logout.html", "dashboard.html", "portal.html",
   "enroll-success.html", "congrats.html", "thank-you.html", "unsubscribe.html",
