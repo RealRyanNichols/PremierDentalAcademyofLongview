@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://premierdentalacademyoflongview.com/sitemap.xml
+Sitemap: https://www.premierdentalacademyoflongview.com/sitemap.xml

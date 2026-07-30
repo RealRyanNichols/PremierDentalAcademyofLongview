@@ -61,8 +61,8 @@
     programLength: {
       weeks: 12,
       display: "about 12 weeks",
-      needsOwnerConfirmation: true,
-      note: "CONFLICT: the live site uniformly says ~12 weeks (kept here as the latest production value). The owner mentioned older source material says 14 weeks. The string '14 weeks' is NOT present anywhere in this repo. Online self-paced may run longer (one blog references 24 weeks). DO NOT change silently — confirm with Amanda/Ryan."
+      needsOwnerConfirmation: false,
+      note: "CONFIRMED by Amanda 2026-07-30: the program is 12 weeks. (Online self-paced pacing varies by student.)"
     },
 
     cohortSeats: {
