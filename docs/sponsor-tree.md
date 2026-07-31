@@ -74,6 +74,23 @@ choose this themselves at checkout ("Light my lantern").
 Square location `2P2ZE3FJNEYTV` re-verified ACTIVE (credit-card capable) via
 Square API on 2026-07-31.
 
+## The wow layer (v2, same day)
+
+Tap/click any leaf → sparkle burst + a pop-card with her story, live progress
+bar and a "Sponsor her →" button (auto-places below top-row leaves so it never
+hides under the sticky nav). Ambience: aurora wisps, shooting stars, moon halo,
+grass + ember lights at the roots, gold petals drifting off sponsored blooms.
+Businesses hang as lanterns from a glowing string (horizontal swipe when there
+are many). Stats count up when scrolled into view; a confetti burst fires when
+an online payment completes. Everything is vanilla SVG/CSS/JS and disabled
+under `prefers-reduced-motion`.
+
+The page's OG share image (`assets/og-sponsor-a-student.png`) is a real
+1200×630 render of the tree's EMPTY state (open seats — no fabricated
+students/numbers), so shares on Facebook/iMessage show the tree itself. To
+refresh it later (e.g. once real leaves are up), re-run the session's headless
+capture (`shoot.js` pattern) — or screenshot the live section at 1200×630.
+
 ## Rules that must not break
 
 - **No PII on the public page, ever.** Leaves are first name + last initial,

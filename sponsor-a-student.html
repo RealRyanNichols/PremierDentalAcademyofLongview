@@ -55,8 +55,54 @@ tailwind.config = { theme: { extend: {
   .lantern-glow{animation:pulseGlow 4s ease-in-out infinite}
   .amt-btn.active{background:#f59e0b;color:#fff;border-color:#f59e0b}
   #card-container{min-height:44px}
+
+  /* aurora wisps behind the tree */
+  .night{position:relative}
+  .night>*:not(.aurora){position:relative;z-index:1}
+  .aurora{position:absolute;z-index:0;border-radius:9999px;filter:blur(70px);pointer-events:none;will-change:transform}
+  .aurora.a1{width:560px;height:280px;left:-130px;top:-50px;opacity:.32;
+    background:radial-gradient(closest-side,#14b8a6,transparent);animation:auroraDrift 19s ease-in-out infinite alternate}
+  .aurora.a2{width:520px;height:250px;right:-110px;top:80px;opacity:.2;
+    background:radial-gradient(closest-side,#f59e0b,transparent);animation:auroraDrift 24s ease-in-out infinite alternate-reverse}
+  @keyframes auroraDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,26px) scale(1.12)}}
+
+  /* shooting stars */
+  .shoot{opacity:0;animation:shoot 9s linear infinite}
+  .shoot.sh2{animation-delay:4.7s;animation-duration:12s}
+  @keyframes shoot{0%,5%{opacity:0;transform:translate(0,0)}6.5%{opacity:1}12%{opacity:0;transform:translate(-360px,160px)}100%{opacity:0;transform:translate(-360px,160px)}}
+
+  /* gold petals drifting off sponsored blooms */
+  .petal{transform-box:fill-box;transform-origin:center;animation:petalFall 6.5s ease-in infinite}
+  @keyframes petalFall{0%{opacity:0;transform:translate(0,0) rotate(0deg)}10%{opacity:.9}100%{opacity:0;transform:translate(-26px,140px) rotate(140deg)}}
+
+  /* sparkle burst on leaf tap */
+  .sparkle{transition:transform .55s cubic-bezier(.2,.7,.3,1),opacity .55s ease-out}
+
+  /* leaf pop-card */
+  #leaf-tip{position:absolute;z-index:30;width:min(260px,72vw);transform:translate(-50%,-100%);
+    background:rgba(10,18,38,.92);border:1px solid rgba(251,191,36,.5);border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 30px rgba(251,191,36,.12);backdrop-filter:blur(6px)}
+  #leaf-tip::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);
+    background:rgba(10,18,38,.92);border-right:1px solid rgba(251,191,36,.5);border-bottom:1px solid rgba(251,191,36,.5)}
+  #leaf-tip.tip-below{transform:translate(-50%,0)}
+  #leaf-tip.tip-below::after{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
+  .lantern-string::-webkit-scrollbar{display:none}
+
+  /* businesses hang from a glowing string */
+  .lantern-string{position:relative;display:flex;gap:1rem;overflow-x:auto;padding:12px 8px 10px;justify-content:safe center;scrollbar-width:none}
+  .lantern-string::before{content:"";position:absolute;top:8px;left:0;right:0;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,rgba(251,191,36,.55) 15%,rgba(251,191,36,.55) 85%,transparent)}
+  .lantern-item{position:relative;flex:0 0 auto;margin-top:16px}
+  .lantern-item::before{content:"";position:absolute;top:-15px;left:50%;width:2px;height:15px;background:rgba(251,191,36,.5)}
+  .lantern-item>.lantern{transform-origin:top center;
+    animation:dangle 6s ease-in-out infinite, pulseGlow 4s ease-in-out infinite;animation-delay:inherit}
+
+  /* confetti on a completed sponsorship */
+  .confetti{position:fixed;top:-14px;z-index:100;pointer-events:none;border-radius:2px;animation:confettiFall linear forwards}
+  @keyframes confettiFall{to{transform:translateY(112vh) rotate(760deg)}}
+
   @media (prefers-reduced-motion: reduce){
-    .star,.orn-anim,#canopy,.ff,.glow-pulse,.lantern-glow{animation:none !important}
+    .star,.orn-anim,#canopy,.ff,.glow-pulse,.lantern-glow,.aurora,.shoot,.petal,.lantern-item,.lantern-item>.lantern,.confetti{animation:none !important}
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -88,6 +134,8 @@ tailwind.config = { theme: { extend: {
   <!-- ══════════════════════ THE SPONSOR TREE ══════════════════════ -->
   <section id="tree" class="scroll-mt-6" aria-labelledby="tree-h">
     <div class="night rounded-3xl overflow-hidden shadow-2xl ring-1 ring-teal-800/40">
+      <div class="aurora a1" aria-hidden="true"></div>
+      <div class="aurora a2" aria-hidden="true"></div>
       <div class="pt-10 sm:pt-12 px-4 text-center">
         <p class="text-[12px] uppercase tracking-[0.2em] text-amber-400 font-bold">Like an angel tree — for careers</p>
         <h2 id="tree-h" class="display text-3xl sm:text-4xl font-bold text-white mt-2">The Longview <span class="text-amber-400 italic">Sponsor Tree</span></h2>
@@ -98,7 +146,8 @@ tailwind.config = { theme: { extend: {
       <div id="tree-stats" class="hidden flex-wrap justify-center gap-2.5 sm:gap-3 mt-6 px-4"></div>
 
       <!-- The tree -->
-      <div class="max-w-3xl mx-auto px-2 sm:px-6 -mt-2">
+      <div id="tree-stage" class="max-w-3xl mx-auto px-2 sm:px-6 -mt-2 relative">
+        <div id="leaf-tip" class="hidden p-4 text-left" role="dialog" aria-label="Student details"></div>
         <svg id="tree-svg" viewBox="0 0 900 770" role="img" aria-label="The Longview Sponsor Tree — each ornament is a student waiting for a sponsor; gold blooms are fully sponsored students" class="w-full h-auto select-none">
           <defs>
             <radialGradient id="g-canopy-a" cx="42%" cy="34%" r="75%">
@@ -140,6 +189,16 @@ tailwind.config = { theme: { extend: {
             <circle class="star s2" cx="60"  cy="210" r="1.2"/><circle class="star s3" cx="835" cy="260" r="1.2"/>
             <circle class="star"    cx="115" cy="330" r="1.4"/><circle class="star s2" cx="855" cy="380" r="1.3"/>
           </g>
+          <!-- shooting stars -->
+          <g transform="translate(760,52)"><g class="shoot">
+            <line x1="6" y1="-3" x2="82" y2="-36" stroke="#e0f2fe" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+            <circle r="2.6" fill="#ffffff"/>
+          </g></g>
+          <g transform="translate(420,36)"><g class="shoot sh2">
+            <line x1="6" y1="-3" x2="70" y2="-30" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+            <circle r="2.2" fill="#ffffff"/>
+          </g></g>
+
           <!-- moon with halo -->
           <circle cx="798" cy="96" r="56" fill="url(#g-glow)" opacity=".5"/>
           <circle cx="798" cy="96" r="30" fill="url(#g-moon)" opacity=".95"/>
@@ -164,6 +223,20 @@ tailwind.config = { theme: { extend: {
             <path d="M589,465 C612,456 630,449 650,443" stroke-width="11"/>
           </g>
           <path d="M408,726 C424,704 476,704 492,726 Z" fill="#4a3524"/>
+
+          <!-- grass tufts + ember lights at the roots -->
+          <g stroke="#166534" stroke-width="3.5" stroke-linecap="round" fill="none" opacity=".85">
+            <path d="M148,714 C150,702 148,695 143,688"/><path d="M156,715 C158,704 159,697 163,691"/>
+            <path d="M262,720 C263,709 261,702 256,696"/><path d="M270,721 C272,711 274,705 278,699"/>
+            <path d="M622,721 C623,710 621,703 616,697"/><path d="M630,722 C632,712 634,706 638,700"/>
+            <path d="M742,714 C744,703 742,696 737,690"/><path d="M750,715 C752,705 754,699 758,693"/>
+            <path d="M368,724 C369,714 367,708 363,703"/><path d="M540,724 C541,714 543,708 547,703"/>
+          </g>
+          <g fill="#fbbf24">
+            <circle class="star"    cx="176" cy="708" r="2.6"/><circle class="star s2" cx="292" cy="714" r="2.2"/>
+            <circle class="star s3" cx="600" cy="715" r="2.6"/><circle class="star"    cx="726" cy="708" r="2.2"/>
+            <circle class="star s2" cx="392" cy="719" r="2"/><circle class="star s3" cx="516" cy="719" r="2"/>
+          </g>
 
           <!-- canopy: one unified silhouette, then depth clusters -->
           <g id="canopy">
@@ -717,19 +790,25 @@ tailwind.config = { theme: { extend: {
           grp.appendChild(sub2);
         }
 
-        (function (prof, isSponsored) {
-          function go() {
+        (function (prof, isSponsored, px, py) {
+          function go(ev) {
+            if (ev) ev.stopPropagation();
             track('sponsor_leaf_click', { student: firstName(prof.display_name) });
-            if (isSponsored) {
-              var card = document.querySelector('[data-profile-card="' + prof.id + '"]');
-              (card || document.getElementById('students-waiting')).scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-              selectStudent(prof.id);
-            }
+            sparkleBurst(px, py);
+            showLeafTip(prof, isSponsored, px, py);
           }
           grp.addEventListener('click', go);
-          grp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(); } });
-        })(p, sponsored);
+          grp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(ev); } });
+        })(p, sponsored, pos[0], pos[1]);
+
+        // Sponsored blooms shed slow gold petals.
+        if (sponsored) {
+          for (var pi = 0; pi < 3; pi++) {
+            var petal = svgEl('ellipse', { cx: (pi - 1) * 9, cy: 16, rx: 4.5, ry: 3, fill: '#fbbf24', 'class': 'petal' });
+            petal.style.animationDelay = (pi * 2.1 + (i % 3)) + 's';
+            anim.appendChild(petal);
+          }
+        }
 
         anim.appendChild(grp);
       } else {
@@ -755,33 +834,148 @@ tailwind.config = { theme: { extend: {
     }
   }
 
+  // Stats chips count up from zero the first time they scroll into view.
   function renderStats(stats) {
     var host = document.getElementById('tree-stats');
     if (!host || !stats) return;
     var chips = [];
-    if (stats.raised_cents > 0) chips.push(['💛', money(stats.raised_cents), 'raised for tuition']);
-    if (stats.sponsored > 0) chips.push(['🌟', stats.sponsored, stats.sponsored === 1 ? 'student sponsored' : 'students sponsored']);
-    if (stats.waiting > 0) chips.push(['🌱', stats.waiting, stats.waiting === 1 ? 'student waiting' : 'students waiting']);
-    if (stats.sponsor_count > 0) chips.push(['🏮', stats.sponsor_count, stats.sponsor_count === 1 ? 'sponsor' : 'sponsors']);
+    if (stats.raised_cents > 0) chips.push(['💛', Math.round(stats.raised_cents / 100), '$', 'raised for tuition']);
+    if (stats.sponsored > 0) chips.push(['🌟', stats.sponsored, '', stats.sponsored === 1 ? 'student sponsored' : 'students sponsored']);
+    if (stats.waiting > 0) chips.push(['🌱', stats.waiting, '', stats.waiting === 1 ? 'student waiting' : 'students waiting']);
+    if (stats.sponsor_count > 0) chips.push(['🏮', stats.sponsor_count, '', stats.sponsor_count === 1 ? 'sponsor' : 'sponsors']);
     if (!chips.length) return;
     host.innerHTML = chips.map(function (c) {
       return '<div class="bg-white/10 border border-white/15 rounded-full px-4 py-2 text-sm text-white font-semibold backdrop-blur-sm">'
-        + c[0] + ' <span class="text-amber-300 font-extrabold">' + esc(c[1]) + '</span> <span class="text-teal-100 font-medium">' + esc(c[2]) + '</span></div>';
+        + c[0] + ' <span class="text-amber-300 font-extrabold stat-num" data-n="' + c[1] + '" data-p="' + c[2] + '">' + esc(c[2] + Number(c[1]).toLocaleString('en-US')) + '</span> <span class="text-teal-100 font-medium">' + esc(c[3]) + '</span></div>';
     }).join('');
     host.classList.remove('hidden');
     host.classList.add('flex');
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var io = new IntersectionObserver(function (entries) {
+        if (!entries.some(function (en) { return en.isIntersecting; })) return;
+        io.disconnect();
+        host.querySelectorAll('.stat-num').forEach(function (el) {
+          var target = parseInt(el.getAttribute('data-n'), 10) || 0;
+          var prefix = el.getAttribute('data-p') || '';
+          var t0 = performance.now();
+          (function tick(t) {
+            var k = Math.min(1, (t - t0) / 1200);
+            k = 1 - Math.pow(1 - k, 3); // ease-out
+            el.textContent = prefix + Math.round(target * k).toLocaleString('en-US');
+            if (k < 1) requestAnimationFrame(tick);
+          })(t0);
+        });
+      }, { threshold: 0.4 });
+      io.observe(host);
+    } catch (e) {}
   }
 
+  // Businesses hang as lanterns from a glowing string.
   function renderLanterns(rows) {
     var host = document.getElementById('lantern-row');
     var empty = document.getElementById('lantern-empty');
     if (!host || !rows || !rows.length) return;
-    host.innerHTML = rows.slice(0, 24).map(function (r) {
-      return '<div class="lantern lantern-glow rounded-xl px-4 py-2 text-amber-200 text-sm font-bold">🏮 ' + esc(r.recognition_name) + '</div>';
+    host.className = 'lantern-string mt-3';
+    host.innerHTML = rows.slice(0, 24).map(function (r, i) {
+      return '<div class="lantern-item" style="animation-delay:' + ((i % 5) * 0.9) + 's">'
+        + '<div class="lantern lantern-glow rounded-xl px-4 py-2 text-amber-200 text-sm font-bold whitespace-nowrap">🏮 ' + esc(r.recognition_name) + '</div>'
+        + '</div>';
     }).join('');
     host.classList.remove('hidden');
-    host.classList.add('flex');
     if (empty) empty.textContent = 'These businesses put real neighbors through school. Yours belongs up here too.';
+  }
+
+  // ── Leaf pop-card + sparkle burst ──
+  function stagePoint(x, y) {
+    // viewBox coords → pixel offsets inside #tree-stage
+    var svg = document.getElementById('tree-svg');
+    var stage = document.getElementById('tree-stage');
+    var sr = svg.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+    return {
+      left: (sr.left - tr.left) + (x / 900) * sr.width,
+      top: (sr.top - tr.top) + (y / 770) * sr.height,
+    };
+  }
+
+  function sparkleBurst(x, y) {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var orn = document.getElementById('ornaments');
+      for (var k = 0; k < 8; k++) {
+        var s = svgEl('circle', { cx: x, cy: y, r: 3, fill: k % 2 ? '#fde68a' : '#5eead4', 'class': 'sparkle', opacity: 1 });
+        orn.appendChild(s);
+        (function (el, ang) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              el.style.transform = 'translate(' + Math.cos(ang) * 52 + 'px,' + Math.sin(ang) * 52 + 'px)';
+              el.style.opacity = '0';
+            });
+          });
+          setTimeout(function () { el.remove(); }, 650);
+        })(s, (Math.PI * 2 * k) / 8 + 0.4);
+      }
+    } catch (e) {}
+  }
+
+  function showLeafTip(prof, isSponsored, x, y) {
+    var tip = document.getElementById('leaf-tip');
+    if (!tip) return;
+    var pct = prof.goal_cents > 0 ? Math.min(100, Math.round((prof.raised_cents / prof.goal_cents) * 100)) : 0;
+    tip.innerHTML =
+      '<div class="flex items-center gap-2">'
+      + '<div class="w-9 h-9 rounded-full ' + (isSponsored ? 'bg-gradient-to-br from-amber-400 to-amber-600' : 'bg-gradient-to-br from-teal-500 to-cyan-600') + ' text-white font-bold grid place-items-center shrink-0">' + esc((prof.display_name || '?')[0]) + '</div>'
+      + '<div class="min-w-0"><div class="font-bold text-white truncate">' + esc(prof.display_name) + '</div>'
+      + (prof.city ? '<div class="text-[11px] text-teal-200">' + esc(prof.city) + ', TX</div>' : '') + '</div>'
+      + '<button id="leaf-tip-x" class="ml-auto text-slate-400 hover:text-white text-lg leading-none px-1" aria-label="Close">✕</button></div>'
+      + '<p class="text-[12.5px] text-slate-200 mt-2 leading-snug">' + esc(String(prof.story || '').slice(0, 140)) + (String(prof.story || '').length > 140 ? '…' : '') + '</p>'
+      + (isSponsored
+        ? '<p class="text-amber-300 text-xs font-bold mt-2.5">🌟 Fully sponsored — she’s headed to class!</p>'
+        : '<div class="mt-2.5"><div class="flex justify-between text-[10.5px] font-bold text-teal-100 mb-1"><span>' + money(prof.raised_cents) + ' raised</span><span>' + pct + '% of ' + money(prof.goal_cents) + '</span></div>'
+          + '<div class="h-1.5 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-amber-400 to-amber-500" style="width:' + pct + '%"></div></div>'
+          + '<button id="leaf-tip-go" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold py-2 rounded-full">💛 Sponsor ' + esc(firstName(prof.display_name)) + ' →</button></div>');
+    // Top-row leaves show the card BELOW the leaf so it never leaves the scene
+    // (or slides under the sticky site nav); everyone else gets it above.
+    var below = y < 340;
+    tip.classList.toggle('tip-below', below);
+    var pt = stagePoint(x, below ? y + 78 : y - 44);
+    var stage = document.getElementById('tree-stage');
+    var half = Math.min(130, (stage.clientWidth / 2) - 8);
+    tip.style.left = Math.max(half, Math.min(stage.clientWidth - half, pt.left)) + 'px';
+    tip.style.top = Math.max(pt.top, 6) + 'px';
+    tip.classList.remove('hidden');
+    var xBtn = document.getElementById('leaf-tip-x');
+    if (xBtn) xBtn.onclick = function (e) { e.stopPropagation(); tip.classList.add('hidden'); };
+    var goBtn = document.getElementById('leaf-tip-go');
+    if (goBtn) goBtn.onclick = function (e) { e.stopPropagation(); tip.classList.add('hidden'); selectStudent(prof.id); };
+  }
+  document.addEventListener('click', function (e) {
+    var tip = document.getElementById('leaf-tip');
+    if (tip && !tip.classList.contains('hidden') && !tip.contains(e.target) && !e.target.closest('.orn')) tip.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { var tip = document.getElementById('leaf-tip'); if (tip) tip.classList.add('hidden'); }
+  });
+
+  // ── Confetti when a sponsorship completes ──
+  function confetti() {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var colors = ['#fbbf24', '#f59e0b', '#2dd4bf', '#5eead4', '#ffffff', '#fde68a'];
+      for (var k = 0; k < 80; k++) {
+        var d = document.createElement('div');
+        d.className = 'confetti';
+        var size = 5 + Math.random() * 6;
+        d.style.left = (Math.random() * 100) + 'vw';
+        d.style.width = size + 'px';
+        d.style.height = (size * 0.6) + 'px';
+        d.style.background = colors[k % colors.length];
+        d.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+        d.style.animationDelay = (Math.random() * 0.6) + 's';
+        document.body.appendChild(d);
+        setTimeout(function (el) { return function () { el.remove(); }; }(d), 4600);
+      }
+    } catch (e) {}
   }
 
   function renderCards() {
@@ -986,6 +1180,7 @@ tailwind.config = { theme: { extend: {
 
     if (out && out.ok) {
       track('sponsor_paid', { cents: amount, student: out.student || '' });
+      confetti();
       var f = document.getElementById('pay-form');
       f.classList.add('hidden');
       var s = document.getElementById('pay-success');
