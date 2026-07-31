@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sponsor Tree — PDA Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+  <script defer src="/assets/admin-nav.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">🔒</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to run the Sponsor Tree.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in →</a>
+</div>
+
+<main id="view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">🌳 The Sponsor Tree</p>
+      <h1 class="display text-3xl font-bold">Sponsors &amp; students</h1>
+      <p class="text-slate-600 text-sm mt-1">Applications come in below. Vet a student → hang her leaf (with written consent). Record money → the tree updates itself: raised totals roll up and leaves bloom gold automatically at goal. <a href="/sponsor-a-student" target="_blank" class="text-teal-700 underline font-semibold">View the live tree ↗</a></p>
+    </div>
+    <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold text-sm px-4 py-2 rounded-lg">↻ Refresh</button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">🌱 Waiting</div><div id="s-waiting" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">🌟 Sponsored</div><div id="s-sponsored" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">💛 Raised (paid)</div><div id="s-raised" class="text-2xl font-bold text-emerald-700 mt-1">$0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">🧾 Open pledges</div><div id="s-pledges" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">📥 Applications</div><div id="s-apps" class="text-2xl font-bold text-slate-900 mt-1">0</div></div>
+  </div>
+
+  <div class="flex gap-2 mb-4 text-sm flex-wrap">
+    <button data-tab="apps" class="tabbtn bg-slate-900 text-white px-3 py-1.5 rounded-lg">📥 Applications</button>
+    <button data-tab="profiles" class="tabbtn bg-white border border-slate-300 px-3 py-1.5 rounded-lg">🌱 Student leaves</button>
+    <button data-tab="money" class="tabbtn bg-white border border-slate-300 px-3 py-1.5 rounded-lg">💰 Money</button>
+    <span class="flex-1"></span>
+    <button id="new-profile" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-3 py-1.5 rounded-lg">➕ New student leaf</button>
+    <button id="new-sponsorship" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-3 py-1.5 rounded-lg">➕ Record sponsorship</button>
+  </div>
+
+  <div id="tab-apps" class="space-y-3"></div>
+  <div id="tab-profiles" class="hidden grid sm:grid-cols-2 gap-4"></div>
+  <div id="tab-money" class="hidden space-y-3"></div>
+  <div id="tab-empty" class="hidden text-center text-slate-500 py-12">Nothing here yet.</div>
+</main>
+
+<!-- Editor overlay (profile + sponsorship share it) -->
+<div id="overlay" class="hidden fixed inset-0 bg-slate-900/60 z-[60] overflow-y-auto p-4">
+  <div class="max-w-lg mx-auto my-8 bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div class="bg-slate-900 text-white px-5 py-4 flex items-center justify-between">
+      <h2 id="ov-title" class="display text-lg font-bold">Edit</h2>
+      <button id="ov-close" class="text-slate-300 hover:text-white text-xl leading-none">✕</button>
+    </div>
+    <div id="ov-body" class="p-5 text-sm"></div>
+  </div>
+</div>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const money = (c) => '$' + Math.round((c || 0) / 100).toLocaleString('en-US');
+  const when = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+
+  let apps = [], leaves = [], ledger = [], tab = 'apps';
+
+  async function loadAll() {
+    const [a, p, s] = await Promise.all([
+      sb.from('leads').select('id, first_name, last_name, email, phone, message, source, created_at')
+        .in('source', ['sponsor-student', 'sponsor-business']).order('created_at', { ascending: false }).limit(200),
+      sb.from('sponsor_profiles').select('*').order('created_at', { ascending: false }).limit(200),
+      sb.from('sponsorships').select('*').order('created_at', { ascending: false }).limit(300),
+    ]);
+    apps = a.data || []; leaves = p.data || []; ledger = s.data || [];
+    document.getElementById('s-waiting').textContent = leaves.filter(x => x.status === 'approved').length;
+    document.getElementById('s-sponsored').textContent = leaves.filter(x => x.status === 'sponsored').length;
+    document.getElementById('s-raised').textContent = money(ledger.filter(x => x.status === 'paid').reduce((t, x) => t + x.amount_cents, 0));
+    document.getElementById('s-pledges').textContent = ledger.filter(x => x.status === 'pledged' || x.status === 'invoiced').length;
+    document.getElementById('s-apps').textContent = apps.length;
+    render();
+  }
+
+  function setTab(t) {
+    tab = t;
+    document.querySelectorAll('.tabbtn').forEach(b => {
+      const on = b.dataset.tab === t;
+      b.className = 'tabbtn ' + (on ? 'bg-slate-900 text-white' : 'bg-white border border-slate-300') + ' px-3 py-1.5 rounded-lg';
+    });
+    render();
+  }
+  document.querySelectorAll('.tabbtn').forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  document.getElementById('refresh').onclick = loadAll;
+
+  function render() {
+    const hostA = document.getElementById('tab-apps');
+    const hostP = document.getElementById('tab-profiles');
+    const hostM = document.getElementById('tab-money');
+    hostA.classList.toggle('hidden', tab !== 'apps');
+    hostP.classList.toggle('hidden', tab !== 'profiles');
+    hostM.classList.toggle('hidden', tab !== 'money');
+    const rows = tab === 'apps' ? apps : tab === 'profiles' ? leaves : ledger;
+    document.getElementById('tab-empty').classList.toggle('hidden', rows.length > 0);
+    if (tab === 'apps') renderApps(); else if (tab === 'profiles') renderLeaves(); else renderMoney();
+  }
+
+  // ── Applications ──
+  function renderApps() {
+    const host = document.getElementById('tab-apps');
+    host.innerHTML = apps.map(l => {
+      const isStudent = l.source === 'sponsor-student';
+      const name = ((l.first_name || '') + ' ' + (l.last_name || '')).trim() || '(no name)';
+      return '<div class="bg-white rounded-xl border ' + (isStudent ? 'border-teal-200' : 'border-amber-300') + ' p-4">'
+        + '<div class="flex items-center gap-2 flex-wrap">'
+        + '<span class="text-[10px] uppercase tracking-wider font-bold ' + (isStudent ? 'bg-teal-100 text-teal-700' : 'bg-amber-100 text-amber-700') + ' px-2 py-0.5 rounded-full">' + (isStudent ? '🌱 Student needs help' : '🏢 Business wants to sponsor') + '</span>'
+        + '<span class="font-bold text-sm">' + esc(name) + '</span>'
+        + '<span class="text-xs text-slate-400 ml-auto">' + esc(when(l.created_at)) + '</span>'
+        + '</div>'
+        + '<p class="text-sm text-slate-700 mt-2 whitespace-pre-wrap">' + esc(l.message || '') + '</p>'
+        + '<div class="flex gap-2 mt-3 flex-wrap text-sm">'
+        + (l.phone ? '<a class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold" href="tel:' + esc(l.phone) + '">📞 Call</a><a class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold" href="sms:' + esc(l.phone) + '">💬 Text</a>' : '')
+        + (l.email ? '<a class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold" href="mailto:' + esc(l.email) + '">✉️ Email</a>' : '')
+        + (isStudent
+          ? '<button data-mkprofile="' + esc(l.id) + '" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-1.5 rounded-lg font-semibold">🌱 Hang her leaf →</button>'
+          : '<button data-mkpledge="' + esc(l.id) + '" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold">🧾 Record pledge →</button>')
+        + '</div></div>';
+    }).join('');
+    host.querySelectorAll('[data-mkprofile]').forEach(b => b.onclick = () => {
+      const l = apps.find(x => x.id === b.dataset.mkprofile);
+      openProfileEditor(null, l);
+    });
+    host.querySelectorAll('[data-mkpledge]').forEach(b => b.onclick = () => {
+      const l = apps.find(x => x.id === b.dataset.mkpledge);
+      openSponsorshipEditor(null, l);
+    });
+  }
+
+  // ── Student leaves (profiles) ──
+  const STATUS_BADGE = {
+    pending: 'bg-slate-100 text-slate-600', approved: 'bg-teal-100 text-teal-700',
+    sponsored: 'bg-amber-100 text-amber-700', archived: 'bg-slate-200 text-slate-500',
+  };
+  function renderLeaves() {
+    const host = document.getElementById('tab-profiles');
+    host.innerHTML = leaves.map(p => {
+      const pct = p.goal_cents > 0 ? Math.min(100, Math.round((p.raised_cents / p.goal_cents) * 100)) : 0;
+      return '<div class="bg-white rounded-xl border border-slate-200 p-4">'
+        + '<div class="flex items-center gap-2">'
+        + '<div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold grid place-items-center">' + esc((p.display_name || '?')[0]) + '</div>'
+        + '<div><div class="font-bold">' + esc(p.display_name) + '</div>' + (p.city ? '<div class="text-xs text-slate-500">' + esc(p.city) + '</div>' : '') + '</div>'
+        + '<span class="ml-auto text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ' + (STATUS_BADGE[p.status] || STATUS_BADGE.pending) + '">' + esc(p.status) + (p.consent_confirmed ? '' : ' · no consent!') + '</span>'
+        + '</div>'
+        + '<p class="text-xs text-slate-600 mt-2 line-clamp-3">' + esc(p.story) + '</p>'
+        + '<div class="mt-3"><div class="flex justify-between text-xs font-semibold text-slate-600 mb-1"><span>' + money(p.raised_cents) + ' raised</span><span>' + money(p.goal_cents) + ' goal (' + pct + '%)</span></div>'
+        + '<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-amber-400 to-amber-500" style="width:' + pct + '%"></div></div></div>'
+        + '<div class="flex gap-2 mt-3 text-sm">'
+        + '<button data-edit="' + esc(p.id) + '" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold">✏️ Edit</button>'
+        + '<button data-pay="' + esc(p.id) + '" class="bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg font-semibold">💰 Record payment</button>'
+        + '</div></div>';
+    }).join('');
+    host.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openProfileEditor(leaves.find(x => x.id === b.dataset.edit)));
+    host.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => openSponsorshipEditor(null, null, b.dataset.pay));
+  }
+
+  // ── Money ──
+  function renderMoney() {
+    const host = document.getElementById('tab-money');
+    const SB = { pledged: 'bg-cyan-100 text-cyan-700', invoiced: 'bg-indigo-100 text-indigo-700', paid: 'bg-emerald-100 text-emerald-700', canceled: 'bg-slate-200 text-slate-500' };
+    host.innerHTML = ledger.map(s => {
+      const stu = leaves.find(p => p.id === s.profile_id);
+      return '<div class="bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-3 flex-wrap">'
+        + '<span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ' + (SB[s.status] || SB.pledged) + '">' + esc(s.status) + '</span>'
+        + '<span class="font-bold">' + esc(money(s.amount_cents)) + '</span>'
+        + '<span class="text-sm text-slate-700">' + esc(s.business_name || s.contact_name || '?') + '</span>'
+        + '<span class="text-xs text-slate-500">→ ' + esc(stu ? stu.display_name : 'General fund') + '</span>'
+        + (s.public_thanks ? '<span class="text-xs">🏮 ' + esc(s.recognition_name || '') + '</span>' : '')
+        + '<span class="text-xs text-slate-400 ml-auto">' + esc(when(s.paid_at || s.created_at)) + '</span>'
+        + (s.square_receipt_url ? '<a href="' + esc(s.square_receipt_url) + '" target="_blank" class="text-xs text-teal-700 underline font-semibold">receipt ↗</a>' : '')
+        + '<button data-edit="' + esc(s.id) + '" class="bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-semibold text-sm">✏️ Edit</button>'
+        + '</div>';
+    }).join('');
+    host.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openSponsorshipEditor(ledger.find(x => x.id === b.dataset.edit)));
+  }
+
+  // ── Overlay editors ──
+  const overlay = document.getElementById('overlay');
+  const ovBody = document.getElementById('ov-body');
+  const ovTitle = document.getElementById('ov-title');
+  document.getElementById('ov-close').onclick = () => overlay.classList.add('hidden');
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.add('hidden'); });
+
+  const field = (label, id, val, ph, type) =>
+    '<label class="block mb-3"><span class="font-semibold text-slate-700">' + label + '</span>'
+    + '<input id="' + id + '" type="' + (type || 'text') + '" value="' + esc(val == null ? '' : val) + '" placeholder="' + esc(ph || '') + '" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600"></label>';
+
+  // Guess "First L." from a student application lead.
+  const leafName = (l) => l ? ((l.first_name || '').trim() + (l.last_name ? ' ' + l.last_name.trim()[0].toUpperCase() + '.' : '')).trim() : '';
+
+  function openProfileEditor(p, fromLead) {
+    ovTitle.textContent = p ? 'Edit ' + p.display_name : '🌱 Hang a new leaf';
+    ovBody.innerHTML =
+      (fromLead ? '<p class="text-xs bg-teal-50 border border-teal-200 rounded-lg px-3 py-2 mb-3">From application: <strong>' + esc(((fromLead.first_name || '') + ' ' + (fromLead.last_name || '')).trim()) + '</strong> · ' + esc(fromLead.phone || '') + ' · ' + esc(fromLead.email || '') + '</p>' : '')
+      + field('Display name (First + last initial ONLY — no full names)', 'pf-name', p ? p.display_name : leafName(fromLead), 'Brittany M.')
+      + field('Town (optional)', 'pf-city', p ? p.city : '', 'Longview')
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">Her story (student-approved blurb)</span>'
+      + '<textarea id="pf-story" rows="4" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">' + esc(p ? p.story : '') + '</textarea></label>'
+      + field('Goal ($)', 'pf-goal', p ? Math.round(p.goal_cents / 100) : 3000, '', 'number')
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">Status</span>'
+      + '<select id="pf-status" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg bg-white">'
+      + ['pending', 'approved', 'sponsored', 'archived'].map(s => '<option ' + (p && p.status === s ? 'selected' : '') + '>' + s + '</option>').join('')
+      + '</select><span class="text-xs text-slate-500">“approved” = leaf shows on the public tree. Money marked paid flips her to “sponsored” automatically at goal.</span></label>'
+      + '<label class="flex items-start gap-2 mb-4 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 cursor-pointer"><input id="pf-consent" type="checkbox" ' + (p && p.consent_confirmed ? 'checked' : '') + ' class="mt-0.5 w-4 h-4 accent-teal-600"><span class="text-slate-700 text-sm"><strong>She agreed in writing to be listed.</strong> Nothing goes public without this — the database enforces it too.</span></label>'
+      + '<div class="flex gap-2"><button id="pf-save" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Save leaf</button>'
+      + '<div id="pf-msg" class="self-center text-sm font-semibold"></div></div>';
+    overlay.classList.remove('hidden');
+
+    document.getElementById('pf-save').onclick = async () => {
+      const msg = document.getElementById('pf-msg');
+      const status = document.getElementById('pf-status').value;
+      const consent = document.getElementById('pf-consent').checked;
+      const row = {
+        display_name: document.getElementById('pf-name').value.trim(),
+        city: document.getElementById('pf-city').value.trim() || null,
+        story: document.getElementById('pf-story').value.trim(),
+        goal_cents: Math.max(0, Math.round(Number(document.getElementById('pf-goal').value) * 100)) || 300000,
+        status, consent_confirmed: consent,
+      };
+      if (!row.display_name || !row.story) { msg.textContent = 'Name and story are required.'; msg.className = 'self-center text-sm font-semibold text-rose-600'; return; }
+      if ((status === 'approved' || status === 'sponsored') && !consent) { msg.textContent = 'Can’t list her without written consent.'; msg.className = 'self-center text-sm font-semibold text-rose-600'; return; }
+      const q = p ? sb.from('sponsor_profiles').update(row).eq('id', p.id) : sb.from('sponsor_profiles').insert(row);
+      const { error } = await q;
+      if (error) { msg.textContent = error.message; msg.className = 'self-center text-sm font-semibold text-rose-600'; return; }
+      overlay.classList.add('hidden');
+      loadAll();
+    };
+  }
+
+  function openSponsorshipEditor(s, fromLead, presetProfileId) {
+    ovTitle.textContent = s ? 'Edit sponsorship' : '💰 Record a sponsorship';
+    const leadBiz = fromLead ? (String(fromLead.message || '').match(/Company:\s*([^·]+)/) || [])[1] : '';
+    ovBody.innerHTML =
+      (fromLead ? '<p class="text-xs bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">From application: <strong>' + esc(((fromLead.first_name || '') + ' ' + (fromLead.last_name || '')).trim()) + '</strong> · ' + esc(fromLead.phone || '') + ' · ' + esc(fromLead.email || '') + '</p>' : '')
+      + field('Business name', 'sp-biz', s ? s.business_name : (leadBiz || '').trim(), 'Smith Family Dental')
+      + field('Contact name', 'sp-contact', s ? s.contact_name : (fromLead ? ((fromLead.first_name || '') + ' ' + (fromLead.last_name || '')).trim() : ''), '')
+      + field('Email', 'sp-email', s ? s.email : (fromLead ? fromLead.email : ''), '', 'email')
+      + field('Phone', 'sp-phone', s ? s.phone : (fromLead ? fromLead.phone : ''), '', 'tel')
+      + field('Amount ($)', 'sp-amount', s ? Math.round(s.amount_cents / 100) : 3000, '', 'number')
+      + '<div class="grid grid-cols-2 gap-3">'
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">Status</span>'
+      + '<select id="sp-status" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg bg-white">'
+      + ['pledged', 'invoiced', 'paid', 'canceled'].map(x => '<option ' + (s && s.status === x ? 'selected' : '') + '>' + x + '</option>').join('')
+      + '</select></label>'
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">Method</span>'
+      + '<select id="sp-method" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg bg-white">'
+      + ['invoice', 'cash', 'check', 'square-online', 'square-manual', 'other'].map(x => '<option ' + (s && s.method === x ? 'selected' : '') + '>' + x + '</option>').join('')
+      + '</select></label></div>'
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">For student</span>'
+      + '<select id="sp-profile" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg bg-white">'
+      + '<option value="">General fund — Amanda applies it</option>'
+      + leaves.filter(p => p.status !== 'archived').map(p => '<option value="' + esc(p.id) + '" ' + ((s ? s.profile_id : presetProfileId) === p.id ? 'selected' : '') + '>' + esc(p.display_name) + ' (' + esc(p.status) + ', ' + money(p.raised_cents) + '/' + money(p.goal_cents) + ')</option>').join('')
+      + '</select><span class="text-xs text-slate-500">Money marked “paid” rolls into her bar instantly; she blooms gold at goal.</span></label>'
+      + '<label class="flex items-start gap-2 mb-2"><input id="sp-thanks" type="checkbox" ' + (s && s.public_thanks ? 'checked' : '') + ' class="mt-0.5 w-4 h-4 accent-amber-500"><span class="text-sm text-slate-700"><strong>🏮 Light their lantern</strong> — they gave permission to be named publicly on the tree.</span></label>'
+      + field('Show them as', 'sp-recog', s ? s.recognition_name : (leadBiz || '').trim(), 'Business name as it should appear')
+      + '<label class="block mb-3"><span class="font-semibold text-slate-700">Notes</span>'
+      + '<textarea id="sp-notes" rows="2" class="mt-1 w-full px-3 py-2 border-2 border-slate-200 rounded-lg">' + esc(s ? s.notes : (fromLead ? 'From lead: ' + (fromLead.message || '') : '')) + '</textarea></label>'
+      + '<div class="flex gap-2 items-center"><button id="sp-save" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full">Save</button>'
+      + (s ? '<button id="sp-del" class="text-rose-600 font-semibold text-sm hover:underline">Delete</button>' : '')
+      + '<div id="sp-msg" class="text-sm font-semibold"></div></div>';
+    overlay.classList.remove('hidden');
+
+    document.getElementById('sp-save').onclick = async () => {
+      const msg = document.getElementById('sp-msg');
+      const status = document.getElementById('sp-status').value;
+      const row = {
+        business_name: document.getElementById('sp-biz').value.trim() || null,
+        contact_name: document.getElementById('sp-contact').value.trim() || null,
+        email: document.getElementById('sp-email').value.trim() || null,
+        phone: document.getElementById('sp-phone').value.trim() || null,
+        amount_cents: Math.max(1, Math.round(Number(document.getElementById('sp-amount').value) * 100)),
+        status,
+        method: document.getElementById('sp-method').value,
+        profile_id: document.getElementById('sp-profile').value || null,
+        public_thanks: document.getElementById('sp-thanks').checked,
+        recognition_name: document.getElementById('sp-recog').value.trim() || null,
+        notes: document.getElementById('sp-notes').value.trim() || null,
+      };
+      if (!Number.isFinite(row.amount_cents) || row.amount_cents < 1) { msg.textContent = 'Amount is required.'; msg.className = 'text-sm font-semibold text-rose-600'; return; }
+      if (status === 'paid' && !(s && s.paid_at)) row.paid_at = new Date().toISOString();
+      if (status !== 'paid') row.paid_at = null;
+      const q = s ? sb.from('sponsorships').update(row).eq('id', s.id) : sb.from('sponsorships').insert(row);
+      const { error } = await q;
+      if (error) { msg.textContent = error.message; msg.className = 'text-sm font-semibold text-rose-600'; return; }
+      overlay.classList.add('hidden');
+      loadAll();
+    };
+    const del = document.getElementById('sp-del');
+    if (del) del.onclick = async () => {
+      if (!confirm('Delete this sponsorship record? The student’s raised total re-computes automatically.')) return;
+      const { error } = await sb.from('sponsorships').delete().eq('id', s.id);
+      if (!error) { overlay.classList.add('hidden'); loadAll(); }
+    };
+  }
+
+  document.getElementById('new-profile').onclick = () => openProfileEditor(null);
+  document.getElementById('new-sponsorship').onclick = () => openSponsorshipEditor(null);
+
+  loadAll();
+})();
+</script>
+</body>
+</html>
