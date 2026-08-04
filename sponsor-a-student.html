@@ -3,15 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sponsor a Student — Adopt a Future Dental Assistant | Premier Dental Academy of Longview</title>
-<meta name="description" content="Local businesses sponsor East Texas students through dental assistant school — a three-way win: the student trains and gets hired, your business invests in the local workforce, and Longview gets another working RDA. Sponsor a full seat or any part of one.">
+<title>The Longview Sponsor Tree — Adopt a Future Dental Assistant | Premier Dental Academy of Longview</title>
+<meta name="description" content="Every leaf on the Longview Sponsor Tree is a real East Texas neighbor training to become a dental assistant. Local businesses light a lantern by sponsoring tuition — pay online in 2 minutes or have Amanda call. Watch students bloom gold when they're fully sponsored.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/sponsor-a-student">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Sponsor a Student — Adopt a Future Dental Assistant">
-<meta property="og:description" content="A three-way win for East Texas: a student gets trained, your business invests in the local workforce, and a dental office gets a job-ready RDA. Sponsor a full seat or any part of one.">
+<meta property="og:title" content="The Longview Sponsor Tree — Adopt a Future Dental Assistant">
+<meta property="og:description" content="Every leaf is a real neighbor who wants to become a dental assistant. Sponsor part of a seat or a whole one — your business glows on the tree, she trains and goes to work in East Texas.">
 <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/sponsor-a-student">
 <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-sponsor-a-student.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -28,8 +28,85 @@ tailwind.config = { theme: { extend: {
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
   .display{font-family:'Fraunces',serif}
+
+  /* ── Sponsor Tree night scene ─────────────────────────────────────── */
+  .night{background:
+    radial-gradient(900px 420px at 50% -80px, rgba(19,78,74,.55), transparent 70%),
+    linear-gradient(180deg,#0a1226 0%,#0c1930 42%,#0c2b30 78%,#0e3a33 100%)}
+  .star{animation:twinkle 3.8s ease-in-out infinite}
+  .star.s2{animation-duration:5.2s;animation-delay:1.1s}
+  .star.s3{animation-duration:6.4s;animation-delay:2.3s}
+  @keyframes twinkle{0%,100%{opacity:.18}50%{opacity:.85}}
+  #canopy{transform-origin:450px 540px;animation:sway 10s ease-in-out infinite}
+  @keyframes sway{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}
+  .orn-anim{animation:dangle 5.2s ease-in-out infinite}
+  @keyframes dangle{0%,100%{transform:rotate(-2.4deg)}50%{transform:rotate(2.4deg)}}
+  .orn{cursor:pointer}
+  .orn .tag{transition:transform .18s ease}
+  .orn:hover .tag,.orn:focus-visible .tag{transform:scale(1.12)}
+  .glow-pulse{animation:pulseGlow 3.2s ease-in-out infinite}
+  @keyframes pulseGlow{0%,100%{opacity:.5}50%{opacity:.95}}
+  .ff{animation:drift 11s ease-in-out infinite;will-change:transform}
+  .ff.f2{animation-duration:14s;animation-delay:2s}
+  .ff.f3{animation-duration:17s;animation-delay:5s}
+  @keyframes drift{0%,100%{transform:translate(0,0)}25%{transform:translate(26px,-30px)}50%{transform:translate(-14px,-56px)}75%{transform:translate(18px,-22px)}}
+  .lantern{background:linear-gradient(160deg,rgba(251,191,36,.16),rgba(245,158,11,.05));
+    border:1px solid rgba(251,191,36,.45);box-shadow:0 0 22px rgba(251,191,36,.18), inset 0 0 14px rgba(251,191,36,.06)}
+  .lantern-glow{animation:pulseGlow 4s ease-in-out infinite}
+  .amt-btn.active{background:#f59e0b;color:#fff;border-color:#f59e0b}
+  #card-container{min-height:44px}
+
+  /* aurora wisps behind the tree */
+  .night{position:relative}
+  .night>*:not(.aurora){position:relative;z-index:1}
+  .aurora{position:absolute;z-index:0;border-radius:9999px;filter:blur(70px);pointer-events:none;will-change:transform}
+  .aurora.a1{width:560px;height:280px;left:-130px;top:-50px;opacity:.32;
+    background:radial-gradient(closest-side,#14b8a6,transparent);animation:auroraDrift 19s ease-in-out infinite alternate}
+  .aurora.a2{width:520px;height:250px;right:-110px;top:80px;opacity:.2;
+    background:radial-gradient(closest-side,#f59e0b,transparent);animation:auroraDrift 24s ease-in-out infinite alternate-reverse}
+  @keyframes auroraDrift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(60px,26px) scale(1.12)}}
+
+  /* shooting stars */
+  .shoot{opacity:0;animation:shoot 9s linear infinite}
+  .shoot.sh2{animation-delay:4.7s;animation-duration:12s}
+  @keyframes shoot{0%,5%{opacity:0;transform:translate(0,0)}6.5%{opacity:1}12%{opacity:0;transform:translate(-360px,160px)}100%{opacity:0;transform:translate(-360px,160px)}}
+
+  /* gold petals drifting off sponsored blooms */
+  .petal{transform-box:fill-box;transform-origin:center;animation:petalFall 6.5s ease-in infinite}
+  @keyframes petalFall{0%{opacity:0;transform:translate(0,0) rotate(0deg)}10%{opacity:.9}100%{opacity:0;transform:translate(-26px,140px) rotate(140deg)}}
+
+  /* sparkle burst on leaf tap */
+  .sparkle{transition:transform .55s cubic-bezier(.2,.7,.3,1),opacity .55s ease-out}
+
+  /* leaf pop-card */
+  #leaf-tip{position:absolute;z-index:30;width:min(260px,72vw);transform:translate(-50%,-100%);
+    background:rgba(10,18,38,.92);border:1px solid rgba(251,191,36,.5);border-radius:16px;
+    box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 30px rgba(251,191,36,.12);backdrop-filter:blur(6px)}
+  #leaf-tip::after{content:"";position:absolute;left:50%;bottom:-8px;width:14px;height:14px;transform:translateX(-50%) rotate(45deg);
+    background:rgba(10,18,38,.92);border-right:1px solid rgba(251,191,36,.5);border-bottom:1px solid rgba(251,191,36,.5)}
+  #leaf-tip.tip-below{transform:translate(-50%,0)}
+  #leaf-tip.tip-below::after{bottom:auto;top:-8px;transform:translateX(-50%) rotate(225deg)}
+  .lantern-string::-webkit-scrollbar{display:none}
+
+  /* businesses hang from a glowing string */
+  .lantern-string{position:relative;display:flex;gap:1rem;overflow-x:auto;padding:12px 8px 10px;justify-content:safe center;scrollbar-width:none}
+  .lantern-string::before{content:"";position:absolute;top:8px;left:0;right:0;height:2px;border-radius:2px;
+    background:linear-gradient(90deg,transparent,rgba(251,191,36,.55) 15%,rgba(251,191,36,.55) 85%,transparent)}
+  .lantern-item{position:relative;flex:0 0 auto;margin-top:16px}
+  .lantern-item::before{content:"";position:absolute;top:-15px;left:50%;width:2px;height:15px;background:rgba(251,191,36,.5)}
+  .lantern-item>.lantern{transform-origin:top center;
+    animation:dangle 6s ease-in-out infinite, pulseGlow 4s ease-in-out infinite;animation-delay:inherit}
+
+  /* confetti on a completed sponsorship */
+  .confetti{position:fixed;top:-14px;z-index:100;pointer-events:none;border-radius:2px;animation:confettiFall linear forwards}
+  @keyframes confettiFall{to{transform:translateY(112vh) rotate(760deg)}}
+
+  @media (prefers-reduced-motion: reduce){
+    .star,.orn-anim,#canopy,.ff,.glow-pulse,.lantern-glow,.aurora,.shoot,.petal,.lantern-item,.lantern-item>.lantern,.confetti{animation:none !important}
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://web.squarecdn.com/v1/square.js"></script>
 <script src="/assets/pda-seo.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
 <script src="/assets/pda-analytics.js" defer></script>
@@ -40,21 +117,190 @@ tailwind.config = { theme: { extend: {
 <!-- Hero -->
 <section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
   <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
-    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Sponsor a Student · Longview, TX</p>
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">The Longview Sponsor Tree · Longview, TX</p>
     <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Adopt a future <span class="text-amber-400 italic">dental assistant.</span></h1>
-    <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Some of the hardest-working people in East Texas want to become Registered Dental Assistants — they just can't cover tuition. Your business can put one of them through school. She trains, graduates, and goes to work. That's the whole idea.</p>
+    <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Some of the hardest-working people in East Texas want to become Registered Dental Assistants — they just can't cover tuition. Every leaf on the tree below is a real neighbor. Your business can turn one gold.</p>
     <div class="mt-7 flex flex-wrap gap-3 justify-center">
-      <a href="#sponsor" data-event="sponsor_cta_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-7 py-3.5 rounded-full shadow-md">🤝 Sponsor a student →</a>
+      <a href="#tree" data-event="sponsor_tree_cta_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-7 py-3.5 rounded-full shadow-md">🌳 See the tree →</a>
+      <a href="#sponsor" data-event="sponsor_cta_click" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-full">🤝 Sponsor a student</a>
       <a href="#apply-help" class="bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-7 py-3.5 rounded-full">I need help paying for class</a>
     </div>
-    <p class="text-teal-100 text-sm mt-5">A full seat is <strong class="text-white">$3,000</strong> — or sponsor any part of one. Every dollar goes to tuition.</p>
+    <p class="text-teal-100 text-sm mt-5">A full seat is <strong class="text-white">$3,000</strong> — or sponsor any part of one, online, in about 2 minutes. Every dollar goes to tuition.</p>
   </div>
 </section>
 
-<main class="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+
+  <!-- ══════════════════════ THE SPONSOR TREE ══════════════════════ -->
+  <section id="tree" class="scroll-mt-6" aria-labelledby="tree-h">
+    <div class="night rounded-3xl overflow-hidden shadow-2xl ring-1 ring-teal-800/40">
+      <div class="aurora a1" aria-hidden="true"></div>
+      <div class="aurora a2" aria-hidden="true"></div>
+      <div class="pt-10 sm:pt-12 px-4 text-center">
+        <p class="text-[12px] uppercase tracking-[0.2em] text-amber-400 font-bold">Like an angel tree — for careers</p>
+        <h2 id="tree-h" class="display text-3xl sm:text-4xl font-bold text-white mt-2">The Longview <span class="text-amber-400 italic">Sponsor Tree</span></h2>
+        <p class="text-teal-100/90 text-sm sm:text-base mt-3 max-w-2xl mx-auto">Every leaf is a real student waiting on tuition help. When sponsors cover her seat, her leaf <span class="text-amber-300 font-semibold">blooms gold</span> — and the businesses who made it happen glow at the roots. <span class="hidden sm:inline text-teal-200">Tap a leaf to sponsor that student.</span></p>
+      </div>
+
+      <!-- Live stats (real numbers only — hidden until they exist) -->
+      <div id="tree-stats" class="hidden flex-wrap justify-center gap-2.5 sm:gap-3 mt-6 px-4"></div>
+
+      <!-- The tree -->
+      <div id="tree-stage" class="max-w-3xl mx-auto px-2 sm:px-6 -mt-2 relative">
+        <div id="leaf-tip" class="hidden p-4 text-left" role="dialog" aria-label="Student details"></div>
+        <svg id="tree-svg" viewBox="0 0 900 770" role="img" aria-label="The Longview Sponsor Tree — each ornament is a student waiting for a sponsor; gold blooms are fully sponsored students" class="w-full h-auto select-none">
+          <defs>
+            <radialGradient id="g-canopy-a" cx="42%" cy="34%" r="75%">
+              <stop offset="0%" stop-color="#2dd4bf"/><stop offset="45%" stop-color="#0d9488"/><stop offset="100%" stop-color="#115e59"/>
+            </radialGradient>
+            <radialGradient id="g-canopy-b" cx="45%" cy="35%" r="75%">
+              <stop offset="0%" stop-color="#14b8a6"/><stop offset="55%" stop-color="#0f766e"/><stop offset="100%" stop-color="#134e4a"/>
+            </radialGradient>
+            <radialGradient id="g-canopy-c" cx="50%" cy="40%" r="70%">
+              <stop offset="0%" stop-color="#5eead4"/><stop offset="50%" stop-color="#14b8a6"/><stop offset="100%" stop-color="#0f766e"/>
+            </radialGradient>
+            <linearGradient id="g-trunk" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="#4a3524"/><stop offset="55%" stop-color="#6b4e33"/><stop offset="100%" stop-color="#8a6a45"/>
+            </linearGradient>
+            <radialGradient id="g-ground" cx="50%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="#14532d"/><stop offset="60%" stop-color="#0e3a33"/><stop offset="100%" stop-color="#0c2b30"/>
+            </radialGradient>
+            <radialGradient id="g-tag" cx="35%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="#2dd4bf"/><stop offset="60%" stop-color="#0d9488"/><stop offset="100%" stop-color="#0f766e"/>
+            </radialGradient>
+            <radialGradient id="g-gold" cx="35%" cy="30%" r="80%">
+              <stop offset="0%" stop-color="#fde68a"/><stop offset="55%" stop-color="#fbbf24"/><stop offset="100%" stop-color="#d97706"/>
+            </radialGradient>
+            <radialGradient id="g-glow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fbbf24" stop-opacity=".85"/><stop offset="60%" stop-color="#fbbf24" stop-opacity=".28"/><stop offset="100%" stop-color="#fbbf24" stop-opacity="0"/>
+            </radialGradient>
+            <radialGradient id="g-moon" cx="40%" cy="35%" r="70%">
+              <stop offset="0%" stop-color="#fefce8"/><stop offset="70%" stop-color="#fde68a"/><stop offset="100%" stop-color="#fcd34d"/>
+            </radialGradient>
+          </defs>
+
+          <!-- stars -->
+          <g fill="#e0f2fe">
+            <circle class="star"    cx="70"  cy="70"  r="1.8"/><circle class="star s2" cx="150" cy="130" r="1.3"/>
+            <circle class="star s3" cx="230" cy="55"  r="1.6"/><circle class="star"    cx="330" cy="95"  r="1.2"/>
+            <circle class="star s2" cx="420" cy="45"  r="1.7"/><circle class="star s3" cx="520" cy="85"  r="1.2"/>
+            <circle class="star"    cx="610" cy="50"  r="1.6"/><circle class="star s2" cx="700" cy="110" r="1.4"/>
+            <circle class="star s3" cx="790" cy="60"  r="1.8"/><circle class="star"    cx="845" cy="150" r="1.3"/>
+            <circle class="star s2" cx="60"  cy="210" r="1.2"/><circle class="star s3" cx="835" cy="260" r="1.2"/>
+            <circle class="star"    cx="115" cy="330" r="1.4"/><circle class="star s2" cx="855" cy="380" r="1.3"/>
+          </g>
+          <!-- shooting stars -->
+          <g transform="translate(760,52)"><g class="shoot">
+            <line x1="6" y1="-3" x2="82" y2="-36" stroke="#e0f2fe" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+            <circle r="2.6" fill="#ffffff"/>
+          </g></g>
+          <g transform="translate(420,36)"><g class="shoot sh2">
+            <line x1="6" y1="-3" x2="70" y2="-30" stroke="#e0f2fe" stroke-width="1.8" stroke-linecap="round" opacity=".6"/>
+            <circle r="2.2" fill="#ffffff"/>
+          </g></g>
+
+          <!-- moon with halo -->
+          <circle cx="798" cy="96" r="56" fill="url(#g-glow)" opacity=".5"/>
+          <circle cx="798" cy="96" r="30" fill="url(#g-moon)" opacity=".95"/>
+          <circle cx="806" cy="88" r="6" fill="#eab308" opacity=".18"/>
+          <circle cx="788" cy="102" r="4.5" fill="#eab308" opacity=".15"/>
+          <circle cx="802" cy="108" r="3" fill="#eab308" opacity=".14"/>
+
+          <!-- ground -->
+          <ellipse cx="450" cy="722" rx="444" ry="42" fill="url(#g-ground)"/>
+          <ellipse cx="450" cy="716" rx="310" ry="24" fill="#14532d" opacity=".28"/>
+
+          <!-- trunk & visible branch forks -->
+          <g stroke="url(#g-trunk)" fill="none" stroke-linecap="round">
+            <path d="M450,726 C447,664 449,610 447,556" stroke-width="48"/>
+            <path d="M448,570 C446,532 447,506 449,478" stroke-width="32"/>
+            <path d="M448,560 C408,516 362,488 312,468" stroke-width="19"/>
+            <path d="M449,548 C492,508 540,484 590,464" stroke-width="19"/>
+            <path d="M448,522 C428,478 406,446 384,418" stroke-width="14"/>
+            <path d="M449,516 C466,472 486,440 508,410" stroke-width="14"/>
+            <path d="M449,492 C451,462 452,438 453,412" stroke-width="10"/>
+            <path d="M313,469 C290,458 272,450 252,444" stroke-width="11"/>
+            <path d="M589,465 C612,456 630,449 650,443" stroke-width="11"/>
+          </g>
+          <path d="M408,726 C424,704 476,704 492,726 Z" fill="#4a3524"/>
+
+          <!-- grass tufts + ember lights at the roots -->
+          <g stroke="#166534" stroke-width="3.5" stroke-linecap="round" fill="none" opacity=".85">
+            <path d="M148,714 C150,702 148,695 143,688"/><path d="M156,715 C158,704 159,697 163,691"/>
+            <path d="M262,720 C263,709 261,702 256,696"/><path d="M270,721 C272,711 274,705 278,699"/>
+            <path d="M622,721 C623,710 621,703 616,697"/><path d="M630,722 C632,712 634,706 638,700"/>
+            <path d="M742,714 C744,703 742,696 737,690"/><path d="M750,715 C752,705 754,699 758,693"/>
+            <path d="M368,724 C369,714 367,708 363,703"/><path d="M540,724 C541,714 543,708 547,703"/>
+          </g>
+          <g fill="#fbbf24">
+            <circle class="star"    cx="176" cy="708" r="2.6"/><circle class="star s2" cx="292" cy="714" r="2.2"/>
+            <circle class="star s3" cx="600" cy="715" r="2.6"/><circle class="star"    cx="726" cy="708" r="2.2"/>
+            <circle class="star s2" cx="392" cy="719" r="2"/><circle class="star s3" cx="516" cy="719" r="2"/>
+          </g>
+
+          <!-- canopy: one unified silhouette, then depth clusters -->
+          <g id="canopy">
+            <ellipse cx="450" cy="330" rx="298" ry="208" fill="#115e59" opacity=".95"/>
+            <circle cx="285" cy="300" r="105" fill="url(#g-canopy-b)"/>
+            <circle cx="615" cy="300" r="105" fill="url(#g-canopy-b)"/>
+            <circle cx="250" cy="425" r="95"  fill="url(#g-canopy-b)"/>
+            <circle cx="650" cy="425" r="95"  fill="url(#g-canopy-b)"/>
+            <circle cx="370" cy="432" r="100" fill="url(#g-canopy-b)"/>
+            <circle cx="530" cy="432" r="100" fill="url(#g-canopy-b)"/>
+            <circle cx="370" cy="200" r="96"  fill="url(#g-canopy-a)"/>
+            <circle cx="530" cy="200" r="96"  fill="url(#g-canopy-a)"/>
+            <circle cx="450" cy="300" r="152" fill="url(#g-canopy-c)" opacity=".9"/>
+            <circle cx="450" cy="368" r="118" fill="url(#g-canopy-b)" opacity=".38"/>
+            <circle cx="386" cy="158" r="36"  fill="#5eead4" opacity=".28"/>
+            <circle cx="308" cy="232" r="26"  fill="#5eead4" opacity=".2"/>
+            <circle cx="520" cy="150" r="24"  fill="#99f6e4" opacity=".24"/>
+            <circle cx="560" cy="252" r="20"  fill="#99f6e4" opacity=".16"/>
+
+            <!-- student ornaments (JS-rendered) -->
+            <g id="ornaments"></g>
+          </g>
+
+          <!-- fireflies -->
+          <g>
+            <circle class="ff"    cx="180" cy="620" r="3.4" fill="#fde68a" opacity=".85"/>
+            <circle class="ff f2" cx="720" cy="600" r="2.8" fill="#fbbf24" opacity=".7"/>
+            <circle class="ff f3" cx="640" cy="668" r="3.4" fill="#fde68a" opacity=".75"/>
+            <circle class="ff f2" cx="260" cy="676" r="2.5" fill="#fbbf24" opacity=".6"/>
+            <circle class="ff"    cx="822" cy="520" r="2.5" fill="#fde68a" opacity=".55"/>
+            <circle class="ff f3" cx="90"  cy="520" r="2.8" fill="#fbbf24" opacity=".6"/>
+            <circle class="ff f2" cx="470" cy="640" r="2.4" fill="#fde68a" opacity=".5"/>
+          </g>
+        </svg>
+      </div>
+
+      <!-- When the board is empty, the tree still tells the truth -->
+      <div id="tree-empty" class="hidden max-w-xl mx-auto text-center px-6 pb-2 -mt-2">
+        <p class="text-teal-100 text-sm bg-white/5 border border-white/10 rounded-2xl px-5 py-4">🌱 <strong class="text-white">Leaves are going up now.</strong> Students are applying and Amanda talks with every one personally before their leaf is hung. Want your business ready on day one? <a href="#sponsor" class="text-amber-300 font-semibold underline">Sponsor the next student in line →</a></p>
+      </div>
+
+      <!-- Lanterns: the businesses lighting the tree -->
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 pb-4 mt-4">
+        <p class="text-center text-[11px] uppercase tracking-[0.2em] text-amber-400/90 font-bold">🏮 Rooted by East Texas businesses</p>
+        <div id="lantern-row" class="hidden flex-wrap justify-center gap-2.5 mt-3"></div>
+        <p id="lantern-empty" class="text-center text-teal-100/80 text-sm mt-2 max-w-md mx-auto">When your business sponsors a student, your lantern glows right here — with your permission — for every visitor, patient, and future hire to see.</p>
+      </div>
+
+      <!-- Share loop -->
+      <div class="border-t border-white/10 mt-6 px-4 py-6 text-center">
+        <p class="text-white font-semibold text-sm">Every share finds another sponsor. 📣</p>
+        <div class="mt-3 flex flex-wrap justify-center gap-2.5">
+          <button id="share-native" data-event="sponsor_share_native" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-5 py-2.5 rounded-full">Share the tree</button>
+          <a id="share-fb" data-event="sponsor_share_facebook" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.premierdentalacademyoflongview.com%2Fsponsor-a-student%3Futm_source%3Dfacebook%26utm_medium%3Dshare%26utm_campaign%3Dsponsor_tree" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-full">Facebook</a>
+          <a id="share-sms" data-event="sponsor_share_text" href="sms:?&body=Look%20at%20this%20%E2%80%94%20Longview%20businesses%20are%20sponsoring%20locals%20through%20dental%20assistant%20school%20like%20an%20angel%20tree%3A%20https%3A%2F%2Fwww.premierdentalacademyoflongview.com%2Fsponsor-a-student%3Futm_source%3Dsms%26utm_medium%3Dshare%26utm_campaign%3Dsponsor_tree" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-full">Text it</a>
+          <button id="share-copy" data-event="sponsor_share_copy" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold px-5 py-2.5 rounded-full">Copy link</button>
+        </div>
+        <p id="share-copied" class="hidden text-emerald-300 text-xs font-semibold mt-2">✓ Link copied — paste it anywhere.</p>
+      </div>
+    </div>
+  </section>
 
   <!-- Three-way win -->
-  <section class="text-center" aria-labelledby="win-h">
+  <section class="text-center mt-14" aria-labelledby="win-h">
     <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">Why it works</p>
     <h2 id="win-h" class="display text-3xl sm:text-4xl font-bold mt-2">One sponsorship. <span class="text-amber-500 italic">Three wins.</span></h2>
     <div class="grid sm:grid-cols-3 gap-4 mt-8 text-left">
@@ -66,7 +312,7 @@ tailwind.config = { theme: { extend: {
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <div class="text-3xl">🏢</div>
         <h3 class="font-bold text-lg mt-2">Your business wins</h3>
-        <p class="text-sm text-slate-600 mt-1">You invest in the local workforce and we recognize your business publicly (with your permission) as her sponsor. We invoice you and provide full documentation — many businesses treat sponsorships as a business expense; ask your tax professional.</p>
+        <p class="text-sm text-slate-600 mt-1">You invest in the local workforce and — with your permission — your lantern glows on the tree and we recognize your business publicly as her sponsor. We invoice you or take card online, and provide full documentation; many businesses treat sponsorships as a business expense. Ask your tax professional.</p>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <div class="text-3xl">🦷</div>
@@ -86,17 +332,17 @@ tailwind.config = { theme: { extend: {
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">1</div>
         <h3 class="font-bold mt-3">Students raise their hand</h3>
-        <p class="text-sm text-slate-600 mt-1">People who want to take the class but can't afford tuition apply below. We talk to every one of them, and — with their written consent — create a short, first-name-only profile.</p>
+        <p class="text-sm text-slate-600 mt-1">People who want to take the class but can't afford tuition apply below. We talk to every one of them, and — with their written consent — hang a first-name-only leaf on the tree.</p>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">2</div>
-        <h3 class="font-bold mt-3">You pick a student</h3>
-        <p class="text-sm text-slate-600 mt-1">Browse the students waiting below (or let Amanda match you). Sponsor a full seat — <strong>$3,000</strong> — or any part of one. We invoice your business directly; every dollar goes to that student's tuition.</p>
+        <h3 class="font-bold mt-3">You pick a leaf</h3>
+        <p class="text-sm text-slate-600 mt-1">Tap a student on the tree (or let Amanda match you). Sponsor a full seat — <strong>$3,000</strong> — or any part of one. Pay securely online in 2 minutes, or we invoice your business; every dollar goes to that student's tuition.</p>
       </div>
       <div class="bg-white rounded-2xl border border-slate-200 p-6">
         <div class="w-9 h-9 rounded-full bg-teal-700 text-white font-bold grid place-items-center">3</div>
-        <h3 class="font-bold mt-3">She trains &amp; goes to work</h3>
-        <p class="text-sm text-slate-600 mt-1">Your student enrolls in the next cohort, trains hands-on at the Longview campus, and we help her interview with East Texas offices when she finishes. You'll know the ending of this story.</p>
+        <h3 class="font-bold mt-3">Her leaf blooms gold</h3>
+        <p class="text-sm text-slate-600 mt-1">When her seat is covered, her leaf turns gold for the whole town to see. She enrolls in the next cohort, trains hands-on in Longview, and we help her interview with East Texas offices when she finishes. You'll know the ending of this story.</p>
       </div>
     </div>
   </section>
@@ -112,15 +358,104 @@ tailwind.config = { theme: { extend: {
     <div id="profiles-empty" class="hidden bg-white border border-slate-200 rounded-2xl p-8 text-center">
       <div class="text-4xl">🌱</div>
       <p class="font-bold mt-2">Profiles are going up now.</p>
-      <p class="text-sm text-slate-600 mt-1 max-w-md mx-auto">Students are applying and Amanda is talking with each one before they're listed. Don't want to wait? <a href="tel:+19039136444" class="text-teal-700 font-semibold underline">Call (903) 913-6444</a> and she'll match your business with a student today.</p>
+      <p class="text-sm text-slate-600 mt-1 max-w-md mx-auto">Students are applying and Amanda is talking with each one before they're listed. Don't want to wait? <a href="tel:+19039136444" class="text-teal-700 font-semibold underline">Call (903) 913-6444</a> and she'll match your business with a student today — or <a href="#sponsor" class="text-teal-700 font-semibold underline">sponsor the next student in line</a>.</p>
     </div>
   </section>
 
-  <!-- Business sponsor form -->
+  <!-- ══════════════════════ SPONSOR — PAY ONLINE ══════════════════════ -->
   <section id="sponsor" class="mt-14 scroll-mt-6" aria-labelledby="sponsor-h">
-    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-sm overflow-hidden">
+    <div class="bg-white rounded-2xl border-2 border-amber-400 shadow-md overflow-hidden">
+      <div class="bg-gradient-to-r from-navy-900 to-teal-800 text-white px-6 py-5">
+        <h2 id="sponsor-h" class="display text-2xl font-bold">💳 Sponsor a student — online, right now</h2>
+        <p class="text-teal-50 text-sm mt-1">Two minutes, any amount from $25 to a full $3,000 seat. Secure card payment via Square; 100% is applied to student tuition. Receipt + documentation emailed instantly.</p>
+      </div>
+
+      <form id="pay-form" class="p-6 grid sm:grid-cols-2 gap-4 text-sm">
+        <label class="block sm:col-span-2">
+          <span class="font-semibold text-slate-700">Who are you sponsoring?</span>
+          <select id="sp-student" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600 bg-white">
+            <option value="">🌟 Next student in line — Amanda matches me</option>
+          </select>
+        </label>
+
+        <div class="sm:col-span-2">
+          <span class="font-semibold text-slate-700">How much?</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1" id="amt-btns">
+            <button type="button" data-cents="10000"  class="amt-btn border-2 border-slate-200 hover:border-amber-500 rounded-xl px-3 py-3 text-center font-bold">$100</button>
+            <button type="button" data-cents="50000"  class="amt-btn border-2 border-slate-200 hover:border-amber-500 rounded-xl px-3 py-3 text-center font-bold">$500<span class="block text-[10px] font-semibold text-slate-500">gets her started</span></button>
+            <button type="button" data-cents="150000" class="amt-btn border-2 border-slate-200 hover:border-amber-500 rounded-xl px-3 py-3 text-center font-bold">$1,500<span class="block text-[10px] font-semibold text-slate-500">half a seat</span></button>
+            <button type="button" data-cents="300000" class="amt-btn active border-2 border-slate-200 hover:border-amber-500 rounded-xl px-3 py-3 text-center font-bold">$3,000<span class="block text-[10px] font-semibold">🌟 full seat</span></button>
+          </div>
+          <label class="flex items-center gap-2 mt-2">
+            <span class="text-slate-600 font-semibold">Or custom: $</span>
+            <input id="sp-custom" type="number" min="25" step="1" inputmode="numeric" placeholder="250" class="w-32 px-3 py-2 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+            <span class="text-xs text-slate-500">($25 minimum online)</span>
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="font-semibold text-slate-700">Business name <span class="font-normal text-slate-400">(optional)</span></span>
+          <input id="sp-business" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Smith Family Dental">
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Your name *</span>
+          <input id="sp-contact" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Email *</span>
+          <input id="sp-email" type="email" required class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+        </label>
+        <label class="block">
+          <span class="font-semibold text-slate-700">Phone</span>
+          <input id="sp-phone" type="tel" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600">
+        </label>
+
+        <div class="sm:col-span-2 bg-amber-50 border border-amber-200 rounded-xl p-4">
+          <label class="flex items-start gap-2.5 cursor-pointer">
+            <input id="sp-public" type="checkbox" checked class="mt-0.5 w-4 h-4 accent-amber-500">
+            <span class="text-slate-700"><strong>🏮 Light my lantern</strong> — show our name on the Sponsor Tree so Longview sees who stepped up.</span>
+          </label>
+          <label class="block mt-2 ml-6" id="sp-recog-wrap">
+            <span class="text-xs font-semibold text-slate-600">Show us as</span>
+            <input id="sp-recog" class="mt-1 w-full px-3 py-2 border-2 border-amber-200 rounded-lg focus:outline-none focus:border-amber-500 bg-white" placeholder="Your business name">
+          </label>
+        </div>
+
+        <label class="block sm:col-span-2">
+          <span class="font-semibold text-slate-700">Note for Amanda <span class="font-normal text-slate-400">(optional)</span></span>
+          <input id="sp-notes" maxlength="1000" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="e.g. we'd love to meet our student when she starts">
+        </label>
+
+        <div class="sm:col-span-2">
+          <span class="font-semibold text-slate-700">Card</span>
+          <div id="card-container" class="mt-1 border-2 border-slate-200 rounded-lg px-3 py-2 bg-white"></div>
+          <p class="text-xs text-slate-500 mt-1.5">🔒 Card processed securely by Square. We don't see or store your card number.</p>
+        </div>
+
+        <div class="sm:col-span-2">
+          <button type="submit" id="pay-btn" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md disabled:opacity-50">🤝 Sponsor now — $3,000</button>
+          <div id="pay-err" hidden class="mt-2 font-semibold text-rose-600"></div>
+        </div>
+      </form>
+
+      <!-- success panel swaps in after a completed payment -->
+      <div id="pay-success" class="hidden p-8 text-center">
+        <div class="text-5xl">🎉</div>
+        <h3 class="display text-2xl font-bold mt-2">You just changed the trajectory of a life.</h3>
+        <p id="pay-success-detail" class="text-slate-600 text-sm mt-2 max-w-md mx-auto"></p>
+        <p id="pay-success-warning" class="hidden text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm mt-3 max-w-md mx-auto"></p>
+        <div class="mt-5 flex flex-wrap gap-3 justify-center">
+          <a id="pay-receipt" target="_blank" rel="noopener" class="hidden bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold px-5 py-2.5 rounded-full">View Square receipt</a>
+          <button id="pay-share" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-5 py-2.5 rounded-full">📣 Tell Longview what you just did</button>
+        </div>
+        <p class="text-xs text-slate-500 mt-4">Amanda will email you your student's progress — you'll know how this story ends. Need an invoice for your books? Just reply to your receipt email.</p>
+      </div>
+    </div>
+
+    <!-- Prefer paper? The original concierge path stays. -->
+    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-sm overflow-hidden mt-6">
       <div class="bg-gradient-to-r from-teal-700 to-teal-600 text-white px-6 py-5">
-        <h2 id="sponsor-h" class="display text-2xl font-bold">🤝 For businesses: sponsor a student</h2>
+        <h2 class="display text-2xl font-bold">🤝 Prefer an invoice or a conversation first?</h2>
         <p class="text-teal-50 text-sm mt-1">Tell us who you are and how you'd like to help. Amanda will call you back within 1 business day with students who are ready to start.</p>
       </div>
       <form id="sponsor-form" class="p-6 grid sm:grid-cols-2 gap-4 text-sm">
@@ -155,13 +490,14 @@ tailwind.config = { theme: { extend: {
           <textarea name="notes" rows="2" maxlength="1000" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="e.g. we'd like to sponsor someone from Kilgore, we're a dental office looking to grow our own assistant…"></textarea>
         </label>
         <div class="sm:col-span-2">
-          <button type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Send — have Amanda call me →</button>
+          <button type="submit" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Send — have Amanda call me →</button>
           <div id="sponsor-msg" class="hidden mt-2 font-semibold"></div>
         </div>
       </form>
     </div>
+
     <div class="bg-slate-100 border border-slate-200 rounded-xl px-5 py-4 mt-4 text-xs text-slate-600 leading-relaxed">
-      <strong>About the paperwork:</strong> Premier Dental Academy is a private career school (not a 501(c)(3) charity), so a sponsorship is not a charitable donation. We invoice your business directly, every dollar is applied to your student's tuition, and you get full documentation. Many local businesses treat sponsorships as an ordinary business expense — like advertising or workforce development — and with your permission we recognize your business publicly as the sponsor. <strong>Ask your CPA or tax professional</strong> how a sponsorship fits your situation; we can't give tax advice.
+      <strong>About the paperwork:</strong> Premier Dental Academy is a private career school (not a 501(c)(3) charity), so a sponsorship is not a charitable donation. Whether you pay online or by invoice, every dollar is applied to your student's tuition and you get full documentation. Many local businesses treat sponsorships as an ordinary business expense — like advertising or workforce development — and with your permission we recognize your business publicly as the sponsor. <strong>Ask your CPA or tax professional</strong> how a sponsorship fits your situation; we can't give tax advice.
     </div>
   </section>
 
@@ -169,7 +505,7 @@ tailwind.config = { theme: { extend: {
   <section id="apply-help" class="mt-14 scroll-mt-6" aria-labelledby="apply-help-h">
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
       <div class="bg-slate-900 text-white px-6 py-5">
-        <h2 id="apply-help-h" class="display text-2xl font-bold">🌱 For students: apply for a sponsorship</h2>
+        <h2 id="apply-help-h" class="display text-2xl font-bold">🌱 For students: get your leaf on the tree</h2>
         <p class="text-slate-300 text-sm mt-1">If you want to become a dental assistant but tuition is the thing in your way, tell us. There's no fee to apply and no obligation — Amanda reads every single one.</p>
       </div>
       <form id="student-form" class="p-6 grid sm:grid-cols-2 gap-4 text-sm">
@@ -205,7 +541,7 @@ tailwind.config = { theme: { extend: {
         <label class="block sm:col-span-2">
           <span class="font-semibold text-slate-700">Tell us your story (a few sentences) *</span>
           <textarea name="story" rows="3" required maxlength="1500" class="mt-1 w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-teal-600" placeholder="Why dental assisting? What's standing in your way? Anything you want a sponsor to know."></textarea>
-          <span class="text-xs text-slate-500">Nothing goes public without your written OK. If you're a match, we'll ask before listing a first-name-only profile on this page.</span>
+          <span class="text-xs text-slate-500">Nothing goes public without your written OK. If you're a match, we'll ask before hanging a first-name-only leaf on the tree.</span>
         </label>
         <div class="sm:col-span-2">
           <button type="submit" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Apply for sponsorship — free →</button>
@@ -224,7 +560,11 @@ tailwind.config = { theme: { extend: {
     <div class="space-y-3">
       <details class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">How much does it cost to sponsor a student?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">A full seat is <strong>$3,000</strong> (the pay-in-full tuition). You can also sponsor part of a seat — <strong>$500</strong> covers a student's down payment and gets her started, and any amount is applied straight to tuition.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">A full seat is <strong>$3,000</strong> (the pay-in-full tuition). You can also sponsor part of a seat — <strong>$500</strong> covers a student's down payment and gets her started, and any amount from $25 up is applied straight to tuition.</div>
+      </details>
+      <details class="bg-white rounded-xl border border-slate-200 group">
+        <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Can I really pay online?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes — the card form above is a real, secure Square checkout (the same system that runs our tuition payments). Pick a student or the general fund, choose an amount, and you get a Square receipt plus a confirmation email instantly. Prefer old-school? Use the second form and we'll invoice your business instead.</div>
       </details>
       <details class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Is a sponsorship tax-deductible?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
@@ -232,11 +572,11 @@ tailwind.config = { theme: { extend: {
       </details>
       <details class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Do I pick the student?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Your call. Browse the board above and pick someone, or tell Amanda what matters to you (your town, a dental office growing its own assistant, a single parent getting a restart) and she'll match you. She personally talks with every student before they're listed.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Your call. Tap a leaf on the tree and pick someone, or tell Amanda what matters to you (your town, a dental office growing its own assistant, a single parent getting a restart) and she'll match you. She personally talks with every student before they're listed.</div>
       </details>
       <details class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">Where does the money go?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">100% to that student's tuition at Premier Dental Academy — we invoice you directly and apply it to her account. If your student can't finish, we'll talk to you before anything else happens with the funds.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">100% to student tuition at Premier Dental Academy — whether you pay by card online or by invoice, it's applied directly to your student's account. If your student can't finish, we'll talk to you before anything else happens with the funds.</div>
       </details>
       <details class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">I'm a student — is this a loan? What's the catch?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
@@ -259,12 +599,22 @@ tailwind.config = { theme: { extend: {
 <script>
 (function () {
   'use strict';
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var SQUARE_APP_ID = 'sq0idp-wP-0xugR7vYxfPzzYDVt7Q';
+  var SQUARE_LOCATION_ID = '2P2ZE3FJNEYTV';
+  var SHARE_URL = 'https://www.premierdentalacademyoflongview.com/sponsor-a-student?utm_source=share&utm_medium=referral&utm_campaign=sponsor_tree';
+
   var sb = null;
-  try { sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'); } catch (e) {}
+  try { sb = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) {}
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); };
   var money = function (c) { return '$' + Math.round(c / 100).toLocaleString('en-US'); };
+  var track = function (ev, props) { try { if (window.PDA && window.PDA.track) window.PDA.track(ev, props || {}); } catch (e) {} };
 
-  // UTM attribution folded into the lead message (same pattern as /apply)
+  // ────────────────────────────────────────────────────────────────────
+  // Lead forms (unchanged behavior): insert into public.leads, honeypot,
+  // UTM attribution folded into the message, offline fallback.
+  // ────────────────────────────────────────────────────────────────────
   function attribution() {
     var a = {};
     try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
@@ -299,7 +649,7 @@ tailwind.config = { theme: { extend: {
           localStorage.setItem('pda.pendingLeads', JSON.stringify(pending));
         } catch (e2) {}
       }
-      try { if (window.PDA && window.PDA.track) window.PDA.track(eventName, { saved: saved }); } catch (e3) {}
+      track(eventName, { saved: saved });
       btn.disabled = false;
       msg.classList.remove('hidden');
       msg.textContent = '✓ Got it — Amanda will reach out within 1 business day. Faster: call or text (903) 913-6444.';
@@ -346,39 +696,551 @@ tailwind.config = { theme: { extend: {
     };
   }, 'sponsor_student_submit');
 
-  // ── The board: approved, consented, anonymized profiles only ──
-  (async function () {
+  // ────────────────────────────────────────────────────────────────────
+  // THE TREE: live profiles → ornaments, stats chips, sponsor lanterns.
+  // All content is real data from Supabase; empty states stay honest.
+  // ────────────────────────────────────────────────────────────────────
+  var SVG_NS = 'http://www.w3.org/2000/svg';
+  function svgEl(tag, attrs) {
+    var n = document.createElementNS(SVG_NS, tag);
+    for (var k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  // Ornament slots tucked into the canopy (x, y) — spaced ≥110 apart so
+  // tags, rings, and name labels never collide.
+  var SLOTS = [
+    [390, 185], [530, 185], [275, 275], [460, 278], [640, 275],
+    [330, 378], [450, 382], [565, 378], [225, 478], [360, 485],
+    [540, 485], [675, 478]
+  ];
+
+  var profiles = [];
+
+  function firstName(dn) { return String(dn || '').split(' ')[0]; }
+
+  function renderOrnaments() {
+    var g = document.getElementById('ornaments');
+    if (!g) return;
+    while (g.firstChild) g.removeChild(g.firstChild);
+    var n = Math.min(profiles.length, SLOTS.length);
+    var openSlots = profiles.length ? Math.min(2, SLOTS.length - n) : 5;
+
+    for (var i = 0; i < n + openSlots; i++) {
+      var pos = SLOTS[i];
+      var outer = svgEl('g', { transform: 'translate(' + pos[0] + ',' + pos[1] + ')' });
+      var anim = svgEl('g', { 'class': 'orn-anim' });
+      anim.style.animationDelay = (i * 0.6) + 's';
+      outer.appendChild(anim);
+
+      // hanging string
+      anim.appendChild(svgEl('line', { x1: 0, y1: -56, x2: 0, y2: -30, stroke: '#fcd34d', 'stroke-width': 1.8, opacity: 0.65 }));
+
+      if (i < n) {
+        var p = profiles[i];
+        var sponsored = p.status === 'sponsored';
+        var grp = svgEl('g', { 'class': 'orn', tabindex: 0, role: 'button' });
+        var title = document.createElementNS(SVG_NS, 'title');
+        title.textContent = sponsored
+          ? (p.display_name + ' — fully sponsored ✓')
+          : (p.display_name + (p.city ? ' from ' + p.city : '') + ' — ' + money(p.raised_cents) + ' of ' + money(p.goal_cents) + ' raised. Tap to sponsor her.');
+        grp.appendChild(title);
+
+        if (sponsored) {
+          var glow = svgEl('circle', { r: 42, fill: 'url(#g-glow)', 'class': 'glow-pulse' });
+          grp.appendChild(glow);
+          // gold blossom petals
+          for (var a = 0; a < 5; a++) {
+            var ang = (Math.PI * 2 * a) / 5 - Math.PI / 2;
+            grp.appendChild(svgEl('circle', {
+              cx: Math.cos(ang) * 17, cy: Math.sin(ang) * 17, r: 11.5,
+              fill: '#fbbf24', opacity: 0.95, 'class': 'tag'
+            }));
+          }
+          grp.appendChild(svgEl('circle', { r: 13.5, fill: 'url(#g-gold)', 'class': 'tag' }));
+          var chk = svgEl('text', { y: 5, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 800, fill: '#78350f' });
+          chk.textContent = '✓';
+          grp.appendChild(chk);
+        } else {
+          var pct = p.goal_cents > 0 ? Math.max(0, Math.min(1, p.raised_cents / p.goal_cents)) : 0;
+          var C = 2 * Math.PI * 32;
+          grp.appendChild(svgEl('circle', { r: 32, fill: 'none', stroke: 'rgba(255,255,255,.18)', 'stroke-width': 4.5 }));
+          if (pct > 0.005) {
+            grp.appendChild(svgEl('circle', {
+              r: 32, fill: 'none', stroke: '#fbbf24', 'stroke-width': 4.5,
+              'stroke-linecap': 'round', 'stroke-dasharray': (C * pct) + ' ' + C,
+              transform: 'rotate(-90)'
+            }));
+          }
+          grp.appendChild(svgEl('circle', { r: 25, fill: 'url(#g-tag)', stroke: '#99f6e4', 'stroke-width': 1.2, 'class': 'tag' }));
+          var init = svgEl('text', { y: 7, 'text-anchor': 'middle', 'font-size': 21, 'font-weight': 800, fill: '#ffffff' });
+          init.textContent = (firstName(p.display_name)[0] || '?').toUpperCase();
+          grp.appendChild(init);
+        }
+
+        var label = svgEl('text', { y: sponsored ? 52 : 56, 'text-anchor': 'middle', 'font-size': 19, 'font-weight': 800, fill: sponsored ? '#fcd34d' : '#ccfbf1' });
+        label.textContent = firstName(p.display_name);
+        grp.appendChild(label);
+        if (sponsored) {
+          var sub = svgEl('text', { y: 70, 'text-anchor': 'middle', 'font-size': 12, 'font-weight': 800, fill: '#fbbf24', 'letter-spacing': '.1em' });
+          sub.textContent = 'SPONSORED';
+          grp.appendChild(sub);
+        } else if (p.raised_cents > 0) {
+          var sub2 = svgEl('text', { y: 74, 'text-anchor': 'middle', 'font-size': 13, 'font-weight': 700, fill: '#fcd34d' });
+          sub2.textContent = Math.round((p.raised_cents / p.goal_cents) * 100) + '% there';
+          grp.appendChild(sub2);
+        }
+
+        (function (prof, isSponsored, px, py) {
+          function go(ev) {
+            if (ev) ev.stopPropagation();
+            track('sponsor_leaf_click', { student: firstName(prof.display_name) });
+            sparkleBurst(px, py);
+            showLeafTip(prof, isSponsored, px, py);
+          }
+          grp.addEventListener('click', go);
+          grp.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); go(ev); } });
+        })(p, sponsored, pos[0], pos[1]);
+
+        // Sponsored blooms shed slow gold petals.
+        if (sponsored) {
+          for (var pi = 0; pi < 3; pi++) {
+            var petal = svgEl('ellipse', { cx: (pi - 1) * 9, cy: 16, rx: 4.5, ry: 3, fill: '#fbbf24', 'class': 'petal' });
+            petal.style.animationDelay = (pi * 2.1 + (i % 3)) + 's';
+            anim.appendChild(petal);
+          }
+        }
+
+        anim.appendChild(grp);
+      } else {
+        // Open seat — an unlit ornament inviting the next student.
+        var open = svgEl('g', { 'class': 'orn', tabindex: 0, role: 'button' });
+        var t2 = document.createElementNS(SVG_NS, 'title');
+        t2.textContent = 'Open seat — apply below and Amanda will talk with you personally.';
+        open.appendChild(t2);
+        open.appendChild(svgEl('circle', { r: 25, fill: 'rgba(255,255,255,.05)', stroke: 'rgba(255,255,255,.32)', 'stroke-width': 1.8, 'stroke-dasharray': '5 6', 'class': 'tag' }));
+        var plus = svgEl('text', { y: 8, 'text-anchor': 'middle', 'font-size': 22, 'font-weight': 700, fill: 'rgba(255,255,255,.55)' });
+        plus.textContent = '+';
+        open.appendChild(plus);
+        var ol = svgEl('text', { y: 54, 'text-anchor': 'middle', 'font-size': 15, 'font-weight': 600, fill: 'rgba(167,243,208,.6)' });
+        ol.textContent = 'open seat';
+        open.appendChild(ol);
+        open.addEventListener('click', function () {
+          track('sponsor_open_seat_click');
+          document.getElementById('apply-help').scrollIntoView({ behavior: 'smooth' });
+        });
+        anim.appendChild(open);
+      }
+      g.appendChild(outer);
+    }
+  }
+
+  // Stats chips count up from zero the first time they scroll into view.
+  function renderStats(stats) {
+    var host = document.getElementById('tree-stats');
+    if (!host || !stats) return;
+    var chips = [];
+    if (stats.raised_cents > 0) chips.push(['💛', Math.round(stats.raised_cents / 100), '$', 'raised for tuition']);
+    if (stats.sponsored > 0) chips.push(['🌟', stats.sponsored, '', stats.sponsored === 1 ? 'student sponsored' : 'students sponsored']);
+    if (stats.waiting > 0) chips.push(['🌱', stats.waiting, '', stats.waiting === 1 ? 'student waiting' : 'students waiting']);
+    if (stats.sponsor_count > 0) chips.push(['🏮', stats.sponsor_count, '', stats.sponsor_count === 1 ? 'sponsor' : 'sponsors']);
+    if (!chips.length) return;
+    host.innerHTML = chips.map(function (c) {
+      return '<div class="bg-white/10 border border-white/15 rounded-full px-4 py-2 text-sm text-white font-semibold backdrop-blur-sm">'
+        + c[0] + ' <span class="text-amber-300 font-extrabold stat-num" data-n="' + c[1] + '" data-p="' + c[2] + '">' + esc(c[2] + Number(c[1]).toLocaleString('en-US')) + '</span> <span class="text-teal-100 font-medium">' + esc(c[3]) + '</span></div>';
+    }).join('');
+    host.classList.remove('hidden');
+    host.classList.add('flex');
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var io = new IntersectionObserver(function (entries) {
+        if (!entries.some(function (en) { return en.isIntersecting; })) return;
+        io.disconnect();
+        host.querySelectorAll('.stat-num').forEach(function (el) {
+          var target = parseInt(el.getAttribute('data-n'), 10) || 0;
+          var prefix = el.getAttribute('data-p') || '';
+          var t0 = performance.now();
+          (function tick(t) {
+            var k = Math.min(1, (t - t0) / 1200);
+            k = 1 - Math.pow(1 - k, 3); // ease-out
+            el.textContent = prefix + Math.round(target * k).toLocaleString('en-US');
+            if (k < 1) requestAnimationFrame(tick);
+          })(t0);
+        });
+      }, { threshold: 0.4 });
+      io.observe(host);
+    } catch (e) {}
+  }
+
+  // Businesses hang as lanterns from a glowing string.
+  function renderLanterns(rows) {
+    var host = document.getElementById('lantern-row');
+    var empty = document.getElementById('lantern-empty');
+    if (!host || !rows || !rows.length) return;
+    host.className = 'lantern-string mt-3';
+    host.innerHTML = rows.slice(0, 24).map(function (r, i) {
+      return '<div class="lantern-item" style="animation-delay:' + ((i % 5) * 0.9) + 's">'
+        + '<div class="lantern lantern-glow rounded-xl px-4 py-2 text-amber-200 text-sm font-bold whitespace-nowrap">🏮 ' + esc(r.recognition_name) + '</div>'
+        + '</div>';
+    }).join('');
+    host.classList.remove('hidden');
+    if (empty) empty.textContent = 'These businesses put real neighbors through school. Yours belongs up here too.';
+  }
+
+  // ── Leaf pop-card + sparkle burst ──
+  function stagePoint(x, y) {
+    // viewBox coords → pixel offsets inside #tree-stage
+    var svg = document.getElementById('tree-svg');
+    var stage = document.getElementById('tree-stage');
+    var sr = svg.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+    return {
+      left: (sr.left - tr.left) + (x / 900) * sr.width,
+      top: (sr.top - tr.top) + (y / 770) * sr.height,
+    };
+  }
+
+  function sparkleBurst(x, y) {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var orn = document.getElementById('ornaments');
+      for (var k = 0; k < 8; k++) {
+        var s = svgEl('circle', { cx: x, cy: y, r: 3, fill: k % 2 ? '#fde68a' : '#5eead4', 'class': 'sparkle', opacity: 1 });
+        orn.appendChild(s);
+        (function (el, ang) {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+              el.style.transform = 'translate(' + Math.cos(ang) * 52 + 'px,' + Math.sin(ang) * 52 + 'px)';
+              el.style.opacity = '0';
+            });
+          });
+          setTimeout(function () { el.remove(); }, 650);
+        })(s, (Math.PI * 2 * k) / 8 + 0.4);
+      }
+    } catch (e) {}
+  }
+
+  function showLeafTip(prof, isSponsored, x, y) {
+    var tip = document.getElementById('leaf-tip');
+    if (!tip) return;
+    var pct = prof.goal_cents > 0 ? Math.min(100, Math.round((prof.raised_cents / prof.goal_cents) * 100)) : 0;
+    tip.innerHTML =
+      '<div class="flex items-center gap-2">'
+      + '<div class="w-9 h-9 rounded-full ' + (isSponsored ? 'bg-gradient-to-br from-amber-400 to-amber-600' : 'bg-gradient-to-br from-teal-500 to-cyan-600') + ' text-white font-bold grid place-items-center shrink-0">' + esc((prof.display_name || '?')[0]) + '</div>'
+      + '<div class="min-w-0"><div class="font-bold text-white truncate">' + esc(prof.display_name) + '</div>'
+      + (prof.city ? '<div class="text-[11px] text-teal-200">' + esc(prof.city) + ', TX</div>' : '') + '</div>'
+      + '<button id="leaf-tip-x" class="ml-auto text-slate-400 hover:text-white text-lg leading-none px-1" aria-label="Close">✕</button></div>'
+      + '<p class="text-[12.5px] text-slate-200 mt-2 leading-snug">' + esc(String(prof.story || '').slice(0, 140)) + (String(prof.story || '').length > 140 ? '…' : '') + '</p>'
+      + (isSponsored
+        ? '<p class="text-amber-300 text-xs font-bold mt-2.5">🌟 Fully sponsored — she’s headed to class!</p>'
+        : '<div class="mt-2.5"><div class="flex justify-between text-[10.5px] font-bold text-teal-100 mb-1"><span>' + money(prof.raised_cents) + ' raised</span><span>' + pct + '% of ' + money(prof.goal_cents) + '</span></div>'
+          + '<div class="h-1.5 bg-white/10 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-amber-400 to-amber-500" style="width:' + pct + '%"></div></div>'
+          + '<button id="leaf-tip-go" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold py-2 rounded-full">💛 Sponsor ' + esc(firstName(prof.display_name)) + ' →</button></div>');
+    // Top-row leaves show the card BELOW the leaf so it never leaves the scene
+    // (or slides under the sticky site nav); everyone else gets it above.
+    var below = y < 340;
+    tip.classList.toggle('tip-below', below);
+    var pt = stagePoint(x, below ? y + 78 : y - 44);
+    var stage = document.getElementById('tree-stage');
+    var half = Math.min(130, (stage.clientWidth / 2) - 8);
+    tip.style.left = Math.max(half, Math.min(stage.clientWidth - half, pt.left)) + 'px';
+    tip.style.top = Math.max(pt.top, 6) + 'px';
+    tip.classList.remove('hidden');
+    var xBtn = document.getElementById('leaf-tip-x');
+    if (xBtn) xBtn.onclick = function (e) { e.stopPropagation(); tip.classList.add('hidden'); };
+    var goBtn = document.getElementById('leaf-tip-go');
+    if (goBtn) goBtn.onclick = function (e) { e.stopPropagation(); tip.classList.add('hidden'); selectStudent(prof.id); };
+  }
+  document.addEventListener('click', function (e) {
+    var tip = document.getElementById('leaf-tip');
+    if (tip && !tip.classList.contains('hidden') && !tip.contains(e.target) && !e.target.closest('.orn')) tip.classList.add('hidden');
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { var tip = document.getElementById('leaf-tip'); if (tip) tip.classList.add('hidden'); }
+  });
+
+  // ── Confetti when a sponsorship completes ──
+  function confetti() {
+    try {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      var colors = ['#fbbf24', '#f59e0b', '#2dd4bf', '#5eead4', '#ffffff', '#fde68a'];
+      for (var k = 0; k < 80; k++) {
+        var d = document.createElement('div');
+        d.className = 'confetti';
+        var size = 5 + Math.random() * 6;
+        d.style.left = (Math.random() * 100) + 'vw';
+        d.style.width = size + 'px';
+        d.style.height = (size * 0.6) + 'px';
+        d.style.background = colors[k % colors.length];
+        d.style.animationDuration = (2.2 + Math.random() * 1.6) + 's';
+        d.style.animationDelay = (Math.random() * 0.6) + 's';
+        document.body.appendChild(d);
+        setTimeout(function (el) { return function () { el.remove(); }; }(d), 4600);
+      }
+    } catch (e) {}
+  }
+
+  function renderCards() {
     var grid = document.getElementById('profiles-grid');
     var empty = document.getElementById('profiles-empty');
-    var rows = [];
-    if (sb) {
-      try {
-        var res = await sb.from('sponsor_profiles')
-          .select('display_name, story, city, goal_cents, raised_cents, status')
-          .in('status', ['approved', 'sponsored'])
-          .order('created_at', { ascending: false }).limit(12);
-        rows = res.data || [];
-      } catch (e) {}
-    }
-    if (!rows.length) { empty.classList.remove('hidden'); return; }
-    grid.innerHTML = rows.map(function (r) {
+    if (!profiles.length) { empty.classList.remove('hidden'); return; }
+    grid.innerHTML = profiles.map(function (r) {
       var pct = r.goal_cents > 0 ? Math.min(100, Math.round((r.raised_cents / r.goal_cents) * 100)) : 0;
       var sponsored = r.status === 'sponsored';
-      return '<div class="bg-white rounded-2xl border ' + (sponsored ? 'border-emerald-300' : 'border-slate-200') + ' p-5">'
+      return '<div class="bg-white rounded-2xl border ' + (sponsored ? 'border-amber-300 ring-2 ring-amber-200' : 'border-slate-200') + ' p-5" data-profile-card="' + esc(r.id) + '">'
         + '<div class="flex items-center gap-2">'
-        + '<div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white font-bold grid place-items-center">' + esc((r.display_name || '?')[0]) + '</div>'
+        + '<div class="w-10 h-10 rounded-full ' + (sponsored ? 'bg-gradient-to-br from-amber-400 to-amber-600' : 'bg-gradient-to-br from-teal-500 to-cyan-600') + ' text-white font-bold grid place-items-center">' + esc((r.display_name || '?')[0]) + '</div>'
         + '<div><div class="font-bold">' + esc(r.display_name) + '</div>' + (r.city ? '<div class="text-xs text-slate-500">' + esc(r.city) + ', TX</div>' : '') + '</div>'
-        + (sponsored ? '<span class="ml-auto text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">Sponsored ✓</span>' : '')
+        + (sponsored ? '<span class="ml-auto text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Sponsored 🌟</span>' : '')
         + '</div>'
         + '<p class="text-sm text-slate-700 mt-3">' + esc(r.story) + '</p>'
         + (!sponsored
           ? '<div class="mt-4"><div class="flex justify-between text-xs font-semibold text-slate-600 mb-1"><span>' + money(r.raised_cents) + ' raised</span><span>' + money(r.goal_cents) + ' goal</span></div>'
-            + '<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-teal-500 to-cyan-500" style="width:' + pct + '%"></div></div>'
-            + '<a href="#sponsor" data-event="sponsor_profile_click" class="inline-block mt-3 text-sm font-bold text-teal-700 hover:underline">Sponsor ' + esc((r.display_name || '').split(' ')[0]) + ' →</a></div>'
-          : '')
+            + '<div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-amber-400 to-amber-500" style="width:' + pct + '%"></div></div>'
+            + '<button data-sponsor-id="' + esc(r.id) + '" data-event="sponsor_profile_click" class="mt-3 w-full bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold px-4 py-2.5 rounded-full">💳 Sponsor ' + esc(firstName(r.display_name)) + ' — ' + money(Math.max(0, r.goal_cents - r.raised_cents)) + ' to go</button></div>'
+          : '<p class="text-xs text-amber-700 font-semibold mt-3">Her seat is covered — she’s headed to class. 🎉</p>')
         + '</div>';
     }).join('');
-  })();
+    grid.querySelectorAll('[data-sponsor-id]').forEach(function (btn) {
+      btn.addEventListener('click', function () { selectStudent(btn.getAttribute('data-sponsor-id')); });
+    });
+  }
+
+  async function loadTree() {
+    if (!sb) { document.getElementById('profiles-empty').classList.remove('hidden'); document.getElementById('tree-empty').classList.remove('hidden'); renderOrnaments(); return; }
+    try {
+      var res = await sb.from('sponsor_profiles')
+        .select('id, display_name, story, city, goal_cents, raised_cents, status')
+        .in('status', ['approved', 'sponsored'])
+        .order('created_at', { ascending: false }).limit(24);
+      profiles = res.data || [];
+    } catch (e) { profiles = []; }
+    // Waiting students first on the tree, most recent first within each group.
+    profiles.sort(function (a, b) { return (a.status === 'sponsored' ? 1 : 0) - (b.status === 'sponsored' ? 1 : 0); });
+    renderOrnaments();
+    renderCards();
+    renderStudentSelect();
+    document.getElementById('tree-empty').classList.toggle('hidden', profiles.length > 0);
+    try {
+      var st = await sb.rpc('sponsor_tree_stats');
+      if (st.data) renderStats(st.data);
+    } catch (e) {}
+    try {
+      var wall = await sb.rpc('sponsor_wall');
+      if (wall.data) renderLanterns(wall.data);
+    } catch (e) {}
+  }
+
+  // ────────────────────────────────────────────────────────────────────
+  // ONLINE CHECKOUT (Square Web Payments → /api/sponsor)
+  // Copies the enroll.html safety posture: module-level submit lock,
+  // never re-enable after a charge may exist, never show "failed" on ok.
+  // ────────────────────────────────────────────────────────────────────
+  var payState = { payments: null, card: null, amountCents: 300000 };
+
+  function renderStudentSelect() {
+    var sel = document.getElementById('sp-student');
+    if (!sel) return;
+    var current = sel.value;
+    sel.innerHTML = '<option value="">🌟 Next student in line — Amanda matches me</option>' + profiles
+      .filter(function (p) { return p.status !== 'sponsored'; })
+      .map(function (p) {
+        var toGo = Math.max(0, p.goal_cents - p.raised_cents);
+        return '<option value="' + esc(p.id) + '">🌱 ' + esc(p.display_name) + (p.city ? ' — ' + esc(p.city) : '') + ' · ' + money(toGo) + ' to go</option>';
+      }).join('');
+    if (current) sel.value = current;
+  }
+
+  function selectStudent(id) {
+    var sel = document.getElementById('sp-student');
+    if (sel) sel.value = id || '';
+    document.getElementById('sponsor').scrollIntoView({ behavior: 'smooth' });
+    initSquare();
+  }
+
+  function setAmount(cents) {
+    payState.amountCents = cents;
+    var btn = document.getElementById('pay-btn');
+    if (btn && !btn.disabled) btn.textContent = '🤝 Sponsor now — ' + money(cents);
+    else if (btn) btn.textContent = '🤝 Sponsor now — ' + money(cents);
+  }
+
+  document.querySelectorAll('.amt-btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      document.querySelectorAll('.amt-btn').forEach(function (x) { x.classList.remove('active'); });
+      b.classList.add('active');
+      document.getElementById('sp-custom').value = '';
+      setAmount(parseInt(b.getAttribute('data-cents'), 10));
+      initSquare();
+    });
+  });
+  document.getElementById('sp-custom').addEventListener('input', function () {
+    var v = parseFloat(this.value);
+    if (Number.isFinite(v) && v > 0) {
+      document.querySelectorAll('.amt-btn').forEach(function (x) { x.classList.remove('active'); });
+      setAmount(Math.round(v * 100));
+    }
+  });
+  document.getElementById('sp-public').addEventListener('change', function () {
+    document.getElementById('sp-recog-wrap').style.display = this.checked ? '' : 'none';
+  });
+  document.getElementById('sp-business').addEventListener('input', function () {
+    var recog = document.getElementById('sp-recog');
+    if (recog && !recog.dataset.touched) recog.placeholder = this.value || 'Your business name';
+  });
+  document.getElementById('sp-recog').addEventListener('input', function () { this.dataset.touched = '1'; });
+
+  var squareInitStarted = false;
+  async function initSquare() {
+    if (squareInitStarted) return;
+    squareInitStarted = true;
+    try {
+      if (!window.Square) { console.warn('Square SDK failed to load'); return; }
+      payState.payments = window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID);
+      payState.card = await payState.payments.card();
+      await payState.card.attach('#card-container');
+      track('sponsor_checkout_ready');
+    } catch (e) {
+      console.warn('Square init failed', e);
+      squareInitStarted = false;
+    }
+  }
+  // Lazy-init the card field when the checkout scrolls into view.
+  try {
+    var io = new IntersectionObserver(function (entries) {
+      if (entries.some(function (en) { return en.isIntersecting; })) { initSquare(); io.disconnect(); }
+    }, { rootMargin: '200px' });
+    io.observe(document.getElementById('sponsor'));
+  } catch (e) { initSquare(); }
+
+  var __PAY_LOCKED = false;
+  document.getElementById('pay-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (__PAY_LOCKED) return;
+    __PAY_LOCKED = true;
+
+    var btn = document.getElementById('pay-btn');
+    var err = document.getElementById('pay-err');
+    err.hidden = true;
+
+    var contact = document.getElementById('sp-contact').value.trim();
+    var email = document.getElementById('sp-email').value.trim();
+    var amount = payState.amountCents;
+    var unlock = function (msg) {
+      __PAY_LOCKED = false;
+      btn.disabled = false;
+      btn.textContent = '🤝 Sponsor now — ' + money(payState.amountCents);
+      if (msg) { err.textContent = msg; err.hidden = false; }
+    };
+
+    if (!contact || !email) return unlock('Your name and email are required.');
+    if (!Number.isFinite(amount) || amount < 2500) return unlock('Minimum online sponsorship is $25 — every bit of it goes to tuition.');
+    if (amount > 1000000) return unlock('For sponsorships over $10,000, call Amanda at (903) 913-6444.');
+    if (!payState.card) { await initSquare(); if (!payState.card) return unlock('The secure card form couldn’t load. Refresh and try again, or call (903) 913-6444.'); }
+
+    btn.disabled = true;
+    btn.textContent = 'Processing… DO NOT close this tab.';
+    track('sponsor_pay_attempt', { cents: amount });
+
+    var tokenRes;
+    try {
+      tokenRes = await payState.card.tokenize();
+      if (tokenRes.status !== 'OK') {
+        return unlock((tokenRes.errors && tokenRes.errors[0] && tokenRes.errors[0].message) || 'Card was rejected. Try another card.');
+      }
+    } catch (e2) {
+      return unlock(e2.message || 'Card tokenization failed.');
+    }
+
+    // From here on a charge may exist. NEVER silently re-enable on unknown state.
+    var out = null, resp = null;
+    try {
+      resp = await fetch('/api/sponsor', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sourceId: tokenRes.token,
+          amountCents: amount,
+          business: document.getElementById('sp-business').value.trim() || null,
+          contact: contact,
+          email: email,
+          phone: document.getElementById('sp-phone').value.trim() || null,
+          profileId: document.getElementById('sp-student').value || null,
+          publicThanks: document.getElementById('sp-public').checked,
+          recognitionName: document.getElementById('sp-recog').value.trim() || null,
+          notes: document.getElementById('sp-notes').value.trim() || null,
+        }),
+      });
+      out = await resp.json();
+    } catch (e3) {
+      // Unknown state — do NOT invite a second charge.
+      btn.textContent = 'Call (903) 913-6444 before retrying';
+      err.innerHTML = 'We lost the connection mid-payment, so we can’t tell if your card was charged. <strong>Call Amanda at (903) 913-6444</strong> — she’ll confirm in Square in 30 seconds. Please don’t click pay again.';
+      err.hidden = false;
+      return;
+    }
+
+    if (out && out.ok) {
+      track('sponsor_paid', { cents: amount, student: out.student || '' });
+      confetti();
+      var f = document.getElementById('pay-form');
+      f.classList.add('hidden');
+      var s = document.getElementById('pay-success');
+      s.classList.remove('hidden');
+      document.getElementById('pay-success-detail').textContent =
+        'Your ' + money(out.amountCents || amount) + ' sponsorship went through' +
+        (out.student && document.getElementById('sp-student').value ? ' for ' + out.student : '') +
+        '. A confirmation email is on its way, and Amanda has already been alerted.';
+      if (out.warning) {
+        var w = document.getElementById('pay-success-warning');
+        w.textContent = out.warning;
+        w.classList.remove('hidden');
+      }
+      if (out.receiptUrl) {
+        var r = document.getElementById('pay-receipt');
+        r.href = out.receiptUrl;
+        r.classList.remove('hidden');
+      }
+      document.getElementById('pay-share').addEventListener('click', doShare);
+      s.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      loadTree(); // refresh ornaments/stats with the new money
+      return;
+    }
+
+    if (out && out.error) {
+      // Our API only returns JSON errors when NO charge succeeded (validation,
+      // pre-charge setup, or a declined card) — safe to let them try again.
+      return unlock(out.error);
+    }
+    btn.textContent = 'Call (903) 913-6444 before retrying';
+    err.innerHTML = 'Something unexpected happened and we can’t tell if your card was charged. <strong>Call Amanda at (903) 913-6444</strong> — she’ll confirm in Square in 30 seconds. Please don’t click pay again.';
+    err.hidden = false;
+  });
+
+  // ── Share ──
+  function doShare() {
+    track('sponsor_share_native');
+    if (navigator.share) {
+      navigator.share({
+        title: 'The Longview Sponsor Tree',
+        text: 'Longview businesses are sponsoring neighbors through dental assistant school — like an angel tree, for careers.',
+        url: SHARE_URL,
+      }).catch(function () {});
+    } else {
+      copyLink();
+    }
+  }
+  function copyLink() {
+    try {
+      navigator.clipboard.writeText(SHARE_URL).then(function () {
+        var el = document.getElementById('share-copied');
+        el.classList.remove('hidden');
+        setTimeout(function () { el.classList.add('hidden'); }, 2500);
+      });
+    } catch (e) {}
+  }
+  document.getElementById('share-native').addEventListener('click', doShare);
+  document.getElementById('share-copy').addEventListener('click', copyLink);
+
+  loadTree();
 })();
 </script>
 </body>

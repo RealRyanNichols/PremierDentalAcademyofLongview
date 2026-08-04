@@ -218,6 +218,16 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   domain verify, Mux tokens, 30 broadcast email bodies import, Kajabi contacts CSV,
   lesson content_html/quizzes for weeks 10–12, Mux signed playback for paid videos.
 
+## SPONSOR TREE — LIVE (July 31, 2026)
+- /sponsor-a-student is the full "angel tree for careers": animated SVG tree (leaves =
+  consented students from sponsor_profiles, gold blooms at goal, opt-in business lanterns
+  via sponsor_wall RPC), REAL Square online checkout (api/sponsor.js, $25–$10k, enroll.js
+  safety rules) + the original invoice/call lead forms. /admin/sponsors = Amanda's console
+  (applications → leaves → money). DB: public.sponsorships (admin-only RLS) + sponsor_rollup
+  trigger (paid → raised_cents → auto approved⇄sponsored) + public RPCs sponsor_tree_stats /
+  sponsor_wall — migration 20260731_sponsor_tree.sql, applied live. Consent stays enforced
+  (UI + RLS); tree renders REAL DATA ONLY (honest empty states). Runbook: docs/sponsor-tree.md.
+
 ## To continue building
 Describe what you want. This file is your memory: read the repo, propose a short
 plan, then make focused changes that follow the rules above.

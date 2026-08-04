@@ -21,6 +21,7 @@
     ['/admin/leads',       '📥', 'Leads'],
     ['/admin/paperwork',   '📋', 'Paperwork'],
     ['/admin/questions',   '🙋', 'Questions'],
+    ['/admin/sponsors',    '🤝', 'Sponsors'],
     ['/admin/students',    '🎓', 'Students'],
     ['/admin/cohorts',     '🗓️', 'Cohorts'],
     ['/admin/courses',     '📚', 'Courses'],
