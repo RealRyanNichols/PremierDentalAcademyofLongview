@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Support console | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ needsOrg: false }, function (state) {
+  if (!state.session) return;
+  load();
+
+  function load() {
+    HUB.screen(null, HUB.skeleton(3));
+    HUB.from('hub_support_grants')
+      .select('id, org_id, reason, expires_at, revoked_at, hub_organizations(name, practice_type)')
+      .eq('granted_to_profile_id', state.session.user.id)
+      .is('revoked_at', null)
+      .gt('expires_at', new Date().toISOString())
+      .then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+        render(r.data || []);
+      })
+      .catch(function (err) { var m = HUB.screen(null, ''); m.appendChild(HUB.errorState(err, load)); });
+  }
+
+  function render(grants) {
+    var html = '<h1 class="font-bold text-2xl">Premier support console</h1>' +
+      '<p class="text-slate-500 text-sm mt-1">Read-only. Every workspace view is logged to the practice\'s audit trail.</p>';
+    if (!grants.length) {
+      html += '<div class="mt-6 bg-white border border-slate-200 rounded-2xl p-10 text-center">' +
+        '<h2 class="font-bold text-lg">No active grants</h2>' +
+        '<p class="text-slate-600 mt-2 max-w-md mx-auto">A practice owner or manager must grant you access from their Settings page. Grants expire automatically.</p></div>';
+      HUB.screen(null, html);
+      return;
+    }
+    html += '<ul class="mt-5 space-y-3">';
+    grants.forEach(function (g) {
+      html += '<li class="bg-white border border-slate-200 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-3">' +
+        '<div><p class="font-bold">' + HUB.esc(g.hub_organizations ? g.hub_organizations.name : 'Workspace') + '</p>' +
+        '<p class="text-slate-500 text-sm">' + (g.reason ? HUB.esc(g.reason) + ' · ' : '') + 'expires ' + HUB.esc(HUB.fmtDate(g.expires_at)) + '</p></div>' +
+        '<button type="button" data-open="' + g.org_id + '" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">Open read-only</button></li>';
+    });
+    html += '</ul><div id="support-view" class="mt-6"></div>';
+    var m = HUB.screen(null, html);
+    HUB.$$('[data-open]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () { openOrg(btn.getAttribute('data-open'), m); });
+    });
+  }
+
+  function openOrg(orgId, m) {
+    var view = HUB.$('#support-view', m);
+    view.innerHTML = HUB.skeleton(3);
+    HUB.rpc('hub_log_support_view', { p_org: orgId, p_page: 'support-console-overview' }).catch(function () {});
+    Promise.all([
+      HUB.rpc('hub_org_people', { p_org: orgId }),
+      HUB.from('hub_plans').select('id, status, start_date, employee_membership_id').eq('org_id', orgId),
+      HUB.from('hub_employee_skills').select('state').eq('org_id', orgId),
+      HUB.from('hub_sops').select('id, title, kind, status').eq('org_id', orgId),
+    ]).then(function (r) {
+      var people = r[0] || [], plans = r[1].data || [], skills = r[2].data || [], sops = r[3].data || [];
+      var counts = {};
+      skills.forEach(function (s) { counts[s.state] = (counts[s.state] || 0) + 1; });
+      view.innerHTML = '<div class="bg-white border-2 border-sky-200 rounded-2xl p-6">' +
+        '<p class="text-xs font-bold text-sky-700 uppercase tracking-wider">Read-only view (logged)</p>' +
+        '<h2 class="font-bold text-lg mt-2">People (' + people.length + ')</h2>' +
+        '<ul class="mt-2 text-sm text-slate-700 space-y-1">' + people.map(function (p) {
+          return '<li>• ' + HUB.esc(p.full_name || p.email) + ' — ' + HUB.esc(p.role) + (p.status === 'archived' ? ' (archived)' : '') + '</li>';
+        }).join('') + '</ul>' +
+        '<h2 class="font-bold text-lg mt-5">Plans</h2>' +
+        '<p class="text-sm text-slate-700 mt-1">' + plans.filter(function (p) { return p.status === 'active'; }).length + ' active · ' + plans.length + ' total</p>' +
+        '<h2 class="font-bold text-lg mt-5">Skill states</h2>' +
+        '<p class="text-sm text-slate-700 mt-1">' + (Object.keys(counts).map(function (k) { return k.replace('_', ' ') + ': ' + counts[k]; }).join(' · ') || 'none recorded') + '</p>' +
+        '<h2 class="font-bold text-lg mt-5">SOPs (' + sops.length + ')</h2>' +
+        '<ul class="mt-2 text-sm text-slate-700 space-y-1">' + sops.map(function (s) { return '<li>• ' + HUB.esc(s.title) + ' (' + HUB.esc(s.kind) + ')</li>'; }).join('') + '</ul>' +
+        '</div>';
+    }).catch(function (err) {
+      view.innerHTML = '';
+      view.appendChild(HUB.errorState(err, function () { openOrg(orgId, m); }));
+    });
+  }
+});
+
+</script>
+</body>
+</html>

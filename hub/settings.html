@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Settings | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ roles: ['owner', 'manager'] }, function (state) {
+  if (!state.membership || ['owner','manager'].indexOf(state.membership.role) === -1) return;
+  load();
+
+  function load() {
+    HUB.screen(null, HUB.skeleton(6));
+    Promise.all([
+      HUB.rpc('hub_org_people', { p_org: state.orgId }),
+      HUB.from('hub_invitations').select('id, email, role, status, expires_at, created_at').eq('org_id', state.orgId).order('created_at', { ascending: false }).limit(20),
+      HUB.from('hub_support_grants').select('*').eq('org_id', state.orgId).order('created_at', { ascending: false }).limit(10),
+      HUB.from('hub_audit_events').select('actor_label, action, at, meta').eq('org_id', state.orgId).order('at', { ascending: false }).limit(50),
+    ]).then(function (r) {
+      render(r[0] || [], r[1].data || [], r[2].data || [], r[3].data || []);
+    }).catch(function (err) { var m = HUB.screen(null, ''); m.appendChild(HUB.errorState(err, load)); });
+  }
+
+  function render(people, invites, grants, audits) {
+    var isOwner = state.membership.role === 'owner';
+    var html = '<h1 class="font-bold text-2xl">Settings</h1>';
+
+    // ── Workspace ──
+    html += '<section class="bg-white border border-slate-200 rounded-2xl p-6 mt-5">' +
+      '<h2 class="font-bold text-lg">Workspace</h2>' +
+      '<form id="org-form" class="mt-3 flex flex-wrap items-end gap-3">' +
+      '<div class="grow max-w-sm"><label class="block font-semibold text-sm" for="org-name">Practice name</label>' +
+      '<input id="org-name" type="text" maxlength="120" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" value="' + HUB.esc(state.org.name) + '"></div>' +
+      '<button type="submit" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg text-sm">Save</button></form>' +
+      '<p class="text-slate-500 text-sm mt-2">Plan: <strong>' + (state.org.plan_tier === 'paid' ? 'Full' : 'Free — one active onboarding at a time') + '</strong>' +
+      (state.org.plan_tier === 'free' ? ' · <a class="text-sky-700 font-semibold hover:underline" href="/hub/upgrade">about the full version</a>' : '') + '</p></section>';
+
+    // ── People ──
+    html += '<section class="bg-white border border-slate-200 rounded-2xl p-6 mt-5"><h2 class="font-bold text-lg">People &amp; roles</h2>';
+    html += '<ul class="mt-3 divide-y divide-slate-100">';
+    people.forEach(function (p) {
+      var self = p.profile_id === (state.session.user && state.session.user.id);
+      html += '<li class="py-3 flex flex-wrap items-center justify-between gap-3">' +
+        '<div><p class="font-semibold">' + HUB.esc(p.full_name || p.email) + (self ? ' <span class="text-xs text-slate-400">(you)</span>' : '') +
+        (p.status === 'archived' ? ' <span class="text-xs bg-slate-200 text-slate-600 rounded-full px-2 py-0.5">Archived</span>' : '') + '</p>' +
+        '<p class="text-slate-500 text-xs">' + HUB.esc(p.email) + (p.archive_reason ? ' · ' + HUB.esc(p.archive_reason) : '') + '</p></div>';
+      if (p.status === 'active') {
+        html += '<div class="flex items-center gap-2">' +
+          '<label class="sr-only" for="role-' + p.membership_id + '">Role for ' + HUB.esc(p.full_name || p.email) + '</label>' +
+          '<select id="role-' + p.membership_id + '" data-role-for="' + p.membership_id + '"' + ((self || (!isOwner && p.role === 'owner')) ? ' disabled' : '') +
+          ' class="border border-slate-300 rounded-lg px-2.5 py-1.5 text-sm bg-white">' +
+          ['owner', 'manager', 'trainer', 'employee'].map(function (r) {
+            return '<option value="' + r + '"' + (p.role === r ? ' selected' : '') + '>' + r + '</option>';
+          }).join('') + '</select>' +
+          (!self ? '<button type="button" data-archive="' + p.membership_id + '" data-name="' + HUB.esc(p.full_name || p.email) + '" class="text-red-600 hover:text-red-800 text-sm font-semibold">Archive</button>' : '') +
+          '</div>';
+      }
+      html += '</li>';
+    });
+    html += '</ul>';
+
+    // invites
+    html += '<h3 class="font-semibold mt-5">Invite someone</h3>' +
+      '<form id="invite-form" class="mt-2 flex flex-wrap items-end gap-3">' +
+      '<div class="grow max-w-xs"><label class="block font-semibold text-sm" for="inv-email">Email</label>' +
+      '<input id="inv-email" type="email" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></div>' +
+      '<div><label class="block font-semibold text-sm" for="inv-role">Role</label>' +
+      '<select id="inv-role" class="mt-1 border border-slate-300 rounded-lg px-3 py-2 bg-white">' +
+      '<option value="employee">employee</option><option value="trainer">trainer</option><option value="manager">manager</option><option value="owner">owner</option></select></div>' +
+      '<button type="submit" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">Create invite link</button></form>' +
+      '<p id="inv-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p>' +
+      '<div id="inv-result" class="hidden mt-3 bg-sky-50 border border-sky-200 rounded-xl p-4">' +
+      '<p class="font-semibold text-sm">Invite link — share it with them (works for 7 days, shown once):</p>' +
+      '<div class="mt-2 flex gap-2"><input id="inv-link" type="text" readonly class="grow border border-slate-300 rounded-lg px-3 py-2 text-xs bg-white">' +
+      '<button type="button" id="inv-copy" class="bg-sky-600 text-white font-semibold px-3 py-2 rounded-lg text-sm shrink-0">Copy</button></div></div>';
+
+    var pending = invites.filter(function (i) { return i.status === 'pending'; });
+    if (pending.length) {
+      html += '<h3 class="font-semibold mt-5">Pending invites</h3><ul class="mt-2 space-y-1.5">';
+      pending.forEach(function (i) {
+        var expired = new Date(i.expires_at) <= new Date();
+        html += '<li class="flex items-center justify-between gap-3 text-sm">' +
+          '<span>' + HUB.esc(i.email) + ' · ' + HUB.esc(i.role) + (expired ? ' · <span class="text-amber-700 font-semibold">expired</span>' : ' · expires ' + HUB.esc(HUB.fmtDate(i.expires_at))) + '</span>' +
+          '<button type="button" data-revoke="' + i.id + '" class="text-red-600 hover:text-red-800 font-semibold">Revoke</button></li>';
+      });
+      html += '</ul>';
+    }
+    html += '</section>';
+
+    // ── Premier support ──
+    html += '<section class="bg-white border border-slate-200 rounded-2xl p-6 mt-5"><h2 class="font-bold text-lg">Premier support access</h2>' +
+      '<p class="text-slate-500 text-sm mt-1">Nobody at Premier can see this workspace unless you grant it. Grants are read-only, expire on their own, and every support view lands in your audit log below.</p>';
+    var activeGrants = grants.filter(function (g) { return !g.revoked_at && new Date(g.expires_at) > new Date(); });
+    if (activeGrants.length) {
+      html += '<ul class="mt-3 space-y-2">';
+      activeGrants.forEach(function (g) {
+        html += '<li class="flex items-center justify-between gap-3 text-sm bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">' +
+          '<span>Active grant' + (g.reason ? ' — ' + HUB.esc(g.reason) : '') + ' · expires ' + HUB.esc(HUB.fmtDate(g.expires_at)) + '</span>' +
+          '<button type="button" data-revoke-grant="' + g.id + '" class="text-red-600 hover:text-red-800 font-semibold">Revoke now</button></li>';
+      });
+      html += '</ul>';
+    } else {
+      html += '<p class="text-sm text-slate-600 mt-3">No active grants.</p>';
+    }
+    html += '<form id="grant-form" class="mt-3 flex flex-wrap items-end gap-3">' +
+      '<div class="grow max-w-xs"><label class="block font-semibold text-sm" for="gr-email">Premier support email</label>' +
+      '<input id="gr-email" type="email" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="name@premierdentalacademyoflongview.com"></div>' +
+      '<div><label class="block font-semibold text-sm" for="gr-days">Days</label>' +
+      '<input id="gr-days" type="number" min="1" max="30" value="7" class="mt-1 w-20 border border-slate-300 rounded-lg px-3 py-2"></div>' +
+      '<div class="grow max-w-xs"><label class="block font-semibold text-sm" for="gr-reason">Reason (optional)</label>' +
+      '<input id="gr-reason" type="text" maxlength="200" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></div>' +
+      '<button type="submit" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg text-sm">Grant access</button></form>' +
+      '<p id="gr-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p></section>';
+
+    // ── Data & privacy ──
+    html += '<section class="bg-white border border-slate-200 rounded-2xl p-6 mt-5"><h2 class="font-bold text-lg">Data &amp; privacy</h2>' +
+      '<p class="text-slate-600 text-sm mt-2">This workspace stores training records only: plans, task status, skill sign-offs and their history, SOPs, quiz pass results, weekly check-ins, and reports. By design there are no fields or uploads for patient data, I-9/W-4, SSNs, health or vaccination records, background checks, card data, or payroll.</p>' +
+      (isOwner
+        ? (state.org.settings && state.org.settings.deletion_requested_at
+          ? '<p class="mt-3 text-sm bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-4 py-2.5">Deletion requested ' + HUB.esc(HUB.fmtDate(state.org.settings.deletion_requested_at)) + '. Premier completes deletion within 14 days — call us to cancel the request.</p>'
+          : '<button type="button" id="del-btn" class="mt-3 border border-red-200 text-red-700 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg text-sm">Request workspace deletion</button>')
+        : '<p class="text-slate-500 text-xs mt-2">Only the owner can request deletion.</p>') +
+      '</section>';
+
+    // ── Audit log ──
+    html += '<section class="bg-white border border-slate-200 rounded-2xl p-6 mt-5"><h2 class="font-bold text-lg">Audit log</h2>' +
+      '<p class="text-slate-500 text-sm mt-1">The last 50 events — role changes, sign-offs, invites, support views, archives.</p>';
+    if (!audits.length) html += '<p class="text-sm text-slate-600 mt-3">Nothing yet.</p>';
+    else {
+      html += '<ul class="mt-3 space-y-1 text-sm max-h-80 overflow-y-auto">';
+      audits.forEach(function (a) {
+        html += '<li class="flex justify-between gap-3 py-1 border-b border-slate-50">' +
+          '<span><strong>' + HUB.esc(a.actor_label) + '</strong> · ' + HUB.esc(a.action.toLowerCase().replace(/_/g, ' ')) + '</span>' +
+          '<span class="text-slate-400 shrink-0">' + HUB.esc(HUB.fmtDate(a.at)) + '</span></li>';
+      });
+      html += '</ul>';
+    }
+    html += '</section>';
+
+    var m = HUB.screen(null, html);
+    wire(m);
+  }
+
+  function wire(m) {
+    HUB.$('#org-form', m).addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = HUB.$('#org-name', m).value.trim();
+      if (!name) return;
+      HUB.from('hub_organizations').update({ name: name }).eq('id', state.orgId).then(function (r) {
+        if (r.error) { HUB.toast(r.error.message, 'error'); return; }
+        HUB.toast('Workspace name saved.'); state.org.name = name;
+      });
+    });
+
+    HUB.$$('[data-role-for]', m).forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        HUB.from('hub_org_memberships').update({ role: sel.value }).eq('id', sel.getAttribute('data-role-for')).then(function (r) {
+          if (r.error) { HUB.toast(r.error.message, 'error'); load(); return; }
+          HUB.toast('Role updated (logged in the audit trail).');
+        });
+      });
+    });
+
+    HUB.$$('[data-archive]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        HUB.modal({
+          title: 'Archive ' + btn.getAttribute('data-name') + '?',
+          body: 'Ends their access now; keeps every record. This shows in the audit log.',
+          input: 'Reason (kept in the record)', okLabel: 'Archive', danger: true,
+        }).then(function (reason) {
+          if (reason === null) return;
+          HUB.rpc('hub_archive_member', { p_membership: btn.getAttribute('data-archive'), p_reason: String(reason || '').slice(0, 300) || null })
+            .then(function () { HUB.track('member_archived', {}, 'member_archived:' + btn.getAttribute('data-archive')); HUB.toast('Archived.'); load(); })
+            .catch(function (err) { HUB.toast(err.message, 'error'); });
+        });
+      });
+    });
+
+    HUB.$('#invite-form', m).addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = HUB.$('#inv-email', m).value.trim();
+      var role = HUB.$('#inv-role', m).value;
+      var err = HUB.$('#inv-err', m);
+      err.classList.add('hidden');
+      HUB.rpc('hub_create_invitation', { p_org: state.orgId, p_email: email, p_role: role })
+        .then(function (token) {
+          var link = location.origin + '/hub/invite?token=' + token;
+          HUB.$('#inv-result', m).classList.remove('hidden');
+          HUB.$('#inv-link', m).value = link;
+          HUB.track('invite_sent', { role: role }, 'invite_sent:' + state.orgId + ':' + token.slice(0, 8));
+        })
+        .catch(function (e2) {
+          err.textContent = /RATE_LIMIT/.test(e2.message) ? 'Invite limit reached for today (20). Try tomorrow.' : e2.message;
+          err.classList.remove('hidden');
+        });
+    });
+    HUB.$('#inv-copy', m).addEventListener('click', function () {
+      var input = HUB.$('#inv-link', m);
+      input.select();
+      navigator.clipboard.writeText(input.value).then(function () { HUB.toast('Link copied.'); }, function () { document.execCommand('copy'); HUB.toast('Link copied.'); });
+    });
+
+    HUB.$$('[data-revoke]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        HUB.rpc('hub_revoke_invitation', { p_invitation: btn.getAttribute('data-revoke') })
+          .then(function () { HUB.toast('Invite revoked.'); load(); })
+          .catch(function (err) { HUB.toast(err.message, 'error'); });
+      });
+    });
+
+    HUB.$('#grant-form', m).addEventListener('submit', function (e) {
+      e.preventDefault();
+      var err = HUB.$('#gr-err', m);
+      err.classList.add('hidden');
+      HUB.rpc('hub_create_support_grant', {
+        p_org: state.orgId,
+        p_support_email: HUB.$('#gr-email', m).value.trim(),
+        p_reason: HUB.$('#gr-reason', m).value.trim() || null,
+        p_days: parseInt(HUB.$('#gr-days', m).value, 10) || 7,
+      }).then(function (grantId) {
+        HUB.track('support_grant_created', {}, 'support_grant:' + grantId);
+        HUB.toast('Support access granted (read-only, audited).'); load();
+      }).catch(function (e2) { err.textContent = e2.message; err.classList.remove('hidden'); });
+    });
+
+    HUB.$$('[data-revoke-grant]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        HUB.rpc('hub_revoke_support_grant', { p_grant: btn.getAttribute('data-revoke-grant') })
+          .then(function () { HUB.toast('Grant revoked — access ends now.'); load(); })
+          .catch(function (err) { HUB.toast(err.message, 'error'); });
+      });
+    });
+
+    var delBtn = HUB.$('#del-btn', m);
+    if (delBtn) delBtn.addEventListener('click', function () {
+      HUB.modal({
+        title: 'Request deletion of this workspace?',
+        body: 'Premier completes deletion within 14 days. Until then you can call us to cancel. This writes an audit event now.',
+        okLabel: 'Request deletion', danger: true,
+      }).then(function (ok) {
+        if (!ok) return;
+        HUB.rpc('hub_request_deletion', { p_org: state.orgId })
+          .then(function () { HUB.track('deletion_requested', {}, 'deletion_requested:' + state.orgId); HUB.toast('Deletion requested. We\'ll be in touch.'); load(); })
+          .catch(function (err) { HUB.toast(err.message, 'error'); });
+      });
+    });
+  }
+});
+
+</script>
+</body>
+</html>

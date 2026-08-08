@@ -13,6 +13,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SKIP_DIRS = [".git", "node_modules", "scripts", "assets", "admin", "marketing",
   "templates", "tools", "skills-lab", "db", "supabase", ".vercel", "kajabi-weeks-7-12",
   "design-reference",
+  "hub", // office-hub private app (noindex by design) — audited by check-hub.mjs instead
   'googlef6ce92f7fc9aa025.html', // Google Search Console verification file — must stay bare
 ];
 // Utility / auth / transactional / noindex pages that don't need marketing SEO.

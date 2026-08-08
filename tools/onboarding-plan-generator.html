@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Free 30/60/90-Day Dental Onboarding Plan Generator</title>
+  <meta name="description" content="Build a free 30/60/90-day onboarding plan for your dental office new hire. Four questions, a complete printable plan — no account required." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    fieldset { border: 0; padding: 0; margin: 0; }
+    @media print { nav, form .no-print, #generator-form { display: none; } }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/onboarding-plan-generator" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/onboarding-plan-generator" />
+  <meta property="og:title" content="Free 30/60/90-Day Dental Onboarding Plan Generator" />
+  <meta property="og:description" content="Four questions. A complete, printable onboarding plan for your dental office new hire." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-6 py-12">
+  <header class="text-center">
+    <p class="text-[12.5px] uppercase tracking-[0.16em] text-sky-700 font-bold">Free tool for dental offices</p>
+    <h1 class="display text-4xl font-semibold mt-2 leading-tight">30/60/90-day onboarding plan generator</h1>
+    <p class="text-slate-600 mt-4 max-w-xl mx-auto">Four questions about your new hire, and you'll get a complete day-by-day onboarding plan — learn the office, build ownership, run it yourself. Print it, email it, or use it as-is tomorrow.</p>
+  </header>
+
+  <!-- The form works with JavaScript OFF: it submits to a server-rendered
+       result page. With JS on, the same plan renders inline below. -->
+  <form id="generator-form" method="GET" action="/api/hub/plan" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 mt-10 space-y-8">
+    <fieldset>
+      <legend class="font-bold text-lg">1. What role are you hiring?</legend>
+      <div class="mt-3 grid sm:grid-cols-2 gap-2.5">
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="role" value="dental_assistant" checked class="accent-sky-600"> Dental assistant
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="role" value="front_office" class="accent-sky-600"> Front office / admin
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="role" value="hygienist" class="accent-sky-600"> Dental hygienist
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="role" value="office_manager" class="accent-sky-600"> Office manager
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="font-bold text-lg">2. How experienced are they?</legend>
+      <div class="mt-3 grid gap-2.5">
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="experience" value="new_to_dental" checked class="accent-sky-600"> Brand new to dental
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="experience" value="new_grad" class="accent-sky-600"> Recent grad / externship done
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="radio" name="experience" value="experienced" class="accent-sky-600"> Experienced, new to this office
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="font-bold text-lg">3. What kind of practice?</legend>
+      <div class="mt-3">
+        <label class="sr-only" for="practice">Practice type</label>
+        <select id="practice" name="practice" class="w-full border border-slate-300 rounded-xl px-4 py-3 bg-white">
+          <option value="general" selected>General dentistry</option>
+          <option value="pediatric">Pediatric</option>
+          <option value="ortho">Orthodontics</option>
+          <option value="oral_surgery">Oral surgery</option>
+          <option value="multi_specialty">Multi-specialty / group</option>
+        </select>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="font-bold text-lg">4. Any focus areas? <span class="font-normal text-slate-500 text-base">(optional — pick up to three)</span></legend>
+      <div class="mt-3 grid sm:grid-cols-2 gap-2.5">
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="sterilization" class="accent-sky-600"> Sterilization &amp; infection control
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="chairside" class="accent-sky-600"> Chairside assisting
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="radiology" class="accent-sky-600"> X-ray workflow (Texas rules apply)
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="software" class="accent-sky-600"> Practice software
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="scheduling" class="accent-sky-600"> Scheduling &amp; recall
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="insurance" class="accent-sky-600"> Insurance &amp; billing basics
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="patient_communication" class="accent-sky-600"> Patient communication
+        </label>
+        <label class="flex items-center gap-3 border border-slate-200 rounded-xl px-4 py-3 cursor-pointer has-[:checked]:border-sky-500 has-[:checked]:bg-sky-50">
+          <input type="checkbox" name="focus" value="lab" class="accent-sky-600"> Lab cases &amp; materials
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend class="font-bold text-lg">First day <span class="font-normal text-slate-500 text-base">(optional — adds real dates)</span></legend>
+      <div class="mt-3">
+        <label class="sr-only" for="start">First day date</label>
+        <input id="start" type="date" name="start" class="border border-slate-300 rounded-xl px-4 py-3 bg-white" />
+      </div>
+    </fieldset>
+
+    <div class="pt-2">
+      <button type="submit" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold px-6 py-4 rounded-xl text-lg">Build my plan</button>
+      <p class="text-slate-500 text-sm mt-3 text-center no-print">Free — no account, no card. Your plan appears instantly and you can print or email it.</p>
+    </div>
+  </form>
+
+  <!-- Inline result (progressive enhancement target) -->
+  <section id="plan-result" class="mt-10" aria-live="polite"></section>
+
+  <p class="text-slate-500 text-sm mt-12 text-center">Part of the <a class="text-sky-700 font-semibold hover:underline" href="/office-hub">onboarding hub for dental offices</a> from Premier Dental Academy of Longview · <a class="text-sky-700 hover:underline" href="/office-hub/tutorials">tutorials</a></p>
+</main>
+
+<script type="module">
+  import { buildPlan, dateForDay, inputsToQuery } from '/assets/hub/plan-builder.mjs';
+
+  const form = document.getElementById('generator-form');
+  const result = document.getElementById('plan-result');
+  const KIND = { task: 'Task', skill: 'Skill to sign off', quiz: 'Knowledge check', sop_read: 'Read the office way', checkin: 'Check-in' };
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  const anonId = (() => {
+    try {
+      let id = localStorage.getItem('hub_anon_id');
+      if (!id) { id = crypto.randomUUID(); localStorage.setItem('hub_anon_id', id); }
+      return id;
+    } catch { return null; }
+  })();
+  const track = (event_name, props, key) => {
+    try {
+      fetch('/api/hub/events', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event_name, props, anon_id: anonId, idempotency_key: key || `${event_name}:${anonId}:${crypto.randomUUID()}` }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+  };
+
+  let started = false;
+  form.addEventListener('change', () => {
+    if (!started) { started = true; track('generator_started', {}, `generator_started:${anonId}:${Date.now()}`); }
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const inputs = {
+      role: fd.get('role'), experience: fd.get('experience'),
+      practiceType: fd.get('practice'), focusAreas: fd.getAll('focus'),
+    };
+    const start = fd.get('start') || null;
+    const plan = buildPlan(inputs);
+    const q = inputsToQuery(inputs) + (start ? `&start=${start}` : '');
+    history.replaceState(null, '', `?${q}`);
+    track('generator_completed', { role: plan.inputs.role, practice: plan.inputs.practiceType, experience: plan.inputs.experience, focus_count: plan.inputs.focusAreas.length, rendered: 'client' });
+
+    result.innerHTML = `
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8">
+        <h2 class="display text-2xl font-semibold">Your plan: ${esc(plan.labels.role)} · ${esc(plan.labels.practiceType)}</h2>
+        <p class="text-slate-500 mt-1">${esc(plan.labels.experience)}${plan.labels.focusAreas.length ? ' · Focus: ' + esc(plan.labels.focusAreas.join(', ')) : ''}</p>
+        <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 mt-4 space-y-2">${plan.notes.map((n) => `<p class="text-slate-700 text-sm">${esc(n)}</p>`).join('')}</div>
+        ${plan.phases.map((ph) => `
+          <section class="mt-6">
+            <h3 class="font-bold text-lg text-sky-800">${esc(ph.title)}</h3>
+            <ol class="mt-3 space-y-3">
+              ${ph.items.map((it) => `
+                <li class="border border-slate-200 rounded-xl p-4">
+                  <div class="flex flex-wrap items-center gap-2 text-sm">
+                    <span class="font-bold text-sky-700 bg-sky-100 rounded-full px-2.5 py-0.5">Day ${it.day}${start ? ' · ' + esc(dateForDay(start, it.day)) : ''}</span>
+                    <span class="text-slate-500 border border-slate-200 rounded-full px-2">${esc(KIND[it.kind] || 'Task')}</span>
+                  </div>
+                  <p class="font-semibold mt-1.5">${esc(it.title)}</p>
+                  <p class="text-slate-600 text-sm mt-0.5">${esc(it.detail)}</p>
+                </li>`).join('')}
+            </ol>
+          </section>`).join('')}
+        <div class="mt-8 flex flex-wrap gap-3 no-print">
+          <button type="button" onclick="window.print()" class="bg-white border border-slate-300 hover:border-slate-400 font-semibold px-5 py-2.5 rounded-xl">Print this plan</button>
+          <a class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-xl" href="/api/hub/plan?${esc(q)}#email">Email me this plan</a>
+          <a class="bg-slate-900 hover:bg-slate-700 text-white font-semibold px-5 py-2.5 rounded-xl" href="/office-hub">Track it week by week →</a>
+        </div>
+        <p class="text-slate-500 text-xs mt-6">${esc(plan.disclaimer)}</p>
+      </div>`;
+    result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+  });
+
+  // Deep link: ?role=…&practice=… pre-fills and renders immediately.
+  const qs = new URLSearchParams(location.search);
+  if (qs.get('role')) {
+    for (const el of form.elements) {
+      if (el.name === 'role' || el.name === 'experience') el.checked = el.value === qs.get(el.name);
+      if (el.name === 'practice') el.value = qs.get('practice') || 'general';
+      if (el.name === 'focus') el.checked = qs.getAll('focus').includes(el.value);
+      if (el.name === 'start' && qs.get('start')) el.value = qs.get('start');
+    }
+    form.requestSubmit();
+  }
+</script>
+
+</body>
+</html>
