@@ -6,6 +6,16 @@
   <url><loc>https://www.premierdentalacademyoflongview.com/apply</loc><priority>0.9</priority></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/waitlist</loc><priority>0.6</priority></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/tour</loc><priority>0.7</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/tools/onboarding-plan-generator</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/set-up-your-workspace</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/invite-your-team</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/sign-off-a-skill</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/your-first-day</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/weekly-check-ins</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/readiness-report</loc><priority>0.5</priority></url>
+  <url><loc>https://www.premierdentalacademyoflongview.com/office-hub/tutorials/grant-premier-support</loc><priority>0.5</priority></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/study-guide</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/study-pack</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://www.premierdentalacademyoflongview.com/exam-prep-course</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>

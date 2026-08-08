@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Sign in | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ public: true, needsOrg: false }, function (state) {
+  var next = new URLSearchParams(location.search).get('next') || '/hub';
+  if (state.session) { location.replace(next); return; }
+  var m = HUB.screen(null,
+    '<div class="max-w-md mx-auto mt-8 bg-white border border-slate-200 rounded-2xl p-8">' +
+    '<h1 class="font-bold text-2xl">Sign in to your workspace</h1>' +
+    '<p class="text-slate-600 mt-2 text-sm">Enter your email and we\'ll send you a one-time sign-in link. No passwords, ever.</p>' +
+    '<form id="login-form" class="mt-6">' +
+    '<label class="block font-semibold text-sm" for="email">Work email</label>' +
+    '<input id="email" name="email" type="email" required autocomplete="email" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2.5">' +
+    '<p id="email-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p>' +
+    '<button type="submit" class="mt-4 w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-3 rounded-xl">Email me a sign-in link</button>' +
+    '</form>' +
+    '<div id="sent" class="hidden mt-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4" role="status">' +
+    'Check your inbox — your sign-in link is on the way. It works once and expires soon, so use it on this device.</div>' +
+    '<p class="text-slate-500 text-xs mt-6">New here? The same link signs you up. If your office sent you an invite link, open that instead.</p>' +
+    '</div>');
+  var form = HUB.$('#login-form', m);
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = HUB.$('#email', m).value.trim();
+    var err = HUB.$('#email-err', m);
+    err.classList.add('hidden');
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      err.textContent = 'That email doesn\'t look right — check for typos.';
+      err.classList.remove('hidden');
+      return;
+    }
+    HUB.withRetry(form, function () {
+      return HUB.sb().auth.signInWithOtp({
+        email: email,
+        options: { emailRedirectTo: location.origin + next },
+      }).then(function (r) { if (r.error) throw new Error(r.error.message); });
+    }).then(function () {
+      form.classList.add('hidden');
+      HUB.$('#sent', m).classList.remove('hidden');
+    });
+  });
+});
+
+</script>
+</body>
+</html>
