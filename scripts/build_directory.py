@@ -115,7 +115,7 @@ def cover_svg(o):
 def avatar(o, size=104, fs=38, ring=True):
     (pname, c1, c2, soft), _ = theme(o["name"])
     r = 'style="box-shadow:0 8px 24px -8px rgba(15,23,42,.4)"' if ring else ""
-    return f'''<div class="grid place-items-center rounded-2xl border-4 border-white flex-none" {r} aria-hidden="true"><svg width="{size}" height="{size}" viewBox="0 0 100 100" style="border-radius:12px;display:block"><defs><linearGradient id="a{abs(hash(o['name']))%99999}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></linearGradient></defs><rect width="100" height="100" rx="0" fill="url(#a{abs(hash(o['name']))%99999})"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="{fs}" fill="#fff">{html.escape(initials(o["name"]))}</text></svg></div>'''
+    return f'''<div class="grid place-items-center rounded-2xl border-4 border-white flex-none" {r} aria-hidden="true"><svg width="{size}" height="{size}" viewBox="0 0 100 100" style="border-radius:12px;display:block"><defs><linearGradient id="a{int(hashlib.md5(o['name'].encode()).hexdigest()[:8],16)%99999}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></linearGradient></defs><rect width="100" height="100" rx="0" fill="url(#a{int(hashlib.md5(o['name'].encode()).hexdigest()[:8],16)%99999})"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="{fs}" fill="#fff">{html.escape(initials(o["name"]))}</text></svg></div>'''
 
 # ---------------------------------------------------------------- classification
 def specialty(o):
@@ -262,7 +262,8 @@ def profile_html(o):
     breadcrumb = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
         {"@type":"ListItem","position":1,"name":"Home","item":DOMAIN+"/"},
         {"@type":"ListItem","position":2,"name":"Dental Office Directory","item":DOMAIN+"/directory"},
-        {"@type":"ListItem","position":3,"name":o["name"],"item":canonical}]}
+        {"@type":"ListItem","position":3,"name":f'Dentists in {o["city"]}, TX',"item":f'{DOMAIN}/directory/{o["_cityslug"]}'},
+        {"@type":"ListItem","position":4,"name":o["name"],"item":canonical}]}
     extra = f'<script type="application/ld+json">{json.dumps(schema)}</script>\n<script type="application/ld+json">{json.dumps(breadcrumb)}</script>'
 
     q = maps_q(o)
@@ -294,10 +295,16 @@ def profile_html(o):
     rating = fmt_rating(o)
     rating_block = f'<div class="flex flex-wrap items-center gap-2 mt-2">{rating}</div>' if rating else ""
 
+    if o.get("hours"):
+        hrows = "".join(f'<li class="flex justify-between gap-3 py-1.5 text-[14px]"><span class="text-slate-500">{html.escape(h.split(":",1)[0])}</span><span class="font-semibold text-slate-800 text-right">{html.escape(h.split(":",1)[1].strip() if ":" in h else "")}</span></li>' for h in o["hours"])
+        hours_block = f'<ul class="mt-2 divide-y divide-slate-100">{hrows}</ul><p class="text-[12px] text-slate-400 mt-2">Per their website · verified {html.escape(o.get("hours_verified", VERIFIED))} · hours can change, confirm below:</p>'
+    else:
+        hours_block = '<p class="text-[15px] text-slate-700 mt-2">Hours vary and change seasonally — the fastest ways to check:</p>'
+
     return f'''{head(title, desc, canonical, extra)}
 {nav("directory")}
 <div class="max-w-5xl mx-auto px-4 sm:px-6 pt-5">
-  <p class="text-[13px] text-slate-500"><a href="/directory" class="text-teal-700 font-semibold hover:underline">← East Texas Dental Office Directory</a> · {html.escape(o["city"])}, TX</p>
+  <p class="text-[13px] text-slate-500"><a href="/directory" class="text-teal-700 font-semibold hover:underline">← East Texas Dental Office Directory</a> · <a href="/directory/{o["_cityslug"]}" class="text-teal-700 font-semibold hover:underline">Dentists in {html.escape(o["city"])}, TX</a></p>
 </div>
 <header class="max-w-5xl mx-auto px-4 sm:px-6 mt-4">
   <div class="rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-white">
@@ -335,7 +342,7 @@ def profile_html(o):
   <aside class="space-y-5">
     <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
       <h2 class="display text-lg font-bold flex items-center gap-2"><span class="text-teal-600">{ICON["clock"]}</span> Hours</h2>
-      <p class="text-[15px] text-slate-700 mt-2">Hours vary and change seasonally — the fastest ways to check:</p>
+      {hours_block}
       <ul class="mt-3 space-y-2 text-sm">
         {f'<li><a class="inline-flex items-center gap-2 text-teal-700 font-semibold hover:underline" href="tel:{re.sub(r"[^0-9+]","",o["phone"])}">{ICON["phone"]} Call {html.escape(o["phone"])}</a></li>' if o.get("phone") else ''}
         <li><a class="inline-flex items-center gap-2 text-teal-700 font-semibold hover:underline" href="https://www.google.com/maps/search/?api=1&query={q}" target="_blank" rel="noopener">{ICON["pin"]} Live hours on Google Maps {ICON["ext"]}</a></li>
@@ -347,6 +354,7 @@ def profile_html(o):
       <ul class="mt-3 space-y-2 text-[15px] text-slate-700">
         {f'<li class="flex items-center gap-2">{ICON["phone"]} <a class="hover:text-teal-700" href="tel:{re.sub(r"[^0-9+]","",o["phone"])}">{html.escape(o["phone"])}</a></li>' if o.get("phone") else '<li class="text-slate-500 text-sm">Phone not published — see sources below.</li>'}
         <li class="flex items-start gap-2">{ICON["pin"]} <span>{html.escape(addr_line)}</span></li>
+        {f'<li class="flex items-center gap-2 break-all">{ICON["globe"]} <a class="hover:text-teal-700" href="mailto:{html.escape(o["email"])}">{html.escape(o["email"])}</a></li>' if o.get("email") else ''}
       </ul>
       <div class="flex flex-wrap gap-2 mt-4">{socials or '<span class="text-slate-500 text-sm">No public social pages on record.</span>'}</div>
       {photos_note}
@@ -360,7 +368,7 @@ def profile_html(o):
       <h2 class="display text-lg font-bold">Is this your office?</h2>
       <p class="text-sm text-slate-600 mt-1.5">Claim this free profile — add photos, hours, staff, and openings. And meet our graduates first when you&#39;re hiring.</p>
       <div class="flex flex-wrap gap-2 mt-4">
-        <a href="mailto:hello@premierdentalacademyoflongview.com?subject=Claim%20directory%20profile%3A%20{urllib.parse.quote(o["name"])}" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition">Claim / update</a>
+        <a href="mailto:hello@premierdentalacademyoflongview.com?subject=Claim%20directory%20profile%3A%20{urllib.parse.quote(o["name"])}" data-event="directory_claim_click" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition">Claim / update</a>
         <a href="/hiring-partners" class="border border-slate-300 hover:border-teal-400 text-slate-700 text-sm font-semibold px-4 py-2.5 rounded-lg transition">Partner with us</a>
       </div>
     </section>
@@ -403,6 +411,8 @@ def index_html(offices, cities, specs):
     city_counts = {}
     for o in offices: city_counts[o["city"]] = city_counts.get(o["city"],0)+1
     city_chips = "".join(f'<button class="chip flex-none text-[13px] font-semibold px-3.5 py-2 rounded-full border transition bg-white text-slate-600 border-slate-200 hover:border-teal-300" data-city="{html.escape(c)}">{html.escape(c)} <span class="text-slate-400">{city_counts[c]}</span></button>' for c in cities)
+    cityslug = {o["city"]: o["_cityslug"] for o in offices}
+    city_hub_links = "".join(f'<a href="/directory/{cityslug[c]}" class="inline-flex items-center gap-1.5 bg-white border border-slate-200 hover:border-teal-300 rounded-full px-4 py-2 text-sm font-semibold text-slate-700">Dentists in {html.escape(c)}, TX <span class="text-slate-400 font-medium">{city_counts[c]}</span></a>' for c in cities)
     spec_chips = "".join(f'<button class="spec flex-none text-[13px] font-semibold px-3.5 py-2 rounded-full border transition bg-white text-slate-600 border-slate-200 hover:border-teal-300" data-spec="{html.escape(s)}">{html.escape(s)}</button>' for s in specs)
     cards = "\n".join(card(o) for o in offices)
     return f'''{head(f"East Texas Dental Office Directory — every office within 50 miles of Longview, TX",
@@ -440,6 +450,10 @@ def index_html(offices, cities, specs):
 {cards}
   </div>
   <div class="hidden bg-white border border-dashed border-slate-300 rounded-2xl p-10 text-center text-slate-500 text-sm mt-4" id="empty">No matches — try clearing the search or filters.</div>
+  <section class="mt-10">
+    <h2 class="display text-xl font-bold">Browse dentists by city</h2>
+    <div class="flex flex-wrap gap-2 mt-3">{city_hub_links}</div>
+  </section>
   <div class="relative overflow-hidden rounded-3xl mt-10 bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-800 text-white p-8 sm:p-10">
     <svg class="absolute -right-10 -top-10 w-64 h-64 text-white/10" viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="32" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="16" stroke="currentColor" stroke-width="2"/></svg>
     <div class="relative max-w-2xl">
@@ -491,6 +505,69 @@ apply();
 </body>
 </html>'''
 
+# ---------------------------------------------------------------- city hubs
+def city_hub_html(city, cslug, co, cities, cityslug):
+    n = len(co)
+    canonical = f"{DOMAIN}/directory/{cslug}"
+    specs_here = sorted({o["_spec"] for o in co})
+    title = f"Dentists in {city}, TX — every dental office we could verify ({n})"
+    desc = f"All {n} dental offices we could verify in {city}, Texas, with services, doctors, contact info and maps: {', '.join(specs_here[:5])}. Free community directory, sourced and dated."
+    schema = {"@context":"https://schema.org","@type":"CollectionPage","name":title,"url":canonical,
+              "description":f"A free directory of {n} dental offices in {city}, Texas."}
+    breadcrumb = {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[
+        {"@type":"ListItem","position":1,"name":"Home","item":DOMAIN+"/"},
+        {"@type":"ListItem","position":2,"name":"Dental Office Directory","item":DOMAIN+"/directory"},
+        {"@type":"ListItem","position":3,"name":f"Dentists in {city}, TX","item":canonical}]}
+    extra = f'<script type="application/ld+json">{json.dumps(schema)}</script>\n<script type="application/ld+json">{json.dumps(breadcrumb)}</script>'
+    cards = "\n".join(card(o) for o in co)
+    others = "".join(f'<a href="/directory/{cityslug[c]}" class="inline-flex bg-white border border-slate-200 hover:border-teal-300 rounded-full px-3.5 py-1.5 text-[13px] font-semibold text-slate-700">{html.escape(c)}</a>' for c in cities if c != city)
+    spec_line = " · ".join(specs_here)
+    return f'''{head(title, desc, canonical, extra)}
+{nav("directory")}
+<header class="relative overflow-hidden">
+  <div class="absolute -top-24 -right-20 w-96 h-96 rounded-full bg-teal-300/50 blur-3xl pointer-events-none"></div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-10 pb-8 sm:pt-14">
+    <p class="text-[13px] text-slate-500"><a href="/directory" class="text-teal-700 font-semibold hover:underline">← East Texas Dental Office Directory</a></p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-3 leading-[1.1] max-w-3xl">Dentists in <span class="gradient-text">{html.escape(city)}, TX</span></h1>
+    <p class="text-slate-600 mt-3 max-w-2xl text-lg">Every dental office we could verify in {html.escape(city)} — {n} listing{"s" if n != 1 else ""}, covering {html.escape(spec_line)}. Each profile has services, doctors, contact info, a map, and where to check live hours. Sourced and dated; no rankings, no pay-to-play.</p>
+    <div class="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
+      <span class="bg-white/80 border border-teal-200 text-teal-800 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5">{ICON["chk"]} Verified {VERIFIED}</span>
+      <span class="bg-white/80 border border-slate-200 text-slate-700 px-3 py-1.5 rounded-full">{n} office{"s" if n != 1 else ""} in {html.escape(city)}</span>
+    </div>
+  </div>
+  <div class="h-1 bg-gradient-to-r from-teal-600 via-cyan-600 to-amber-500"></div>
+</header>
+<main class="max-w-7xl mx-auto px-4 sm:px-6">
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+{cards}
+  </div>
+  <section class="mt-10">
+    <h2 class="display text-lg font-bold">Nearby cities</h2>
+    <div class="flex flex-wrap gap-2 mt-3">{others}</div>
+  </section>
+  <div class="relative overflow-hidden rounded-3xl mt-8 bg-gradient-to-br from-teal-700 via-teal-600 to-cyan-800 text-white p-8 sm:p-10">
+    <svg class="absolute -right-10 -top-10 w-64 h-64 text-white/10" viewBox="0 0 100 100" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="48" stroke="currentColor" stroke-width="2"/><circle cx="50" cy="50" r="32" stroke="currentColor" stroke-width="2"/></svg>
+    <div class="relative max-w-2xl">
+      <h2 class="display text-2xl sm:text-3xl font-bold">Offices in {html.escape(city)} hire trained assistants.</h2>
+      <p class="text-teal-50/90 mt-2">We train dental assistants for East Texas — hands-on, in a real office setting in Longview. See <a href="/career-archives" class="underline font-semibold">who's hiring right now</a>.</p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <a href="/#programs" data-event="directory_training_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-3 rounded-xl shadow-lg transition">Explore our training →</a>
+        <a href="tel:+19039136444" class="border border-white/40 hover:bg-white/10 font-semibold px-5 py-3 rounded-xl transition">Call (903) 913-6444</a>
+      </div>
+    </div>
+  </div>
+  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mt-4 mb-4 flex flex-col sm:flex-row sm:items-center gap-4">
+    <div class="flex-1">
+      <p class="font-bold text-slate-900">Run one of these {html.escape(city)} offices?</p>
+      <p class="text-sm text-slate-600">Your listing is free. Claim it to add photos, hours, your team, and job openings.</p>
+    </div>
+    <a href="mailto:hello@premierdentalacademyoflongview.com?subject=Claim%20our%20{urllib.parse.quote(city)}%20directory%20profile" data-event="directory_claim_click" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2.5 rounded-lg transition flex-none">Claim your profile</a>
+  </div>
+</main>
+{FOOTER}
+</body>
+</html>'''
+
 # ---------------------------------------------------------------- main
 def main():
     data = json.load(open(os.path.join(ROOT, "db", "et_dental_directory.json")))
@@ -504,6 +581,15 @@ def main():
     cities = sorted({o["city"] for o in offices}, key=lambda c: (city_order.get(c,1), c))
     specs = sorted({o["_spec"] for o in offices})
 
+    # city hub slugs — must never collide with (already-live) office slugs
+    cityslug = {}
+    for c in cities:
+        s = re.sub(r"[^a-z0-9]+", "-", c.lower()).strip("-")
+        if s in taken: s = s + "-tx"
+        taken.add(s); cityslug[c] = s
+    for o in offices:
+        o["_cityslug"] = cityslug[o["city"]]
+
     os.makedirs(OUT_DIR, exist_ok=True)
     for o in offices:
         with open(os.path.join(OUT_DIR, o["_slug"] + ".html"), "w") as f:
@@ -512,11 +598,17 @@ def main():
     with open(os.path.join(SITE, "directory.html"), "w") as f:
         f.write(idx)
 
+    for c in cities:
+        co = [o for o in offices if o["city"] == c]
+        with open(os.path.join(OUT_DIR, cityslug[c] + ".html"), "w") as f:
+            f.write(city_hub_html(c, cityslug[c], co, cities, cityslug))
+
     # sitemap
     sm_path = os.path.join(SITE, "sitemap.xml")
     sm = open(sm_path).read()
     sm = re.sub(r"\n\s*<url><loc>[^<]*/directory[^<]*</loc>.*?</url>", "", sm)
     entries = [f"  <url><loc>{DOMAIN}/directory</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>"]
+    entries += [f"  <url><loc>{DOMAIN}/directory/{cityslug[c]}</loc><priority>0.7</priority><changefreq>weekly</changefreq></url>" for c in cities]
     entries += [f"  <url><loc>{DOMAIN}/directory/{o['_slug']}</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>" for o in offices]
     sm = sm.replace("</urlset>", "\n".join(entries) + "\n</urlset>")
     open(sm_path, "w").write(sm)

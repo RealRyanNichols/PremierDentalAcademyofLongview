@@ -92,6 +92,8 @@
           <a href="/sponsor-a-student" class="block px-4 py-2 hover:bg-slate-50">Sponsor a student</a>
           <a href="/salary"    class="block px-4 py-2 hover:bg-slate-50">Salary calculator</a>
           <a href="/blog"      class="block px-4 py-2 hover:bg-slate-50">Blog</a>
+          <a href="/directory" class="block px-4 py-2 hover:bg-slate-50">East Texas office directory</a>
+          <a href="/career-archives" class="block px-4 py-2 hover:bg-slate-50">Career archives</a>
           <a href="/contact"   class="block px-4 py-2 hover:bg-slate-50">Contact</a>
           <a href="/teach"     class="block px-4 py-2 hover:bg-slate-50 text-amber-600 font-semibold">Teach with us →</a>
         </div>
@@ -116,6 +118,8 @@
     <a href="/courses"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Courses</a>
     <a href="/calendar"  data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Calendar</a>
     <a href="/employers" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">For offices</a>
+    <a href="/directory" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Office directory</a>
+    <a href="/career-archives" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Career archives</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Tools</p>
     <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 All tools — free &amp; paid</a>
@@ -564,6 +568,8 @@
       <a href="/tour" class="block hover:text-white">Schedule a tour</a>
       <a href="/waitlist" class="block hover:text-white">Join the waitlist</a>
       <a href="/salary" class="block hover:text-white">Salary calculator</a>
+      <a href="/directory" class="block hover:text-white">East Texas office directory</a>
+      <a href="/career-archives" class="block hover:text-white">Career archives</a>
       <a href="/study-pack" class="block hover:text-white">Study Pack — $19</a>
       <a href="/exam-prep-course" class="block hover:text-white">Exam-Prep Course — $97</a>
       <a href="/exam-pro" class="block hover:text-white">Exam Pro — $29</a>
