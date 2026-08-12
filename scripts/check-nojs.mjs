@@ -8,7 +8,7 @@
 // fails if the visible text still contains a placeholder.
 //
 // Run: node scripts/check-nojs.mjs
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
@@ -34,6 +34,20 @@ const PLACEHOLDERS = [
   /\b0 tools\b/i,
 ];
 
+// A placeholder is the loud version of this bug. The quiet version is a container that ships
+// completely empty and is filled by JavaScript — nothing for a crawler to read at all, and no
+// telltale string to grep for. These are the known content containers on public pages; each
+// must arrive with real content inside it.
+const CONTENT_CONTAINERS = [
+  ["skills-lab/abbreviations.html", "groups", "the charting abbreviation reference"],
+  ["skills-lab/instruments.html", "instGrid", "the instrument list"],
+  ["skills-lab/procedures.html", "cards", "the procedure scenarios"],
+  ["skills-lab/tray-builder.html", "trayCards", "the tray setups"],
+  ["tools/first-30-days.html", "weeks", "the week-by-week plan"],
+  ["tools/resource-hub.html", "cards", "the resource list"],
+  ["tools/index.html", "paid-grid", "the prep-tools grid"],
+];
+
 function walk(dir) {
   let out = [];
   for (const e of readdirSync(dir, { withFileTypes: true })) {
@@ -43,6 +57,25 @@ function walk(dir) {
     else if (e.name.endsWith(".html") && !SKIP_FILES.has(e.name)) out.push(p);
   }
   return out;
+}
+
+// Pull the inner HTML of <tag id="wanted"> … </tag>, counting nesting so a container full of
+// nested divs isn't truncated at the first closing tag.
+function innerHTMLOf(html, id) {
+  const open = new RegExp(`<(\\w+)\\b[^>]*\\bid=["']${id}["'][^>]*>`, "i");
+  const m = html.match(open);
+  if (!m) return null;
+  if (/\/>\s*$/.test(m[0])) return "";
+  const tag = m[1];
+  const start = m.index + m[0].length;
+  const scan = new RegExp(`</?${tag}\\b`, "gi");
+  scan.lastIndex = start;
+  let depth = 1, hit;
+  while ((hit = scan.exec(html))) {
+    depth += hit[0][1] === "/" ? -1 : 1;
+    if (depth === 0) return html.slice(start, hit.index);
+  }
+  return html.slice(start);
 }
 
 // Approximate what a crawler reads: no scripts, no styles, no comments, no tags.
@@ -71,7 +104,24 @@ for (const f of files) {
   }
 }
 
-console.log(`No-JS render check: ${files.length} public pages read as a crawler would`);
+for (const [rel, id, what] of CONTENT_CONTAINERS) {
+  const p = join(root, rel);
+  if (!existsSync(p)) continue;
+  const html = readFileSync(p, "utf8");
+  const inner = innerHTMLOf(html, id);
+  if (inner === null) {
+    console.error(`  ✗ ${rel} — expected a #${id} container holding ${what}, but no such element exists`);
+    fail++;
+    continue;
+  }
+  const words = visibleText(inner).split(/\s+/).filter(Boolean).length;
+  if (words < 20) {
+    console.error(`  ✗ ${rel} — #${id} ships ${words} word(s); ${what} is built by JavaScript and is invisible to search`);
+    fail++;
+  }
+}
+
+console.log(`No-JS render check: ${files.length} public pages read as a crawler would, ${CONTENT_CONTAINERS.length} content containers verified non-empty`);
 console.log(fail
   ? `✗ ${fail} page(s) ship pre-hydration placeholders — bake the real content into the HTML`
   : "✓ no page ships a pre-hydration placeholder");

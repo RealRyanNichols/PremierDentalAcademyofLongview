@@ -16,8 +16,8 @@
     "check:nojs": "node scripts/check-nojs.mjs",
     "check:compliance": "node scripts/check-compliance.mjs",
     "check:static": "node scripts/build-static-content.mjs --check",
-    "check:math": "node --test scripts/test/",
+    "check:math": "node --test scripts/test/*.test.mjs",
     "build:static": "node scripts/build-static-content.mjs",
-    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-nojs.mjs && node scripts/check-compliance.mjs && node scripts/build-static-content.mjs --check && node --test scripts/test/"
+    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-nojs.mjs && node scripts/check-compliance.mjs && node scripts/build-static-content.mjs --check && node --test scripts/test/*.test.mjs"
   }
 }

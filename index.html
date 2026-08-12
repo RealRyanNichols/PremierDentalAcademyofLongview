@@ -210,9 +210,16 @@
 <div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
     <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse shrink-0"></span>
-    <span>Next cohort starts <span id="cohort-date" class="underline decoration-amber-900/40">Aug 17</span></span>
+    <!-- The DATE is generated from data/cohorts.json at build time, so it is a real fact in
+         the HTML that a crawler can read. The COUNTDOWN is deliberately left empty: a relative
+         number baked into a static file goes stale the next day, which is exactly how this
+         banner came to claim "18 days left" for a date six days out. JavaScript fills it in
+         from the live cohort record, and an empty span is honest until it does. -->
+    <span>Next cohort starts <span id="cohort-date" class="underline decoration-amber-900/40"><!--PDA:GEN cohortDate-->
+        Aug 17, 2026
+        <!--/PDA:GEN cohortDate--></span></span>
     <span class="text-amber-900/70">·</span>
-    <span id="cohort-countdown" class="font-mono">18 days left</span>
+    <span id="cohort-countdown" class="font-mono"></span>
     <a href="/enroll" class="ml-1 hidden sm:inline-flex underline underline-offset-2 hover:text-amber-900">Enroll →</a>
   </div>
 </div>

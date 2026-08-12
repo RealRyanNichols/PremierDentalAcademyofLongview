@@ -53,7 +53,13 @@ tailwind.config = { theme: { extend: {
       <p class="text-xs text-slate-500">Enrolled students: already included ✓</p>
     </div>
     <div id="paid-grid" class="grid sm:grid-cols-3 gap-4">
-      <p class="text-slate-400 text-sm col-span-full">Loading…</p>
+      <!-- Prices come from the live products table so this page can never disagree with
+           checkout, which is why they are not baked in here. The names, descriptions and
+           links are stable facts, so they ship in the HTML and JS adds the price on top. -->
+      <a href="/exam-pro" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🎯</div><h3 class="font-bold mt-3">Exam Pro</h3><p class="text-sm text-slate-600 mt-1">The timed 50-question mock state board. Per-topic scoring, full explanations, unlimited retakes.</p></a>
+      <a href="/study-pack" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">📚</div><h3 class="font-bold mt-3">Study Pack</h3><p class="text-sm text-slate-600 mt-1">Cheat sheets + study guide covering the topics RDA candidates get tripped up on.</p></a>
+      <a href="/exam-prep-course" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🎓</div><h3 class="font-bold mt-3">Exam Prep Course</h3><p class="text-sm text-slate-600 mt-1">The guided mini-course: lessons, quizzes, and a plan that walks you to exam day.</p></a>
+      <a href="/career-vault" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🗝️</div><h3 class="font-bold mt-3">Career Vault</h3><p class="text-sm text-slate-600 mt-1">4 career tracks, 44 lessons: front desk to chairside to specialty — map your whole dental career.</p></a>
     </div>
   </section>
 
