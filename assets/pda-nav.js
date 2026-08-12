@@ -55,7 +55,8 @@
       <div class="pda-dd relative">
         <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">Tools <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-60 z-50 text-slate-700">
-          <a href="/tools" class="block px-4 py-2 font-bold text-teal-700 hover:bg-slate-50">🧰 All tools — free &amp; paid</a>
+          <a href="/toolbox" class="block px-4 py-2 font-bold text-teal-700 hover:bg-slate-50">🧰 The Toolbox — every tool, sorted</a>
+          <a href="/tools" class="block px-4 py-2 hover:bg-slate-50">All tools — free &amp; paid</a>
           <p class="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-amber-600 font-bold">Paid prep — own it</p>
           <a href="/exam-pro" class="block px-4 py-2 hover:bg-slate-50">💎 Exam Pro — mock state board</a>
           <a href="/study-pack" class="block px-4 py-2 hover:bg-slate-50">💎 Study Pack</a>
@@ -122,7 +123,8 @@
     <a href="/career-archives" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">Career archives</a>
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Tools</p>
-    <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 All tools — free &amp; paid</a>
+    <a href="/toolbox" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 The Toolbox — every tool, sorted</a>
+    <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-medium text-slate-900">All tools — free &amp; paid</a>
     <p class="text-[10px] uppercase tracking-widest text-amber-600 font-bold px-1 mt-3 mb-1">Paid prep — own it</p>
     <a href="/exam-pro" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam Pro — mock state board</a>
     <a href="/study-pack" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Study Pack</a>

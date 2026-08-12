@@ -237,6 +237,94 @@ const blocks = {
     esc(ABBREV?.NOTE ||
       "Charting symbols and colours are not standardised nationally — they vary from office to office. Learn the convention your office uses."),
 
+  /* ── /toolbox — the hub, and the main landing page from search ──
+     Generated in full so every tool name and description is in the initial HTML. The filter
+     chips are progressive enhancement on top: with JavaScript off you get every tool, grouped
+     by situation, which is a perfectly good page. */
+  toolboxShelves: () => {
+    const T = loadGlobal("assets/data/toolbox.js", "PDA_TOOLBOX");
+    if (!T) return "";
+    const badge = (t) => {
+      if (t.cost === "paid") return `<span class="shrink-0 bg-amber-100 text-amber-800 text-[11px] font-bold rounded-full px-2.5 py-1">Paid · free when enrolled</span>`;
+      if (t.cost === "gated") return `<span class="shrink-0 bg-slate-100 text-slate-600 text-[11px] font-bold rounded-full px-2.5 py-1">Free · quick signup</span>`;
+      return `<span class="shrink-0 bg-teal-50 text-teal-700 text-[11px] font-bold rounded-full px-2.5 py-1">Free · no signup</span>`;
+    };
+    return T.SITUATIONS.map((s) => {
+      const tools = T.published().filter((t) => t.situation === s.id);
+      if (!tools.length) return "";
+      const cards = tools
+        .map(
+          (t) =>
+            `<a href="${esc(t.href)}" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition" data-type="${esc(t.type)}" data-cost="${esc(t.cost)}">` +
+            `<div class="flex items-start justify-between gap-2"><span class="text-2xl" aria-hidden="true">${t.emoji}</span>${badge(t)}</div>` +
+            `<h3 class="font-bold text-navy-900 mt-2">${esc(t.name)}${t.isNew ? ` <span class="text-[10px] align-middle bg-teal-600 text-white rounded-full px-2 py-0.5">New</span>` : ""}</h3>` +
+            `<p class="text-sm text-slate-600 mt-1">${esc(t.blurb)}</p></a>`
+        )
+        .join("");
+      return `<section class="shelf" data-situation="${esc(s.id)}">` +
+        `<h2 class="display text-2xl font-bold text-navy-900">${esc(s.title)}</h2>` +
+        `<p class="text-slate-600 mt-1">${esc(s.blurb)}</p>` +
+        `<div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">${cards}</div>` +
+        `<p class="shelf-empty hidden text-slate-500 text-sm mt-4">Nothing in this group matches that filter.</p>` +
+        `</section>`;
+    }).join("\n        ");
+  },
+
+  toolboxCount: () => {
+    const T = loadGlobal("assets/data/toolbox.js", "PDA_TOOLBOX");
+    return String(T ? T.published().length : 0);
+  },
+
+  toolboxFilters: () => {
+    const T = loadGlobal("assets/data/toolbox.js", "PDA_TOOLBOX");
+    if (!T) return "";
+    return [`<button type="button" class="filter-chip is-on" data-filter="all">Everything</button>`]
+      .concat(
+        T.TYPES.filter((ty) => T.published().some((t) => t.type === ty.id)).map(
+          (ty) => `<button type="button" class="filter-chip" data-filter="${esc(ty.id)}">${esc(ty.label)}</button>`
+        )
+      )
+      .join("\n          ");
+  },
+
+  /* ── /tools/healthcare-careers ──
+     Every wage on this page is an outcome claim, so the source line and the "as of" date are
+     generated right next to the figures rather than trusted to stay in sync by hand. */
+  careerTable: () => {
+    const C = loadGlobal("assets/data/healthcare-careers.js", "PDA_CAREERS");
+    if (!C) return "";
+    const usd = (v) => "$" + v.toLocaleString("en-US");
+    return C.CAREERS.map(
+      (c) =>
+        `<article id="${esc(c.id)}" class="bg-white rounded-2xl border ${c.ours ? "border-teal-400" : "border-slate-200"} shadow-sm p-5 scroll-mt-24">` +
+        `<div class="flex items-start justify-between gap-3">` +
+        `<h3 class="display text-lg font-bold text-navy-900"><span aria-hidden="true">${c.emoji}</span> ${esc(c.name)}</h3>` +
+        (c.ours ? `<span class="shrink-0 bg-teal-600 text-white text-[11px] font-bold rounded-full px-2.5 py-1">What we teach</span>` : "") +
+        `</div>` +
+        `<p class="text-sm text-slate-700 mt-2">${esc(c.what)}</p>` +
+        `<dl class="grid grid-cols-2 gap-3 mt-4 text-sm">` +
+        `<div><dt class="text-slate-500">Median pay</dt><dd class="font-bold text-navy-900">${usd(c.medianAnnual)}<span class="font-normal text-slate-500"> a year</span></dd></div>` +
+        `<div><dt class="text-slate-500">Projected growth</dt><dd class="font-bold text-navy-900">${c.growthPct}%</dd></div>` +
+        `<div><dt class="text-slate-500">Usual training</dt><dd class="font-semibold text-navy-900">${esc(c.typicalMonths)}</dd></div>` +
+        `<div><dt class="text-slate-500">Entry education</dt><dd class="font-semibold text-navy-900">${esc(c.education)}</dd></div>` +
+        `</dl>` +
+        `<p class="text-sm text-slate-600 mt-3"><span class="font-semibold text-navy-900">Getting in:</span> ${esc(c.path)}</p>` +
+        (c.note ? `<p class="text-xs text-slate-500 mt-2">${esc(c.note)}</p>` : "") +
+        `<p class="text-xs mt-3"><a class="font-semibold text-teal-700 underline" href="${c.url}" target="_blank" rel="noopener">Check these figures at the BLS →</a></p>` +
+        `</article>`
+    ).join("\n        ");
+  },
+
+  careerSourceLine: () => {
+    const C = loadGlobal("assets/data/healthcare-careers.js", "PDA_CAREERS");
+    if (!C) return "";
+    const s = C.SOURCE;
+    return `Pay figures are median annual wages from the ${esc(s.wages)}, ${esc(s.wagesAsOf)}. ` +
+      `Growth figures are from ${esc(s.growth)}, ${esc(s.growthAsOf)}. For comparison, the median annual wage ` +
+      `across all occupations was $${s.allOccupationsMedian.toLocaleString("en-US")} and average projected growth ` +
+      `was ${s.allOccupationsGrowth}%. Figures last checked ${esc(s.checked)}.`;
+  },
+
   /* ── /tools/first-30-days and /tools/resource-hub ── */
 
   first30Weeks: () =>
@@ -292,6 +380,8 @@ const TARGETS = [
   "skills-lab/procedures.html",
   "skills-lab/tray-builder.html",
   "skills-lab/day-shift.html",
+  "tools/healthcare-careers.html",
+  "tools/paying-for-training.html",
   "toolbox.html",
 ];
 
