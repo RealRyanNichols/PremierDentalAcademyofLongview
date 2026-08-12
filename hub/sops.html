@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Office SOPs | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({}, function (state) {
+  if (!state.membership) return;
+  var canEdit = ['owner', 'manager', 'trainer'].indexOf(state.membership.role) !== -1;
+  var KINDS = { procedure: 'Procedure', tray_setup: 'Tray setup', sterilization: 'Sterilization', front_office: 'Front office', other: 'Other' };
+  load();
+
+  function load() {
+    HUB.screen(null, HUB.skeleton(4));
+    HUB.from('hub_sops').select('id, kind, title, status, version, last_reviewed_at')
+      .eq('org_id', state.orgId).neq('status', 'archived').order('kind').order('title')
+      .then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+        render(r.data || []);
+      })
+      .catch(function (err) { var m = HUB.screen(null, ''); m.appendChild(HUB.errorState(err, load)); });
+  }
+
+  function render(sops) {
+    var html = '<div class="flex items-center justify-between gap-3">' +
+      '<h1 class="font-bold text-2xl">Office SOPs</h1>' +
+      (canEdit ? '<button type="button" id="new-sop" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">+ New SOP</button>' : '') + '</div>' +
+      '<p class="text-slate-500 text-sm mt-1">The office way, written down once — new hires read the current version, always.</p>';
+    if (!sops.length) {
+      html += '<div class="mt-6 bg-white border border-slate-200 rounded-2xl p-10 text-center">' +
+        '<h2 class="font-bold text-lg">No SOPs yet</h2>' +
+        '<p class="text-slate-600 mt-2 max-w-md mx-auto">Start with the one thing you explain most often — the composite tray, the sterilization flow, or how the phone gets answered.</p>' +
+        (canEdit ? '<button type="button" id="new-sop-2" class="mt-5 bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-xl">Write your first SOP</button>' : '') + '</div>';
+    } else {
+      var kinds = [];
+      sops.forEach(function (s) { if (kinds.indexOf(s.kind) === -1) kinds.push(s.kind); });
+      kinds.forEach(function (k) {
+        html += '<h2 class="font-bold text-lg mt-6">' + (KINDS[k] || k) + '</h2><ul class="mt-2.5 space-y-2">';
+        sops.filter(function (s) { return s.kind === k; }).forEach(function (s) {
+          html += '<li><a href="/hub/sop?id=' + s.id + '" class="flex items-center justify-between gap-3 bg-white border border-slate-200 hover:border-sky-300 rounded-xl px-4 py-3">' +
+            '<span class="font-semibold">' + HUB.esc(s.title) + (s.status === 'draft' ? ' <span class="text-xs text-amber-700 bg-amber-100 rounded-full px-2 py-0.5 ml-1">Draft</span>' : '') + '</span>' +
+            '<span class="text-xs text-slate-400 shrink-0">v' + s.version + ' · reviewed ' + HUB.esc(HUB.fmtDate(s.last_reviewed_at)) + '</span></a></li>';
+        });
+        html += '</ul>';
+      });
+    }
+    var m = HUB.screen(null, html);
+    HUB.$$('#new-sop, #new-sop-2', m).forEach(function (b) { b.addEventListener('click', createFlow); });
+  }
+
+  function createFlow() {
+    var panel = HUB.el('div', { class: 'fixed inset-0 bg-slate-900/50 z-[80] flex items-center justify-center p-4 overflow-y-auto' });
+    panel.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="ns-title" class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl my-8">' +
+      '<h2 id="ns-title" class="font-bold text-lg">New SOP</h2>' +
+      '<label class="block font-semibold text-sm mt-4" for="ns-t">Title</label>' +
+      '<input id="ns-t" type="text" maxlength="150" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="e.g. Composite tray setup">' +
+      '<p id="ns-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p>' +
+      '<label class="block font-semibold text-sm mt-3" for="ns-k">Type</label>' +
+      '<select id="ns-k" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">' +
+      '<option value="procedure">Procedure</option><option value="tray_setup">Tray setup</option>' +
+      '<option value="sterilization">Sterilization</option><option value="front_office">Front office</option><option value="other">Other</option></select>' +
+      '<label class="block font-semibold text-sm mt-3" for="ns-steps">Steps — one per line, in order</label>' +
+      '<textarea id="ns-steps" rows="8" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="Set out 2x2 gauze&#10;Mirror, explorer, cotton pliers on the left&#10;…"></textarea>' +
+      '<div id="ns-retry"></div>' +
+      '<div class="mt-5 flex justify-end gap-3">' +
+      '<button type="button" id="ns-cancel" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold text-sm">Cancel</button>' +
+      '<button type="button" id="ns-ok" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm">Save SOP</button></div></div>';
+    document.body.appendChild(panel);
+    var dlg = panel.firstChild;
+    function close() { panel.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    HUB.$('#ns-cancel', dlg).addEventListener('click', close);
+    HUB.$('#ns-t', dlg).focus();
+    HUB.$('#ns-ok', dlg).addEventListener('click', function () {
+      var title = HUB.$('#ns-t', dlg).value.trim();
+      var err = HUB.$('#ns-err', dlg);
+      err.classList.add('hidden');
+      if (!title) { err.textContent = 'Give the SOP a title.'; err.classList.remove('hidden'); return; }
+      var steps = HUB.$('#ns-steps', dlg).value.split('\n').map(function (s) { return s.trim(); }).filter(Boolean);
+      HUB.withRetry(HUB.$('#ns-retry', dlg), function () {
+        return HUB.from('hub_sops').insert({
+          org_id: state.orgId, kind: HUB.$('#ns-k', dlg).value, title: title,
+          body: steps.map(function (s) { return { step: s }; }),
+        }).select('id').single().then(function (r) { if (r.error) throw new Error(r.error.message); return r.data; });
+      }).then(function (row) {
+        HUB.track('sop_created', { kind: HUB.$('#ns-k', dlg).value }, 'sop_created:' + row.id);
+        HUB.toast('SOP saved.');
+        close(); load();
+      });
+    });
+  }
+});
+
+</script>
+</body>
+</html>

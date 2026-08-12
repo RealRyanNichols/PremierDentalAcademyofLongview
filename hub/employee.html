@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>My onboarding | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({}, function (state) {
+  if (!state.membership) return;
+  load();
+
+  function load() {
+    var main = HUB.screen(null, HUB.skeleton(5));
+    Promise.all([
+      HUB.from('hub_plans').select('id, start_date, status').eq('employee_membership_id', state.membership.id).eq('status', 'active').maybeSingle(),
+      HUB.from('hub_employee_skills').select('id, state, recheck_at, note, hub_skills(title, category)').eq('employee_membership_id', state.membership.id),
+      HUB.from('hub_checkins').select('week_of, wins, needs, next_plan').eq('employee_membership_id', state.membership.id).order('week_of', { ascending: false }).limit(4),
+    ]).then(function (r) {
+      var plan = r[0].data;
+      if (!plan) { renderNoPlan(); return; }
+      HUB.from('hub_plan_tasks').select('*').eq('plan_id', plan.id).order('day_offset').then(function (tr) {
+        render(plan, tr.data || [], r[1].data || [], r[2].data || []);
+      });
+    }).catch(function (err) {
+      main.innerHTML = ''; main.appendChild(HUB.errorState(err, load));
+    });
+  }
+
+  function renderNoPlan() {
+    HUB.screen(null,
+      '<div class="bg-white border border-slate-200 rounded-2xl p-10 text-center mt-4">' +
+      '<h1 class="font-bold text-xl">Welcome!</h1>' +
+      '<p class="text-slate-600 mt-2">Your onboarding plan hasn\'t been started yet. Your manager will kick it off — check back soon, or browse the office SOPs meanwhile.</p>' +
+      '<a href="/hub/sops" class="inline-block mt-5 border border-slate-300 hover:border-slate-400 font-semibold px-5 py-2.5 rounded-xl">Read the SOPs</a></div>');
+  }
+
+  function dayNumber(startDate) {
+    var s = new Date(startDate + 'T12:00:00');
+    var diff = Math.floor((Date.now() - s.getTime()) / 86400000) + 1;
+    return Math.max(1, diff);
+  }
+
+  function render(plan, tasks, skills, checkins) {
+    var today = dayNumber(plan.start_date);
+    var done = tasks.filter(function (t) { return t.status === 'done'; }).length;
+    var pct = tasks.length ? Math.round(done * 100 / tasks.length) : 0;
+    var current = tasks.filter(function (t) { return t.status !== 'done' && t.status !== 'skipped' && t.day_offset <= today + 2; });
+    var upcoming = tasks.filter(function (t) { return t.status !== 'done' && t.status !== 'skipped' && t.day_offset > today + 2; }).slice(0, 5);
+
+    var html = '<h1 class="font-bold text-2xl">My onboarding</h1>' +
+      '<p class="text-slate-500 mt-1">Day ' + today + ' · started ' + HUB.esc(HUB.fmtDate(plan.start_date)) + '</p>' +
+      '<div class="mt-3 bg-slate-100 rounded-full h-2.5" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="Overall progress">' +
+      '<div class="bg-sky-500 h-2.5 rounded-full" style="width:' + pct + '%"></div></div>' +
+      '<p class="text-sm text-slate-500 mt-1">' + done + ' of ' + tasks.length + ' tasks done (' + pct + '%)</p>';
+
+    html += '<h2 class="font-bold text-lg mt-7">Up now</h2>';
+    if (!current.length) {
+      html += '<div class="bg-white border border-slate-200 rounded-2xl p-6 mt-3 text-slate-600">Nothing due right now — nice. Upcoming tasks are below.</div>';
+    } else {
+      html += '<ul class="mt-3 space-y-3">';
+      current.forEach(function (t) { html += taskCard(t, true); });
+      html += '</ul>';
+    }
+    if (upcoming.length) {
+      html += '<h2 class="font-bold text-lg mt-7">Coming up</h2><ul class="mt-3 space-y-3">';
+      upcoming.forEach(function (t) { html += taskCard(t, false); });
+      html += '</ul>';
+    }
+
+    if (skills.length) {
+      html += '<h2 class="font-bold text-lg mt-7">My skills</h2><ul class="mt-3 grid sm:grid-cols-2 gap-3">';
+      var stateLabel = { not_started: 'Not started', observed: 'Observed', practicing: 'Practicing', independent: 'Independent', needs_coaching: 'Needs coaching' };
+      var stateCls = { not_started: 'bg-slate-100 text-slate-600', observed: 'bg-sky-100 text-sky-800', practicing: 'bg-amber-100 text-amber-800', independent: 'bg-emerald-100 text-emerald-800', needs_coaching: 'bg-red-100 text-red-800' };
+      skills.forEach(function (s) {
+        html += '<li class="bg-white border border-slate-200 rounded-xl p-4">' +
+          '<p class="font-semibold text-sm">' + HUB.esc(s.hub_skills ? s.hub_skills.title : '') + '</p>' +
+          '<span class="inline-block mt-1.5 text-xs font-bold rounded-full px-2.5 py-0.5 ' + (stateCls[s.state] || '') + '">' + (stateLabel[s.state] || s.state) + '</span>' +
+          (s.state === 'needs_coaching' && s.recheck_at ? '<p class="text-xs text-slate-500 mt-1.5">Re-check ' + HUB.esc(HUB.fmtDate(s.recheck_at)) + (s.note ? ' — ' + HUB.esc(s.note) : '') + '</p>' : '') +
+          '</li>';
+      });
+      html += '</ul><p class="text-slate-500 text-xs mt-2">Skills are signed off by your trainer when they\'ve watched you do them.</p>';
+    }
+
+    if (checkins.length) {
+      html += '<h2 class="font-bold text-lg mt-7">Weekly check-ins</h2><ul class="mt-3 space-y-3">';
+      checkins.forEach(function (c) {
+        html += '<li class="bg-white border border-slate-200 rounded-xl p-4 text-sm">' +
+          '<p class="font-semibold">Week of ' + HUB.esc(HUB.fmtDate(c.week_of)) + '</p>' +
+          (c.wins ? '<p class="mt-1"><span class="font-semibold text-emerald-700">Wins:</span> ' + HUB.esc(c.wins) + '</p>' : '') +
+          (c.needs ? '<p class="mt-1"><span class="font-semibold text-amber-700">Needs:</span> ' + HUB.esc(c.needs) + '</p>' : '') +
+          '<p class="mt-1"><span class="font-semibold text-sky-700">Next:</span> ' + HUB.esc(c.next_plan) + '</p></li>';
+      });
+      html += '</ul>';
+    }
+
+    var m = HUB.screen(null, html);
+    HUB.$$('[data-done]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () { completeTask(btn, m); });
+    });
+  }
+
+  function taskCard(t, actionable) {
+    var kindLabel = { task: '', skill: 'Trainer signs this off', quiz: 'Knowledge check', sop_read: 'Read the office way', checkin: 'Check-in with your manager' }[t.kind] || '';
+    var action = '';
+    if (actionable) {
+      if (t.kind === 'skill') action = '<span class="text-xs text-slate-500 font-semibold">🔒 ' + kindLabel + '</span>';
+      else if (t.kind === 'checkin') action = '<span class="text-xs text-slate-500 font-semibold">Your manager records this</span>';
+      else if (t.kind === 'sop_read') action = '<a href="/hub/sops" class="text-sky-700 font-semibold text-sm hover:underline mr-3">Open SOPs</a><button type="button" data-done="' + t.id + '" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-3.5 py-1.5 rounded-lg text-sm">Mark read</button>';
+      else action = '<button type="button" data-done="' + t.id + '" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-3.5 py-1.5 rounded-lg text-sm">Mark done</button>';
+    }
+    return '<li class="bg-white border border-slate-200 rounded-xl p-4">' +
+      '<div class="flex items-start justify-between gap-3">' +
+      '<div><span class="text-xs font-bold text-sky-700 bg-sky-100 rounded-full px-2 py-0.5">Day ' + t.day_offset + '</span>' +
+      '<p class="font-semibold mt-1.5">' + HUB.esc(t.title) + '</p>' +
+      (kindLabel && t.kind !== 'skill' && t.kind !== 'checkin' ? '<p class="text-xs text-slate-500 mt-0.5">' + kindLabel + '</p>' : '') + '</div>' +
+      '<div class="shrink-0 text-right">' + action + '</div></div><div data-retry-slot></div></li>';
+  }
+
+  function completeTask(btn, m) {
+    var id = btn.getAttribute('data-done');
+    var slot = btn.closest('li').querySelector('[data-retry-slot]');
+    btn.disabled = true;
+    HUB.withRetry(slot, function () {
+      return HUB.from('hub_plan_tasks').update({ status: 'done' }).eq('id', id).then(function (r) {
+        if (r.error) throw new Error(r.error.message);
+      });
+    }).then(function () {
+      HUB.track('task_completed', {}, 'task_completed:' + id);
+      HUB.toast('Nice — marked done.');
+      load();
+    }).catch(function () { btn.disabled = false; });
+  }
+});
+
+</script>
+</body>
+</html>

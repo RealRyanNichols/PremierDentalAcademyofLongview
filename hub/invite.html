@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>You’re invited | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ public: true, needsOrg: false }, function (state) {
+  var token = new URLSearchParams(location.search).get('token') || '';
+  var m;
+  if (!token) { HUB.screen(null, HUB.denied('This invite link is incomplete — ask your office to resend it.')); return; }
+  HUB.rpc('hub_invite_preview', { p_token: token }).then(function (rows) {
+    var inv = rows && rows[0];
+    if (!inv) { showBad('This invite link isn\'t valid.', 'Double-check you copied the whole link, or ask your office to send a fresh one.'); return; }
+    if (inv.status === 'expired') { showBad('This invite has expired.', 'Invites work for 7 days. Ask ' + HUB.esc(inv.org_name) + ' to send you a new one — it takes them a few seconds.'); return; }
+    if (inv.status === 'revoked') { showBad('This invite was cancelled.', 'Ask ' + HUB.esc(inv.org_name) + ' to send you a current invite.'); return; }
+    if (inv.status === 'accepted') { showBad('This invite was already used.', 'If that was you, just sign in.', true); return; }
+    m = HUB.screen(null,
+      '<div class="max-w-md mx-auto mt-8 bg-white border border-slate-200 rounded-2xl p-8 text-center">' +
+      '<p class="text-[12px] uppercase tracking-wider text-sky-700 font-bold">You\'re invited</p>' +
+      '<h1 class="font-bold text-2xl mt-2">' + HUB.esc(inv.org_name) + '</h1>' +
+      '<p class="text-slate-600 mt-2">wants to add you as <strong>' + HUB.esc(inv.role) + '</strong> in their onboarding workspace.</p>' +
+      '<div id="invite-action" class="mt-6"></div></div>');
+    var action = HUB.$('#invite-action', m);
+    if (state.session) {
+      var btn = HUB.el('button', { type: 'button', class: 'w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-3 rounded-xl', text: 'Accept invitation' });
+      action.appendChild(btn);
+      btn.addEventListener('click', function () {
+        HUB.withRetry(action, function () { return HUB.rpc('hub_accept_invite', { p_token: token }); })
+          .then(function (orgId) {
+            try { localStorage.setItem('hub_org', orgId); } catch (e) {}
+            HUB.track('invite_accepted', { role: inv.role }, 'invite_accepted:' + orgId + ':' + token.slice(0, 8));
+            HUB.toast('Welcome to ' + inv.org_name + '!');
+            location.href = '/hub';
+          });
+      });
+    } else {
+      action.innerHTML =
+        '<form id="invite-login"><label class="block font-semibold text-sm text-left" for="email">Your email (' + HUB.esc(inv.email) + ')</label>' +
+        '<input id="email" type="email" required value="' + HUB.esc(inv.email) + '" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2.5">' +
+        '<button type="submit" class="mt-3 w-full bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-3 rounded-xl">Email me a sign-in link</button>' +
+        '<p class="text-slate-500 text-xs mt-3 text-left">We\'ll sign you in, then bring you right back here to accept.</p></form>' +
+        '<div id="sent" class="hidden mt-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 text-sm" role="status">Check your inbox — open the link on this device, and you\'ll land back here to accept.</div>';
+      HUB.$('#invite-login', action).addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = HUB.$('#email', action).value.trim();
+        HUB.withRetry(action, function () {
+          return HUB.sb().auth.signInWithOtp({ email: email, options: { emailRedirectTo: location.origin + '/hub/invite?token=' + token } })
+            .then(function (r) { if (r.error) throw new Error(r.error.message); });
+        }).then(function () {
+          HUB.$('#invite-login', action).classList.add('hidden');
+          HUB.$('#sent', action).classList.remove('hidden');
+        });
+      });
+    }
+  }).catch(function (err) {
+    HUB.screen(null, '').appendChild(HUB.errorState(err, function () { location.reload(); }));
+  });
+  function showBad(title, body, showSignIn) {
+    HUB.screen(null,
+      '<div class="max-w-md mx-auto mt-8 bg-white border border-slate-200 rounded-2xl p-8 text-center">' +
+      '<h1 class="font-bold text-2xl">' + HUB.esc(title) + '</h1>' +
+      '<p class="text-slate-600 mt-3">' + body + '</p>' +
+      (showSignIn ? '<a href="/hub/login" class="inline-block mt-5 bg-sky-600 text-white font-semibold px-5 py-2.5 rounded-xl">Sign in</a>' : '') +
+      '</div>');
+  }
+});
+
+</script>
+</body>
+</html>

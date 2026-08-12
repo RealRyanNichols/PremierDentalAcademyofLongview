@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Home | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({}, function (state) {
+  if (!state.membership) return;
+  if (state.membership.role === 'employee') { location.replace('/hub/employee'); return; }
+  load();
+
+  function load() {
+    var main = HUB.screen(null, HUB.skeleton(4));
+    Promise.all([
+      HUB.rpc('hub_org_people', { p_org: state.orgId }),
+      HUB.from('hub_plans').select('id, employee_membership_id, start_date, status').eq('org_id', state.orgId),
+      HUB.from('hub_plan_tasks').select('id, plan_id, status, kind').eq('org_id', state.orgId),
+      HUB.from('hub_templates').select('id, slug, title, role_target, body').is('org_id', null),
+    ]).then(function (r) {
+      render(r[0] || [], r[1].data || [], r[2].data || [], r[3].data || []);
+    }).catch(function (err) {
+      main.innerHTML = '';
+      main.appendChild(HUB.errorState(err, load));
+    });
+  }
+
+  function render(people, plans, tasks, templates) {
+    var employees = people.filter(function (p) { return p.role === 'employee' && p.status === 'active'; });
+    var activePlans = plans.filter(function (p) { return p.status === 'active'; });
+    var planByEmp = {};
+    activePlans.forEach(function (p) { planByEmp[p.employee_membership_id] = p; });
+    var tasksByPlan = {};
+    tasks.forEach(function (t) { (tasksByPlan[t.plan_id] = tasksByPlan[t.plan_id] || []).push(t); });
+
+    var html = '<div class="flex items-center justify-between gap-3">' +
+      '<h1 class="font-bold text-2xl">Onboarding</h1>' +
+      '<a href="/hub/settings" class="text-sky-700 font-semibold text-sm hover:underline">Invite people →</a></div>';
+
+    if (!employees.length) {
+      html += '<div class="mt-6 bg-white border border-slate-200 rounded-2xl p-10 text-center">' +
+        '<h2 class="font-bold text-xl">Your workspace is ready</h2>' +
+        '<p class="text-slate-600 mt-2 max-w-md mx-auto">Nobody\'s being onboarded yet. Invite your new hire (and the trainer who\'ll sign off their skills), then start their plan here.</p>' +
+        '<div class="mt-6 flex flex-wrap justify-center gap-3">' +
+        '<a href="/hub/settings" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-5 py-2.5 rounded-xl">Invite your team</a>' +
+        '<a href="/hub/sops" class="border border-slate-300 hover:border-slate-400 font-semibold px-5 py-2.5 rounded-xl">Write your first SOP</a>' +
+        '</div></div>';
+      HUB.screen(null, html);
+      return;
+    }
+
+    html += '<ul class="mt-5 space-y-4">';
+    employees.forEach(function (emp) {
+      var plan = planByEmp[emp.membership_id];
+      html += '<li class="bg-white border border-slate-200 rounded-2xl p-6">';
+      html += '<div class="flex flex-wrap items-center justify-between gap-3">';
+      html += '<div><h2 class="font-bold text-lg">' + HUB.esc(emp.full_name || emp.email) + '</h2>' +
+        '<p class="text-slate-500 text-sm">' + HUB.esc(emp.title || 'New hire') + '</p></div>';
+      if (plan) {
+        var pt = tasksByPlan[plan.id] || [];
+        var done = pt.filter(function (t) { return t.status === 'done'; }).length;
+        var pct = pt.length ? Math.round(done * 100 / pt.length) : 0;
+        html += '<div class="text-right"><p class="text-sm text-slate-500">Started ' + HUB.esc(HUB.fmtDate(plan.start_date)) + '</p>' +
+          '<p class="font-bold text-sky-700">' + done + '/' + pt.length + ' tasks · ' + pct + '%</p></div>';
+        html += '</div>';
+        html += '<div class="mt-3 bg-slate-100 rounded-full h-2.5" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="Plan progress for ' + HUB.esc(emp.full_name || emp.email) + '">' +
+          '<div class="bg-sky-500 h-2.5 rounded-full" style="width:' + pct + '%"></div></div>';
+        html += '<div class="mt-4 flex flex-wrap gap-2.5 text-sm">' +
+          '<a href="/hub/plan?e=' + emp.membership_id + '" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg">Open plan</a>' +
+          '<a href="/hub/skills?e=' + emp.membership_id + '" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg">Skills checklist</a>' +
+          '<a href="/hub/report?e=' + emp.membership_id + '" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg">Readiness report</a>' +
+          '<button type="button" data-checkin="' + emp.membership_id + '" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg">Weekly check-in</button>' +
+          '</div>';
+      } else {
+        html += '<button type="button" data-start="' + emp.membership_id + '" class="bg-sky-600 hover:bg-sky-500 text-white font-semibold px-4 py-2 rounded-lg text-sm">Start onboarding plan</button></div>';
+      }
+      html += '</li>';
+    });
+    html += '</ul>';
+    var m = HUB.screen(null, html);
+
+    HUB.$$('[data-start]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () { startPlan(btn.getAttribute('data-start'), templates, m); });
+    });
+    HUB.$$('[data-checkin]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () { checkinModal(btn.getAttribute('data-checkin')); });
+    });
+  }
+
+  function startPlan(membershipId, templates, container) {
+    // Inline panel instead of modal so entries survive errors (validation rule).
+    var panel = HUB.el('div', { class: 'fixed inset-0 bg-slate-900/50 z-[80] flex items-center justify-center p-4' });
+    panel.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="sp-title" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">' +
+      '<h2 id="sp-title" class="font-bold text-lg">Start an onboarding plan</h2>' +
+      '<label class="block font-semibold text-sm mt-4" for="sp-tpl">Template</label>' +
+      '<select id="sp-tpl" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">' +
+      templates.map(function (t) { return '<option value="' + t.id + '">' + HUB.esc(t.title) + '</option>'; }).join('') +
+      '</select>' +
+      '<label class="block font-semibold text-sm mt-3" for="sp-date">First day</label>' +
+      '<input id="sp-date" type="date" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" value="' + new Date().toISOString().slice(0, 10) + '">' +
+      '<div id="sp-err"></div>' +
+      '<div class="mt-5 flex justify-end gap-3">' +
+      '<button type="button" id="sp-cancel" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold text-sm">Cancel</button>' +
+      '<button type="button" id="sp-ok" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm">Create plan</button>' +
+      '</div></div>';
+    document.body.appendChild(panel);
+    var dlg = panel.firstChild;
+    function close() { panel.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    HUB.$('#sp-cancel', dlg).addEventListener('click', close);
+    HUB.$('#sp-tpl', dlg).focus();
+    HUB.$('#sp-ok', dlg).addEventListener('click', function () {
+      var tpl = templates.find(function (t) { return t.id === HUB.$('#sp-tpl', dlg).value; });
+      var startDate = HUB.$('#sp-date', dlg).value;
+      if (!tpl || !startDate) return;
+      var errBox = HUB.$('#sp-err', dlg);
+      HUB.withRetry(errBox, function () { return createPlan(membershipId, tpl, startDate); })
+        .then(function () { close(); location.reload(); })
+        .catch(function (err) {
+          if (/FREE_TIER_LIMIT/.test(String(err.message))) {
+            close();
+            HUB.modal({
+              title: 'Free workspaces run one onboarding at a time',
+              body: 'To onboard more than one person at once, talk to Premier about the full version.',
+              okLabel: 'See upgrade', cancelLabel: 'Not now',
+            }).then(function (go) { if (go) location.href = '/hub/upgrade'; });
+          }
+        });
+    });
+  }
+
+  function createPlan(membershipId, tpl, startDate) {
+    var stockSkills;
+    return HUB.from('hub_skills').select('id, title').is('org_id', null).then(function (r) {
+      stockSkills = {};
+      (r.data || []).forEach(function (s) { stockSkills[s.title.toLowerCase()] = s.id; });
+      return HUB.from('hub_plans').insert({
+        org_id: state.orgId, employee_membership_id: membershipId,
+        template_id: tpl.id, start_date: startDate,
+      }).select().single();
+    }).then(function (r) {
+      if (r.error) throw new Error(r.error.message);
+      var plan = r.data;
+      var items = (tpl.body && tpl.body.tasks) || [];
+      var rows = items.map(function (it, i) {
+        return {
+          plan_id: plan.id, org_id: state.orgId,
+          phase: it.phase, day_offset: it.day, kind: it.kind, title: it.title,
+          skill_id: it.kind === 'skill' && it.skill_title ? (stockSkills[String(it.skill_title).toLowerCase()] || null) : null,
+          sort: i,
+        };
+      });
+      return HUB.from('hub_plan_tasks').insert(rows).then(function (r2) {
+        if (r2.error) throw new Error(r2.error.message);
+        HUB.track('template_applied', { template: tpl.slug }, 'template_applied:' + plan.id);
+        HUB.track('plan_created', { tasks: rows.length }, 'plan_created:' + plan.id);
+        HUB.toast('Plan created — ' + rows.length + ' tasks over 90 days.');
+      });
+    });
+  }
+
+  function checkinModal(membershipId) {
+    var panel = HUB.el('div', { class: 'fixed inset-0 bg-slate-900/50 z-[80] flex items-center justify-center p-4 overflow-y-auto' });
+    panel.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="ci-title" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl my-8">' +
+      '<h2 id="ci-title" class="font-bold text-lg">Weekly check-in</h2>' +
+      '<p class="text-slate-500 text-sm mt-1">Two minutes, three boxes. The hire can read this.</p>' +
+      '<label class="block font-semibold text-sm mt-4" for="ci-wins">Wins this week</label>' +
+      '<textarea id="ci-wins" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></textarea>' +
+      '<label class="block font-semibold text-sm mt-3" for="ci-needs">Needs work</label>' +
+      '<textarea id="ci-needs" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></textarea>' +
+      '<label class="block font-semibold text-sm mt-3" for="ci-next">Next week\'s focus <span class="text-red-600">*</span></label>' +
+      '<textarea id="ci-next" rows="2" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></textarea>' +
+      '<p id="ci-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p>' +
+      '<div id="ci-retry"></div>' +
+      '<div class="mt-5 flex justify-end gap-3">' +
+      '<button type="button" id="ci-cancel" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold text-sm">Cancel</button>' +
+      '<button type="button" id="ci-ok" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm">Save check-in</button>' +
+      '</div></div>';
+    document.body.appendChild(panel);
+    var dlg = panel.firstChild;
+    function close() { panel.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    HUB.$('#ci-cancel', dlg).addEventListener('click', close);
+    HUB.$('#ci-wins', dlg).focus();
+    HUB.$('#ci-ok', dlg).addEventListener('click', function () {
+      var next = HUB.$('#ci-next', dlg).value.trim();
+      var errEl = HUB.$('#ci-err', dlg);
+      errEl.classList.add('hidden');
+      if (!next) { errEl.textContent = 'Next week\'s focus is the one required box.'; errEl.classList.remove('hidden'); return; }
+      // week_of = Monday of this week (America/Chicago-friendly date math)
+      var now = new Date();
+      var day = (now.getDay() + 6) % 7; // Mon=0
+      var monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+      var weekOf = monday.getFullYear() + '-' + String(monday.getMonth() + 1).padStart(2, '0') + '-' + String(monday.getDate()).padStart(2, '0');
+      HUB.withRetry(HUB.$('#ci-retry', dlg), function () {
+        return HUB.from('hub_checkins').upsert({
+          org_id: HUB.state.orgId, employee_membership_id: membershipId,
+          author_membership_id: HUB.state.membership.id, week_of: weekOf,
+          wins: HUB.$('#ci-wins', dlg).value.trim() || null,
+          needs: HUB.$('#ci-needs', dlg).value.trim() || null,
+          next_plan: next,
+        }, { onConflict: 'employee_membership_id,week_of' }).then(function (r) {
+          if (r.error) throw new Error(r.error.message);
+        });
+      }).then(function () {
+        HUB.track('checkin_created', { week_of: weekOf }, 'checkin:' + membershipId + ':' + weekOf);
+        HUB.toast('Check-in saved for the week of ' + weekOf + '.');
+        close();
+      });
+    });
+  }
+});
+
+</script>
+</body>
+</html>

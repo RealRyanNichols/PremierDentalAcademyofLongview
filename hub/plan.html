@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Onboarding plan | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ roles: ['owner', 'manager', 'trainer'] }, function (state) {
+  if (!state.membership || ['owner','manager','trainer'].indexOf(state.membership.role) === -1) return;
+  var empId = new URLSearchParams(location.search).get('e');
+  if (!empId) { HUB.screen(null, HUB.denied('No employee selected.')); return; }
+  var emp = null, plan = null;
+  load();
+
+  function load() {
+    var main = HUB.screen(null, HUB.skeleton(6));
+    Promise.all([
+      HUB.rpc('hub_org_people', { p_org: state.orgId }),
+      HUB.from('hub_plans').select('*').eq('employee_membership_id', empId).eq('status', 'active').maybeSingle(),
+    ]).then(function (r) {
+      emp = (r[0] || []).find(function (p) { return p.membership_id === empId; });
+      plan = r[1].data;
+      if (!emp) { HUB.screen(null, HUB.denied('That person isn\'t in this workspace.')); return; }
+      if (!plan) {
+        HUB.screen(null, '<div class="bg-white border border-slate-200 rounded-2xl p-8 text-center mt-4">' +
+          '<h1 class="font-bold text-xl">' + HUB.esc(emp.full_name || emp.email) + ' has no active plan</h1>' +
+          '<p class="text-slate-600 mt-2">Start one from the home screen.</p>' +
+          '<a href="/hub" class="inline-block mt-4 bg-sky-600 text-white font-semibold px-5 py-2.5 rounded-xl">Back to home</a></div>');
+        return;
+      }
+      HUB.from('hub_plan_tasks').select('*').eq('plan_id', plan.id).order('day_offset').order('sort').then(function (tr) {
+        if (tr.error) throw new Error(tr.error.message);
+        render(tr.data || []);
+      });
+    }).catch(function (err) { var m = HUB.screen(null, ''); m.appendChild(HUB.errorState(err, load)); });
+  }
+
+  var PHASE_TITLES = { d30: 'Days 1–30 · Learn the office', d60: 'Days 31–60 · Build ownership', d90: 'Days 61–90 · Run it yourself' };
+  var KIND_LABEL = { task: 'Task', skill: 'Skill', quiz: 'Quiz', sop_read: 'SOP read', checkin: 'Check-in' };
+
+  function render(tasks) {
+    var done = tasks.filter(function (t) { return t.status === 'done'; }).length;
+    var pct = tasks.length ? Math.round(done * 100 / tasks.length) : 0;
+    var html = '<p class="text-sm"><a class="text-sky-700 hover:underline" href="/hub">← Home</a></p>' +
+      '<div class="flex flex-wrap items-center justify-between gap-3 mt-2">' +
+      '<div><h1 class="font-bold text-2xl">' + HUB.esc(emp.full_name || emp.email) + '</h1>' +
+      '<p class="text-slate-500 text-sm">' + HUB.esc(emp.title || 'New hire') + ' · started ' + HUB.esc(HUB.fmtDate(plan.start_date)) + ' · ' + done + '/' + tasks.length + ' done</p></div>' +
+      '<div class="flex gap-2"><a href="/hub/skills?e=' + empId + '" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg text-sm">Skills</a>' +
+      '<a href="/hub/report?e=' + empId + '" class="border border-slate-300 hover:border-slate-400 font-semibold px-4 py-2 rounded-lg text-sm">Report</a>' +
+      '<button type="button" id="archive-btn" class="border border-red-200 text-red-700 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg text-sm">Archive</button></div></div>' +
+      '<div class="mt-3 bg-slate-100 rounded-full h-2.5" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100" aria-label="Plan progress"><div class="bg-sky-500 h-2.5 rounded-full" style="width:' + pct + '%"></div></div>';
+
+    ['d30', 'd60', 'd90'].forEach(function (phase) {
+      var pts = tasks.filter(function (t) { return t.phase === phase; });
+      html += '<section class="mt-7"><div class="flex items-center justify-between">' +
+        '<h2 class="font-bold text-lg">' + PHASE_TITLES[phase] + '</h2>' +
+        '<button type="button" data-add="' + phase + '" class="text-sky-700 font-semibold text-sm hover:underline">+ Add task</button></div>';
+      if (!pts.length) html += '<p class="text-slate-500 text-sm mt-2">No tasks in this phase yet.</p>';
+      else {
+        html += '<ul class="mt-3 space-y-2">';
+        pts.forEach(function (t) {
+          var doneCls = t.status === 'done' ? 'opacity-60' : '';
+          html += '<li class="bg-white border border-slate-200 rounded-xl p-3.5 ' + doneCls + '">' +
+            '<div class="flex items-center justify-between gap-3 flex-wrap">' +
+            '<div class="flex items-center gap-2.5 min-w-0">' +
+            '<input type="checkbox" data-toggle="' + t.id + '" ' + (t.status === 'done' ? 'checked' : '') + (t.kind === 'skill' ? ' disabled title="Completes via skill sign-off"' : '') + ' class="accent-sky-600 w-4 h-4" aria-label="Mark ' + HUB.esc(t.title) + ' done">' +
+            '<span class="text-xs font-bold text-sky-700 bg-sky-100 rounded-full px-2 py-0.5 shrink-0">Day ' + t.day_offset + '</span>' +
+            '<span class="font-semibold text-sm truncate">' + HUB.esc(t.title) + '</span>' +
+            '<span class="text-xs text-slate-400 border border-slate-200 rounded-full px-1.5 shrink-0">' + KIND_LABEL[t.kind] + '</span></div>' +
+            '<div class="shrink-0 flex gap-2">' +
+            '<button type="button" data-edit="' + t.id + '" class="text-slate-500 hover:text-slate-800 text-sm font-semibold">Edit</button>' +
+            '<button type="button" data-del="' + t.id + '" class="text-red-500 hover:text-red-700 text-sm font-semibold">Delete</button>' +
+            '</div></div><div data-retry-slot></div></li>';
+        });
+        html += '</ul>';
+      }
+      html += '</section>';
+    });
+
+    var m = HUB.screen(null, html);
+    HUB.$$('[data-toggle]', m).forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        var slot = cb.closest('li').querySelector('[data-retry-slot]');
+        HUB.withRetry(slot, function () {
+          return HUB.from('hub_plan_tasks').update({ status: cb.checked ? 'done' : 'todo', completed_at: cb.checked ? new Date().toISOString() : null, completed_by: cb.checked ? state.membership.id : null })
+            .eq('id', cb.getAttribute('data-toggle')).then(function (r) { if (r.error) throw new Error(r.error.message); });
+        }).then(function () { if (cb.checked) HUB.track('task_completed', {}, 'task_completed:' + cb.getAttribute('data-toggle')); load(); });
+      });
+    });
+    HUB.$$('[data-del]', m).forEach(function (b) {
+      b.addEventListener('click', function () {
+        HUB.modal({ title: 'Delete this task?', body: 'It comes off the plan for good. Completed history on other tasks is untouched.', okLabel: 'Delete task', danger: true })
+          .then(function (ok) {
+            if (!ok) return;
+            HUB.from('hub_plan_tasks').delete().eq('id', b.getAttribute('data-del')).then(function (r) {
+              if (r.error) { HUB.toast(r.error.message, 'error'); return; }
+              HUB.toast('Task deleted.'); load();
+            });
+          });
+      });
+    });
+    HUB.$$('[data-add]', m).forEach(function (b) {
+      b.addEventListener('click', function () { taskForm(null, b.getAttribute('data-add'), tasks); });
+    });
+    HUB.$$('[data-edit]', m).forEach(function (b) {
+      b.addEventListener('click', function () {
+        var t = tasks.find(function (x) { return x.id === b.getAttribute('data-edit'); });
+        taskForm(t, t.phase, tasks);
+      });
+    });
+    HUB.$('#archive-btn', m).addEventListener('click', archiveFlow);
+  }
+
+  function taskForm(existing, phase, tasks) {
+    var ranges = { d30: [1, 30], d60: [31, 60], d90: [61, 120] };
+    var panel = HUB.el('div', { class: 'fixed inset-0 bg-slate-900/50 z-[80] flex items-center justify-center p-4' });
+    panel.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="tf-title" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">' +
+      '<h2 id="tf-title" class="font-bold text-lg">' + (existing ? 'Edit task' : 'Add a task') + '</h2>' +
+      '<label class="block font-semibold text-sm mt-4" for="tf-t">Task</label>' +
+      '<input id="tf-t" type="text" maxlength="200" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" value="' + HUB.esc(existing ? existing.title : '') + '">' +
+      '<p id="tf-err" class="text-red-700 text-sm mt-1 hidden" role="alert"></p>' +
+      '<label class="block font-semibold text-sm mt-3" for="tf-d">Day (' + ranges[phase][0] + '–' + ranges[phase][1] + ')</label>' +
+      '<input id="tf-d" type="number" min="' + ranges[phase][0] + '" max="' + ranges[phase][1] + '" class="mt-1 w-28 border border-slate-300 rounded-lg px-3 py-2" value="' + (existing ? existing.day_offset : ranges[phase][0]) + '">' +
+      '<div id="tf-retry"></div>' +
+      '<div class="mt-5 flex justify-end gap-3">' +
+      '<button type="button" id="tf-cancel" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold text-sm">Cancel</button>' +
+      '<button type="button" id="tf-ok" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm">' + (existing ? 'Save' : 'Add task') + '</button></div></div>';
+    document.body.appendChild(panel);
+    var dlg = panel.firstChild;
+    function close() { panel.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    HUB.$('#tf-cancel', dlg).addEventListener('click', close);
+    HUB.$('#tf-t', dlg).focus();
+    HUB.$('#tf-ok', dlg).addEventListener('click', function () {
+      var title = HUB.$('#tf-t', dlg).value.trim();
+      var day = parseInt(HUB.$('#tf-d', dlg).value, 10);
+      var err = HUB.$('#tf-err', dlg);
+      err.classList.add('hidden');
+      if (!title) { err.textContent = 'Give the task a name.'; err.classList.remove('hidden'); return; }
+      if (!(day >= ranges[phase][0] && day <= ranges[phase][1])) { err.textContent = 'Day must be between ' + ranges[phase][0] + ' and ' + ranges[phase][1] + '.'; err.classList.remove('hidden'); return; }
+      HUB.withRetry(HUB.$('#tf-retry', dlg), function () {
+        if (existing) {
+          return HUB.from('hub_plan_tasks').update({ title: title, day_offset: day }).eq('id', existing.id)
+            .then(function (r) { if (r.error) throw new Error(r.error.message); });
+        }
+        return HUB.from('hub_plan_tasks').insert({
+          plan_id: plan.id, org_id: state.orgId, phase: phase, day_offset: day, kind: 'task', title: title,
+          sort: tasks.length,
+        }).then(function (r) { if (r.error) throw new Error(r.error.message); });
+      }).then(function () { HUB.toast(existing ? 'Task updated.' : 'Task added.'); close(); load(); });
+    });
+  }
+
+  function archiveFlow() {
+    HUB.modal({
+      title: 'Archive ' + (emp.full_name || emp.email) + '?',
+      body: 'Archiving ends their hub access and closes the plan, but keeps every sign-off, check-in, and report for your records. You can see archived people in Settings.',
+      input: 'Reason (kept in the record)',
+      okLabel: 'Archive person', danger: true,
+    }).then(function (reason) {
+      if (reason === null) return;
+      HUB.rpc('hub_archive_member', { p_membership: empId, p_reason: String(reason || '').slice(0, 300) || null })
+        .then(function () {
+          HUB.track('member_archived', {}, 'member_archived:' + empId);
+          HUB.toast('Archived. Their record is kept.');
+          location.href = '/hub';
+        })
+        .catch(function (err) { HUB.toast(err.message, 'error'); });
+    });
+  }
+});
+
+</script>
+</body>
+</html>

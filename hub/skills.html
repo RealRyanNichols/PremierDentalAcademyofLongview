@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Skills checklist | Onboarding Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    :focus-visible { outline: 2px solid #0284c7; outline-offset: 2px; }
+    @media (prefers-reduced-motion: reduce) { .animate-pulse { animation: none; } }
+    @media (max-width: 779.9px) { body { padding-bottom: 64px; } }
+    @media (min-width: 780px) { #hub-bottombar { display: none; } }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/hub/hub-app.js"></script>
+
+</head>
+<body class="bg-slate-50 min-h-screen">
+  <header id="hub-topbar" class="bg-white border-b border-slate-200 sticky top-0 z-50"></header>
+  <main id="hub-main" class="max-w-4xl mx-auto px-4 py-6">
+    <div class="space-y-3" aria-label="Loading">
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+      <div class="animate-pulse bg-slate-200 rounded-xl h-16"></div>
+    </div>
+    <noscript><p class="bg-amber-50 border border-amber-300 rounded-xl p-4 mt-4">The hub needs JavaScript. Please enable it and refresh.</p></noscript>
+  </main>
+  <nav id="hub-bottombar" aria-label="Hub navigation" class="fixed bottom-0 inset-x-0 bg-white border-t border-slate-200 z-50"></nav>
+  
+<script>
+
+HUB.init({ roles: ['owner', 'manager', 'trainer'] }, function (state) {
+  if (!state.membership || ['owner','manager','trainer'].indexOf(state.membership.role) === -1) return;
+  var empId = new URLSearchParams(location.search).get('e');
+  if (!empId) { HUB.screen(null, HUB.denied('No employee selected.')); return; }
+  var canSign = ['owner', 'trainer'].indexOf(state.membership.role) !== -1;
+  var STATES = [
+    ['not_started', 'Not started'], ['observed', 'Observed'], ['practicing', 'Practicing'],
+    ['independent', 'Independent'], ['needs_coaching', 'Needs coaching'],
+  ];
+  var TEXAS_NOTE = 'In Texas, x-ray positioning and exposure require the TSBDE RDA radiology certificate. Items in this category are practice-internal familiarization only and do not authorize exposing radiographs.';
+  var emp = null;
+  load();
+
+  function load() {
+    HUB.screen(null, HUB.skeleton(6));
+    Promise.all([
+      HUB.rpc('hub_org_people', { p_org: state.orgId }),
+      HUB.from('hub_skills').select('*').or('org_id.is.null,org_id.eq.' + state.orgId).order('category').order('sort'),
+      HUB.from('hub_employee_skills').select('*').eq('employee_membership_id', empId),
+    ]).then(function (r) {
+      emp = (r[0] || []).find(function (p) { return p.membership_id === empId; });
+      if (!emp) { HUB.screen(null, HUB.denied('That person isn\'t in this workspace.')); return; }
+      render(r[1].data || [], r[2].data || []);
+    }).catch(function (err) { var m = HUB.screen(null, ''); m.appendChild(HUB.errorState(err, load)); });
+  }
+
+  function render(skills, empSkills) {
+    var byId = {};
+    empSkills.forEach(function (es) { byId[es.skill_id] = es; });
+    var cats = [];
+    skills.forEach(function (s) { if (cats.indexOf(s.category) === -1) cats.push(s.category); });
+
+    var html = '<p class="text-sm"><a class="text-sky-700 hover:underline" href="/hub/plan?e=' + empId + '">← Plan</a></p>' +
+      '<h1 class="font-bold text-2xl mt-2">Skills — ' + HUB.esc(emp.full_name || emp.email) + '</h1>' +
+      '<p class="text-slate-500 text-sm mt-1">' + (canSign ? 'Tap the state your trainer eye actually saw. Every change keeps its history.' : 'Read-only — owners and trainers record sign-offs.') + '</p>';
+
+    cats.forEach(function (cat) {
+      html += '<section class="mt-7"><h2 class="font-bold text-lg">' + HUB.esc(cat) + '</h2>';
+      if (/radiol|x-?ray/i.test(cat)) {
+        html += '<p class="mt-2 bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-4 py-2.5 text-sm">' + TEXAS_NOTE + '</p>';
+      }
+      html += '<ul class="mt-3 space-y-3">';
+      skills.filter(function (s) { return s.category === cat; }).forEach(function (s) {
+        var es = byId[s.id];
+        var cur = es ? es.state : 'not_started';
+        html += '<li class="bg-white border border-slate-200 rounded-xl p-4" data-skill="' + s.id + '">' +
+          '<div class="flex flex-wrap items-start justify-between gap-2">' +
+          '<div><p class="font-semibold">' + HUB.esc(s.title) + '</p>' +
+          (s.description ? '<p class="text-slate-500 text-sm mt-0.5">' + HUB.esc(s.description) + '</p>' : '') +
+          (es && es.signed_off_at ? '<p class="text-xs text-slate-400 mt-1">Last change ' + HUB.esc(HUB.fmtDate(es.signed_off_at)) + '</p>' : '') +
+          (es && es.state === 'needs_coaching' ? '<p class="text-xs text-red-700 mt-1">' + (es.recheck_at ? 'Re-check ' + HUB.esc(HUB.fmtDate(es.recheck_at)) : '') + (es.note ? ' — ' + HUB.esc(es.note) : '') + '</p>' : '') +
+          '</div>' +
+          (es ? '<button type="button" data-history="' + es.id + '" class="text-slate-400 hover:text-slate-700 text-xs font-semibold">History</button>' : '') +
+          '</div>';
+        html += '<div role="radiogroup" aria-label="State for ' + HUB.esc(s.title) + '" class="mt-3 flex flex-wrap gap-1.5">';
+        STATES.forEach(function (st) {
+          var active = cur === st[0];
+          var cls = active
+            ? (st[0] === 'independent' ? 'bg-emerald-600 text-white' : st[0] === 'needs_coaching' ? 'bg-red-600 text-white' : 'bg-sky-600 text-white')
+            : 'bg-white border border-slate-300 text-slate-600' + (canSign ? ' hover:border-slate-400' : '');
+          html += '<button type="button" role="radio" aria-checked="' + active + '" data-state="' + st[0] + '"' +
+            (canSign ? '' : ' disabled') + ' class="rounded-full px-3 py-1 text-xs font-bold ' + cls + (canSign ? '' : ' opacity-60 cursor-not-allowed') + '">' + st[1] + '</button>';
+        });
+        html += '</div><div data-history-slot class="mt-2"></div><div data-retry-slot></div></li>';
+      });
+      html += '</ul></section>';
+    });
+
+    var m = HUB.screen(null, html);
+    if (canSign) {
+      HUB.$$('[data-skill]', m).forEach(function (li) {
+        HUB.$$('[data-state]', li).forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var to = btn.getAttribute('data-state');
+            var skillId = li.getAttribute('data-skill');
+            if (btn.getAttribute('aria-checked') === 'true') return;
+            if (to === 'needs_coaching') coachingFlow(li, skillId);
+            else signOff(li, skillId, to, null, null);
+          });
+        });
+      });
+    }
+    HUB.$$('[data-history]', m).forEach(function (btn) {
+      btn.addEventListener('click', function () { toggleHistory(btn); });
+    });
+  }
+
+  function coachingFlow(li, skillId) {
+    var panel = HUB.el('div', { class: 'fixed inset-0 bg-slate-900/50 z-[80] flex items-center justify-center p-4' });
+    var inWeek = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+    panel.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="nc-title" class="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl">' +
+      '<h2 id="nc-title" class="font-bold text-lg">Flag for re-coaching</h2>' +
+      '<p class="text-slate-500 text-sm mt-1">A plan, not a punishment: one specific note and a date you\'ll look again.</p>' +
+      '<label class="block font-semibold text-sm mt-4" for="nc-note">What to fix (they\'ll read this)</label>' +
+      '<input id="nc-note" type="text" maxlength="300" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="e.g. water ratio on alginate">' +
+      '<label class="block font-semibold text-sm mt-3" for="nc-date">Re-check date</label>' +
+      '<input id="nc-date" type="date" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" value="' + inWeek + '">' +
+      '<div id="nc-retry"></div>' +
+      '<div class="mt-5 flex justify-end gap-3">' +
+      '<button type="button" id="nc-cancel" class="px-4 py-2 rounded-lg border border-slate-300 font-semibold text-sm">Cancel</button>' +
+      '<button type="button" id="nc-ok" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 text-white font-semibold text-sm">Flag &amp; set re-check</button></div></div>';
+    document.body.appendChild(panel);
+    var dlg = panel.firstChild;
+    function close() { panel.remove(); document.removeEventListener('keydown', esc, true); }
+    function esc(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc, true);
+    HUB.$('#nc-cancel', dlg).addEventListener('click', close);
+    HUB.$('#nc-note', dlg).focus();
+    HUB.$('#nc-ok', dlg).addEventListener('click', function () {
+      signOff(HUB.$('#nc-retry', dlg), li.getAttribute('data-skill'), 'needs_coaching',
+        HUB.$('#nc-note', dlg).value.trim() || null, HUB.$('#nc-date', dlg).value || null, close);
+    });
+  }
+
+  function signOff(retryHost, skillId, toState, note, recheck, onDone) {
+    var slot = retryHost.querySelector ? (retryHost.querySelector('[data-retry-slot]') || retryHost) : retryHost;
+    HUB.withRetry(slot, function () {
+      return HUB.rpc('hub_sign_off_skill', {
+        p_org: state.orgId, p_employee_membership: empId, p_skill: skillId,
+        p_to_state: toState, p_note: note, p_recheck: recheck,
+      });
+    }).then(function () {
+      var today = new Date().toISOString().slice(0, 10);
+      HUB.track('skill_signed_off', { to_state: toState }, 'signoff:' + empId + ':' + skillId + ':' + toState + ':' + today);
+      HUB.track('first_skill_signed_off', {}, 'first-signoff:' + state.orgId);
+      if (toState === 'needs_coaching') HUB.track('needs_coaching_flagged', {}, 'needs_coaching:' + empId + ':' + skillId + ':' + today);
+      HUB.toast(toState === 'needs_coaching' ? 'Flagged with a re-check date.' : 'Signed off: ' + toState.replace('_', ' ') + '.');
+      if (onDone) onDone();
+      load();
+    });
+  }
+
+  function toggleHistory(btn) {
+    var li = btn.closest('li');
+    var slot = li.querySelector('[data-history-slot]');
+    if (slot.innerHTML) { slot.innerHTML = ''; return; }
+    slot.innerHTML = '<p class="text-xs text-slate-400">Loading history…</p>';
+    HUB.from('hub_skill_signoff_events').select('from_state, to_state, note, at')
+      .eq('employee_skill_id', btn.getAttribute('data-history')).order('at', { ascending: false })
+      .then(function (r) {
+        if (r.error) { slot.innerHTML = '<p class="text-xs text-red-600">Couldn\'t load history.</p>'; return; }
+        slot.innerHTML = '<ul class="border-l-2 border-slate-200 pl-3 space-y-1">' + (r.data || []).map(function (ev) {
+          return '<li class="text-xs text-slate-500">' + HUB.esc(HUB.fmtDate(ev.at)) + ': ' +
+            HUB.esc(ev.from_state.replace('_', ' ')) + ' → <strong>' + HUB.esc(ev.to_state.replace('_', ' ')) + '</strong>' +
+            (ev.note ? ' — ' + HUB.esc(ev.note) : '') + '</li>';
+        }).join('') + '</ul>';
+      });
+  }
+});
+
+</script>
+</body>
+</html>
