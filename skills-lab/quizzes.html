@@ -44,16 +44,26 @@ tailwind.config = { theme: { extend: {
     <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Practice Quiz Hub</p>
     <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Drill it until it's automatic.</h1>
     <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Realistic dental-assisting questions across every category an office cares about. Unlimited retakes. Every attempt feeds your <span class="font-semibold text-white">First Day Ready Score</span>.</p>
+    <p class="text-slate-300 mt-3 max-w-2xl text-sm">
+        <!--PDA:GEN quizIntroSentence-->
+        98 practice questions across 13 categories — Charting, Dental Terminology, Instruments, X-Ray Errors, Infection Control, and more. Unlimited retakes, and every question explains its answer.
+        <!--/PDA:GEN quizIntroSentence-->
+    </p>
   </div>
 
-  <!-- Live stats strip -->
+  <!-- Live stats strip. The bank size is generated into the HTML (see
+       scripts/build-static-content.mjs) so search engines and no-JS visitors see the real
+       number; the two personal stats stay em-dashes until the browser resolves them,
+       because "0 quizzes taken" is a guess about the visitor, not a fact. -->
   <div class="grid grid-cols-3 gap-3 sm:gap-4 mt-6">
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
-      <div id="stBank" class="display text-3xl font-bold text-navy-900">0</div>
+      <div id="stBank" class="display text-3xl font-bold text-navy-900"><!--PDA:GEN quizBankCount-->
+        98
+        <!--/PDA:GEN quizBankCount--></div>
       <div class="text-[11px] text-slate-500 mt-0.5">questions in the bank</div>
     </div>
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
-      <div id="stTaken" class="display text-3xl font-bold text-teal-700">0</div>
+      <div id="stTaken" class="display text-3xl font-bold text-teal-700">—</div>
       <div class="text-[11px] text-slate-500 mt-0.5">quizzes you've taken</div>
     </div>
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
@@ -62,15 +72,62 @@ tailwind.config = { theme: { extend: {
     </div>
   </div>
 
+  <!-- Crawlable category index. This is the content that used to exist only after JS ran. -->
+  <nav aria-label="Quiz categories" class="mt-5 bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+    <h2 class="text-sm font-bold text-navy-900">Every category in the bank</h2>
+    <ul class="mt-3 flex flex-wrap gap-2 list-none p-0">
+        <!--PDA:GEN quizCategoryList-->
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Charting" class="hover:text-teal-700">Charting</a><span class="text-slate-500 font-normal">10</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Dental%20Terminology" class="hover:text-teal-700">Dental Terminology</a><span class="text-slate-500 font-normal">10</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Instruments" class="hover:text-teal-700">Instruments</a><span class="text-slate-500 font-normal">10</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=X-Ray%20Errors" class="hover:text-teal-700">X-Ray Errors</a><span class="text-slate-500 font-normal">10</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Infection%20Control" class="hover:text-teal-700">Infection Control</a><span class="text-slate-500 font-normal">8</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Patient%20Communication" class="hover:text-teal-700">Patient Communication</a><span class="text-slate-500 font-normal">8</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Scheduling" class="hover:text-teal-700">Scheduling</a><span class="text-slate-500 font-normal">8</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Dental%20Charting%20Abbreviations" class="hover:text-teal-700">Dental Charting Abbreviations</a><span class="text-slate-500 font-normal">7</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Procedure%20Workflow" class="hover:text-teal-700">Procedure Workflow</a><span class="text-slate-500 font-normal">7</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Crown%20%26%20Bridge" class="hover:text-teal-700">Crown &amp; Bridge</a><span class="text-slate-500 font-normal">5</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Extractions%2FOral%20Surgery" class="hover:text-teal-700">Extractions/Oral Surgery</a><span class="text-slate-500 font-normal">5</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Restorative%2FComposite" class="hover:text-teal-700">Restorative/Composite</a><span class="text-slate-500 font-normal">5</span></li>
+        <li class="inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 rounded-full px-3 py-1 text-xs font-semibold"><a href="/skills-lab/quizzes?cat=Root%20Canal%20(Endo)" class="hover:text-teal-700">Root Canal (Endo)</a><span class="text-slate-500 font-normal">5</span></li>
+        <!--/PDA:GEN quizCategoryList-->
+    </ul>
+  </nav>
+
   <!-- Picker -->
   <div id="picker" class="mt-6">
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
       <label for="cat" class="block text-sm font-semibold text-navy-900 mb-2">Choose a category</label>
       <div class="flex flex-col sm:flex-row gap-3">
-        <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
+        <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
+          <!--PDA:GEN quizCategoryOptions-->
+        <option value="__mixed__">Mixed practice (random)</option>
+          <option value="Charting">Charting (10)</option>
+          <option value="Dental Terminology">Dental Terminology (10)</option>
+          <option value="Instruments">Instruments (10)</option>
+          <option value="X-Ray Errors">X-Ray Errors (10)</option>
+          <option value="Infection Control">Infection Control (8)</option>
+          <option value="Patient Communication">Patient Communication (8)</option>
+          <option value="Scheduling">Scheduling (8)</option>
+          <option value="Dental Charting Abbreviations">Dental Charting Abbreviations (7)</option>
+          <option value="Procedure Workflow">Procedure Workflow (7)</option>
+          <option value="Crown &amp; Bridge">Crown &amp; Bridge (5)</option>
+          <option value="Extractions/Oral Surgery">Extractions/Oral Surgery (5)</option>
+          <option value="Restorative/Composite">Restorative/Composite (5)</option>
+          <option value="Root Canal (Endo)">Root Canal (Endo) (5)</option>
+        <!--/PDA:GEN quizCategoryOptions-->
+        </select>
         <div class="flex items-center gap-2">
           <label for="diff" class="text-sm text-slate-500">Level</label>
-          <select id="diff" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
+          <select id="diff" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
+            <!--PDA:GEN quizDifficultyOptions-->
+        <option value="__all__">All levels</option>
+          <option value="beginner">Beginner (29)</option>
+          <option value="intermediate">Intermediate (32)</option>
+          <option value="advanced">Advanced (22)</option>
+          <option value="expert">Expert (15)</option>
+        <!--/PDA:GEN quizDifficultyOptions-->
+          </select>
         </div>
         <div class="flex items-center gap-2">
           <label for="len" class="text-sm text-slate-500">Questions</label>
@@ -134,30 +191,38 @@ tailwind.config = { theme: { extend: {
     document.getElementById('stAvg').textContent = m.attempts.length ? (m.quizAvg + '%') : '—';
   }
 
-  // Category dropdown + chips
-  var optMixed = document.createElement('option');
-  optMixed.value = '__mixed__'; optMixed.textContent = 'Mixed practice (random)';
-  catSel.appendChild(optMixed);
-  D.QUIZ_CATEGORIES.forEach(function (cat) {
-    var n = D.QUIZ_BANK.filter(function (q) { return q.category === cat; }).length;
-    var o = document.createElement('option'); o.value = cat; o.textContent = cat + ' (' + n + ')';
-    catSel.appendChild(o);
-  });
+  // The category and level dropdowns are generated into the HTML by
+  // scripts/build-static-content.mjs so they exist before JS runs. Only rebuild them here
+  // if they somehow arrived empty — otherwise we would append a duplicate set.
+  if (catSel.options.length <= 1) {
+    var optMixed = document.createElement('option');
+    optMixed.value = '__mixed__'; optMixed.textContent = 'Mixed practice (random)';
+    catSel.appendChild(optMixed);
+    D.QUIZ_CATEGORIES.forEach(function (cat) {
+      var n = D.QUIZ_BANK.filter(function (q) { return q.category === cat; }).length;
+      var o = document.createElement('option'); o.value = cat; o.textContent = cat + ' (' + n + ')';
+      catSel.appendChild(o);
+    });
+  }
   document.getElementById('chips').innerHTML =
     '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-navy-900 text-white hover:opacity-90 transition" data-cat="__mixed__">Mixed practice</button>' +
     D.QUIZ_CATEGORIES.map(function (cat) {
       return '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-cat="' + U.escapeHTML(cat) + '">' + U.escapeHTML(cat) + '</button>';
     }).join('');
 
-  // Difficulty dropdown (All levels + each level, with live counts) + chips
-  var optAll = document.createElement('option');
-  optAll.value = ALL_DIFF; optAll.textContent = 'All levels';
-  diffSel.appendChild(optAll);
-  (D.QUIZ_DIFFICULTIES || []).forEach(function (d) {
-    var n = D.QUIZ_BANK.filter(function (q) { return q.difficulty === d; }).length;
-    var o = document.createElement('option'); o.value = d; o.textContent = diffLabel(d) + ' (' + n + ')';
-    diffSel.appendChild(o);
-  });
+  // Difficulty dropdown (All levels + each level, with live counts) + chips — same
+  // static-first arrangement as the category dropdown above.
+  if (diffSel.options.length <= 1) {
+    var optAll = document.createElement('option');
+    optAll.value = ALL_DIFF; optAll.textContent = 'All levels';
+    diffSel.appendChild(optAll);
+    (D.QUIZ_DIFFICULTIES || []).forEach(function (d) {
+      var n = D.QUIZ_BANK.filter(function (q) { return q.difficulty === d; }).length;
+      if (!n) return;
+      var o = document.createElement('option'); o.value = d; o.textContent = diffLabel(d) + ' (' + n + ')';
+      diffSel.appendChild(o);
+    });
+  }
   document.getElementById('diffChips').innerHTML =
     '<button class="diffChip text-xs font-semibold px-3 py-1.5 rounded-full bg-teal-600 text-white hover:opacity-90 transition" data-diff="' + ALL_DIFF + '">All levels</button>' +
     (D.QUIZ_DIFFICULTIES || []).map(function (d) {
