@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tray Setup Builder — 14 Procedures, Graded on the Real Rules | Premier Dental Academy</title>
+<meta name="description" content="Build the tray for 14 dental procedures and get graded against the arrangement rules offices actually use: left to right in order of use, cotton across the top, hinged instruments right, grouped by function.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/skills-lab/tray-setup">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Premier Dental Academy of Longview">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/skills-lab/tray-setup">
+<meta property="og:title" content="Tray setup builder — graded on the real rules">
+<meta property="og:description" content="Build the tray for 14 procedures and get marked against how offices actually arrange them.">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-skills-lab.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tray setup builder — graded on the real rules">
+<meta name="twitter:description" content="Build the tray for 14 procedures and get marked against how offices actually arrange them.">
+<meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-skills-lab.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .tap{min-height:44px}
+  .pick{min-height:44px;text-align:left;border:1.5px solid #e2e8f0;border-radius:10px;padding:8px 12px;background:#fff;
+        font-size:14px;font-weight:600;color:#0f172a;cursor:pointer;transition:.12s;width:100%}
+  .pick:hover{border-color:#0d9488;background:#f0fdfa}
+  .pick.is-used{opacity:.4;pointer-events:none}
+  .slot{min-height:44px;border:1.5px solid #cbd5e1;border-radius:10px;padding:8px 12px;background:#fff;
+        display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600}
+  .rule-ok{background:#ecfdf5;border-color:#6ee7b7}
+  .rule-no{background:#fff7ed;border-color:#fdba74}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Dental Tray Setup Builder","applicationCategory":"EducationalApplication","operatingSystem":"Any modern web browser","url":"https://www.premierdentalacademyoflongview.com/skills-lab/tray-setup","description":"Build instrument trays for 14 dental procedures and receive grading against the four standard tray arrangement conventions.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"provider":{"@type":"EducationalOrganization","name":"Premier Dental Academy of Longview","telephone":"+1-903-913-6444","address":{"@type":"PostalAddress","streetAddress":"2800 Gilmer Rd, Suite 106","addressLocality":"Longview","addressRegion":"TX","postalCode":"75604","addressCountry":"US"}}}
+</script>
+<script defer src="/assets/pda-analytics.js"></script>
+<link rel="stylesheet" href="/assets/pda-polish.css">
+<script defer src="/assets/pda-nav.js"></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+
+  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
+    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Drill</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Set the tray the way an office does</h1>
+    <p class="text-slate-200 mt-2 text-sm sm:text-base">Picking the right instruments is half of it. Arranging them so the dentist can take the next one without looking is the half that gets you kept on. This grades both.</p>
+  </div>
+
+  <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mt-5">
+    <h2 class="display text-lg font-bold">The four rules you're marked against</h2>
+    <ol id="rules-list" class="mt-3 space-y-3 list-decimal pl-5">
+        <!--PDA:GEN trayRules-->
+        <li><span class="font-semibold text-navy-900">Place the instruments left to right in the order they will be used.</span><span class="block text-sm text-slate-600 mt-0.5">The dentist reaches for the next instrument without looking away from the mouth. When the tray reads like the procedure, the next thing needed is always the next one down the row, so transfers happen by feel and stay fast. It is also the fastest way to check your own work — set the tray in order, walk the procedure in your head, and a missing item shows up as a gap before the patient is ever seated.</span></li>
+        <li><span class="font-semibold text-navy-900">Cotton products and gauze go across the TOP of the tray, above the instrument row.</span><span class="block text-sm text-slate-600 mt-0.5">Gauze, cotton rolls, dry angles and pellets get grabbed constantly and out of sequence — to dry a prep, wipe a working end, blot cement or apply pressure. Parking them along the top keeps them reachable without reaching over or breaking up the ordered row, and it keeps loose cotton fibres off the instrument tips.</span></li>
+        <li><span class="font-semibold text-navy-900">Hinged instruments — forceps, scissors, needle holders and hemostats — are grouped at the RIGHT end of the tray.</span><span class="block text-sm text-slate-600 mt-0.5">Hinged instruments are bulky and their handles spread open, so mixed into the row they push everything else apart and tangle together. Keeping them as one group on the right means the surgical instruments are always in the same place, even under a drape, and the assistant can hand off a whole group at once. The basic setup is the exception — mirror, explorer and cotton pliers stay at the far left because they are used first and travel as a unit.</span></li>
+        <li><span class="font-semibold text-navy-900">Group the instruments by function — examination, hand instruments, restorative or procedure-specific items, then the hinged group.</span><span class="block text-sm text-slate-600 mt-0.5">Grouping by job lets anyone audit a tray at a glance: the exam group is either there or it is not, the restorative group is either complete or it is missing a carver. It also tells you what to do when two rules disagree. On a surgical setup, function grouping and the hinged rule win over strict order of use — the forceps sit with the other hinged instruments on the right even though they are picked up before the sutures. Remember that offices and instructors vary in these details; match the convention where you work.</span></li>
+        <!--/PDA:GEN trayRules-->
+    </ol>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mt-5">
+    <h2 class="display text-lg font-bold">Pick a procedure</h2>
+    <div class="flex flex-wrap items-center gap-3 mt-3">
+      <label for="proc" class="sr-only">Procedure</label>
+      <select id="proc" class="tap flex-1 min-w-[220px] rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
+          <!--PDA:GEN trayProcedureOptions-->
+        <option value="exam">Basic exam</option>
+          <option value="prophy">Prophylaxis (adult cleaning)</option>
+          <option value="sealants">Sealants</option>
+          <option value="restorative">Composite restoration</option>
+          <option value="amalgam">Amalgam restoration</option>
+          <option value="crown">Crown preparation and temporary</option>
+          <option value="crown-cementation">Crown cementation (seat and deliver)</option>
+          <option value="extraction">Simple extraction</option>
+          <option value="surgical-extraction">Surgical extraction</option>
+          <option value="endo">Root canal (endodontic treatment)</option>
+          <option value="impressions">Impressions and bite registration</option>
+          <option value="perio-scaling">Periodontal scaling and root planing</option>
+          <option value="emergency">Emergency and palliative visit</option>
+          <option value="pediatric-restorative">Pediatric restoration</option>
+        <!--/PDA:GEN trayProcedureOptions-->
+      </select>
+      <button type="button" id="begin" class="tap bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Set this tray →</button>
+    </div>
+  </section>
+
+  <section id="builder" class="hidden mt-5"></section>
+  <section id="result" class="hidden mt-5" aria-live="polite"></section>
+
+  <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mt-8">
+    <h2 class="display text-lg font-bold">Every setup in this drill</h2>
+    <div id="setup-list" class="grid sm:grid-cols-2 gap-3 mt-3">
+        <!--PDA:GEN traySetupList-->
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Basic exam</h3><p class="text-sm text-slate-600 mt-1">The setup every operatory starts with — look, feel, measure, dry.</p><p class="text-xs text-slate-500 mt-2">7 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Prophylaxis (adult cleaning)</h3><p class="text-sm text-slate-600 mt-1">A routine recall cleaning — calculus removal, polish, floss, fluoride.</p><p class="text-xs text-slate-500 mt-2">12 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Sealants</h3><p class="text-sm text-slate-600 mt-1">Sealing the pits and fissures of caries-free molars — an isolation procedure more than a cutting one.</p><p class="text-xs text-slate-500 mt-2">15 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Composite restoration</h3><p class="text-sm text-slate-600 mt-1">A tooth-colored filling — etch, bond, layer, cure, carve, check the bite.</p><p class="text-xs text-slate-500 mt-2">26 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Amalgam restoration</h3><p class="text-sm text-slate-600 mt-1">A silver filling — condensed, carved and burnished, with no bonding step.</p><p class="text-xs text-slate-500 mt-2">21 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Crown preparation and temporary</h3><p class="text-sm text-slate-600 mt-1">Prep the tooth, expose the margin, record it, then build the provisional that protects it.</p><p class="text-xs text-slate-500 mt-2">30 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Crown cementation (seat and deliver)</h3><p class="text-sm text-slate-600 mt-1">The delivery appointment — off with the temporary, try in, adjust, cement, clean up.</p><p class="text-xs text-slate-500 mt-2">20 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Simple extraction</h3><p class="text-sm text-slate-600 mt-1">A tooth removed whole, without cutting tissue or bone — loosen, deliver, debride, control the bleeding.</p><p class="text-xs text-slate-500 mt-2">15 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Surgical extraction</h3><p class="text-sm text-slate-600 mt-1">A flap is reflected and the tooth is sectioned or bone is removed — a sterile setup with a suturing group.</p><p class="text-xs text-slate-500 mt-2">17 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Root canal (endodontic treatment)</h3><p class="text-sm text-slate-600 mt-1">Isolate with the dam, open the tooth, clean and shape the canals, fill and seal them.</p><p class="text-xs text-slate-500 mt-2">31 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Impressions and bite registration</h3><p class="text-sm text-slate-600 mt-1">Capturing the arch and the bite for study models, whitening trays, night guards or a lab case.</p><p class="text-xs text-slate-500 mt-2">12 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Periodontal scaling and root planing</h3><p class="text-sm text-slate-600 mt-1">Quadrant therapy for periodontal disease — charting, anesthetic, deep scaling below the gumline.</p><p class="text-xs text-slate-500 mt-2">13 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Emergency and palliative visit</h3><p class="text-sm text-slate-600 mt-1">A patient in pain, worked into the schedule — find the source, relieve it, seal it, and plan the real appointment.</p><p class="text-xs text-slate-500 mt-2">16 items on the tray</p></article>
+        <article class="bg-slate-50 rounded-xl border border-slate-200 p-4"><h3 class="font-bold text-navy-900 text-sm">Pediatric restoration</h3><p class="text-sm text-slate-600 mt-1">A filling or a stainless steel crown on a primary tooth — smaller instruments, shorter appointment, different post-op talk.</p><p class="text-xs text-slate-500 mt-2">27 items on the tray</p></article>
+        <!--/PDA:GEN traySetupList-->
+    </div>
+  </section>
+
+  <nav class="mt-8 grid sm:grid-cols-2 gap-4" aria-label="Related tools">
+    <a href="/skills-lab/instrument-id" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">🔧</div>
+      <h2 class="font-bold mt-2">Shaky on the instruments themselves?</h2>
+      <p class="text-sm text-slate-600 mt-1">Drill all 84 first, then come back and set the tray.</p>
+    </a>
+    <a href="/skills-lab/procedures" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">📋</div>
+      <h2 class="font-bold mt-2">See the procedure end to end</h2>
+      <p class="text-sm text-slate-600 mt-1">Step through the appointment the tray is for.</p>
+    </a>
+  </nav>
+
+  <p class="text-center mt-8"><a href="/toolbox" class="font-semibold text-teal-700 underline">← Back to the toolbox</a></p>
+
+</main>
+
+<script src="/assets/skills-lab/instruments-data.js"></script>
+<script src="/assets/skills-lab/trays-data.js"></script>
+<script src="/assets/skills-lab/tray-grader.js"></script>
+<script>
+(function () {
+  'use strict';
+  var T = window.SL_TRAYS, I = window.SL_INSTRUMENTS, G = window.SL_TRAY_GRADER;
+  var esc = function (s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  if (!T || !I || !G) return;
+
+  var byId = {}; I.ITEMS.forEach(function (i) { byId[i.id] = i; });
+  var nameOf = function (id) { return (byId[id] && byId[id].name) || id; };
+  var isCotton = function (id) { return /cotton|gauze|dri-?aid|pellet|roll/.test(nameOf(id).toLowerCase()); };
+
+  var setup = null, row = [], top = [];
+  var builder = document.getElementById('builder');
+  var result = document.getElementById('result');
+
+  document.getElementById('begin').addEventListener('click', function () {
+    var id = document.getElementById('proc').value;
+    setup = T.SETUPS.filter(function (s) { return s.id === id; })[0];
+    if (!setup) return;
+    row = []; top = [];
+    result.classList.add('hidden'); result.innerHTML = '';
+    builder.classList.remove('hidden');
+    renderBuilder();
+    builder.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  function renderBuilder() {
+    // Offer the correct instruments plus a handful of plausible wrong ones, so choosing is a
+    // real decision rather than "tick everything on the list".
+    var correct = setup.instrumentIds.slice();
+    var others = I.ITEMS.filter(function (i) { return correct.indexOf(i.id) === -1; })
+      .sort(function () { return Math.random() - 0.5; }).slice(0, 6).map(function (i) { return i.id; });
+    var offer = correct.concat(others).sort(function () { return Math.random() - 0.5; });
+
+    builder.innerHTML =
+      '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">' +
+        '<h2 class="display text-xl font-bold">' + esc(setup.procedure) + '</h2>' +
+        (setup.blurb ? '<p class="text-sm text-slate-600 mt-1">' + esc(setup.blurb) + '</p>' : '') +
+        '<p class="text-sm text-slate-700 mt-3">Tap an instrument to add it. Add them <strong>in the order they get used</strong>, and send cotton products to the top of the tray.</p>' +
+
+        '<h3 class="font-bold text-navy-900 mt-5">Top of the tray</h3>' +
+        '<div id="topRow" class="flex flex-wrap gap-2 mt-2 min-h-[52px] rounded-xl border border-dashed border-slate-300 p-2"></div>' +
+
+        '<h3 class="font-bold text-navy-900 mt-4">Instrument row — left to right</h3>' +
+        '<div id="mainRow" class="flex flex-wrap gap-2 mt-2 min-h-[52px] rounded-xl border border-dashed border-slate-300 p-2"></div>' +
+
+        '<h3 class="font-bold text-navy-900 mt-5">Available</h3>' +
+        '<div id="offer" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2 mt-2"></div>' +
+
+        '<div class="mt-5 flex flex-wrap gap-3">' +
+          '<button type="button" id="check" class="tap bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Check my tray</button>' +
+          '<button type="button" id="reset" class="tap bg-white border border-slate-300 text-navy-900 font-bold px-6 py-3 rounded-full">Start this tray over</button>' +
+        '</div>' +
+      '</div>';
+
+    var offerEl = document.getElementById('offer');
+    offerEl.innerHTML = offer.map(function (id) {
+      return '<button type="button" class="pick" data-id="' + esc(id) + '">' + esc(nameOf(id)) + '</button>';
+    }).join('');
+
+    offerEl.addEventListener('click', function (e) {
+      var b = e.target.closest('.pick'); if (!b) return;
+      var id = b.dataset.id;
+      (isCotton(id) ? top : row).push(id);
+      b.classList.add('is-used');
+      paint();
+    });
+
+    document.getElementById('check').addEventListener('click', check);
+    document.getElementById('reset').addEventListener('click', renderBuilder);
+    paint();
+  }
+
+  function paint() {
+    var draw = function (el, list, empty) {
+      el.innerHTML = list.length
+        ? list.map(function (id, i) {
+            return '<span class="slot">' + (i + 1) + '. ' + esc(nameOf(id)) +
+              '<button type="button" class="text-slate-400 hover:text-rose-600 font-bold" data-remove="' + i + '" aria-label="Remove ' + esc(nameOf(id)) + '">&times;</button></span>';
+          }).join('')
+        : '<span class="text-sm text-slate-400 self-center px-1">' + empty + '</span>';
+    };
+    draw(document.getElementById('topRow'), top, 'Cotton products go here.');
+    draw(document.getElementById('mainRow'), row, 'Instruments go here, in order of use.');
+
+    [['topRow', top], ['mainRow', row]].forEach(function (pair) {
+      document.getElementById(pair[0]).addEventListener('click', function (e) {
+        var b = e.target.closest('[data-remove]'); if (!b) return;
+        var removed = pair[1].splice(parseInt(b.dataset.remove, 10), 1)[0];
+        var chip = document.querySelector('.pick[data-id="' + removed + '"]');
+        if (chip) chip.classList.remove('is-used');
+        paint();
+      }, { once: true });
+    });
+  }
+
+  function check() {
+    var r = G.grade({ setup: setup, placedIds: row, topIds: top, instruments: I.ITEMS });
+    var ruleById = {}; T.RULES.forEach(function (x) { ruleById[x.id] = x; });
+
+    var rules = r.results.map(function (res) {
+      var meta = ruleById[res.id] || {};
+      return '<div class="' + (res.ok ? 'rule-ok' : 'rule-no') + ' border rounded-xl p-4">' +
+        '<p class="font-bold text-navy-900">' + (res.ok ? '✓ ' : '→ ') + esc(meta.rule || res.id) + '</p>' +
+        '<p class="text-sm text-slate-700 mt-1">' + esc(res.detail) + '</p>' +
+        (!res.ok && meta.why ? '<p class="text-xs text-slate-600 mt-2"><strong>Why it matters:</strong> ' + esc(meta.why) + '</p>' : '') +
+        '</div>';
+    }).join('');
+
+    var gaps = '';
+    if (r.missing.length) {
+      gaps += '<p class="text-sm text-slate-700 mt-3"><strong>Missing from the tray:</strong> ' +
+        r.missing.map(nameOf).map(esc).join(', ') + '.</p>';
+    }
+    if (r.extra.length) {
+      gaps += '<p class="text-sm text-slate-700 mt-1"><strong>Not needed for this procedure:</strong> ' +
+        r.extra.map(nameOf).map(esc).join(', ') + '.</p>';
+    }
+    if (!r.missing.length && !r.extra.length) {
+      gaps = '<p class="text-sm text-teal-800 mt-3">Every instrument this procedure needs is on the tray, and nothing extra.</p>';
+    }
+
+    result.innerHTML = '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6">' +
+      '<h2 class="display text-2xl font-bold">' + r.passed + ' of ' + r.total + ' arrangement rules met</h2>' +
+      '<p class="text-sm text-slate-600 mt-1">Marked the way a lead assistant would look at it.</p>' +
+      gaps +
+      '<div class="grid sm:grid-cols-2 gap-3 mt-4">' + rules + '</div>' +
+      '<div class="mt-5 flex flex-wrap gap-3">' +
+        '<button type="button" id="retry" class="tap bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Try this tray again</button>' +
+        '<a href="/skills-lab/instrument-id" class="tap inline-flex items-center bg-white border border-slate-200 text-navy-900 font-bold px-6 py-3 rounded-full">Drill the instruments</a>' +
+      '</div>' +
+      '<p class="text-xs text-slate-500 mt-4">Marked in your browser. Nothing is sent anywhere and nothing is stored.</p></div>';
+
+    result.classList.remove('hidden');
+    document.getElementById('retry').addEventListener('click', renderBuilder);
+    result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.PDA && window.PDA.track) {
+      try { window.PDA.track('tray_setup_checked', { procedure: setup.id, passed: r.passed }); } catch (e) {}
+    }
+  }
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>

@@ -188,6 +188,34 @@ const blocks = {
       })
       .join("\n        "),
 
+  /* ── /skills-lab/tray-setup ── */
+  trayRules: () =>
+    (TRAYS?.RULES || [])
+      .map(
+        (r) =>
+          `<li><span class="font-semibold text-navy-900">${esc(r.rule)}</span>` +
+          (r.why ? `<span class="block text-sm text-slate-600 mt-0.5">${esc(r.why)}</span>` : "") +
+          `</li>`
+      )
+      .join("\n        "),
+
+  trayProcedureOptions: () =>
+    (TRAYS?.SETUPS || [])
+      .map((s) => `<option value="${esc(s.id)}">${esc(s.procedure)}</option>`)
+      .join("\n          "),
+
+  traySetupList: () =>
+    (TRAYS?.SETUPS || [])
+      .map(
+        (s) =>
+          `<article class="bg-slate-50 rounded-xl border border-slate-200 p-4">` +
+          `<h3 class="font-bold text-navy-900 text-sm">${esc(s.procedure)}</h3>` +
+          (s.blurb ? `<p class="text-sm text-slate-600 mt-1">${esc(s.blurb)}</p>` : "") +
+          `<p class="text-xs text-slate-500 mt-2">${(s.instrumentIds || []).length} items on the tray</p>` +
+          `</article>`
+      )
+      .join("\n        "),
+
   procedureCount: () => String((VO.SCENARIOS || []).length),
 
   procedureCards: () =>
@@ -380,6 +408,7 @@ const TARGETS = [
   "skills-lab/procedures.html",
   "skills-lab/tray-builder.html",
   "skills-lab/day-shift.html",
+  "skills-lab/tray-setup.html",
   "tools/healthcare-careers.html",
   "tools/paying-for-training.html",
   "toolbox.html",

@@ -17,9 +17,9 @@
               m    = what it stands for
               note = one short clarifying line a student can use at the chair
 
-   96 abbreviations across 10 categories. When adding to this file: only
-   include shorthand genuinely used in US dental practice, and keep notes
-   factual — students study from this before they work on real patients.
+   96 abbreviations across 10 categories. When adding to this file: include
+   shorthand genuinely used in US dental practice, and keep notes factual —
+   students study from this before they work on real patients.
    ============================================================================ */
 (function () {
   'use strict';
@@ -96,7 +96,7 @@
           { a: 'SRP', m: 'Scaling and Root Planing', note: 'Deep cleaning below the gumline.' },
           { a: 'EXT', m: 'Extraction', note: 'Removal of a tooth.' },
           { a: 'PX', m: 'Prophy (prophylaxis)', note: 'A routine cleaning.' },
-          { a: 'FL / FL2', m: 'Fluoride', note: 'Topical fluoride treatment.' },
+          { a: 'FL / FV', m: 'Fluoride / Fluoride Varnish', note: 'Topical fluoride treatment; FV is the varnish form painted on the teeth.' },
           { a: 'IMP', m: 'Impression', note: 'A mold of the teeth used to make models or appliances.' },
           { a: 'TX', m: 'Treatment', note: 'Care provided to the patient (also "Tx").' },
           { a: 'ENDO', m: 'Endodontics', note: 'The specialty and procedures that treat the pulp and root canals.' },
@@ -114,7 +114,7 @@
           { a: 'TA', m: 'Toothache', note: 'Pain in or around a tooth.' },
           { a: 'DS', m: 'Dry Socket', note: 'Lost blood clot after an extraction (alveolar osteitis).' },
           { a: 'ABS', m: 'Abscess', note: 'A localized pocket of pus from infection.' },
-          { a: 'V', m: 'Class V (five)', note: 'A cavity in the gingival third of any tooth.' },
+          { a: 'V', m: 'Class V (five)', note: 'A cavity in the gingival third of the facial or lingual surface of any tooth.' },
           { a: 'CC', m: 'Chief Complaint', note: "Why the patient says they came in, recorded in the patient's own words." },
           { a: 'DX', m: 'Diagnosis', note: 'The provider\'s conclusion about what the problem is (also written "Dx").' },
           { a: 'FX', m: 'Fracture', note: 'A broken or cracked tooth or restoration.' },
