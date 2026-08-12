@@ -100,6 +100,8 @@
       blurb:'A practice-management trainer with a working anatomical tooth chart.' },
     { id:'chairside', name:'ChairSide', href:'/tools/chairside', emoji:'🦷', situation:'learning', type:'drill', cost:'free',
       blurb:'Clinical workflow trainer — procedures, trays and the assisting steps in order.' },
+    { id:'tooth-numbering', name:'Tooth numbering converter', href:'/tools/tooth-numbering', emoji:'🦷', situation:'learning', type:'reference', cost:'free', isNew:true,
+      blurb:'Universal, Palmer and FDI side by side, with a converter and a drill.' },
     { id:'how-to-chart', name:'How to chart', href:'/tools/how-to-chart', emoji:'📈', situation:'learning', type:'reference', cost:'free',
       blurb:'Dental charting explained the way offices actually do it.' },
     { id:'flashcards', name:'RDA flashcards', href:'/tools/flashcards', emoji:'🃏', situation:'learning', type:'drill', cost:'free',

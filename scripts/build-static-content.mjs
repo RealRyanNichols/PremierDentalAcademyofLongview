@@ -188,6 +188,34 @@ const blocks = {
       })
       .join("\n        "),
 
+  /* ── /tools/tooth-numbering — the full cross-reference, generated so it can't be
+        mistyped and so search engines can read the whole chart. ── */
+  toothChart: () => {
+    const T = loadGlobal("assets/tools/tooth-numbering.js", "PDA_TEETH");
+    if (!T) return "";
+    const row = (t) =>
+      `<tr class="border-b border-slate-100 last:border-0">` +
+      `<td class="py-2 pr-3 font-mono font-bold text-navy-900">${esc(t.universal)}</td>` +
+      `<td class="py-2 pr-3 font-mono text-teal-700">${esc(t.fdi)}</td>` +
+      `<td class="py-2 pr-3 font-mono text-slate-700">${esc(t.palmer)}</td>` +
+      `<td class="py-2 pr-3 text-slate-700">${esc(t.quadrant.name)}</td>` +
+      `<td class="py-2 text-slate-700">${esc(t.name)}</td></tr>`;
+    const head =
+      `<thead><tr class="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200">` +
+      `<th class="py-2 pr-3">Universal</th><th class="py-2 pr-3">FDI</th><th class="py-2 pr-3">Palmer</th>` +
+      `<th class="py-2 pr-3">Quadrant</th><th class="py-2">Tooth</th></tr></thead>`;
+    return (
+      `<h3 class="font-bold text-navy-900 mt-2">Permanent teeth (adult)</h3>` +
+      `<div class="overflow-x-auto mt-2"><table class="w-full text-sm min-w-[520px]">${head}<tbody>` +
+      T.allPermanent().map(row).join("") +
+      `</tbody></table></div>` +
+      `<h3 class="font-bold text-navy-900 mt-6">Primary teeth (baby)</h3>` +
+      `<div class="overflow-x-auto mt-2"><table class="w-full text-sm min-w-[520px]">${head}<tbody>` +
+      T.allPrimary().map(row).join("") +
+      `</tbody></table></div>`
+    );
+  },
+
   /* ── /skills-lab/tray-setup ── */
   trayRules: () =>
     (TRAYS?.RULES || [])
@@ -411,6 +439,7 @@ const TARGETS = [
   "skills-lab/tray-setup.html",
   "tools/healthcare-careers.html",
   "tools/paying-for-training.html",
+  "tools/tooth-numbering.html",
   "toolbox.html",
 ];
 

@@ -474,7 +474,7 @@
 
     it('bite-registration', 'Bite registration material', 'materials',
       'Fast-set material that records how the upper & lower teeth bite together',
-      'Fast-setting material squeezed straight onto the biting surfaces with NO tray to carry it. Impression materials are always carried in a tray.',
+      'Fast-setting material squeezed straight onto the biting surfaces with NO tray to carry it. The heavy body impression material it sits beside is loaded into a tray, and the light body wash is syringed around the prep before that tray is seated.',
       '🟨'),
 
     it('temp-crown-material', 'Temporary crown material', 'materials',

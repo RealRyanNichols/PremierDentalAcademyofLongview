@@ -702,7 +702,7 @@
         'Coronoid process'
       ],
       answer: 0,
-      rationale: 'The mental foramen is a normal radiolucent opening on the buccal mandible near the premolar apices and is a classic mimic of periapical pathology. The distinguishing feature is that a normal foramen is not continuous with an intact periodontal ligament space and the tooth usually tests vital. The maxillary sinus is a maxillary structure and cannot appear on a mandibular image, which makes option B an anatomy check as much as a radiographic one.' },
+      rationale: 'The mental foramen is a normal radiolucent opening on the buccal mandible near the premolar apices and is a classic mimic of periapical pathology. The distinguishing features are that the lamina dura and periodontal ligament space stay intact and continuous around the apex — a true periapical lesion interrupts that continuity — and that the tooth usually tests vital. The maxillary sinus is a maxillary structure and cannot appear on a mandibular image, which makes option B an anatomy check as much as a radiographic one.' },
 
     { id: 'b2q30', domain: 'dental_anatomy', difficulty: 'intermediate',
       q: 'A large radiolucent area with a thin radiopaque border appearing above the apices of the maxillary posterior teeth is most likely the:',
@@ -732,7 +732,7 @@
       rationale: 'With the patient’s head at 12, a right-handed operator works from 7 to 12, the assistant sits at 2 to 4, instruments pass in the transfer zone at 4 to 7 over the patient’s upper chest, and 12 to 2 is the static zone where the mobile cart sits. Zones are mirrored for a left-handed operator. Instruments are never passed over the patient’s face, which is the practical reason the transfer zone is defined where it is.' },
 
     { id: 'b3q02', domain: 'chairside', difficulty: 'beginner',
-      q: 'The dental assistant should be seated approximately how far in relation to the operator?',
+      q: 'At what height should the dental assistant be seated in relation to the operator?',
       options: [
         'At the same eye level as the operator',
         'Four to six inches higher than the operator',
