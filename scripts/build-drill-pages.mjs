@@ -139,13 +139,15 @@ tailwind.config = { theme: { extend: {
   .tap{min-height:44px}
   .mode-chip{min-height:44px;padding:0 18px;border-radius:9999px;border:1.5px solid #e2e8f0;background:#fff;
              font-size:14px;font-weight:600;color:#475569;cursor:pointer;transition:.12s}
-  .mode-chip.is-on{background:#0d9488;border-color:#0d9488;color:#fff}
+  /* teal-700 rather than teal-600: white on #0d9488 measures 3.74:1, under the 4.5:1
+     WCAG AA threshold for text at this size. #0f766e measures 5.40:1. */
+  .mode-chip.is-on{background:#0f766e;border-color:#0f766e;color:#fff}
   .opt{width:100%;text-align:left;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;background:#fff;
        font-size:15px;font-weight:600;color:#0f172a;cursor:pointer;transition:.12s;min-height:44px}
   .opt:not(:disabled):hover{border-color:#0d9488;background:#f0fdfa}
   .opt-correct{border-color:#059669!important;background:#ecfdf5!important}
   .opt-wrong{border-color:#e11d48!important;background:#fff1f2!important}
-  .fld{width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:16px;background:#fff}
+  .fld{box-sizing:border-box;width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:16px;background:#fff}
   .fld:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
 </style>
 <script type="application/ld+json">

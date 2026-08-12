@@ -71,3 +71,41 @@ if (rows.length) {
 }
 console.log((failPages ? "✗ " : "✓ ") + failPages + " page(s) missing essentials, " + warnPages + " with OG/Twitter warnings only");
 if (failPages) process.exit(1);
+
+/* ── Duplicate titles and descriptions ─────────────────────────────────────
+ * Two pages sharing a title compete with each other in search results, and Google
+ * picks which one to show. Across the whole site this is a warning — the generated
+ * city and directory pages legitimately share a lot of structure. Among the toolbox
+ * routes it is a hard failure, because those are hand-written and there is no excuse. */
+const TOOLBOX_ROUTES = [
+  "toolbox.html",
+  "tools/cost-of-training.html", "tools/hours-check.html", "tools/healthcare-careers.html",
+  "tools/paying-for-training.html", "tools/finish-plan.html", "tools/tooth-numbering.html",
+  "tools/texas-rda-timeline.html", "tools/dental-bill-decoder.html",
+  "skills-lab/abbreviation-drill.html", "skills-lab/instrument-id.html", "skills-lab/tray-setup.html",
+];
+
+const grab = (h, re) => { const m = h.match(re); return m ? (m[1] || m[2] || "").trim() : ""; };
+const titles = new Map(), descs = new Map();
+let dupFail = 0;
+
+for (const rel of TOOLBOX_ROUTES) {
+  const abs = join(root, rel);
+  let html;
+  try { html = readFileSync(abs, "utf8"); } catch { continue; }
+  const title = grab(html, /<title>([^<]*)<\/title>/i);
+  const desc = grab(html, /<meta[^>]+name=["']description["'][^>]*content=("([^"]*)"|'([^']*)')/i);
+
+  if (titles.has(title)) { console.error(`  ✗ ${rel} — duplicate <title> with ${titles.get(title)}`); dupFail++; }
+  else titles.set(title, rel);
+
+  if (desc && descs.has(desc)) { console.error(`  ✗ ${rel} — duplicate description with ${descs.get(desc)}`); dupFail++; }
+  else if (desc) descs.set(desc, rel);
+}
+
+console.log(`Toolbox SEO uniqueness: ${titles.size} route(s) checked`);
+if (dupFail) {
+  console.error(`✗ ${dupFail} duplicate title/description among the toolbox routes`);
+  process.exit(1);
+}
+console.log("✓ every toolbox route has a distinct title and description");

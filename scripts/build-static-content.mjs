@@ -216,6 +216,58 @@ const blocks = {
     );
   },
 
+  /* ── /tools/texas-rda-timeline ── */
+  rdaTimeline: () => {
+    const T = loadGlobal("assets/data/texas-rda-timeline.js", "PDA_RDA_TIMELINE");
+    if (!T) return "";
+    return T.STEPS.map((s, i) =>
+      `<li id="${esc(s.id)}" class="bg-white rounded-2xl border ${s.ours ? "border-teal-400" : "border-slate-200"} shadow-sm p-5 scroll-mt-24">` +
+      `<div class="flex items-start gap-3">` +
+      `<span class="shrink-0 w-9 h-9 rounded-full bg-navy-900 text-white font-bold grid place-items-center" aria-hidden="true">${i + 1}</span>` +
+      `<div class="flex-1">` +
+      `<h3 class="display text-lg font-bold text-navy-900">${esc(s.title)}` +
+      (s.ours ? ` <span class="text-[11px] align-middle bg-teal-600 text-white rounded-full px-2 py-0.5">This part is us</span>` : "") +
+      `</h3>` +
+      `<p class="text-sm text-slate-700 mt-1">${esc(s.what)}</p>` +
+      `<p class="text-sm mt-3"><span class="font-semibold text-navy-900">What to have ready:</span> ${s.bring.map(esc).join(" · ")}</p>` +
+      `<p class="text-sm text-slate-600 mt-2">${esc(s.note)}</p>` +
+      `<p class="text-xs text-teal-800 bg-teal-50 border border-teal-100 rounded-lg p-2 mt-3"><strong>Who decides:</strong> ${esc(s.whoDecides)}</p>` +
+      `</div></div></li>`
+    ).join("\n        ");
+  },
+
+  rdaTimelineSource: () => {
+    const T = loadGlobal("assets/data/texas-rda-timeline.js", "PDA_RDA_TIMELINE");
+    if (!T) return "";
+    return `${esc(T.SOURCE.caveat)} Requirements are set by the ${esc(T.SOURCE.authority)} and were checked on ${esc(T.SOURCE.checked)}.`;
+  },
+
+  /* ── /tools/dental-bill-decoder ──
+     Generated so the whole glossary is in the HTML: this page's audience arrives from search
+     with a bill in their hand, and the terms ARE the page. */
+  billingTerms: () => {
+    const B = loadGlobal("assets/data/dental-billing.js", "PDA_BILLING");
+    if (!B) return "";
+    return B.TERMS.map((t) =>
+      `<article id="${esc(t.id)}" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 scroll-mt-24">` +
+      `<h3 class="display text-lg font-bold text-navy-900">${esc(t.term)}</h3>` +
+      `<p class="text-sm font-semibold text-teal-800 mt-1">${esc(t.short)}</p>` +
+      `<p class="text-sm text-slate-700 mt-2">${esc(t.long)}</p>` +
+      `<p class="text-sm text-slate-600 mt-2"><span class="font-semibold text-navy-900">For example:</span> ${esc(t.example)}</p>` +
+      `<p class="text-sm bg-teal-50 border border-teal-100 rounded-lg p-3 mt-3"><span class="font-semibold text-teal-900">Ask the office:</span> &ldquo;${esc(t.ask)}&rdquo;</p>` +
+      `<p class="text-sm bg-amber-50 border border-amber-100 rounded-lg p-3 mt-2"><span class="font-semibold text-amber-900">Where people get caught:</span> ${esc(t.gotcha)}</p>` +
+      `</article>`
+    ).join("\n        ");
+  },
+
+  billingTermJumpLinks: () => {
+    const B = loadGlobal("assets/data/dental-billing.js", "PDA_BILLING");
+    if (!B) return "";
+    return B.TERMS.map((t) =>
+      `<a href="#${esc(t.id)}" class="bg-slate-100 hover:bg-teal-50 hover:text-teal-700 text-slate-700 rounded-full px-3 py-1.5 text-xs font-semibold">${esc(t.term)}</a>`
+    ).join("\n        ");
+  },
+
   /* ── /skills-lab/tray-setup ── */
   trayRules: () =>
     (TRAYS?.RULES || [])
@@ -440,6 +492,8 @@ const TARGETS = [
   "tools/healthcare-careers.html",
   "tools/paying-for-training.html",
   "tools/tooth-numbering.html",
+  "tools/texas-rda-timeline.html",
+  "tools/dental-bill-decoder.html",
   "toolbox.html",
 ];
 
