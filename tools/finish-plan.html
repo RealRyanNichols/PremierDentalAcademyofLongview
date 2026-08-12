@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Finish Plan — What Actually Stops People Completing | Premier Dental Academy</title>
+<meta name="description" content="People rarely quit training because it was too hard. They quit because the car died in week five. Flag what could derail you and get a concrete plan for each one — before it happens.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/finish-plan">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Premier Dental Academy of Longview">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/finish-plan">
+<meta property="og:title" content="Your finish plan">
+<meta property="og:description" content="People rarely quit because the course was too hard. Plan for the things that actually derail it.">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Your finish plan">
+<meta name="twitter:description" content="People rarely quit because the course was too hard. Plan for the things that actually derail it.">
+<meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .tap{min-height:44px}
+  .risk{border:1.5px solid #e2e8f0;border-radius:14px;transition:.12s;cursor:pointer;display:block}
+  .risk:has(input:checked){border-color:#0d9488;background:#f0fdfa}
+  .risk input{width:20px;height:20px;accent-color:#0d9488}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Finish Plan Builder","applicationCategory":"EducationalApplication","operatingSystem":"Any modern web browser","url":"https://www.premierdentalacademyoflongview.com/tools/finish-plan","description":"Identifies the practical risks that most often stop people completing vocational training and produces a concrete plan for each one selected.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"provider":{"@type":"EducationalOrganization","name":"Premier Dental Academy of Longview","telephone":"+1-903-913-6444","address":{"@type":"PostalAddress","streetAddress":"2800 Gilmer Rd, Suite 106","addressLocality":"Longview","addressRegion":"TX","postalCode":"75604","addressCountry":"US"}}}
+</script>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Plan for the <span class="text-amber-400 italic">week five</span> problem</h1>
+    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Almost nobody stops coming because the material was too hard. They stop because the childcare fell through, or a shift got moved, and there was no plan for it. Tick what could derail you and we will hand you something concrete for each one.</p>
+  </div>
+</section>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+  <form id="riskForm" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+    <h2 class="display text-xl font-bold">What worries you about finishing?</h2>
+    <p class="text-sm text-slate-600 mt-1">Tick anything that feels possible. Nothing here is a prediction about you and nothing is sent anywhere.</p>
+    <div id="risks" class="space-y-3 mt-5"></div>
+    <div class="text-center mt-6">
+      <button type="submit" data-event="finish_plan_run" class="tap bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md">Build my plan →</button>
+    </div>
+  </form>
+
+  <section id="plan" class="hidden mt-8" aria-live="polite"></section>
+
+  <section class="mt-10 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <h2 class="display text-xl font-bold">What we need from you</h2>
+    <p class="text-slate-700 mt-2">One thing, really: tell us early. Nearly every problem on this page has options in week two that it does not have in week eight. A missed payment we know about is a conversation. A missed payment we find out about six weeks later is a much harder one.</p>
+    <p class="text-slate-700 mt-3">Call or text <a class="font-semibold text-teal-700 underline" href="tel:+19039136444">(903) 913-6444</a>. You will not be the first person to ring with any of this.</p>
+    <p class="text-sm text-slate-600 mt-3">In-person tuition is $3,000 paid in full or $3,500 on a plan ($500 down plus a $3,000 balance); online is $397 (regular $997) and is distance education. To complete the programme you finish the coursework and the required hands-on competencies, and tuition must be paid in full before your certificate is issued. Transfer and refund terms: <a class="font-semibold text-teal-700 underline" href="/terms">Terms</a>.</p>
+  </section>
+
+  <nav class="mt-8 grid sm:grid-cols-2 gap-4" aria-label="Related tools">
+    <a href="/tools/hours-check" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">⏳</div>
+      <h2 class="font-bold mt-2">Is the week even there?</h2>
+      <p class="text-sm text-slate-600 mt-1">Add up your 168 hours and see what is genuinely left.</p>
+    </a>
+    <a href="/tools/resource-hub" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">📚</div>
+      <h2 class="font-bold mt-2">Need help right now?</h2>
+      <p class="text-sm text-slate-600 mt-1">Childcare, food, rent and someone to talk to — real numbers that answer.</p>
+    </a>
+  </nav>
+
+  <p class="text-center mt-8"><a href="/toolbox" class="font-semibold text-teal-700 underline">← Back to the toolbox</a></p>
+
+</main>
+
+<script src="/assets/tools/finish-plan.js"></script>
+<script>
+(function () {
+  'use strict';
+  var F = window.PDA_FINISH;
+  var esc = function (s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+
+  document.getElementById('risks').innerHTML = F.RISKS.map(function (r) {
+    return '<label class="risk p-4 flex gap-3 items-start">' +
+      '<input type="checkbox" value="' + r.id + '" class="mt-0.5 shrink-0">' +
+      '<span><span class="font-semibold text-navy-900 block">' + esc(r.q) + '</span>' +
+      '<span class="text-sm text-slate-600">' + esc(r.why) + '</span></span></label>';
+  }).join('');
+
+  document.getElementById('riskForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ids = Array.prototype.slice
+      .call(document.querySelectorAll('#risks input:checked'))
+      .map(function (i) { return i.value; });
+    var p = F.buildPlan(ids);
+    var out = document.getElementById('plan');
+
+    var head = p.count
+      ? '<h2 class="display text-2xl font-bold">Your plan — ' + p.count + ' thing' + (p.count === 1 ? '' : 's') + ' to sort before you start</h2>' +
+        '<p class="text-sm text-slate-600 mt-1">Do these while they are hypothetical. That is the entire trick.</p>'
+      : '<h2 class="display text-2xl font-bold">Nothing flagged — here is the short version</h2>' +
+        '<p class="text-sm text-slate-600 mt-1">If none of those worry you, these two still apply to everybody.</p>';
+
+    var sections = p.risks.map(function (r) {
+      return '<section class="mt-5"><h3 class="font-bold text-navy-900">' + esc(r.q) + '</h3>' +
+        '<ul class="mt-2 space-y-1.5 list-disc pl-5 text-slate-700">' +
+        r.plan.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></section>';
+    }).join('');
+
+    out.innerHTML =
+      '<div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">' + head + sections +
+        '<section class="mt-5 bg-teal-50 border border-teal-200 rounded-xl p-4">' +
+          '<h3 class="font-bold text-teal-900">Everybody does these two</h3>' +
+          '<ul class="mt-2 space-y-1.5 list-disc pl-5 text-teal-900">' +
+          p.universal.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul></section>' +
+        '<div class="mt-5 flex flex-wrap gap-3">' +
+          '<button type="button" id="printPlan" class="tap inline-flex items-center bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Print this plan</button>' +
+          '<a href="tel:+19039136444" data-event="call_click" class="tap inline-flex items-center bg-white border border-slate-200 text-navy-900 font-bold px-6 py-3 rounded-full">Talk it through: (903) 913-6444</a>' +
+        '</div>' +
+        '<p class="text-xs text-slate-500 mt-4">Built in your browser. Nothing is sent anywhere and nothing is stored.</p>' +
+      '</div>';
+
+    out.classList.remove('hidden');
+    document.getElementById('printPlan').addEventListener('click', function () { window.print(); });
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.PDA && window.PDA.track) { try { window.PDA.track('finish_plan_complete', { risks: p.count }); } catch (e) {} }
+  });
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>

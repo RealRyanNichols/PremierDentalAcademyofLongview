@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full RDA Practice Exam — 90 Questions, Per-Domain Report | Premier Dental Academy</title>
+<meta name="description" content="Ninety RDA-style practice questions across three banks, with a rationale on every question and a per-domain breakdown showing exactly where to study next. No signup.">
+<!-- Held out of search until the question bank has been reviewed and signed off. The page
+     itself also refuses to run while assets/exam/rda-question-banks.js is marked DRAFT. -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/rda-practice-exam">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .tap{min-height:44px}
+  .opt{width:100%;text-align:left;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 14px;background:#fff;
+       font-size:15px;font-weight:500;color:#0f172a;cursor:pointer;transition:.12s;min-height:44px}
+  .opt:not(:disabled):hover{border-color:#0d9488;background:#f0fdfa}
+  .opt.is-picked{border-color:#0d9488;background:#f0fdfa;font-weight:700}
+  .opt-correct{border-color:#059669!important;background:#ecfdf5!important}
+  .opt-wrong{border-color:#e11d48!important;background:#fff1f2!important}
+</style>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+  <div id="review-banner" class="hidden bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 mb-6">
+    <h2 class="display text-lg font-bold text-amber-900">Not published yet — awaiting review</h2>
+    <p class="text-sm text-amber-900 mt-2">These 90 questions have been written but have <strong>not yet been reviewed and signed off by Amanda Williams</strong>. Until that happens this page stays out of search and off the toolbox, and the exam will not start.</p>
+    <p class="text-sm text-amber-900 mt-2">To publish: review the questions in <code class="bg-amber-100 px-1.5 py-0.5 rounded">assets/exam/rda-question-banks.js</code>, change <code class="bg-amber-100 px-1.5 py-0.5 rounded">reviewStatus</code> to something that does not begin with "DRAFT", remove the <code class="bg-amber-100 px-1.5 py-0.5 rounded">noindex</code> from this page, and drop <code class="bg-amber-100 px-1.5 py-0.5 rounded">draft: true</code> from the toolbox entry.</p>
+  </div>
+
+  <div class="text-center">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-black mt-2 leading-tight">Full RDA <span class="text-teal-700">practice exam</span></h1>
+    <p class="text-slate-600 mt-3 max-w-xl mx-auto">Ninety questions across three banks. Every one explains its answer, and the report at the end tells you which topic to spend your next hour on rather than just handing you a number.</p>
+  </div>
+
+  <div class="bg-white border border-slate-200 rounded-2xl p-5 mt-6">
+    <h2 class="display text-lg font-bold">About the passing standard</h2>
+    <p class="text-sm text-slate-700 mt-2">DANB reports exam results as a scaled score, not a percent correct. A scaled score of at least 400 is required to pass, on a scale of 100 to 900. Texas does not publish a percentage passing score for the state RDA exam — the passing standard is set by your TSBDE-approved course provider.</p>
+    <p class="text-sm text-slate-700 mt-2">That is why this exam gives you a raw count and a per-topic breakdown and stops there. Converting practice results into a predicted pass would mean inventing a number, and you would be entitled to be annoyed when it turned out to be wrong.</p>
+  </div>
+
+  <section id="setup" class="mt-6">
+    <div class="bg-white border border-slate-200 rounded-2xl p-5">
+      <h2 class="display text-lg font-bold">Choose how to sit it</h2>
+      <div class="grid sm:grid-cols-2 gap-4 mt-4">
+        <button type="button" id="mode-learn" class="text-left bg-white border-2 border-teal-600 rounded-2xl p-5 hover:shadow-lg transition tap">
+          <div class="text-3xl" aria-hidden="true">📖</div>
+          <h3 class="display text-lg font-bold mt-2">Learn mode</h3>
+          <p class="text-sm text-slate-600 mt-1">Answer, then see straight away whether you were right and why. No clock. This is the one that builds knowledge.</p>
+        </button>
+        <button type="button" id="mode-timed" class="text-left bg-white border-2 border-slate-200 rounded-2xl p-5 hover:shadow-lg hover:border-amber-400 transition tap">
+          <div class="text-3xl" aria-hidden="true">⏱️</div>
+          <h3 class="display text-lg font-bold mt-2">Timed exam</h3>
+          <p class="text-sm text-slate-600 mt-1">No feedback until the end, with a clock running. This is the one that rehearses the real thing.</p>
+        </button>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3 mt-5">
+        <label for="bankPick" class="text-sm font-semibold text-navy-900">Which bank</label>
+        <select id="bankPick" class="tap rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
+        <label for="lenPick" class="text-sm font-semibold text-navy-900">Questions</label>
+        <select id="lenPick" class="tap rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
+          <option value="15">15</option><option value="30" selected>30</option><option value="0">All</option>
+        </select>
+      </div>
+      <p id="setup-error" class="hidden text-sm text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3 mt-4"></p>
+    </div>
+  </section>
+
+  <section id="exam" class="hidden mt-6" aria-live="polite"></section>
+  <section id="report" class="hidden mt-6"></section>
+
+  <nav class="mt-8 grid sm:grid-cols-2 gap-4" aria-label="Related tools">
+    <a href="/skills-lab/quizzes" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">⚡</div>
+      <h2 class="font-bold mt-2">Shorter practice</h2>
+      <p class="text-sm text-slate-600 mt-1">Quick drills by category when you have ten minutes rather than an hour.</p>
+    </a>
+    <a href="/tools/study-plan" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">🎯</div>
+      <h2 class="font-bold mt-2">Turn the report into a plan</h2>
+      <p class="text-sm text-slate-600 mt-1">Build a week-by-week study plan around your weak areas.</p>
+    </a>
+  </nav>
+
+  <p class="text-center mt-8"><a href="/toolbox" class="font-semibold text-teal-700 underline">← Back to the toolbox</a></p>
+
+</main>
+
+<script src="/assets/exam/rda-question-banks.js"></script>
+<script src="/assets/exam/exam-engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  var E = window.PDA_EXAM, BANKS = window.PDA_EXAM_BANKS;
+  var esc = function (s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var setupEl = document.getElementById('setup');
+  var examEl = document.getElementById('exam');
+  var reportEl = document.getElementById('report');
+  var errEl = document.getElementById('setup-error');
+
+  // A missing bank shows an honest error and disables start, rather than a silent zero state.
+  if (!BANKS || !E || !E.allQuestions(BANKS).length) {
+    errEl.textContent = 'The question bank did not load, so the exam cannot start. Nothing is wrong with your device — try refreshing, or ring us on (903) 913-6444.';
+    errEl.classList.remove('hidden');
+    ['mode-learn','mode-timed','bankPick','lenPick'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.disabled = true;
+    });
+    return;
+  }
+
+  var DRAFT = E.isDraft(BANKS);
+  if (DRAFT) {
+    document.getElementById('review-banner').classList.remove('hidden');
+    ['mode-learn','mode-timed','bankPick','lenPick'].forEach(function (id) {
+      var el = document.getElementById(id); if (el) el.disabled = true;
+    });
+  }
+
+  var DOMAIN_TITLE = {};
+  (BANKS.DOMAINS || []).forEach(function (d) { DOMAIN_TITLE[d.id] = d.title; });
+  var domainTitle = function (id) { return DOMAIN_TITLE[id] || id; };
+
+  var pick = document.getElementById('bankPick');
+  pick.innerHTML = '<option value="">All three banks (90 questions)</option>' +
+    (BANKS.BANKS || []).map(function (b) {
+      return '<option value="' + esc(b.id) + '">' + esc(b.title) + ' (' + b.questions.length + ')</option>';
+    }).join('');
+
+  var mode = 'learn', questions = [], answers = {}, idx = 0, startedAt = 0, tick = null;
+
+  function begin(m) {
+    if (DRAFT) return;
+    mode = m;
+    questions = E.buildExam({
+      banks: BANKS,
+      bankId: document.getElementById('bankPick').value || null,
+      length: parseInt(document.getElementById('lenPick').value, 10)
+    });
+    if (!questions.length) {
+      errEl.textContent = 'No questions matched that selection. Try "All three banks".';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    errEl.classList.add('hidden');
+    answers = {}; idx = 0; startedAt = Date.now();
+    setupEl.classList.add('hidden');
+    reportEl.classList.add('hidden'); reportEl.innerHTML = '';
+    examEl.classList.remove('hidden');
+    if (tick) clearInterval(tick);
+    if (mode === 'timed') tick = setInterval(paintClock, 1000);
+    renderQ();
+    examEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  document.getElementById('mode-learn').addEventListener('click', function () { begin('learn'); });
+  document.getElementById('mode-timed').addEventListener('click', function () { begin('timed'); });
+
+  function elapsed() { return (Date.now() - startedAt) / 1000; }
+  function paintClock() {
+    var el = document.getElementById('clock');
+    if (el) el.textContent = E.formatClock(elapsed());
+  }
+
+  function renderQ() {
+    if (idx >= questions.length) return finish();
+    var q = questions[idx];
+    var pct = Math.round(idx / questions.length * 100);
+
+    examEl.innerHTML =
+      '<div class="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6">' +
+        '<div class="flex items-center justify-between text-sm mb-2">' +
+          '<span class="font-semibold text-slate-700">Question ' + (idx + 1) + ' of ' + questions.length + '</span>' +
+          (mode === 'timed' ? '<span class="font-mono font-semibold bg-slate-100 rounded px-2 py-0.5" id="clock">0:00</span>'
+                            : '<span class="text-teal-700 font-semibold">Learn mode</span>') +
+        '</div>' +
+        '<div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden mb-5">' +
+          '<div class="h-full bg-teal-600" style="width:' + pct + '%"></div></div>' +
+        '<p class="text-xs font-semibold text-teal-700 uppercase tracking-wide">' + esc(domainTitle(q.domain)) + ' · ' + esc(q.difficulty || '') + '</p>' +
+        '<p class="display text-lg sm:text-xl font-bold text-navy-900 mt-1">' + esc(q.q) + '</p>' +
+        '<div id="opts" class="space-y-2 mt-4">' +
+          q.options.map(function (o, i) {
+            return '<button type="button" class="opt" data-i="' + i + '">' + esc(o) + '</button>';
+          }).join('') +
+        '</div>' +
+        '<div id="fb" class="mt-4"></div>' +
+        (mode === 'timed'
+          ? '<div class="mt-4 flex justify-between"><button type="button" id="skip" class="text-slate-400 hover:text-slate-600 text-sm">Skip for now</button>' +
+            '<button type="button" id="endEarly" class="text-slate-400 hover:text-rose-600 text-sm">End and see my report</button></div>'
+          : '') +
+      '</div>';
+
+    if (mode === 'timed') paintClock();
+
+    document.getElementById('opts').addEventListener('click', function (e) {
+      var b = e.target.closest('.opt'); if (!b || b.disabled) return;
+      var chosen = parseInt(b.dataset.i, 10);
+      answers[q.id] = chosen;
+
+      if (mode === 'timed') {
+        // No feedback: mark the choice and move on.
+        Array.prototype.slice.call(document.querySelectorAll('.opt')).forEach(function (o) {
+          o.classList.toggle('is-picked', o === b);
+        });
+        setTimeout(function () { idx++; renderQ(); }, 120);
+        return;
+      }
+
+      Array.prototype.slice.call(document.querySelectorAll('.opt')).forEach(function (o, i) {
+        o.disabled = true;
+        if (i === q.answer) o.classList.add('opt-correct');
+        else if (i === chosen) o.classList.add('opt-wrong');
+      });
+      var right = chosen === q.answer;
+      document.getElementById('fb').innerHTML =
+        '<div class="' + (right ? 'bg-teal-50 border-teal-200' : 'bg-amber-50 border-amber-200') + ' border rounded-xl p-4">' +
+        '<p class="font-bold ' + (right ? 'text-teal-800' : 'text-amber-900') + '">' + (right ? 'Correct.' : 'Not quite.') + '</p>' +
+        '<p class="text-sm text-slate-700 mt-1">' + esc(q.rationale) + '</p>' +
+        '<button type="button" id="nextQ" class="tap mt-3 bg-navy-900 text-white font-bold px-6 py-2.5 rounded-full">' +
+          (idx + 1 >= questions.length ? 'See my report →' : 'Next →') + '</button></div>';
+      document.getElementById('nextQ').addEventListener('click', function () { idx++; renderQ(); });
+      document.getElementById('nextQ').focus();
+    });
+
+    var skip = document.getElementById('skip');
+    if (skip) skip.addEventListener('click', function () { idx++; renderQ(); });
+    var end = document.getElementById('endEarly');
+    if (end) end.addEventListener('click', finish);
+  }
+
+  function finish() {
+    if (tick) { clearInterval(tick); tick = null; }
+    var took = elapsed();
+    var s = E.score(questions, answers);
+    var weak = E.weakAreas(s, 70);
+
+    var rows = s.weakest.map(function (d) {
+      return '<div class="flex items-center justify-between gap-3 py-2 border-b border-slate-100 last:border-0">' +
+        '<span class="text-slate-700">' + esc(domainTitle(d.domain)) + '</span>' +
+        '<span class="font-semibold text-navy-900">' + d.correct + '/' + d.total + ' · ' + d.pct + '%</span></div>';
+    }).join('');
+
+    var advice = weak.length
+      ? '<div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mt-4">' +
+        '<h3 class="font-bold text-amber-900">Where your next hour should go</h3>' +
+        '<p class="text-sm text-amber-900 mt-1">' +
+        weak.map(function (d) { return esc(domainTitle(d.domain)); }).join(', ') +
+        '. Drill those specifically rather than re-sitting the whole thing — you already know the rest.</p>' +
+        '<a href="/skills-lab/quizzes" class="tap inline-flex items-center mt-3 bg-amber-500 hover:bg-amber-600 text-white font-bold px-5 py-2.5 rounded-full">Drill my weak areas →</a></div>'
+      : '<div class="bg-teal-50 border border-teal-200 rounded-xl p-4 mt-4">' +
+        '<p class="text-teal-900">You were above 70% in every topic on this attempt. Try the timed mode, or the full 90.</p></div>';
+
+    reportEl.innerHTML =
+      '<div class="bg-white border border-slate-200 rounded-2xl p-6">' +
+        '<h2 class="display text-2xl font-bold">' + s.correct + ' of ' + s.total + ' correct</h2>' +
+        '<p class="text-sm text-slate-600 mt-1">' +
+          (s.unanswered ? s.unanswered + ' left unanswered · ' : '') +
+          (mode === 'timed' ? 'Took ' + E.formatClock(took) + '.' : 'Learn mode, untimed.') + '</p>' +
+        '<p class="text-sm text-slate-600 mt-3">This is a raw count on practice questions. It is not a scaled score and it does not predict a DANB result — a scaled score of 400 on a 100–900 scale is what passes there, and it cannot be worked out from a percentage.</p>' +
+        '<h3 class="font-bold text-navy-900 mt-5">By topic, weakest first</h3>' +
+        '<div class="mt-2">' + rows + '</div>' +
+        advice +
+        '<div class="mt-5 flex flex-wrap gap-3">' +
+          '<button type="button" id="retake" class="tap bg-navy-900 text-white font-bold px-6 py-3 rounded-full">Sit it again</button>' +
+          '<a href="/tools/study-plan" class="tap inline-flex items-center bg-white border border-slate-200 text-navy-900 font-bold px-6 py-3 rounded-full">Build a study plan</a>' +
+        '</div>' +
+        '<p class="text-xs text-slate-500 mt-4">Scored in your browser. Nothing is sent anywhere and nothing is stored.</p>' +
+      '</div>';
+
+    examEl.classList.add('hidden');
+    reportEl.classList.remove('hidden');
+    setupEl.classList.remove('hidden');
+    document.getElementById('retake').addEventListener('click', function () { begin(mode); });
+    reportEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.PDA && window.PDA.track) {
+      try { window.PDA.track('rda_exam_complete', { mode: mode, correct: s.correct, total: s.total }); } catch (e) {}
+    }
+  }
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>

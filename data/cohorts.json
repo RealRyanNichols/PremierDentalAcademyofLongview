@@ -1,0 +1,32 @@
+{
+  "_comment": [
+    "Checked-in snapshot of the Supabase `cohorts` table, used to bake real class dates into",
+    "the static HTML (scripts/build-static-content.mjs) and to generate the subscribable",
+    "calendar (scripts/build-ics.mjs). Supabase remains the live source of truth — the browser",
+    "still fetches it and overrides anything here. This snapshot exists so that Googlebot and",
+    "no-JS visitors get real dates instead of an empty banner.",
+    "",
+    "SCHEDULE TEXT: every row below carries the approved neutral wording. PDA no longer offers",
+    "night or evening classes (Amanda, 2026-07-06), so no generated page may ever print an",
+    "evening time. Three rows in the live Supabase table (May 25, Jun 2, Jun 22 2026) still",
+    "hold dead evening strings from before the July 6 neutralization; they are deliberately NOT",
+    "mirrored here. See docs/toolbox-build-report.md — Amanda needs to clear them in Supabase.",
+    "",
+    "Refresh with: npm run sync:cohorts (prints the SQL to re-pull), then npm run build:static."
+  ],
+  "synced_at": "2026-08-12",
+  "source": "supabase.public.cohorts",
+  "neutral_schedule": "Daytime classes — call or text (903) 913-6444 for current class days & times",
+  "cohorts": [
+    { "name": "May 25, 2026 — In-Person", "start_date": "2026-05-25", "status": "current", "capacity": 8, "enrolled_count": 5, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "June 2, 2026 — In-Person", "start_date": "2026-06-02", "status": "current", "capacity": 8, "enrolled_count": 4, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "June 22, 2026 — In-Person", "start_date": "2026-06-22", "status": "current", "capacity": 8, "enrolled_count": 3, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "July 7, 2026 — In-Person", "start_date": "2026-07-07", "status": "current", "capacity": 8, "enrolled_count": 7, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "August 17, 2026 — In-Person", "start_date": "2026-08-17", "status": "upcoming", "capacity": 8, "enrolled_count": 5, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "August 25, 2026 — In-Person", "start_date": "2026-08-25", "status": "upcoming", "capacity": 8, "enrolled_count": 4, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "September 14, 2026 — In-Person", "start_date": "2026-09-14", "status": "upcoming", "capacity": 8, "enrolled_count": 1, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "September 29, 2026 — In-Person", "start_date": "2026-09-29", "status": "upcoming", "capacity": 8, "enrolled_count": 0, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "November 9, 2026 — In-Person", "start_date": "2026-11-09", "status": "upcoming", "capacity": 8, "enrolled_count": 0, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" },
+    { "name": "November 17, 2026 — In-Person", "start_date": "2026-11-17", "status": "upcoming", "capacity": 8, "enrolled_count": 0, "delivery_mode": "in_person", "location": "2800 Gilmer Rd, Suite 106, Longview, TX 75604" }
+  ]
+}

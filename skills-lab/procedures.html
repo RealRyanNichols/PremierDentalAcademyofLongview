@@ -44,14 +44,32 @@ tailwind.config = { theme: { extend: {
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6">
     <div class="flex items-center justify-between mb-2">
       <div class="font-semibold text-navy-900 text-sm">Procedures completed</div>
-      <div class="text-sm text-slate-500"><span id="procDone">0</span> of <span id="procTotal">0</span></div>
+      <div class="text-sm text-slate-500"><span id="procDone">—</span> of <span id="procTotal"><!--PDA:GEN procedureCount-->
+        13
+        <!--/PDA:GEN procedureCount--></span></div>
     </div>
     <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="procBar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all" style="width:0%"></div></div>
   </div>
 
   <div id="picker">
     <h2 class="display text-xl font-bold text-navy-900 mt-8 mb-3">Choose a procedure</h2>
-    <div id="cards" class="grid sm:grid-cols-2 gap-4"></div>
+    <div id="cards" class="grid sm:grid-cols-2 gap-4">
+        <!--PDA:GEN procedureCards-->
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Morning operatory setup</h3><p class="text-sm text-slate-600 mt-1">Open the office before the first patient — PPE, waterlines, barriers, the spore test and the first tray.</p><p class="text-xs text-slate-500 mt-2">8 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Crown preparation</h3><p class="text-sm text-slate-600 mt-1">Assist Maria's crown from tray setup and anesthetic through prep, isolation, the impression and the temporary.</p><p class="text-xs text-slate-500 mt-2">10 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Composite filling</h3><p class="text-sm text-slate-600 mt-1">Assist Darnell's tooth-colored filling — isolation, the etch-bond-cure sequence, layering and the bite check.</p><p class="text-xs text-slate-500 mt-2">9 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Simple extraction</h3><p class="text-sm text-slate-600 mt-1">Assist Joyce's extraction — confirm &amp; consent, manage the field, control bleeding and give post-op care.</p><p class="text-xs text-slate-500 mt-2">9 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Sterilization workflow</h3><p class="text-sm text-slate-600 mt-1">Process contaminated instruments correctly — heavy PPE, one-directional flow, cleaning, packaging, autoclave, spore test.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Emergency appointment</h3><p class="text-sm text-slate-600 mt-1">Tyler walks in with a severe toothache. Triage it, set the room and tray, brief the doctor and keep him comfortable.</p><p class="text-xs text-slate-500 mt-2">8 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">New patient intake</h3><p class="text-sm text-slate-600 mt-1">Greet and seat a brand-new patient, place the bib, review the health history and take a baseline blood pressure.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Medical history red flags</h3><p class="text-sm text-slate-600 mt-1">Spot the medical-history items that change how care is delivered, from allergies to pre-medication.</p><p class="text-xs text-slate-500 mt-2">4 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Bitewing x-ray series</h3><p class="text-sm text-slate-600 mt-1">Position and expose a bitewing series, then recognize the common errors and how to fix them.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Alginate impression</h3><p class="text-sm text-slate-600 mt-1">Mix, load, seat and pour an alginate impression for a study model.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Periodontal charting</h3><p class="text-sm text-slate-600 mt-1">Record probing depths and bleeding points accurately while the clinician calls them out.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Four-handed instrument transfer</h3><p class="text-sm text-slate-600 mt-1">Keep the procedure smooth with proper instrument transfer and field isolation.</p><p class="text-xs text-slate-500 mt-2">6 steps</p></article>
+        <article class="bg-white rounded-2xl border border-slate-200 p-5"><h3 class="font-bold text-navy-900">Patient faints in the chair</h3><p class="text-sm text-slate-600 mt-1">A nervous patient turns pale and lightheaded. Manage syncope and know the emergency kit.</p><p class="text-xs text-slate-500 mt-2">4 steps</p></article>
+        <!--/PDA:GEN procedureCards-->
+      </div>
   </div>
 
   <div id="runner" class="hidden"></div>

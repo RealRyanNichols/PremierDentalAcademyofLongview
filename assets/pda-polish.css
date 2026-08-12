@@ -138,3 +138,38 @@ body.pda-tinted {
     linear-gradient(180deg, #e6f1f2 0%, #eef5f6 45%, #e9f2f3 100%);
   background-attachment: fixed;
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Touch target sizing (WCAG 2.1 AA, 2.5.5 / 2.5.8)
+   Standalone controls need a target of at least 44px so they can be hit reliably
+   with a thumb. The shared navigation was shipping 19–33px controls, and several
+   call-to-action buttons landed at 43px — close enough to look fine and far
+   enough to be missed on a phone, which is where most of this traffic is.
+
+   Scoped to standalone controls only. Links inside prose are deliberately left
+   alone: WCAG excludes inline text links from the target-size rule, and forcing
+   them to 44px would wreck paragraph spacing.
+   ──────────────────────────────────────────────────────────────────────────── */
+nav button,
+nav a[class*="rounded-full"],
+nav a[class*="rounded-lg"],
+header button,
+.pda-cta,
+a[data-event="enroll_click"],
+a[data-event="call_click"],
+a[data-event="apply_click"] {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form controls in the tools: box-sizing so a 100%-width field with padding and a
+   border does not overhang its container. Two pixels of overhang is all it takes
+   to make a whole page scroll sideways on a 390px phone. */
+.fld,
+input.fld,
+select.fld,
+textarea.fld {
+  box-sizing: border-box;
+}

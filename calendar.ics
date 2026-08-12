@@ -1,0 +1,181 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Premier Dental Academy of Longview//Class Calendar//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:Premier Dental Academy of Longview — class dates
+X-WR-CALDESC:Start dates for Registered Dental Assistant training at Premie
+ r Dental Academy of Longview. Call or text (903) 913-6444 for current clas
+ s days and times.
+X-PUBLISHED-TTL:PT12H
+BEGIN:VEVENT
+UID:cohort-2026-05-25@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260525
+DTEND;VALUE=DATE:20260526
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n3 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-06-02@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260602
+DTEND;VALUE=DATE:20260603
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n4 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-06-22@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260622
+DTEND;VALUE=DATE:20260623
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n5 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-07-07@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260707
+DTEND;VALUE=DATE:20260708
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n1 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-08-17@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260817
+DTEND;VALUE=DATE:20260818
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n3 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-08-25@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260825
+DTEND;VALUE=DATE:20260826
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n4 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-09-14@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260914
+DTEND;VALUE=DATE:20260915
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n7 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-09-29@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20260929
+DTEND;VALUE=DATE:20260930
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n8 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-11-09@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20261109
+DTEND;VALUE=DATE:20261110
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n8 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+BEGIN:VEVENT
+UID:cohort-2026-11-17@premierdentalacademyoflongview.com
+DTSTAMP:20260812T000000Z
+DTSTART;VALUE=DATE:20261117
+DTEND;VALUE=DATE:20261118
+SUMMARY:RDA class starts — Premier Dental Academy\, Longview
+DESCRIPTION:Registered Dental Assistant training starts today at the Longvi
+ ew campus.\n\nDaytime classes — call or text (903) 913-6444 for current cl
+ ass days & times\n\n8 of 8 seats were open when this calendar was built.\n
+ \nIn-person tuition is $3\,000 paid in full\, or $3\,500 on a plan ($500 d
+ own plus a $3\,000\nbalance in weekly or monthly instalments). Refund and 
+ transfer terms: https://www.premierdentalacademyoflongview.com/terms\n\nQu
+ estions: (903) 913-6444 · hello@premierdentalacademyoflongview.com
+LOCATION:2800 Gilmer Rd\, Suite 106\, Longview\, TX 75604
+URL:https://www.premierdentalacademyoflongview.com/classes
+TRANSP:TRANSPARENT
+END:VEVENT
+END:VCALENDAR

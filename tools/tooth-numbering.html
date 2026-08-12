@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tooth Numbering Converter — Universal, Palmer &amp; FDI | Premier Dental Academy</title>
+<meta name="description" content="Convert between the three tooth numbering systems — Universal, Palmer and FDI — and drill them until they're automatic. Full cross-reference chart for all 32 permanent and 20 primary teeth. Free, no signup.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/tooth-numbering">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Premier Dental Academy of Longview">
+<meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/tooth-numbering">
+<meta property="og:title" content="Tooth numbering converter — Universal, Palmer and FDI">
+<meta property="og:description" content="Convert between all three tooth numbering systems, with a full cross-reference chart and a drill.">
+<meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-skills-lab.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Tooth numbering converter — Universal, Palmer and FDI">
+<meta name="twitter:description" content="Convert between all three tooth numbering systems, with a full cross-reference chart and a drill.">
+<meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-skills-lab.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { theme: { extend: {
+  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+}}}
+</script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  .display{font-family:'Fraunces',serif}
+  .tap{min-height:44px}
+  .fld{box-sizing:border-box;width:100%;border:1.5px solid #e2e8f0;border-radius:10px;padding:12px 14px;font-size:16px;background:#fff}
+  .fld:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tooth Numbering Converter","applicationCategory":"EducationalApplication","operatingSystem":"Any modern web browser","url":"https://www.premierdentalacademyoflongview.com/tools/tooth-numbering","description":"Converts a tooth between the Universal, Palmer and FDI numbering systems and drills the conversions, covering all 32 permanent and 20 primary teeth.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"provider":{"@type":"EducationalOrganization","name":"Premier Dental Academy of Longview","telephone":"+1-903-913-6444","address":{"@type":"PostalAddress","streetAddress":"2800 Gilmer Rd, Suite 106","addressLocality":"Longview","addressRegion":"TX","postalCode":"75604","addressCountry":"US"}}}
+</script>
+<script src="/assets/pda-seo.js" defer></script>
+<script src="/assets/pda-nav.js" defer></script>
+<script src="/assets/pda-analytics.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
+    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free · no signup</p>
+    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Three systems, <span class="text-amber-400 italic">one tooth</span></h1>
+    <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Universal on most US charts, FDI on anything international, Palmer on orthodontic and oral-surgery notes. You will read all three. Type any of them in and see the other two.</p>
+  </div>
+</section>
+
+<main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+    <h2 class="display text-xl font-bold">Convert a tooth</h2>
+    <p class="text-sm text-slate-600 mt-1">Type a Universal number (1–32 or A–T), an FDI code (like 46), or Palmer notation (like LR6).</p>
+    <form id="convert" class="flex flex-col sm:flex-row gap-2 mt-4">
+      <label for="toothIn" class="sr-only">Tooth number or code</label>
+      <input class="fld tap" id="toothIn" placeholder="e.g. 30, or 46, or LR6" autocomplete="off" autocapitalize="characters" spellcheck="false">
+      <button type="submit" class="tap bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 rounded-xl">Convert</button>
+    </form>
+    <div id="convertOut" class="mt-4" aria-live="polite"></div>
+  </section>
+
+  <section class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mt-5">
+    <h2 class="display text-lg font-bold text-amber-900">The trap worth knowing</h2>
+    <p class="text-sm text-amber-900 mt-2">Some numbers are valid in <strong>both</strong> systems and mean different teeth. <strong>14</strong> is the upper left first molar in Universal, and the upper right first premolar in FDI. When a chart just says "14", the system it is written in is the whole question — so this tool always tells you which one it read your input as.</p>
+  </section>
+
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mt-5">
+    <h2 class="display text-xl font-bold">How each system counts</h2>
+    <div class="grid sm:grid-cols-3 gap-4 mt-3">
+      <div class="bg-slate-50 rounded-xl p-4">
+        <h3 class="font-bold text-navy-900">Universal</h3>
+        <p class="text-sm text-slate-700 mt-1">One continuous run of 1–32. Starts at the upper right third molar, goes left across the top to 16, drops to the lower left third molar at 17, and comes back to 32 at the lower right. Baby teeth are A–T on the same path.</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4">
+        <h3 class="font-bold text-navy-900">FDI (ISO 3950)</h3>
+        <p class="text-sm text-slate-700 mt-1">Two digits. The first is the quadrant — 1 upper right, 2 upper left, 3 lower left, 4 lower right — and the second is how far out from the midline the tooth sits. Baby teeth use quadrants 5–8.</p>
+      </div>
+      <div class="bg-slate-50 rounded-xl p-4">
+        <h3 class="font-bold text-navy-900">Palmer</h3>
+        <p class="text-sm text-slate-700 mt-1">A quadrant bracket plus 1–8 counting out from the midline. Written with an angled symbol on paper; here it is shown as UR, UL, LL or LR so it can be typed. Baby teeth use A–E.</p>
+      </div>
+    </div>
+    <p class="text-sm text-slate-600 mt-4">The thing that makes Universal awkward to convert is that it runs midline-outward in two quadrants and outward-to-midline in the other two, while Palmer and FDI always count out from the midline. That is why 8 and 9 are neighbours either side of the front, but 1 and 32 are the back teeth on opposite sides.</p>
+  </section>
+
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mt-5">
+    <h2 class="display text-xl font-bold">Drill it</h2>
+    <p class="text-sm text-slate-600 mt-1">Given a tooth in one system, name it in another. Ten at a time.</p>
+    <div class="flex flex-wrap items-center gap-3 mt-4">
+      <label for="drillFrom" class="text-sm font-semibold text-navy-900">From</label>
+      <select id="drillFrom" class="fld tap" style="width:auto"><option value="universal">Universal</option><option value="fdi">FDI</option><option value="palmer">Palmer</option></select>
+      <label for="drillTo" class="text-sm font-semibold text-navy-900">To</label>
+      <select id="drillTo" class="fld tap" style="width:auto"><option value="fdi">FDI</option><option value="universal">Universal</option><option value="palmer">Palmer</option></select>
+      <button type="button" id="startDrill" class="tap bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-full">Start drilling →</button>
+    </div>
+    <div id="drill" class="hidden mt-5" aria-live="polite"></div>
+  </section>
+
+  <section class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mt-5">
+    <h2 class="display text-xl font-bold">Full cross-reference</h2>
+    <p class="text-sm text-slate-600 mt-1">Every permanent and primary tooth in all three systems.</p>
+    <div id="chart">
+        <!--PDA:GEN toothChart-->
+        <h3 class="font-bold text-navy-900 mt-2">Permanent teeth (adult)</h3><div class="overflow-x-auto mt-2"><table class="w-full text-sm min-w-[520px]"><thead><tr class="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200"><th class="py-2 pr-3">Universal</th><th class="py-2 pr-3">FDI</th><th class="py-2 pr-3">Palmer</th><th class="py-2 pr-3">Quadrant</th><th class="py-2">Tooth</th></tr></thead><tbody><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">1</td><td class="py-2 pr-3 font-mono text-teal-700">18</td><td class="py-2 pr-3 font-mono text-slate-700">UR8</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Third molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">2</td><td class="py-2 pr-3 font-mono text-teal-700">17</td><td class="py-2 pr-3 font-mono text-slate-700">UR7</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">3</td><td class="py-2 pr-3 font-mono text-teal-700">16</td><td class="py-2 pr-3 font-mono text-slate-700">UR6</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">4</td><td class="py-2 pr-3 font-mono text-teal-700">15</td><td class="py-2 pr-3 font-mono text-slate-700">UR5</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Second premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">5</td><td class="py-2 pr-3 font-mono text-teal-700">14</td><td class="py-2 pr-3 font-mono text-slate-700">UR4</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">First premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">6</td><td class="py-2 pr-3 font-mono text-teal-700">13</td><td class="py-2 pr-3 font-mono text-slate-700">UR3</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">7</td><td class="py-2 pr-3 font-mono text-teal-700">12</td><td class="py-2 pr-3 font-mono text-slate-700">UR2</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">8</td><td class="py-2 pr-3 font-mono text-teal-700">11</td><td class="py-2 pr-3 font-mono text-slate-700">UR1</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">9</td><td class="py-2 pr-3 font-mono text-teal-700">21</td><td class="py-2 pr-3 font-mono text-slate-700">UL1</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">10</td><td class="py-2 pr-3 font-mono text-teal-700">22</td><td class="py-2 pr-3 font-mono text-slate-700">UL2</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">11</td><td class="py-2 pr-3 font-mono text-teal-700">23</td><td class="py-2 pr-3 font-mono text-slate-700">UL3</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">12</td><td class="py-2 pr-3 font-mono text-teal-700">24</td><td class="py-2 pr-3 font-mono text-slate-700">UL4</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">First premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">13</td><td class="py-2 pr-3 font-mono text-teal-700">25</td><td class="py-2 pr-3 font-mono text-slate-700">UL5</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Second premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">14</td><td class="py-2 pr-3 font-mono text-teal-700">26</td><td class="py-2 pr-3 font-mono text-slate-700">UL6</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">15</td><td class="py-2 pr-3 font-mono text-teal-700">27</td><td class="py-2 pr-3 font-mono text-slate-700">UL7</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">16</td><td class="py-2 pr-3 font-mono text-teal-700">28</td><td class="py-2 pr-3 font-mono text-slate-700">UL8</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Third molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">17</td><td class="py-2 pr-3 font-mono text-teal-700">38</td><td class="py-2 pr-3 font-mono text-slate-700">LL8</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Third molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">18</td><td class="py-2 pr-3 font-mono text-teal-700">37</td><td class="py-2 pr-3 font-mono text-slate-700">LL7</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">19</td><td class="py-2 pr-3 font-mono text-teal-700">36</td><td class="py-2 pr-3 font-mono text-slate-700">LL6</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">20</td><td class="py-2 pr-3 font-mono text-teal-700">35</td><td class="py-2 pr-3 font-mono text-slate-700">LL5</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Second premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">21</td><td class="py-2 pr-3 font-mono text-teal-700">34</td><td class="py-2 pr-3 font-mono text-slate-700">LL4</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">First premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">22</td><td class="py-2 pr-3 font-mono text-teal-700">33</td><td class="py-2 pr-3 font-mono text-slate-700">LL3</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">23</td><td class="py-2 pr-3 font-mono text-teal-700">32</td><td class="py-2 pr-3 font-mono text-slate-700">LL2</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">24</td><td class="py-2 pr-3 font-mono text-teal-700">31</td><td class="py-2 pr-3 font-mono text-slate-700">LL1</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">25</td><td class="py-2 pr-3 font-mono text-teal-700">41</td><td class="py-2 pr-3 font-mono text-slate-700">LR1</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">26</td><td class="py-2 pr-3 font-mono text-teal-700">42</td><td class="py-2 pr-3 font-mono text-slate-700">LR2</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">27</td><td class="py-2 pr-3 font-mono text-teal-700">43</td><td class="py-2 pr-3 font-mono text-slate-700">LR3</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">28</td><td class="py-2 pr-3 font-mono text-teal-700">44</td><td class="py-2 pr-3 font-mono text-slate-700">LR4</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">First premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">29</td><td class="py-2 pr-3 font-mono text-teal-700">45</td><td class="py-2 pr-3 font-mono text-slate-700">LR5</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Second premolar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">30</td><td class="py-2 pr-3 font-mono text-teal-700">46</td><td class="py-2 pr-3 font-mono text-slate-700">LR6</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">31</td><td class="py-2 pr-3 font-mono text-teal-700">47</td><td class="py-2 pr-3 font-mono text-slate-700">LR7</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">32</td><td class="py-2 pr-3 font-mono text-teal-700">48</td><td class="py-2 pr-3 font-mono text-slate-700">LR8</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Third molar</td></tr></tbody></table></div><h3 class="font-bold text-navy-900 mt-6">Primary teeth (baby)</h3><div class="overflow-x-auto mt-2"><table class="w-full text-sm min-w-[520px]"><thead><tr class="text-left text-xs uppercase tracking-wide text-slate-500 border-b border-slate-200"><th class="py-2 pr-3">Universal</th><th class="py-2 pr-3">FDI</th><th class="py-2 pr-3">Palmer</th><th class="py-2 pr-3">Quadrant</th><th class="py-2">Tooth</th></tr></thead><tbody><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">A</td><td class="py-2 pr-3 font-mono text-teal-700">55</td><td class="py-2 pr-3 font-mono text-slate-700">URE</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">B</td><td class="py-2 pr-3 font-mono text-teal-700">54</td><td class="py-2 pr-3 font-mono text-slate-700">URD</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">C</td><td class="py-2 pr-3 font-mono text-teal-700">53</td><td class="py-2 pr-3 font-mono text-slate-700">URC</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">D</td><td class="py-2 pr-3 font-mono text-teal-700">52</td><td class="py-2 pr-3 font-mono text-slate-700">URB</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">E</td><td class="py-2 pr-3 font-mono text-teal-700">51</td><td class="py-2 pr-3 font-mono text-slate-700">URA</td><td class="py-2 pr-3 text-slate-700">Upper right</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">F</td><td class="py-2 pr-3 font-mono text-teal-700">61</td><td class="py-2 pr-3 font-mono text-slate-700">ULA</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">G</td><td class="py-2 pr-3 font-mono text-teal-700">62</td><td class="py-2 pr-3 font-mono text-slate-700">ULB</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">H</td><td class="py-2 pr-3 font-mono text-teal-700">63</td><td class="py-2 pr-3 font-mono text-slate-700">ULC</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">I</td><td class="py-2 pr-3 font-mono text-teal-700">64</td><td class="py-2 pr-3 font-mono text-slate-700">ULD</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">J</td><td class="py-2 pr-3 font-mono text-teal-700">65</td><td class="py-2 pr-3 font-mono text-slate-700">ULE</td><td class="py-2 pr-3 text-slate-700">Upper left</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">K</td><td class="py-2 pr-3 font-mono text-teal-700">75</td><td class="py-2 pr-3 font-mono text-slate-700">LLE</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Second molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">L</td><td class="py-2 pr-3 font-mono text-teal-700">74</td><td class="py-2 pr-3 font-mono text-slate-700">LLD</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">M</td><td class="py-2 pr-3 font-mono text-teal-700">73</td><td class="py-2 pr-3 font-mono text-slate-700">LLC</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">N</td><td class="py-2 pr-3 font-mono text-teal-700">72</td><td class="py-2 pr-3 font-mono text-slate-700">LLB</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">O</td><td class="py-2 pr-3 font-mono text-teal-700">71</td><td class="py-2 pr-3 font-mono text-slate-700">LLA</td><td class="py-2 pr-3 text-slate-700">Lower left</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">P</td><td class="py-2 pr-3 font-mono text-teal-700">81</td><td class="py-2 pr-3 font-mono text-slate-700">LRA</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Central incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">Q</td><td class="py-2 pr-3 font-mono text-teal-700">82</td><td class="py-2 pr-3 font-mono text-slate-700">LRB</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Lateral incisor</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">R</td><td class="py-2 pr-3 font-mono text-teal-700">83</td><td class="py-2 pr-3 font-mono text-slate-700">LRC</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Canine</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">S</td><td class="py-2 pr-3 font-mono text-teal-700">84</td><td class="py-2 pr-3 font-mono text-slate-700">LRD</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">First molar</td></tr><tr class="border-b border-slate-100 last:border-0"><td class="py-2 pr-3 font-mono font-bold text-navy-900">T</td><td class="py-2 pr-3 font-mono text-teal-700">85</td><td class="py-2 pr-3 font-mono text-slate-700">LRE</td><td class="py-2 pr-3 text-slate-700">Lower right</td><td class="py-2 text-slate-700">Second molar</td></tr></tbody></table></div>
+        <!--/PDA:GEN toothChart-->
+    </div>
+  </section>
+
+  <nav class="mt-8 grid sm:grid-cols-2 gap-4" aria-label="Related tools">
+    <a href="/tools/how-to-chart" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">📈</div>
+      <h2 class="font-bold mt-2">Now learn to chart on them</h2>
+      <p class="text-sm text-slate-600 mt-1">Dental charting explained the way offices actually do it.</p>
+    </a>
+    <a href="/skills-lab/abbreviation-drill" class="bg-white rounded-2xl border border-slate-200 p-5 block hover:border-teal-300 transition">
+      <div class="text-2xl" aria-hidden="true">🔤</div>
+      <h2 class="font-bold mt-2">The shorthand that goes with it</h2>
+      <p class="text-sm text-slate-600 mt-1">96 charting abbreviations, drilled three ways.</p>
+    </a>
+  </nav>
+
+  <p class="text-center mt-8"><a href="/toolbox" class="font-semibold text-teal-700 underline">← Back to the toolbox</a></p>
+
+</main>
+
+<script src="/assets/tools/tooth-numbering.js"></script>
+<script>
+(function () {
+  'use strict';
+  var T = window.PDA_TEETH;
+  var esc = function (s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var LABEL = { universal: 'Universal', fdi: 'FDI', palmer: 'Palmer' };
+
+  /* ── Converter ── */
+  document.getElementById('convert').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var raw = document.getElementById('toothIn').value;
+    var t = T.lookup(raw);
+    var out = document.getElementById('convertOut');
+
+    if (!t) {
+      out.innerHTML = '<div class="bg-amber-50 border border-amber-200 rounded-xl p-4">' +
+        '<p class="text-amber-900">That is not a tooth we recognise. Try a Universal number (1–32), ' +
+        'a baby-tooth letter (A–T), an FDI code like 46, or Palmer notation like LR6.</p></div>';
+      return;
+    }
+
+    // Say which system the input was read as — with overlapping numbers this is the answer.
+    var readAs = /^[A-Ta-t]$/.test(String(raw).trim()) ? 'Universal (a baby tooth)'
+      : /^(UR|UL|LL|LR)/i.test(String(raw).trim()) ? 'Palmer'
+      : (parseInt(raw, 10) >= 1 && parseInt(raw, 10) <= 32) ? 'Universal'
+      : 'FDI';
+
+    out.innerHTML = '<div class="bg-teal-50 border border-teal-200 rounded-xl p-5">' +
+      '<p class="text-xs font-semibold text-teal-800 uppercase tracking-wide">Read as ' + esc(readAs) + '</p>' +
+      '<h3 class="display text-2xl font-bold text-navy-900 mt-1">' + esc(t.quadrant.name) + ' ' + esc(t.name.toLowerCase()) + '</h3>' +
+      '<p class="text-sm text-slate-600">' + esc(t.quadrant.arch) + ' arch, ' + esc(t.quadrant.side) + ' side · ' +
+        (t.dentition === 'primary' ? 'primary (baby) tooth' : 'permanent tooth') + '</p>' +
+      '<dl class="grid grid-cols-3 gap-3 mt-4">' +
+        '<div><dt class="text-xs text-slate-500 uppercase tracking-wide">Universal</dt><dd class="font-mono text-xl font-bold text-navy-900">' + esc(t.universal) + '</dd></div>' +
+        '<div><dt class="text-xs text-slate-500 uppercase tracking-wide">FDI</dt><dd class="font-mono text-xl font-bold text-teal-700">' + esc(t.fdi) + '</dd></div>' +
+        '<div><dt class="text-xs text-slate-500 uppercase tracking-wide">Palmer</dt><dd class="font-mono text-xl font-bold text-slate-700">' + esc(t.palmer) + '</dd></div>' +
+      '</dl></div>';
+  });
+
+  /* ── Drill ── */
+  var queue = [], idx = 0, right = 0, from = 'universal', to = 'fdi';
+
+  document.getElementById('startDrill').addEventListener('click', function () {
+    from = document.getElementById('drillFrom').value;
+    to = document.getElementById('drillTo').value;
+    if (from === to) {
+      document.getElementById('drill').classList.remove('hidden');
+      document.getElementById('drill').innerHTML =
+        '<div class="bg-amber-50 border border-amber-200 rounded-xl p-4"><p class="text-amber-900">' +
+        'Pick two different systems — converting a system to itself would not teach you much.</p></div>';
+      return;
+    }
+    queue = T.allPermanent().sort(function () { return Math.random() - 0.5; }).slice(0, 10);
+    idx = 0; right = 0;
+    document.getElementById('drill').classList.remove('hidden');
+    renderQ();
+  });
+
+  function renderQ() {
+    var el = document.getElementById('drill');
+    if (idx >= queue.length) {
+      el.innerHTML = '<div class="bg-white border border-slate-200 rounded-xl p-5">' +
+        '<h3 class="display text-xl font-bold">' + right + ' of ' + queue.length + ' right</h3>' +
+        '<p class="text-sm text-slate-600 mt-1">' +
+        (right === queue.length ? 'All correct. Try the other direction, or swap in Palmer.'
+                                : 'The chart underneath has every tooth if you want to check the ones you missed.') +
+        '</p><button type="button" id="againBtn" class="tap mt-4 bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 py-3 rounded-full">Go again</button></div>';
+      document.getElementById('againBtn').addEventListener('click', function () {
+        document.getElementById('startDrill').click();
+      });
+      return;
+    }
+    var t = queue[idx];
+    el.innerHTML = '<div class="bg-white border border-slate-200 rounded-xl p-5">' +
+      '<p class="text-sm text-slate-500">' + (idx + 1) + ' of ' + queue.length + ' · ' + right + ' right so far</p>' +
+      '<p class="text-sm text-slate-600 mt-2">This tooth is <strong>' + esc(t[from]) + '</strong> in ' + LABEL[from] + '.</p>' +
+      '<p class="display text-xl font-bold text-navy-900 mt-1">What is it in ' + LABEL[to] + '?</p>' +
+      '<form id="ansForm" class="flex flex-col sm:flex-row gap-2 mt-4">' +
+        '<label for="ansIn" class="sr-only">Your answer in ' + LABEL[to] + '</label>' +
+        '<input class="fld tap" id="ansIn" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Your answer">' +
+        '<button type="submit" class="tap bg-teal-600 hover:bg-teal-700 text-white font-bold px-6 rounded-xl">Check</button>' +
+      '</form><div id="ansOut" class="mt-3"></div></div>';
+
+    document.getElementById('ansForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var given = String(document.getElementById('ansIn').value || '').trim().toUpperCase();
+      var ok = given === String(t[to]).toUpperCase();
+      if (ok) right++;
+      document.getElementById('ansOut').innerHTML =
+        '<div class="' + (ok ? 'bg-teal-50 border-teal-200' : 'bg-amber-50 border-amber-200') + ' border rounded-xl p-4">' +
+        '<p class="font-bold ' + (ok ? 'text-teal-800' : 'text-amber-900') + '">' +
+          (ok ? 'Correct.' : 'It is ' + esc(t[to]) + '.') + '</p>' +
+        '<p class="text-sm text-slate-700 mt-1">' + esc(t.quadrant.name) + ' ' + esc(t.name.toLowerCase()) +
+          ' — Universal ' + esc(t.universal) + ', FDI ' + esc(t.fdi) + ', Palmer ' + esc(t.palmer) + '.</p>' +
+        '<button type="button" id="nextBtn" class="tap mt-3 bg-navy-900 text-white font-bold px-6 py-2.5 rounded-full">' +
+          (idx + 1 >= queue.length ? 'See how you did →' : 'Next →') + '</button></div>';
+      document.getElementById('nextBtn').addEventListener('click', function () { idx++; renderQ(); });
+      document.getElementById('nextBtn').focus();
+    });
+    var input = document.getElementById('ansIn');
+    if (input) input.focus();
+  }
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>

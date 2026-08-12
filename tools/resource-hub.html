@@ -39,7 +39,16 @@ tailwind.config = { theme: { extend: {
 </section>
 
 <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-  <div class="res grid sm:grid-cols-2 gap-4" id="cards"></div>
+  <div class="res grid sm:grid-cols-2 gap-4" id="cards">
+        <!--PDA:GEN resourceCards-->
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">🧸</div><div><h3 class="display text-lg font-bold text-navy-900">Childcare help</h3><p class="text-sm text-slate-600 mt-1">Texas can help working or in-training parents pay for childcare. Ask your local Workforce Solutions office, or visit <a class="link" href="https://www.twc.texas.gov/programs/child-care" target="_blank" rel="noopener">twc.texas.gov</a>. Need it fast? Dial <a class="link" href="tel:211">211</a>.</p></div></div></article>
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">🍎</div><div><h3 class="display text-lg font-bold text-navy-900">Food assistance</h3><p class="text-sm text-slate-600 mt-1">Apply for SNAP food benefits at <a class="link" href="https://www.yourtexasbenefits.com" target="_blank" rel="noopener">YourTexasBenefits.com</a>. For a food pantry near you, contact the <a class="link" href="https://www.easttexasfoodbank.org" target="_blank" rel="noopener">East Texas Food Bank</a> or dial <a class="link" href="tel:211">211</a>.</p></div></div></article>
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">🏠</div><div><h3 class="display text-lg font-bold text-navy-900">Rent, utilities &amp; bills</h3><p class="text-sm text-slate-600 mt-1">Dial <a class="link" href="tel:211">211</a> (211 Texas) — a free, 24/7 line that connects you to local rent, utility, and emergency-assistance programs.</p></div></div></article>
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">💬</div><div><h3 class="display text-lg font-bold text-navy-900">Someone to talk to</h3><p class="text-sm text-slate-600 mt-1">Free and confidential, 24/7. Call or text <a class="link" href="tel:988">988</a> (Suicide &amp; Crisis Lifeline), or the SAMHSA helpline at <a class="link" href="tel:18006624357">1-800-662-4357</a> for mental health or substance support.</p></div></div></article>
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">🛟</div><div><h3 class="display text-lg font-bold text-navy-900">Safety at home</h3><p class="text-sm text-slate-600 mt-1">If you are not safe, you deserve help. The National Domestic Violence Hotline is <a class="link" href="tel:18007997233">1-800-799-7233</a> (or text START to 88788), free and confidential. Dial <a class="link" href="tel:211">211</a> for local shelters.</p></div></div></article>
+        <article class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><div class="flex items-start gap-3"><div class="text-2xl" aria-hidden="true">🎓</div><div><h3 class="display text-lg font-bold text-navy-900">Finish your GED</h3><p class="text-sm text-slate-600 mt-1">No high-school diploma yet? Free GED and adult-education classes are available across East Texas. Dial <a class="link" href="tel:211">211</a> or ask Workforce Solutions to find one near you.</p></div></div></article>
+        <!--/PDA:GEN resourceCards-->
+      </div>
 
   <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 mt-6 text-sm text-amber-900">
     <strong>In an emergency, call 911.</strong> These are independent resources we share to help our students — Premier Dental Academy is not affiliated with them, and availability can change.
@@ -55,6 +64,7 @@ tailwind.config = { theme: { extend: {
   </div>
 </main>
 
+<script src="/assets/data/resource-hub.js"></script>
 <script>
 (function () {
   'use strict';

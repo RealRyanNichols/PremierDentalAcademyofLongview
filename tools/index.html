@@ -53,7 +53,13 @@ tailwind.config = { theme: { extend: {
       <p class="text-xs text-slate-500">Enrolled students: already included ✓</p>
     </div>
     <div id="paid-grid" class="grid sm:grid-cols-3 gap-4">
-      <p class="text-slate-400 text-sm col-span-full">Loading…</p>
+      <!-- Prices come from the live products table so this page can never disagree with
+           checkout, which is why they are not baked in here. The names, descriptions and
+           links are stable facts, so they ship in the HTML and JS adds the price on top. -->
+      <a href="/exam-pro" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🎯</div><h3 class="font-bold mt-3">Exam Pro</h3><p class="text-sm text-slate-600 mt-1">The timed 50-question mock state board. Per-topic scoring, full explanations, unlimited retakes.</p></a>
+      <a href="/study-pack" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">📚</div><h3 class="font-bold mt-3">Study Pack</h3><p class="text-sm text-slate-600 mt-1">Cheat sheets + study guide covering the topics RDA candidates get tripped up on.</p></a>
+      <a href="/exam-prep-course" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🎓</div><h3 class="font-bold mt-3">Exam Prep Course</h3><p class="text-sm text-slate-600 mt-1">The guided mini-course: lessons, quizzes, and a plan that walks you to exam day.</p></a>
+      <a href="/career-vault" class="tool-card group bg-white rounded-2xl border-2 border-amber-300 p-5 block"><div class="text-3xl">🗝️</div><h3 class="font-bold mt-3">Career Vault</h3><p class="text-sm text-slate-600 mt-1">4 career tracks, 44 lessons: front desk to chairside to specialty — map your whole dental career.</p></a>
     </div>
   </section>
 
@@ -74,10 +80,10 @@ tailwind.config = { theme: { extend: {
 
   <!-- ── Free: learn & practice ── -->
   <section>
-    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free · no signup</p>
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Free</p>
     <h2 class="display text-2xl sm:text-3xl font-bold mb-4">Learning &amp; practicing</h2>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      <a href="/tools/practice-exam" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">📝</div><h3 class="font-bold mt-2">Free Practice Exam</h3><p class="text-sm text-slate-600 mt-1">Sample RDA-style questions with instant scoring. (The full timed mock is Exam Pro.)</p></a>
+      <a href="/tools/practice-exam" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="flex items-start justify-between"><div class="text-2xl">📝</div><span class="inline-block bg-slate-100 text-slate-600 text-[11px] font-bold rounded-full px-2.5 py-1">Free · quick signup</span></div><h3 class="font-bold mt-2">Free Practice Exam</h3><p class="text-sm text-slate-600 mt-1">Sample RDA-style questions with instant scoring. Takes your name and an email or phone so we can send your results. (The full timed mock is Exam Pro.)</p></a>
       <a href="/tools/flashcards" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🃏</div><h3 class="font-bold mt-2">RDA Flashcards</h3><p class="text-sm text-slate-600 mt-1">Instruments, terms, and infection control — flip and learn.</p></a>
       <a href="/tools/practice-pro" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🖥️</div><h3 class="font-bold mt-2">PDA Practice Pro</h3><p class="text-sm text-slate-600 mt-1">A Dentrix-style practice-management trainer with a real tooth chart.</p></a>
       <a href="/tools/chairside" class="tool-card bg-white rounded-2xl border border-slate-200 p-5 block"><div class="text-2xl">🦷</div><h3 class="font-bold mt-2">PDA ChairSide</h3><p class="text-sm text-slate-600 mt-1">Clinical workflow trainer — procedures, trays, and assisting steps.</p></a>
