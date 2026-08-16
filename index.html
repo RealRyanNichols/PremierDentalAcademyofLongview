@@ -206,6 +206,11 @@
 </head>
 <body class="antialiased">
 
+<a href="/online" id="strike-banner" style="display:block;background:#0a1226;color:#fff;text-align:center;padding:10px 16px;font-size:14px;text-decoration:none">
+  <span style="font-weight:600">Online RDA program: <span style="color:#fbbf24;font-weight:800">$397</span> becomes <span style="font-weight:800">$997</span> Saturday, Aug 22 →</span>
+  <span id="strike-countdown" style="margin-left:8px;font-family:monospace;font-weight:700;color:#5eead4"></span>
+</a>
+
 <!-- ───────────── Top alert banner — cohort countdown ───────────── -->
 <div class="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-400 text-amber-950 border-b border-amber-500/40">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold text-center">
@@ -1241,10 +1246,20 @@
 // Aug 22, 2026 online price cutover — flips displayed $397 to the $997 regular
 // price at Sat 00:00 CT. Real date gate (July-1 pattern); charge amounts flip
 // server-side at the same instant.
-(function(){var END=Date.parse('2026-08-22T05:00:00Z');if(Date.now()<END)return;
+(function(){var END=Date.parse('2026-08-22T05:00:00Z');
+function post(){
 document.querySelectorAll('.js-online-price').forEach(function(el){el.textContent='$997';});
 document.querySelectorAll('.js-online-reg').forEach(function(el){el.style.display='none';});
-document.querySelectorAll('.js-online-plabel').forEach(function(el){el.textContent='One-time payment · regular price';});})();
+document.querySelectorAll('.js-online-plabel').forEach(function(el){el.textContent='One-time payment · regular price';});
+var b=document.getElementById('strike-banner');
+if(b)b.innerHTML='<span style="font-weight:600">The online RDA program is <span style="color:#fbbf24;font-weight:800">$997</span> — self-paced, start any day, everything included →</span>';
+}
+function tick(){var ms=END-Date.now();if(ms<=0){post();return;}
+var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
+var el=document.getElementById('strike-countdown');
+if(el)el.textContent=d+'d '+h+'h '+m+'m left at $397';
+setTimeout(tick,30000);}
+if(Date.now()>=END){post();}else{tick();}})();
 </script>
 </body>
 </html>
