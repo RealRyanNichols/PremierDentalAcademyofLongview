@@ -46,6 +46,16 @@ Live: https://www.premierdentalacademyoflongview.com (apex + www).
 - `vercel.json`         { "cleanUrls": true }
 - `.gitlab-ci.yml`      GitLab secret detection (keep it).
 
+## KAJABI — RETIRED (Amanda, Aug 16, 2026)
+PDA is fully OFF Kajabi. The entire course runs on the owned stack: /learn
+(player) + /admin/courses (builder) + Supabase + Vercel. Do not plan, request,
+or build anything Kajabi — no logins, no broadcasts, no offer edits. The last
+site link to Kajabi was removed Aug 16 (portal.html → /learn). Any section
+below that mentions Kajabi as active is HISTORICAL. If a stray purchase ever
+lands with source='kajabi', flag it to Amanda. Owner intent on the record:
+the in-house platform (software, technology, data list, ad system, content
+system) is itself the asset — investors and other academies will want it.
+
 ## Hard rules (do not break)
 1. Clean URLs stay working (`/night-class`, not `/night-class.html`).
 2. Supabase RLS stays enforced; admin-only data stays admin-only. Admin is
