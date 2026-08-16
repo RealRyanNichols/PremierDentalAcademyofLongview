@@ -22,7 +22,7 @@
 
   // ── Defaults if page didn't ship its own meta ─────────────────
   const META = {
-    description: "Premier Dental Academy of Longview — East Texas's only RDA training program where you practice on real-grade practice management software before your first day.",
+    description: "Premier Dental Academy of Longview — the East Texas RDA training program where you practice on real-grade practice management software before your first day.",
     image: location.origin + '/assets/og-cover.png',
     siteName: 'Premier Dental Academy of Longview',
     twitter: '@PremierDental',

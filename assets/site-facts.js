@@ -42,7 +42,13 @@
       // July 1, 2026 price change — must match api/enroll.js (the payment engine).
       // Pay in full: $3,000. Payment plan: $3,500 total = $500 down + $3,000 balance.
       inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000, balance: 3000, balanceDisplay: "$3,000" },
-      online:   { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true, saleLabel: "limited-time sale" }
+      // Aug 22, 2026 cutover: $397 promo ends Fri Aug 21 11:59 PM CT; $997
+      // regular price from Sat Aug 22 12:00 AM CT. Date-gated (same pattern as
+      // the July 1 in-person cutover) — matches api/enroll.js ONLINE_CUTOVER_MS
+      // and the scheduled products.online_program price_cents flip.
+      online: (Date.now() < Date.parse("2026-08-22T05:00:00Z"))
+        ? { price: 397, priceDisplay: "$397", priceCents: 39700, regularPrice: 997, regularDisplay: "$997", sale: true,  saleLabel: "promotional price through Fri, Aug 21", saleEndsAtISO: "2026-08-22T05:00:00Z" }
+        : { price: 997, priceDisplay: "$997", priceCents: 99700, regularPrice: 997, regularDisplay: "$997", sale: false, saleLabel: "regular price", saleEndsAtISO: "2026-08-22T05:00:00Z" }
     },
 
     paymentPlan: {
@@ -52,7 +58,7 @@
     },
 
     transferRefund: {
-      online: "Online ($397) is non-refundable; 100% transfers as credit toward In-Person tuition within 90 days.",
+      online: "Online tuition is non-refundable; 100% transfers as credit toward In-Person tuition within 90 days.",
       inPerson: "In-Person ($3,000, or $3,500 on a plan) is pro-rated per the Terms.",
       source: "terms.html"
     },

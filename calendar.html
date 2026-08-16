@@ -184,7 +184,7 @@
     <span class="absolute -top-2.5 left-5 bg-amber-400 text-amber-950 text-[9px] font-extrabold uppercase tracking-widest px-2.5 py-0.5 rounded-full">Limited-time price</span>
     <span class="text-2xl shrink-0">💻</span>
     <span class="flex-1 min-w-0 text-slate-800 text-sm sm:text-base">
-      <strong class="text-slate-900">Prefer to learn online?</strong> Same curriculum, start any day — <strong class="text-teal-700">$397</strong> <span class="line-through text-slate-400">$997</span>, one time.
+      <strong class="text-slate-900">Prefer to learn online?</strong> Same curriculum, start any day — <strong class="text-teal-700"><span class="js-online-price">$397</span></strong> <span class="line-through text-slate-400 js-online-reg">$997</span>, one time <span class="js-online-plabel">(promo price through Fri, Aug 21)</span>.
     </span>
     <span class="shrink-0 inline-flex items-center gap-1.5 bg-teal-700 group-hover:bg-teal-800 text-white text-sm font-semibold px-4 py-2 rounded-full transition">Enroll →</span>
   </a>
@@ -280,7 +280,8 @@ const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.c
 const fmtMonth = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 const fmtDate  = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtShort = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-const PRICE = { in_person: '$3,000', online: '$397' };
+// Aug 22, 2026 cutover: online $397 promo → $997 regular (date-gated, July-1 pattern).
+const PRICE = { in_person: '$3,000', online: (Date.now() >= Date.parse('2026-08-22T05:00:00Z') ? '$997' : '$397') };
 const ICON  = { in_person: '🏫', online: '💻' };
 const LABEL = { in_person: 'In-Person',  online: 'Online' };
 
@@ -473,5 +474,12 @@ loadCohorts().then(() => { if (window.AOS) AOS.refreshHard(); });
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>window.AOS && AOS.init({ duration: 600, once: true, offset: 50 });</script>
 <script defer src="/assets/pda-track.js"></script>
+<script>
+// Aug 22, 2026 online price cutover — real date gate (July-1 pattern).
+(function(){if(Date.now()<Date.parse('2026-08-22T05:00:00Z'))return;
+document.querySelectorAll('.js-online-price').forEach(function(el){el.textContent='$997';});
+document.querySelectorAll('.js-online-reg').forEach(function(el){el.style.display='none';});
+document.querySelectorAll('.js-online-plabel').forEach(function(el){el.textContent='(regular price)';});})();
+</script>
 </body>
 </html>

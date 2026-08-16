@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Enroll in Dental Assistant School — Longview, TX & Online | PDA</title>
-  <meta name="description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
+  <meta name="description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today. Online $397 through Fri, Aug 21 — $997 regular price after." />
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
@@ -38,6 +38,7 @@
        unless the buyer chooses the payment plan. Pay-in-full needs none of it. */
     body:not([data-paymode="plan"]) [data-plan-only] { display: none !important; }
   </style>
+  <script src="/assets/site-facts.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/seat-mask.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -53,11 +54,11 @@
   <meta property="og:site_name" content="Premier Dental Academy of Longview" />
   <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/enroll" />
   <meta property="og:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
-  <meta property="og:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
+  <meta property="og:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today. Online $397 through Fri, Aug 21 — $997 regular price after." />
   <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-offer-stack.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Enroll in Dental Assistant School — Longview, TX & Online | PDA" />
-  <meta name="twitter:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today, then weekly or monthly payments. Online $397." />
+  <meta name="twitter:description" content="Enroll in the PDA RDA Program. In-person $3,000 paid in full, or $3,500 on a plan — $500 down today. Online $397 through Fri, Aug 21 — $997 regular price after." />
   <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
 
   <!-- Course schema → Google Course rich results in SERPs (price, provider). -->
@@ -105,6 +106,7 @@
         "offers": {
           "@type": "Offer",
           "price": "397",
+          "priceValidUntil": "2026-08-22",
           "priceCurrency": "USD",
           "url": "https://www.premierdentalacademyoflongview.com/enroll",
           "availability": "https://schema.org/InStock"
@@ -115,6 +117,11 @@
   </script>
 </head>
 <body class="min-h-screen">
+
+<div id="strike-banner" class="bg-navy-900 text-white text-center px-4 py-2.5 text-sm" style="background:#0a1226">
+  <span class="font-semibold">Online: <span class="text-amber-400 font-extrabold">$397</span> becomes <span class="font-extrabold">$997</span> Saturday, Aug 22.</span>
+  <span id="strike-countdown" class="ml-2 inline-block font-mono font-bold" style="color:#5eead4"></span>
+</div>
 
 <nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -173,19 +180,20 @@
     </div>
 
     <div class="bg-white border-2 border-rose-400 rounded-2xl p-6 hover:border-rose-600 transition relative shadow-lg">
-      <span class="absolute -top-3 left-5 bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">🔥 Limited time</span>
+      <span class="absolute -top-3 left-5 bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">Final week at $397</span>
       <div class="flex items-center gap-2 mt-1"><span class="text-2xl">💻</span><h3 class="font-bold text-xl">Online</h3></div>
       <p class="text-sm text-slate-500 mt-1">Start any day · no class schedule</p>
       <div class="mt-5">
         <div class="flex items-baseline gap-2">
-          <span class="display text-4xl font-extrabold text-rose-700">$397</span>
-          <span class="line-through text-slate-400 text-xl font-semibold">$997</span>
+          <span class="display text-4xl font-extrabold text-rose-700 js-online-price">$397</span>
+          <span class="line-through text-slate-400 text-xl font-semibold js-online-reg">$997</span>
         </div>
-        <div class="text-xs font-bold text-rose-700 mt-0.5 uppercase tracking-wider">One-time payment · sale price</div>
+        <div class="text-xs font-bold text-rose-700 mt-0.5 uppercase tracking-wider js-online-plabel">One-time payment · $997 after Fri, Aug 21</div>
       </div>
       <ul class="text-sm text-slate-700 mt-5 space-y-2">
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Start any day, work at your own pace</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Same curriculum as in-person</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> <strong>Now included:</strong>&nbsp;Exam Pro + Study Pack + Exam-Prep Mini-Course ($145 in add-ons, free)</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Full Practice Pro + ChairSide trainer access</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Infection control + radiology coursework</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
@@ -196,7 +204,7 @@
       </div>
       <button type="button" data-action="pick-plan" data-plan="online"
         class="block w-full text-center mt-5 bg-rose-600 hover:bg-rose-700 text-white font-bold py-3 rounded-full shadow-md">
-        Lock In Online — $397 →
+        <span class="js-cta-label">Lock In Online — $397 →</span>
       </button>
     </div>
 
@@ -270,16 +278,16 @@
         <!-- Shown only when Online is selected — the rose, one-time $397 callout -->
         <div id="online-summary" class="bg-gradient-to-br from-rose-50 to-amber-50 border-2 border-rose-300 rounded-xl p-5">
           <div class="flex items-center gap-2">
-            <span class="text-[10px] font-extrabold uppercase tracking-widest text-white bg-rose-500 px-2 py-1 rounded-full animate-pulse">🔥 Limited time</span>
+            <span class="text-[10px] font-extrabold uppercase tracking-widest text-white bg-rose-500 px-2 py-1 rounded-full animate-pulse">Final week at $397</span>
             <span class="text-xs font-bold text-rose-700 uppercase tracking-wider">Online — start any day</span>
           </div>
           <div class="mt-3 flex items-baseline gap-2">
-            <span class="display text-4xl font-extrabold text-rose-700">$397</span>
-            <span class="line-through text-slate-400 text-xl font-semibold">$997</span>
+            <span class="display text-4xl font-extrabold text-rose-700 js-online-price">$397</span>
+            <span class="line-through text-slate-400 text-xl font-semibold js-online-reg">$997</span>
             <span class="text-sm text-slate-600">one-time payment</span>
           </div>
           <p class="text-xs text-slate-700 mt-3 leading-relaxed">
-            <strong>Non-refundable at this sale price.</strong> You're getting tools worth thousands at a fraction of full price. If Online isn't the right fit, we'll <strong>transfer your full $397 as credit toward the In-Person program</strong> — your money is never lost.
+            <strong>Non-refundable at this sale price.</strong> You're getting tools worth thousands at a fraction of full price. If Online isn't the right fit, we'll <strong>transfer your full payment as credit toward the In-Person program</strong> — your money is never lost.
           </p>
         </div>
 
@@ -417,7 +425,7 @@
     <div class="text-center max-w-2xl mx-auto mb-8" data-aos="fade-up">
       <p class="text-[12px] uppercase tracking-[0.16em] text-teal-700 font-bold">Why Premier</p>
       <h2 id="enroll-proof" class="display text-3xl sm:text-4xl font-bold text-slate-900 mt-2">A real path to a real job — <span class="text-amber-500 italic">close to home.</span></h2>
-      <p class="text-slate-600 mt-3">East Texas's only RDA program that trains you on real practice-management software before your first day on the job.</p>
+      <p class="text-slate-600 mt-3">The East Texas RDA program that trains you on real practice-management software before your first day on the job.</p>
     </div>
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
       <div class="bg-white rounded-2xl border border-slate-200 p-5 text-center pda-glow-card" data-aos="fade-up"><div data-count class="display text-3xl font-bold text-teal-700">406+</div><div class="text-xs text-slate-500 mt-1 uppercase tracking-widest font-semibold">Graduates hired</div></div>
@@ -448,7 +456,7 @@
   <section class="mt-14 bg-gradient-to-b from-[#0a1226] to-[#070d1f] text-white rounded-3xl px-6 py-10 sm:py-14 text-center" data-aos="fade-up">
     <div class="text-4xl">🔁</div>
     <h2 class="display text-2xl sm:text-3xl font-bold mt-2">Your money is <span class="text-amber-400 italic">never lost.</span></h2>
-    <p class="text-slate-300 mt-3 max-w-2xl mx-auto">Start Online and decide you'd rather train in person? Your full <strong class="text-white">$397 transfers as credit</strong> toward the In-Person program. In-Person tuition is pro-rated per Texas state guidelines. Either way, you're protected — and we help you get hired when you finish.</p>
+    <p class="text-slate-300 mt-3 max-w-2xl mx-auto">Start Online and decide you'd rather train in person? Your full <strong class="text-white">online payment transfers as credit</strong> toward the In-Person program. In-Person tuition is pro-rated per Texas state guidelines. Either way, you're protected — and we help you get hired when you finish.</p>
     <div class="mt-6 flex flex-wrap gap-3 justify-center">
       <a href="#top" data-event="enroll_click" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full">Pick your format ↑</a>
       <a href="tel:+19039136444" data-event="call_click" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-6 py-3 rounded-full">📞 Call (903) 913-6444</a>
@@ -496,7 +504,7 @@
 
   <div class="text-center mt-10 text-sm text-slate-600 max-w-2xl mx-auto">
     <p class="font-semibold text-slate-900">Refund &amp; transfer policy</p>
-    <p class="mt-1"><strong>Online ($397 sale):</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.</p>
+    <p class="mt-1"><strong>Online:</strong> non-refundable — but transferable in full to In-Person credit if it isn't right for you. Your money is never lost.</p>
     <p class="mt-1"><strong>In-Person ($3,000, or $3,500 on a plan):</strong> pro-rated refund per Texas state proprietary-school guidelines. Submit withdrawal in writing; refunds process within 30 days.</p>
   </div>
 
@@ -517,7 +525,7 @@
     <div class="space-y-3">
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group" open>
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">How do payments work?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">In-Person is <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> — put <strong>$500 down</strong> today and split the <strong>$3,000</strong> balance into simple weekly or monthly payments (up to 12). Want to see your exact payment dates first? <a href="/tools/tuition-planner" class="text-teal-700 underline">Try the free Tuition Planner</a>. Online is a one-time <strong>$397</strong> (sale; reg $997). You can also split with Klarna, Afterpay, or Affirm.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">In-Person is <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> — put <strong>$500 down</strong> today and split the <strong>$3,000</strong> balance into simple weekly or monthly payments (up to 12). Want to see your exact payment dates first? <a href="/tools/tuition-planner" class="text-teal-700 underline">Try the free Tuition Planner</a>. Online is a one-time <strong>$397 through Friday, Aug 21</strong> — <strong>$997</strong> regular price after. You can also split with Klarna, Afterpay, or Affirm.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">Do I need any experience?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
@@ -529,7 +537,7 @@
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold text-slate-900">What if I change my mind?<span class="text-teal-600 text-2xl group-open:rotate-45 transition">+</span></summary>
-        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online ($397):</strong> non-refundable at the sale price, but transferable in full to In-Person credit — your money is never lost. <strong>In-Person ($3,000 / $3,500 plan):</strong> pro-rated refund per Texas state guidelines.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700"><strong>Online:</strong> non-refundable, but transferable in full to In-Person credit — your money is never lost. <strong>In-Person ($3,000 / $3,500 plan):</strong> pro-rated refund per Texas state guidelines.</div>
       </details>
     </div>
   </section>
@@ -551,7 +559,9 @@ const SQUARE_LOCATION_ID = '2P2ZE3FJNEYTV';
 
 const PLAN_DEFS = {
   'in-person': { name: 'PDA RDA Program — In-Person', total: 300000, mode: 'in_person' },
-  'online':    { name: 'PDA RDA Program — Online',    total:  39700, mode: 'online' },
+  // Aug 22, 2026 cutover: $397 promo → $997 regular at Sat 00:00 CT. Matches
+  // api/enroll.js ONLINE_CUTOVER + the products.online_program price flip.
+  'online':    { name: 'PDA RDA Program — Online',    total: (Date.now() >= Date.parse('2026-08-22T05:00:00Z') ? 99700 : 39700), mode: 'online' },
 };
 
 const sb = window.supabase.createClient(
@@ -914,11 +924,11 @@ async function submit() {
       if (resp.ok && (out.ok || out.alreadyOwned)) {
         try {
           if (window.PDA && window.PDA.track) window.PDA.track('purchase', {
-            plan: 'online', value: 397, currency: 'USD',
+            plan: 'online', value: PLAN_DEFS['online'].total / 100, currency: 'USD',
           });
         } catch (e) {}
         const params = new URLSearchParams({
-          plan: 'online', total: '39700', down: out.alreadyOwned ? '0' : '39700', remaining: '0',
+          plan: 'online', total: String(PLAN_DEFS['online'].total), down: out.alreadyOwned ? '0' : String(PLAN_DEFS['online'].total), remaining: '0',
           receipt: out.receiptUrl || '', course: '1', warning: out.warning || '',
         });
         window.location.href = '/enroll-success?' + params.toString();
@@ -1054,5 +1064,31 @@ document.addEventListener('change', (ev) => {
 loadCohorts().then(autoPickFromUrl);
 </script>
 <script defer src="/assets/pda-track.js"></script>
+<script>
+// ── Aug 22, 2026 online price cutover (REAL deadline — July-1 pattern). ──
+// Before Sat 00:00 CT: countdown in the banner. After: every $397 display
+// flips to the $997 regular price. Charge amounts flip server-side
+// (products.online_program + api/enroll.js) at the same instant.
+(function () {
+  var END = Date.parse('2026-08-22T05:00:00Z');
+  function post() {
+    document.querySelectorAll('.js-online-price').forEach(function (el) { el.textContent = '$997'; });
+    document.querySelectorAll('.js-online-reg').forEach(function (el) { el.style.display = 'none'; });
+    document.querySelectorAll('.js-online-plabel').forEach(function (el) { el.textContent = 'One-time payment · regular price'; });
+    document.querySelectorAll('.js-cta-label').forEach(function (el) { el.textContent = 'Enroll Online — $997 →'; });
+    var b = document.getElementById('strike-banner');
+    if (b) b.innerHTML = '<span class="font-semibold">Online: <span class="text-amber-400 font-extrabold" style="color:#fbbf24">$997</span> · self-paced · start any day · everything included.</span>';
+  }
+  function tick() {
+    var ms = END - Date.now();
+    if (ms <= 0) { post(); return; }
+    var d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4);
+    var el = document.getElementById('strike-countdown');
+    if (el) el.textContent = d + 'd ' + h + 'h ' + m + 'm left at $397';
+    setTimeout(tick, 30000);
+  }
+  if (Date.now() >= END) { post(); } else { tick(); }
+})();
+</script>
 </body>
 </html>
