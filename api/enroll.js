@@ -303,7 +303,7 @@ export default async function handler(req, res) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(firstPaymentDate)) return res.status(400).json({ error: 'Invalid first payment date.' });
     if (!/^\d{4}-\d{2}-\d{2}$/.test(classEndDate)) return res.status(400).json({ error: 'Invalid class end date.' });
     down = Math.round(Number(downCents));
-    if (!Number.isFinite(down) || down < 20000) return res.status(400).json({ error: 'Minimum down payment is $200.' });
+    if (!Number.isFinite(down) || down < 50000) return res.status(400).json({ error: 'Minimum down payment is $500.' });
     if (down > total) return res.status(400).json({ error: 'Down payment cannot exceed total tuition.' });
     remaining = total - down;
     paidInFull = remaining === 0;

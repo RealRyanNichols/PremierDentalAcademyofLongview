@@ -1,25 +1,61 @@
 {
   "cleanUrls": true,
   "crons": [
-    { "path": "/api/cron-send-scheduled", "schedule": "*/15 * * * *" },
-    { "path": "/api/cron-process-sequences", "schedule": "0 * * * *" }
+    {
+      "path": "/api/cron-send-scheduled",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron-process-sequences",
+      "schedule": "0 * * * *"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" },
-        { "key": "Strict-Transport-Security", "value": "max-age=31536000; includeSubDomains" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), browsing-topics=()" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=(), browsing-topics=()"
+        }
       ]
     },
     {
       "source": "/(.*)\\.(jpg|jpeg|gif|png|svg|ico|webp|avif|woff|woff2)",
       "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
       ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/night-class",
+      "destination": "/classes",
+      "permanent": true
+    },
+    {
+      "source": "/night-class.html",
+      "destination": "/classes",
+      "permanent": true
     }
   ]
 }

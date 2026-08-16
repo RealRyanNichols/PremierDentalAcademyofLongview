@@ -41,9 +41,9 @@
     }
     const w = Number(feed && feed.inquiries_7d);
     if (w >= 3) msgs.push({ icon: '📈', text: `${w} people requested info this week.` });
-    // Published program outcomes (the school's real, site-wide figures).
-    msgs.push({ icon: '🎓', text: '406+ graduates hired across East Texas.' });
-    msgs.push({ icon: '⭐', text: '85%+ job-placement rate for graduates.' });
+    // NOTE: graduate-count / placement-rate messages removed 2026-08-16 —
+    // unverified per assets/site-facts.js (do not display until Amanda supplies
+    // a dated, verified figure). Only live Supabase-backed messages remain.
     return msgs;
   }
 

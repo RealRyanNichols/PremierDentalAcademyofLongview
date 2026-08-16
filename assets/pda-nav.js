@@ -649,7 +649,7 @@
       'ip-total': NEW ? '$3,000' : '$3,000',
       'ip-pif':   NEW ? '$3,000' : '$3,000',
       'ip-plan':  NEW ? '$3,500' : '$3,500',
-      'ip-down':  NEW ? '$500'   : '$200'
+      'ip-down':  NEW ? '$500'   : '$500'
     };
     function go() {
       document.querySelectorAll('[data-price]').forEach(function (el) {

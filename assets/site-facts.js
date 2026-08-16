@@ -73,8 +73,8 @@
 
     cohortSeats: {
       value: 8, display: "8 seats per class",
-      verified: false,
-      note: "Marketing claim in calendar.html. Real per-cohort seat counts come from the Supabase 'cohorts' table (capacity/enrolled_count). Confirm the '8 per class' cap before relying on it."
+      verified: true,
+      note: "VERIFIED 2026-08-16 against the Supabase 'cohorts' table: every upcoming cohort has capacity = 8 (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17). Live per-cohort seats still come from capacity/enrolled_count."
     },
 
     employer: {
