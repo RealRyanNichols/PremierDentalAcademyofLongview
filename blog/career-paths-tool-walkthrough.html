@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Career Paths Tool: Where Dental Assisting Can Actually Lead</title>
+  <meta name="description" content="A walkthrough of our free Career Paths tool — the six-step ladder from RDA to certifications, expanded functions, specialty and lead roles, office management, and beyond. No signup." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .step-row { cursor:pointer; }
+    .step-row.open .step-chev { transform: rotate(90deg); }
+    .step-chev { transition: transform .18s ease; display:inline-block; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/career-paths-tool-walkthrough" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/career-paths-tool-walkthrough" />
+  <meta property="og:title" content="The Career Paths Tool: Where Dental Assisting Can Actually Lead" />
+  <meta property="og:description" content="A walkthrough of our free six-step career ladder — RDA, certifications, expanded functions, specialty roles, office management, and beyond." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-career-paths-tool-walkthrough.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Where Dental Assisting Can Actually Lead" />
+  <meta name="twitter:description" content="Walk the six-step career ladder with our free Career Paths tool. No signup." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-career-paths-tool-walkthrough.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The Career Paths Tool: Where Dental Assisting Can Actually Lead","description":"A walkthrough of our free six-step career ladder — RDA, certifications, expanded functions, specialty roles, office management, and beyond.","datePublished":"2026-08-20","dateModified":"2026-08-20","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og/blog-career-paths-tool-walkthrough.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/career-paths-tool-walkthrough"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Feature spotlight · Free tools</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">The Career Paths tool: where dental assisting can actually lead</h1>
+  <p class="text-slate-500 mt-3 text-lg">The question underneath "should I do this?" is usually "and then what?" Nobody wants to train for a job that dead-ends in two years. So we built a free page that lays the whole ladder out — six steps, what each one is, and how people get there. Here's a walkthrough, and then you can go climb it yourself.</p>
+
+  <div class="grid grid-cols-3 gap-3 mt-8 not-prose">
+    <div class="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-teal-700">6</div><div class="text-xs text-slate-600 mt-1">steps on the ladder</div></div>
+    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-amber-600">$0</div><div class="text-xs text-slate-600 mt-1">to use it — no signup</div></div>
+    <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-cyan-700">1</div><div class="text-xs text-slate-600 mt-1">step you have to take first</div></div>
+  </div>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">What the tool actually is</h2>
+    <p><a href="/tools/career-paths" class="text-teal-700 font-semibold">Career Paths</a> is a single page on this site — free, no email required, nothing to install. It shows the dental-assisting career as a ladder of six steps. Tap any step and it opens: what that role is, roughly what it can pay, and how people typically get there.</p>
+    <p>That's the whole thing. It isn't a quiz, it doesn't score you, and it doesn't try to talk you into anything. It exists because we kept having the same conversation on the phone — "is this just a job or is there somewhere to go?" — and a page answers it better at 11pm than a voicemail does.</p>
+
+    <div class="bg-slate-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">About the pay figures on that page</div>
+      <p class="mt-1 mb-0">They're regional estimates, and the tool says so on its face. Pay varies by employer, experience, certifications, specialty and hours — no page can promise you a number. For a closer look at East Texas specifically, use the <a href="/salary" class="text-teal-700 font-semibold">salary page</a>, and treat every figure as a starting point for a conversation, not a guarantee.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">The six steps (tap to open each one)</h2>
+    <p>Here's the same ladder, right here, so you can see the shape of it before you go to the tool:</p>
+    <div class="not-prose" id="ladderList"></div>
+    <p class="text-sm text-slate-500 mt-3">Tap a step to expand it. The full version — with pay ranges and a "start step one" link — lives at <a href="/tools/career-paths" class="text-teal-700 font-semibold">/tools/career-paths</a>.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Why the ladder is built this way</h2>
+    <p>Look at the shape of it and one thing stands out: <strong>steps two and three don't require going back to school.</strong> That's the part most people don't realize when they're deciding whether to start.</p>
+    <p>In a lot of fields, more money means another degree and another loan. In dental assisting, a big chunk of your early growth comes from stacking credentials on top of the RDA registration you already have — radiology, coronal polishing, nitrous-oxide monitoring, CPR/BLS, sealants. Each one adds something you're allowed to do, which adds value to an office, which adds leverage for you. Many offices will help pay for them, because a more capable assistant makes their schedule work better.</p>
+    <p>Then the ladder branches instead of narrowing. Some people go deeper clinically — expanded functions, then a specialty office like orthodontics, oral surgery or pediatrics. Some go the other direction entirely, toward treatment coordination and office management, where the skills are scheduling, insurance, treatment plans and people. And some use assisting as the launchpad and go on to hygiene or further healthcare training, funded by the income the first step gave them.</p>
+
+    <div class="bg-slate-50 border-l-4 border-cyan-700 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">One honest caveat about Texas rules</div>
+      <p class="mt-1 mb-0">What a dental assistant is permitted to do in Texas — including expanded functions — is set by the Texas State Board of Dental Examiners, and requirements change. The tool describes the shape of the career; for the actual rules that apply to you, go to <a href="https://tsbde.texas.gov" target="_blank" rel="noopener" class="text-teal-700 font-semibold">tsbde.texas.gov</a>. We'd rather send you to the board than paraphrase it and be out of date.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">How to use it if you're still deciding</h2>
+    <p>If you haven't started school yet, the useful move is to read step one and step six and ask yourself whether the distance between them looks worth it. Don't try to pick your final destination today — nobody knows at the start whether they'll love chairside work or discover they're the person who should be running the front office. You find that out by doing the job.</p>
+    <p>What the tool gives you is permission to stop treating this as a dead-end decision. It's a first step with options attached, which is a different kind of risk than a first step with nothing after it.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">How to use it if you're already enrolled</h2>
+    <p>Different job. Use it as a two-year plan. Pick the one credential you want to add first after you're registered, write it down, and ask about it in your interviews — "which certifications does this office support?" is a genuinely good question to ask an employer, and it tells them you're thinking past the first paycheck.</p>
+    <p>Pair it with the other free tools while you're at it: the <a href="/tools/resume-builder" class="text-teal-700 font-semibold">resume builder</a> for the job hunt, <a href="/tools/interview-prep" class="text-teal-700 font-semibold">interview prep</a> for the conversation, and <a href="/tools/practice-pro" class="text-teal-700 font-semibold">Practice Pro</a> to keep your charting and front-office skills sharp. They're all on the <a href="/tools" class="text-teal-700 font-semibold">tools page</a>, all free.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Step one is the only one you can do this month</h2>
+    <p>Everything on that ladder from step two up requires you to be an RDA first. That's the honest bottleneck, and it's also the good news, because step one is the shortest one on the list.</p>
+    <p>Our in-person program runs about 12 weeks at the Longview campus, 2800 Gilmer Rd, Suite 106, capped at 8 students so you're actually on the equipment instead of watching someone else use it. Classes are daytime — <a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> for exact hours. The next in-person starts are <a href="/calendar" class="text-teal-700 font-semibold">August 25 and September 14</a>. Tuition is $3,000 paid in full, or $3,500 on a plan ($500 down, then the $3,000 balance in simple payments). Workforce Solutions, WIOA and GI Bill funding are accepted. If the drive to Longview doesn't work, there's a self-paced <a href="/online" class="text-teal-700 font-semibold">online option</a> too.</p>
+
+    <div class="not-prose" data-pda-lead data-topic="career-paths-tool-walkthrough" data-heading="Wondering which path fits you? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">Start with step one.</h2>
+      <p class="text-teal-100 mb-5">The rest of the ladder is yours to climb. Applying is free and takes about two minutes.</p>
+      <a href="/apply" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Apply now →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/dental-assistant-career-path-how-to-advance" class="text-teal-700 font-semibold">How to advance as a dental assistant</a> · <a href="/blog/dental-assistant-to-dental-hygienist-path" class="text-teal-700 font-semibold">Assistant to hygienist, honestly</a> · <a href="/blog/texas-dental-assistant-certifications-checklist" class="text-teal-700 font-semibold">The Texas certifications checklist</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var STEPS=[
+    {n:1,icon:"🦷",title:"Registered Dental Assistant",tag:"The starting line",what:"Chairside assisting, sterilization, x-rays, charting and patient care. This is the job the whole ladder stands on.",how:"Complete a program and register as an RDA in Texas."},
+    {n:2,icon:"📜",title:"Add certifications",tag:"No extra degree required",what:"Radiology, coronal polishing, nitrous-oxide monitoring, CPR/BLS, sealants — each credential makes you more capable and more hireable.",how:"Stack them over your first year or two. Many offices help pay for them."},
+    {n:3,icon:"🛠️",title:"Expanded functions assistant",tag:"More clinical responsibility",what:"Take on additional clinical duties allowed under Texas rules — more responsibility, and typically a step up in pay.",how:"Pursue expanded-functions training after you have real chairside experience."},
+    {n:4,icon:"⭐",title:"Lead or specialty assistant",tag:"Go deeper clinically",what:"Become the go-to assistant in your office, or specialize — orthodontics, oral surgery, pediatric dentistry. Specialty offices often pay more.",how:"Build a strong track record, then move into a specialty practice or a lead role."},
+    {n:5,icon:"📋",title:"Treatment coordinator / office manager",tag:"Go toward leadership",what:"Run the front office — scheduling, treatment plans, insurance, and the patient experience. Often a salaried leadership role.",how:"Grow your front-desk and people skills. Many managers started chairside."},
+    {n:6,icon:"🎓",title:"Hygiene or beyond",tag:"The bigger jump",what:"Some assistants go on to dental hygiene or further healthcare careers, using assisting as the launchpad rather than the destination.",how:"Use your experience and income to fund more schooling when you're ready."}
+  ];
+  var host=document.getElementById('ladderList');
+  if(!host)return;
+  host.innerHTML=STEPS.map(function(s,i){
+    return '<div class="step-row border border-slate-200 rounded-xl mb-2 overflow-hidden" data-i="'+i+'">'+
+      '<div class="flex items-center gap-3 p-3 bg-white hover:bg-slate-50">'+
+        '<span class="w-8 h-8 shrink-0 rounded-full bg-teal-700 text-white text-sm font-bold flex items-center justify-center">'+s.n+'</span>'+
+        '<span class="text-xl shrink-0">'+s.icon+'</span>'+
+        '<span class="flex-1 min-w-0"><span class="block font-semibold text-slate-900 text-[15px] leading-snug">'+s.title+'</span>'+
+        '<span class="block text-xs text-slate-500">'+s.tag+'</span></span>'+
+        '<span class="step-chev text-teal-700 font-bold shrink-0">›</span>'+
+      '</div>'+
+      '<div class="step-body hidden bg-slate-50 border-t border-slate-200 p-4 text-[15px] text-slate-700">'+
+        '<p style="margin:0 0 .5rem">'+s.what+'</p>'+
+        '<p style="margin:0"><strong>How to get there:</strong> '+s.how+'</p>'+
+      '</div></div>';
+  }).join('');
+  host.querySelectorAll('.step-row').forEach(function(row){
+    row.addEventListener('click',function(){
+      row.classList.toggle('open');
+      row.querySelector('.step-body').classList.toggle('hidden');
+    });
+  });
+})();
+</script>
+</body>
+</html>
