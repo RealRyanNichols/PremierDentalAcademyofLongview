@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Lesson Reports — PDA Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <img src="/assets/logo-mark.png" alt="PDA" width="28" height="28" class="w-7 h-7 rounded" />
+      <span>PDA Admin</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin/students" class="text-slate-600 hover:text-teal-700">Students</a>
+      <a href="/admin/feedback" class="text-slate-600 hover:text-teal-700">Feedback</a>
+      <button id="signout" class="text-rose-600 hover:underline">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">&#128274;</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to view lesson reports.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in &rarr;</a>
+</div>
+
+<main id="view" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="flex items-end justify-between flex-wrap gap-3 mb-6">
+    <div>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Reported by students</p>
+      <h1 class="display text-3xl font-bold">Lesson reports</h1>
+      <p class="text-slate-600 text-sm mt-1">Typos, unclear passages, and things students think are wrong &mdash; straight from the lesson they were reading.</p>
+    </div>
+    <button id="refresh" class="bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold text-sm px-4 py-2 rounded-lg">&#8635; Refresh</button>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Needs review</div><div id="s-new" class="text-2xl font-bold text-rose-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Working on it</div><div id="s-open" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Fixed</div><div id="s-fixed" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">This week</div><div id="s-week" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-4 text-sm">
+    <button data-f="new" class="rp-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg">Needs review</button>
+    <button data-f="working" class="rp-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Working on it</button>
+    <button data-f="fixed" class="rp-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Fixed</button>
+    <button data-f="all" class="rp-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">All</button>
+  </div>
+
+  <div id="list" class="space-y-3"></div>
+  <div id="empty" class="hidden text-center text-slate-500 py-12">Nothing here right now.</div>
+</main>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  const KIND = {
+    typo:    ['Typo',       'bg-slate-100 text-slate-700'],
+    unclear: ['Unclear',    'bg-amber-100 text-amber-700'],
+    wrong:   ['Maybe wrong','bg-rose-100 text-rose-700'],
+    broken:  ['Broken',     'bg-purple-100 text-purple-700'],
+    other:   ['Other',      'bg-slate-100 text-slate-700']
+  };
+  let rows = [], filter = 'new';
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  async function loadData() {
+    const { data, error } = await sb.from('lesson_reports')
+      .select('id, student_name, student_email, lesson_id, lesson_title, course_slug, module_title, kind, quoted_text, message, page_url, status, admin_note, created_at')
+      .order('created_at', { ascending: false }).limit(500);
+    if (error) { document.getElementById('list').innerHTML = '<div class="text-rose-600 text-sm">Could not load reports: ' + esc(error.message) + '</div>'; return; }
+    rows = data || [];
+    document.getElementById('s-new').textContent   = rows.filter(r => r.status === 'new').length;
+    document.getElementById('s-open').textContent  = rows.filter(r => r.status === 'working').length;
+    document.getElementById('s-fixed').textContent = rows.filter(r => r.status === 'fixed').length;
+    const weekAgo = Date.now() - 7 * 864e5;
+    document.getElementById('s-week').textContent  = rows.filter(r => new Date(r.created_at).getTime() > weekAgo).length;
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    const shown = rows.filter(r => filter === 'all' || r.status === filter);
+    document.getElementById('empty').classList.toggle('hidden', shown.length > 0);
+    list.innerHTML = shown.map(r => {
+      const k = KIND[r.kind] || KIND.other;
+      const when = new Date(r.created_at).toLocaleString();
+      const who = r.student_name || r.student_email || 'A student';
+      const where = [r.module_title, r.lesson_title].filter(Boolean).map(esc).join(' &middot; ');
+      const link = r.page_url ? '<a href="' + esc(r.page_url) + '" target="_blank" class="text-teal-700 hover:underline">open lesson &rarr;</a>' : '';
+      return '<div class="bg-white rounded-xl border border-slate-200 p-4" data-row="' + r.id + '">'
+        + '<div class="flex items-center gap-2 flex-wrap mb-1">'
+          + '<span class="text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ' + k[1] + '">' + k[0] + '</span>'
+          + (r.status === 'fixed' ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">Fixed</span>' : '')
+          + (r.status === 'working' ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">Working</span>' : '')
+          + '<span class="ml-auto text-xs text-slate-400">' + esc(when) + '</span>'
+        + '</div>'
+        + '<div class="text-xs text-slate-500">' + esc(who) + ' &mdash; ' + (where || esc(r.course_slug || '')) + ' ' + link + '</div>'
+        + (r.quoted_text ? '<blockquote class="mt-2 border-l-4 border-slate-200 pl-3 text-sm text-slate-500 italic">' + esc(r.quoted_text) + '</blockquote>' : '')
+        + '<div class="text-sm text-slate-800 mt-2 whitespace-pre-wrap">' + esc(r.message) + '</div>'
+        + (r.admin_note ? '<div class="mt-2 text-xs text-slate-500"><b>Note:</b> ' + esc(r.admin_note) + '</div>' : '')
+        + '<div class="mt-3 flex gap-2 flex-wrap text-xs">'
+          + (r.status !== 'working' ? '<button data-act="working" data-id="' + r.id + '" class="rp-act border border-slate-300 hover:border-amber-500 px-3 py-1.5 rounded-lg font-semibold">Working on it</button>' : '')
+          + (r.status !== 'fixed'   ? '<button data-act="fixed"   data-id="' + r.id + '" class="rp-act bg-teal-700 hover:bg-teal-800 text-white px-3 py-1.5 rounded-lg font-semibold">Mark fixed</button>' : '')
+          + (r.status !== 'new'     ? '<button data-act="new"     data-id="' + r.id + '" class="rp-act border border-slate-300 hover:border-slate-500 px-3 py-1.5 rounded-lg font-semibold">Reopen</button>' : '')
+          + '<button data-act="note" data-id="' + r.id + '" class="rp-act border border-slate-300 hover:border-teal-500 px-3 py-1.5 rounded-lg font-semibold">Add note</button>'
+        + '</div>'
+      + '</div>';
+    }).join('');
+    document.querySelectorAll('.rp-act').forEach(b => b.onclick = () => act(b.getAttribute('data-id'), b.getAttribute('data-act'), b));
+  }
+
+  async function act(id, action, btn) {
+    const patch = {};
+    if (action === 'note') {
+      const cur = (rows.find(r => r.id === id) || {}).admin_note || '';
+      const note = prompt('Note for this report (what you did, or what you need):', cur);
+      if (note === null) return;
+      patch.admin_note = note.trim() || null;
+    } else {
+      patch.status = action;
+      patch.resolved_at = action === 'fixed' ? new Date().toISOString() : null;
+      patch.resolved_by = action === 'fixed' ? session.user.id : null;
+    }
+    btn.disabled = true;
+    const { error } = await sb.from('lesson_reports').update(patch).eq('id', id);
+    if (error) { alert('Could not save: ' + error.message); btn.disabled = false; return; }
+    await loadData();
+  }
+
+  document.querySelectorAll('.rp-filter').forEach(b => b.onclick = () => {
+    filter = b.getAttribute('data-f');
+    document.querySelectorAll('.rp-filter').forEach(x => { x.className = 'rp-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg'; });
+    b.className = 'rp-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg';
+    render();
+  });
+  document.getElementById('refresh').onclick = loadData;
+  await loadData();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>

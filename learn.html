@@ -276,6 +276,7 @@
           '<button id="complete-btn" class="' + (completed ? 'bg-teal-100 text-teal-800' : 'bg-teal-700 hover:bg-teal-800 text-white') + ' font-semibold px-5 py-2.5 rounded-full text-sm">' + (completed ? '✓ Completed' : 'Mark complete') + '</button>' +
           (next ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + next.m.module_number + '&l=' + next.l.lesson_number + '" class="border border-slate-300 hover:border-teal-500 font-semibold px-5 py-2.5 rounded-full text-sm">Next lesson →</a>' : '') +
         '</div>' +
+        '<div id="pda-report"></div>' +
       '</article>' +
       '<div class="mt-4 flex justify-between text-sm">' +
         (prev ? '<a href="/learn?c=' + encodeURIComponent(slug) + '&m=' + prev.m.module_number + '&l=' + prev.l.lesson_number + '" class="text-slate-500 hover:text-teal-700">← ' + esc(prev.l.title) + '</a>' : '<span></span>') +
@@ -287,6 +288,7 @@
     renderInteractive(full);
     renderPractice(full);
     renderExtras(full, mNum, lNum, slug);
+    renderReport(full, data, cur, slug);
     document.getElementById('complete-btn').addEventListener('click', function () { markComplete(mNum, lNum, null, next, slug); });
     Array.prototype.forEach.call(document.querySelectorAll('.att-btn'), function (b) {
       b.addEventListener('click', async function () {
@@ -480,6 +482,84 @@
   }
 
   // Extras: end-of-week feedback form (required) OR the Ask-a-question tutor.
+  // ---- "Something look off?" — student-reported lesson problems -------------
+  var REPORT_KINDS = [
+    'typo:Typo or spelling',
+    'unclear:Something is unclear',
+    'wrong:I think this is wrong',
+    'broken:Something is broken',
+    'other:Something else'
+  ];
+  function reportThanks() {
+    return '<div class="mt-8 rounded-2xl border-2 border-teal-200 bg-teal-50 p-6">' +
+      '<h3 class="font-bold text-teal-800 text-lg">Thank you — we got it 🙏</h3>' +
+      '<p class="text-sm text-slate-600 mt-1">A real person reads every one of these, and your name goes on the fix. If we need more detail we will reach out. Keep going — and keep telling us.</p>' +
+      '</div>';
+  }
+  function renderReport(lesson, data, cur, slug) {
+    var host = document.getElementById('pda-report');
+    if (!host || !uid) return;
+    host.innerHTML =
+      '<div class="mt-8 border-t border-slate-200 pt-6">' +
+        '<button id="rp-open" class="text-sm font-semibold text-slate-500 hover:text-teal-700">Something look off on this page? Tell us →</button>' +
+        '<div id="rp-form" class="hidden mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:p-6">' +
+          '<h3 class="display text-lg font-extrabold text-slate-900">Help us fix it</h3>' +
+          '<p class="text-sm text-slate-600 mt-1">You are not being picky. If something reads wrong, is confusing, or looks broken, we want to know — the students behind you get a better course because you spoke up. Nothing here affects your grade.</p>' +
+          '<p class="text-sm font-bold text-slate-700 mt-4">What kind of problem is it?</p>' +
+          '<div id="rp-kind" class="flex flex-wrap gap-2 mt-1">' +
+            REPORT_KINDS.map(function (k) { var a = k.split(':'); return '<button type="button" data-k="' + a[0] + '" class="rp-k rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-slate-600">' + a[1] + '</button>'; }).join('') +
+          '</div>' +
+          '<p class="text-sm font-bold text-slate-700 mt-4">Paste the part that is wrong <span class="font-normal text-slate-400">(optional — helps us find it fast)</span></p>' +
+          '<textarea id="rp-quote" rows="2" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="Copy and paste the sentence here."></textarea>' +
+          '<p class="text-sm font-bold text-slate-700 mt-3">Tell us what is off</p>' +
+          '<textarea id="rp-msg" rows="3" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm" placeholder="In your own words — what did not make sense, or what looks wrong?"></textarea>' +
+          '<div class="mt-4 flex items-center gap-3 flex-wrap">' +
+            '<button id="rp-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-6 py-2.5 rounded-full text-sm">Send it in</button>' +
+            '<button id="rp-cancel" class="text-sm text-slate-400 hover:text-slate-600">Never mind</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    var openBtn = host.querySelector('#rp-open'), form = host.querySelector('#rp-form'), kind = '';
+    openBtn.onclick = function () { form.classList.remove('hidden'); openBtn.classList.add('hidden'); host.querySelector('#rp-msg').focus(); };
+    host.querySelector('#rp-cancel').onclick = function () { form.classList.add('hidden'); openBtn.classList.remove('hidden'); };
+    Array.prototype.forEach.call(host.querySelectorAll('.rp-k'), function (b) {
+      b.onclick = function () {
+        kind = b.getAttribute('data-k');
+        Array.prototype.forEach.call(host.querySelectorAll('.rp-k'), function (x) {
+          x.className = 'rp-k rounded-lg border px-3 py-2 text-sm font-bold ' + (x === b ? 'border-teal-500 bg-teal-50 text-teal-700' : 'border-slate-300 bg-white text-slate-600');
+        });
+      };
+    });
+    host.querySelector('#rp-send').onclick = async function () {
+      var btn = this;
+      var msg = String(host.querySelector('#rp-msg').value || '').trim();
+      if (!msg) { alert('Tell us a little about what is off, then send it in.'); host.querySelector('#rp-msg').focus(); return; }
+      btn.disabled = true; btn.textContent = 'Sending…';
+      var who = {};
+      try { var u = (await sb.auth.getUser()).data.user || {}; who = { email: u.email || null, name: (u.user_metadata && (u.user_metadata.full_name || u.user_metadata.name)) || null }; } catch (e) {}
+      var row = {
+        student_id: uid,
+        student_name: who.name,
+        student_email: who.email,
+        lesson_id: lesson.id,
+        lesson_title: lesson.title,
+        course_slug: slug,
+        module_title: cur && cur.m ? cur.m.title : null,
+        kind: kind || 'other',
+        quoted_text: String(host.querySelector('#rp-quote').value || '').trim().slice(0, 4000) || null,
+        message: msg.slice(0, 4000),
+        page_url: location.pathname + location.search
+      };
+      var res = await sb.from('lesson_reports').insert(row);
+      if (res.error) {
+        btn.disabled = false; btn.textContent = 'Send it in';
+        alert('That did not go through. Please text (903) 913-6444 and we will get it fixed.');
+        return;
+      }
+      host.innerHTML = reportThanks();
+    };
+  }
+
   function renderExtras(lesson, mNum, lNum, slug) {
     var host = document.getElementById('pda-extras');
     if (!host) return;

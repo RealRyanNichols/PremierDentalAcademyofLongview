@@ -29,6 +29,7 @@
     ['/admin/instructors', '👩‍🏫', 'Instructors'],
     ['/admin/chat',        '🗨️', 'Chat'],
     ['/admin/feedback',    '💬', 'Feedback'],
+    ['/admin/reports',     '🛠️', 'Reports'],
     ['/admin/brain',       '🧠', 'Brain'],
   ];
 
