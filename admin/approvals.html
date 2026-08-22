@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Approve Course Changes — PDA Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; }
+    .display { font-family: 'Fraunces', serif; }
+    .preview { background:#fff; border:1px solid #e2e8f0; border-radius:.75rem; padding:1.25rem; max-height:26rem; overflow-y:auto; line-height:1.7; color:#334155; }
+    .preview h2 { color:#0f766e; font-size:1.2rem; font-weight:700; margin:1.2rem 0 .5rem; padding-bottom:.3rem; border-bottom:2px solid #99f6e4; }
+    .preview h3 { color:#0f172a; font-size:1.02rem; font-weight:650; margin:1rem 0 .35rem; }
+    .preview p { margin:.55rem 0; }
+    .preview ol { list-style:decimal; padding-left:1.4rem; margin:.55rem 0; }
+    .preview li { margin-bottom:.35rem; }
+    .preview dl { margin:0 0 1rem; padding:.85rem 1rem; background:#f8fafc; border-left:4px solid #14b8a6; border-radius:6px; }
+    .preview dt { font-weight:700; color:#0f766e; margin-top:.6rem; }
+    .preview dt:first-child { margin-top:0; }
+    .preview dd { margin:.15rem 0 0; color:#334155; }
+    .preview table { width:100%; border-collapse:collapse; margin:0 0 1rem; }
+    .preview td, .preview th { border:1px solid #e2e8f0; padding:.45rem .6rem; vertical-align:top; text-align:left; }
+  </style>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<nav class="bg-white border-b border-slate-200">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold">
+      <img src="/assets/logo-mark.png" alt="PDA" width="28" height="28" class="w-7 h-7 rounded" />
+      <span>PDA Admin</span>
+    </a>
+    <div class="flex items-center gap-4 text-sm">
+      <a href="/admin/reports" class="text-slate-600 hover:text-teal-700">Reports</a>
+      <button id="signout" class="text-rose-600 hover:underline">Sign out</button>
+    </div>
+  </div>
+</nav>
+
+<div id="auth-wall" class="hidden max-w-md mx-auto mt-20 bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+  <div class="text-4xl mb-2">&#128274;</div>
+  <h1 class="display text-2xl font-bold">Admin access only</h1>
+  <p class="text-slate-600 mt-2 text-sm">Sign in with an admin account to review course changes.</p>
+  <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in &rarr;</a>
+</div>
+
+<main id="view" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8">
+  <div class="mb-6">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Your approval</p>
+    <h1 class="display text-3xl font-bold">Course changes waiting on you</h1>
+    <p class="text-slate-600 text-sm mt-2 max-w-3xl">Each card below is a change to the course that is <b>not live yet</b>. Read what is wrong, read the proposed wording exactly as a student would see it, then Approve or Reject. Approving publishes it to every copy of that lesson immediately. Nothing here reaches a student until you click.</p>
+  </div>
+
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Waiting</div><div id="s-pending" class="text-2xl font-bold text-amber-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">New sections</div><div id="s-new" class="text-2xl font-bold text-cyan-700 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Corrections</div><div id="s-corr" class="text-2xl font-bold text-rose-600 mt-1">0</div></div>
+    <div class="bg-white rounded-xl border border-slate-200 p-4"><div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Approved</div><div id="s-done" class="text-2xl font-bold text-teal-700 mt-1">0</div></div>
+  </div>
+
+  <div class="flex flex-wrap gap-2 mb-5 text-sm">
+    <button data-f="pending" class="ap-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg">Waiting on you</button>
+    <button data-f="correction" class="ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Corrections only</button>
+    <button data-f="new_section" class="ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">New sections only</button>
+    <button data-f="approved" class="ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Already approved</button>
+    <button data-f="rejected" class="ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Rejected</button>
+  </div>
+
+  <div id="list" class="space-y-5"></div>
+  <div id="empty" class="hidden text-center text-slate-500 py-12">Nothing here right now.</div>
+</main>
+
+<script>
+(async () => {
+  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  let profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  document.getElementById('view').classList.remove('hidden');
+  document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
+
+  let rows = [], filter = 'pending';
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  async function loadData() {
+    const { data, error } = await sb.from('content_drafts')
+      .select('id, lesson_ids, lesson_title, course_slug, change_type, section_title, what_is_wrong, current_text, proposed_html, proposed_plain, sources, confidence, status, reviewer_note, reviewed_at, created_at')
+      .order('change_type', { ascending: true }).order('created_at', { ascending: true });
+    if (error) { document.getElementById('list').innerHTML = '<div class="text-rose-600 text-sm">Could not load: ' + esc(error.message) + '</div>'; return; }
+    rows = data || [];
+    const pend = rows.filter(r => r.status === 'pending');
+    document.getElementById('s-pending').textContent = pend.length;
+    document.getElementById('s-new').textContent  = pend.filter(r => r.change_type === 'new_section').length;
+    document.getElementById('s-corr').textContent = pend.filter(r => r.change_type === 'correction').length;
+    document.getElementById('s-done').textContent = rows.filter(r => r.status === 'approved').length;
+    render();
+  }
+
+  function render() {
+    const list = document.getElementById('list');
+    const shown = rows.filter(r => {
+      if (filter === 'pending')  return r.status === 'pending';
+      if (filter === 'approved') return r.status === 'approved';
+      if (filter === 'rejected') return r.status === 'rejected';
+      return r.status === 'pending' && r.change_type === filter;
+    });
+    document.getElementById('empty').classList.toggle('hidden', shown.length > 0);
+    list.innerHTML = shown.map(r => {
+      const isNew = r.change_type === 'new_section';
+      const typeBadge = isNew
+        ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-cyan-100 text-cyan-700 px-2 py-0.5 rounded-full">New section</span>'
+        : '<span class="text-[10px] uppercase tracking-wider font-bold bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">Correction</span>';
+      const statusBadge = r.status === 'approved'
+        ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full">Approved &amp; live</span>'
+        : (r.status === 'rejected' ? '<span class="text-[10px] uppercase tracking-wider font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">Rejected</span>' : '');
+      const where = isNew
+        ? (r.current_text ? 'Replaces the current section in place' : 'Added at the end of the lesson')
+        : 'Replaces one passage in place';
+      return '<div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" data-row="' + r.id + '">'
+        + '<div class="flex items-center gap-2 flex-wrap mb-2">' + typeBadge + statusBadge
+          + '<span class="ml-auto text-xs text-slate-400">' + esc(r.lesson_title || '') + ' &middot; ' + esc(where) + ' &middot; ' + (r.lesson_ids || []).length + ' cop' + ((r.lesson_ids || []).length === 1 ? 'y' : 'ies') + '</span></div>'
+        + '<h2 class="display text-xl font-extrabold text-slate-900">' + esc(r.section_title || '') + '</h2>'
+        + '<div class="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3"><p class="text-[11px] uppercase tracking-widest text-amber-700 font-bold">What is wrong now</p>'
+          + '<p class="text-sm text-slate-800 mt-1">' + esc(r.what_is_wrong) + '</p></div>'
+        + (r.current_text
+            ? '<div class="mt-3"><p class="text-[11px] uppercase tracking-widest text-slate-500 font-bold">Current wording (will be replaced)</p>'
+              + '<blockquote class="mt-1 border-l-4 border-rose-200 bg-rose-50 pl-3 pr-3 py-2 text-sm text-slate-600 rounded-r-lg whitespace-pre-wrap">' + esc(r.current_text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()) + '</blockquote></div>'
+            : '')
+        + '<div class="mt-4"><p class="text-[11px] uppercase tracking-widest text-slate-500 font-bold">Proposed wording &mdash; exactly how a student will see it</p>'
+          + '<div class="preview mt-1">' + r.proposed_html + '</div></div>'
+        + '<details class="mt-3"><summary class="text-sm font-semibold text-slate-500 cursor-pointer hover:text-teal-700">Where every fact came from</summary>'
+          + '<pre class="mt-2 text-xs text-slate-600 whitespace-pre-wrap bg-slate-50 rounded-lg p-3 border border-slate-200">' + esc(r.sources) + '</pre></details>'
+        + (r.reviewer_note ? '<div class="mt-3 text-xs text-slate-500"><b>Your note:</b> ' + esc(r.reviewer_note) + '</div>' : '')
+        + (r.status === 'pending'
+            ? '<div class="mt-5 flex gap-2 flex-wrap text-sm">'
+              + '<button data-act="approve" data-id="' + r.id + '" class="ap-act bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">&#10003; Approve &amp; publish</button>'
+              + '<button data-act="reject"  data-id="' + r.id + '" class="ap-act border border-slate-300 hover:border-rose-400 text-slate-600 font-semibold px-5 py-2.5 rounded-full">Reject</button>'
+              + '<button data-act="note"    data-id="' + r.id + '" class="ap-act border border-slate-300 hover:border-teal-500 text-slate-600 font-semibold px-4 py-2.5 rounded-full">Add a note</button>'
+              + '</div>'
+            : '<div class="mt-4 text-xs text-slate-400">Reviewed ' + esc(r.reviewed_at ? new Date(r.reviewed_at).toLocaleString() : '') + '</div>')
+      + '</div>';
+    }).join('');
+    document.querySelectorAll('.ap-act').forEach(b => b.onclick = () => act(b.getAttribute('data-id'), b.getAttribute('data-act'), b));
+  }
+
+  async function act(id, action, btn) {
+    const row = rows.find(r => r.id === id) || {};
+    if (action === 'note') {
+      const note = prompt('Note for this change:', row.reviewer_note || '');
+      if (note === null) return;
+      btn.disabled = true;
+      const { error } = await sb.from('content_drafts').update({ reviewer_note: note.trim() || null }).eq('id', id);
+      if (error) { alert('Could not save: ' + error.message); btn.disabled = false; return; }
+      return loadData();
+    }
+    if (action === 'reject') {
+      if (!confirm('Reject this change? It will not be published.')) return;
+      btn.disabled = true;
+      const { error } = await sb.from('content_drafts')
+        .update({ status: 'rejected', reviewed_by: session.user.id, reviewed_at: new Date().toISOString() }).eq('id', id);
+      if (error) { alert('Could not save: ' + error.message); btn.disabled = false; return; }
+      return loadData();
+    }
+    if (!confirm('Approve and publish this to the live course now?')) return;
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    const { data, error } = await sb.rpc('apply_content_draft', { p_draft_id: id });
+    if (error) { alert('Could not publish: ' + error.message); btn.disabled = false; btn.textContent = '✓ Approve & publish'; return; }
+    if (data && data.ok === false) { alert('Not published — ' + (data.reason || 'unknown reason')); btn.disabled = false; btn.textContent = '✓ Approve & publish'; return; }
+    await loadData();
+  }
+
+  document.querySelectorAll('.ap-filter').forEach(b => b.onclick = () => {
+    filter = b.getAttribute('data-f');
+    document.querySelectorAll('.ap-filter').forEach(x => { x.className = 'ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg'; });
+    b.className = 'ap-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg';
+    render();
+  });
+  await loadData();
+})();
+</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>

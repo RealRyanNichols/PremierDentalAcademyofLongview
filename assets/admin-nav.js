@@ -30,6 +30,7 @@
     ['/admin/chat',        '🗨️', 'Chat'],
     ['/admin/feedback',    '💬', 'Feedback'],
     ['/admin/reports',     '🛠️', 'Reports'],
+    ['/admin/approvals',   '✅', 'Approvals'],
     ['/admin/brain',       '🧠', 'Brain'],
   ];
 
