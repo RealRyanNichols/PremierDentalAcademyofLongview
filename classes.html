@@ -161,7 +161,7 @@
       <label class="block"><span class="text-sm font-medium">Phone *</span><input name="phone" type="tel" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600" /></label>
       <label class="block"><span class="text-sm font-medium">Anything we should know?</span><textarea name="notes" rows="2" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600"></textarea></label>
       <button type="submit" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-full">Reserve my seat →</button>
-      <p class="text-xs text-slate-500 text-center">$500 down reserves your seat · Online sale non-refundable (transferable) · In-Person pro-rated per TX guidelines</p>
+      <p class="text-xs text-slate-500 text-center">$500 down reserves your seat · Online tuition non-refundable (transferable) · In-Person pro-rated per TX guidelines</p>
     </form>
     <div id="rm-success" class="hidden text-center py-6">
       <div class="text-5xl mb-2">🎉</div>
@@ -190,7 +190,7 @@ window.AOS && AOS.init({ duration: 500, once: true });
   // Literals remain only as a fallback so the page still renders if that script fails to load.
   const F = (typeof window !== 'undefined' && window.PDA_FACTS) ? window.PDA_FACTS : {};
   const IP_PRICE = (((F.pricing || {}).inPerson || {}).totalDisplay) || '$3,000';
-  const ON_PRICE = (((F.pricing || {}).online   || {}).priceDisplay) || '$397';
+  const ON_PRICE = (((F.pricing || {}).online   || {}).priceDisplay) || '$997';
   const PROGRAMS = {
     foundation:   { label: 'In-Person', price: IP_PRICE, dur: 'At our Longview campus' },
     career_track: { label: 'Online',    price: ON_PRICE, dur: 'Self-paced — start any day' },

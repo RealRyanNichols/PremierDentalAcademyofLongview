@@ -31,18 +31,12 @@ const CUTOVER_MS = Date.parse('2026-07-01T05:00:00Z'); // 2026-07-01 00:00 Ameri
 const newPricing = () => Date.now() >= CUTOVER_MS;
 const NEW_IN_PERSON = { pifCents: 300000, planTotalCents: 350000, downCents: 50000, balanceCents: 300000 };
 
-// ── Aug 22, 2026 ONLINE price change (auto-switches at midnight Central) ──
-// Before:  online $397 promotional price (one-time).
-// On/after: online $997 — the published regular price. Flips by date so no
-// manual edit is needed at midnight; mirrors the products.online_program
-// price_cents flip that drives the buy-product edge function. In-person is
-// unchanged here.
-const ONLINE_CUTOVER_MS = Date.parse('2026-08-22T05:00:00Z'); // 2026-08-22 00:00 America/Chicago (CDT, UTC-5)
-const onlineCents = () => (Date.now() >= ONLINE_CUTOVER_MS ? 99700 : 39700);
+// ── Current ONLINE price ──────────────────────────────────────────────
+const onlineCents = () => 99700;
 
 const PLANS = {
   'in-person': { name: 'PDA RDA Program — In-Person', totalCents: 300000 },
-  'online':    { name: 'PDA RDA Program — Online (Limited Time Sale)', totalCents: 39700 },
+  'online':    { name: 'PDA RDA Program — Online', totalCents: 99700 },
 };
 
 
@@ -275,7 +269,7 @@ export default async function handler(req, res) {
   // down / remaining / paidInFull / total drive the charge + invoice below.
   let down, remaining, paidInFull, schedule = null, total;
   if (isOnline) {
-    // Online: single charge, no schedule. Date-gated price (see ONLINE_CUTOVER_MS).
+    // Online: single $997 charge, no schedule.
     total = onlineCents();
     down = total; remaining = 0; paidInFull = true;
   } else if (useNew) {

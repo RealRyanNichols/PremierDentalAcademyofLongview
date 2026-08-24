@@ -21,7 +21,7 @@
     "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
-    "priceRange": "$397 – $3,000",
+    "priceRange": "$997 – $3,000",
     "image": "https://premierdentalacademyoflongview.com/assets/og-cover.png",
     "logo": "https://premierdentalacademyoflongview.com/assets/og-cover.png",
     "address": {
@@ -43,7 +43,7 @@
       "name": "RDA Training Programs",
       "itemListElement": [
         { "@type": "Offer", "name": "PDA RDA Program — In-Person",  "price": "3000", "priceCurrency": "USD" },
-        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "397",  "priceValidUntil": "2026-08-22", "priceCurrency": "USD" }
+        { "@type": "Offer", "name": "PDA RDA Program — Online",     "price": "997", "priceCurrency": "USD" }
       ]
     }
   }
@@ -69,7 +69,7 @@
       "name": "PDA RDA Program — Online",
       "description": "Same Registered Dental Assistant curriculum, fully online and self-paced. Start any day, from anywhere in Texas.",
       "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
-      "offers": { "@type": "Offer", "price": "397", "priceValidUntil": "2026-08-22", "priceCurrency": "USD", "category": "Tuition" },
+      "offers": { "@type": "Offer", "price": "997", "priceCurrency": "USD", "category": "Tuition" },
       "hasCourseInstance": { "@type": "CourseInstance", "courseMode": "Online" },
       "educationalCredentialAwarded": "PDA Certificate of Completion",
       "occupationalCategory": "31-9091"
@@ -106,7 +106,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 with payment plans available. Online is a one-time $397 through Friday, Aug 21, 2026 — $997 regular price after — non-refundable but transferable to In-Person credit if you switch. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 with payment plans available. Online is a one-time $997 payment — non-refundable but transferable to In-Person credit if you switch. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them." }
       },
       {
         "@type": "Question",
@@ -207,7 +207,7 @@
 <body class="antialiased">
 
 <a href="/online" id="strike-banner" style="display:block;background:#0a1226;color:#fff;text-align:center;padding:10px 16px;font-size:14px;text-decoration:none">
-  <span style="font-weight:600">Online RDA program: <span style="color:#fbbf24;font-weight:800">$397</span> becomes <span style="font-weight:800">$997</span> Saturday, Aug 22 →</span>
+  <span style="font-weight:600">Online RDA program: <span style="color:#fbbf24;font-weight:800">$997</span> one time · start any day →</span>
   <span id="strike-countdown" style="margin-left:8px;font-family:monospace;font-weight:700;color:#5eead4"></span>
 </a>
 
@@ -372,8 +372,8 @@
           </button>
           <button type="button" data-plan="online" class="pdacalc-opt text-left rounded-xl border-2 border-slate-200 bg-white p-4">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">Online</div>
-            <div class="display text-2xl font-bold text-slate-900 js-online-price">$397</div>
-            <div class="text-xs text-slate-600 js-online-plabel">Sale thru Aug 21 (reg $997) · start today</div>
+            <div class="display text-2xl font-bold text-slate-900 js-online-price">$997</div>
+            <div class="text-xs text-slate-600 js-online-plabel">One-time payment · start today</div>
           </button>
         </div>
         <div id="pdacalc-body" class="mt-5">
@@ -426,7 +426,7 @@
   function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
   function setWeekly(){mode="weekly";on(wk);off(mo);term.min=4;term.max=NEW?52:12;term.value=12;}
   function render(){
-    if(plan==="online"){var oPost=Date.now()>=Date.parse('2026-08-22T05:00:00Z');reslbl.textContent=oPost?"One-time (regular price)":"One-time (reg $997)";amt.textContent=oPost?"$997":"$397";cnt.textContent="start today";lbl.textContent="";if(totLbl)totLbl.textContent=(oPost?"$997":"$397")+" one-time";return;}
+    if(plan==="online"){reslbl.textContent="One-time";amt.textContent="$997";cnt.textContent="start today";lbl.textContent="";if(totLbl)totLbl.textContent="$997 one-time";return;}
     var n=parseInt(term.value,10),per=Math.round(IP.balance/n),u=mode==="weekly"?"wk":"mo";
     reslbl.textContent="$"+IP.down+" down today, then";amt.textContent="$"+per.toLocaleString()+"/"+u;
     cnt.textContent=n+" payments";lbl.textContent=n+(mode==="weekly"?" weeks":" months");
@@ -530,19 +530,17 @@
       </div>
 
       <div data-aos="fade-up" data-aos-delay="100" class="bg-white border-2 border-rose-400 rounded-2xl p-8 hover:shadow-xl transition relative">
-        <span class="absolute -top-3 left-6 bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">🔥 Limited time</span>
+        <span class="absolute -top-3 left-6 bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">🔥 </span>
         <div class="flex items-center gap-3 mb-2">
           <span class="text-3xl">💻</span>
           <h3 class="text-2xl font-bold display">Online</h3>
-          <span class="ml-auto text-[10px] font-bold uppercase tracking-widest text-rose-600 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full">Sale</span>
         </div>
         <p class="text-slate-600 text-sm">Same curriculum, fully online and self-paced — start any day, no class schedule.</p>
         <div class="my-6">
           <div class="flex items-baseline gap-3">
-            <span class="display text-4xl font-extrabold text-rose-700 js-online-price">$397</span>
-            <span class="line-through text-slate-400 text-xl font-semibold js-online-reg">$997</span>
+            <span class="display text-4xl font-extrabold text-rose-700 js-online-price">$997</span>
           </div>
-          <div class="text-xs text-rose-700 font-bold mt-1 uppercase tracking-wider js-online-plabel">One-time payment · $997 after Fri, Aug 21</div>
+          <div class="text-xs text-teal-700 font-bold mt-1 uppercase tracking-wider js-online-plabel">One-time payment · start any day</div>
         </div>
         <ul class="space-y-2.5 text-sm text-slate-700">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Start any day — no class schedule, work at your pace</li>
@@ -863,17 +861,17 @@
         <a href="/enroll?plan=in-person" class="block text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-full">Enroll &amp; pay — In-Person →</a>
       </div>
       <div data-aos="fade-up" data-aos-delay="200" class="bg-white border-2 border-rose-400 rounded-2xl p-6 relative shadow-lg">
-        <span class="absolute -top-3 left-6 bg-rose-500 text-white text-xs font-extrabold uppercase tracking-wider px-2 py-1 rounded-full animate-pulse">🔥 Limited time</span>
+        <span class="absolute -top-3 left-6 bg-rose-500 text-white text-xs font-extrabold uppercase tracking-wider px-2 py-1 rounded-full animate-pulse">🔥 </span>
         <span class="absolute -top-3 right-6 bg-cyan-700 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Online</span>
         <h3 class="font-bold text-lg mt-2">Online</h3>
         <p class="text-xs text-slate-500 mt-1">Start any day · no class schedule.</p>
         <div class="mt-4">
           <div class="flex items-baseline gap-2">
-            <span class="display text-3xl font-extrabold text-rose-700">$397</span>
+            <span class="display text-3xl font-extrabold text-rose-700">$997</span>
             <span class="line-through text-slate-400 text-base font-semibold">$997</span>
             <span class="text-sm text-slate-500 font-normal">one-time</span>
           </div>
-          <div class="text-[11px] text-rose-700 font-bold mt-0.5 uppercase tracking-wider">Limited-time sale price</div>
+          <div class="text-[11px] text-rose-700 font-bold mt-0.5 uppercase tracking-wider">regular price price</div>
           <div class="text-[11px] text-slate-500 mt-1">or split with Klarna · Afterpay · Affirm</div>
         </div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
@@ -883,7 +881,7 @@
           <li>✓ PDA Certificate of Completion</li>
           <li>✓ Job placement help</li>
         </ul>
-        <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-full shadow-md">Enroll Online — $397 →</a>
+        <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-full shadow-md">Enroll Online — $997 →</a>
       </div>
     </div>
     <p class="text-center text-xs text-slate-500 mt-8">May qualify for WIOA funding through Workforce Solutions · Payment plans available</p>
@@ -948,7 +946,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($3,000)</strong> — payment plans available. <strong>Online is on sale right now: $397 one-time</strong> (regularly $997) — non-refundable at this price, but if it isn't right for you we'll transfer the full $397 as credit toward the In-Person program. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes for <strong>In-Person ($3,000)</strong>, with payment plans available. <strong>Online is $997 one time</strong> and is non-refundable, but 100% transfers as credit toward the In-Person program within 90 days. You may also qualify for WIOA funding through Workforce Solutions East Texas.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -981,7 +979,7 @@
           <a href="/apply" data-event="apply_click" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-7 py-3.5 rounded-full shadow-lg inline-flex items-center gap-2">Apply now →</a>
           <a href="/tools/practice-pro" data-event="free_preview_click" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-7 py-3.5 rounded-full backdrop-blur inline-flex items-center gap-2">Try preview first</a>
         </div>
-        <p class="text-teal-200 text-xs mt-6">No payment required to apply · Online sale non-refundable but transferable · In-Person pro-rated per TX guidelines</p>
+        <p class="text-teal-200 text-xs mt-6">No payment required to apply · Online tuition non-refundable but transferable · In-Person pro-rated per TX guidelines</p>
         <p class="text-teal-200/70 text-xs mt-2 max-w-xl mx-auto">Earnings vary by employer, experience, and hours; figures reflect East-Texas regional averages and are not a guarantee. See the <a href="/salary" class="underline hover:text-white">salary page</a>.</p>
       </div>
     </div>
@@ -1207,24 +1205,5 @@
   })();
 </script>
 <script defer src="/assets/pda-track.js"></script>
-<script>
-// Aug 22, 2026 online price cutover — flips displayed $397 to the $997 regular
-// price at Sat 00:00 CT. Real date gate (July-1 pattern); charge amounts flip
-// server-side at the same instant.
-(function(){var END=Date.parse('2026-08-22T05:00:00Z');
-function post(){
-document.querySelectorAll('.js-online-price').forEach(function(el){el.textContent='$997';});
-document.querySelectorAll('.js-online-reg').forEach(function(el){el.style.display='none';});
-document.querySelectorAll('.js-online-plabel').forEach(function(el){el.textContent='One-time payment · regular price';});
-var b=document.getElementById('strike-banner');
-if(b)b.innerHTML='<span style="font-weight:600">The online RDA program is <span style="color:#fbbf24;font-weight:800">$997</span> — self-paced, start any day, everything included →</span>';
-}
-function tick(){var ms=END-Date.now();if(ms<=0){post();return;}
-var d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);
-var el=document.getElementById('strike-countdown');
-if(el)el.textContent=d+'d '+h+'h '+m+'m left at $397';
-setTimeout(tick,30000);}
-if(Date.now()>=END){post();}else{tick();}})();
-</script>
 </body>
 </html>

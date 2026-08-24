@@ -76,7 +76,7 @@ function jsonLd(c, url) {
 
 function head(c, url) {
   const title = `Dental Assistant School Near ${c.town}, TX | Premier Dental Academy`;
-  const desc = `Become a Registered Dental Assistant from ${c.town}, TX. Train hands-on at our Longview campus (about ${c.minutes} minutes away, evening options) or 100% online. In-person $3,000 paid in full ($500 down on a plan) or online $397.`;
+  const desc = `Become a Registered Dental Assistant from ${c.town}, TX. Train hands-on at our Longview campus (about ${c.minutes} minutes away, evening options) or 100% online. In-person $3,000 paid in full ($500 down on a plan) or online $997.`;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -143,7 +143,7 @@ function twoWays(c) {
       <div class="bg-slate-50 rounded-xl p-5 flex flex-col">
         <div class="font-semibold text-slate-900 text-base">💻 Online from ${esc(c.town)}</div>
         <p class="text-slate-600 mt-1">The same curriculum, fully online and self-paced — no drive at all. Perfect if you're juggling family and work${c.band === "far" ? ", or if the distance makes weekly trips unrealistic" : ""}.</p>
-        <p class="text-slate-900 font-semibold mt-3">$397 · self-paced</p>
+        <p class="text-slate-900 font-semibold mt-3">$997 · self-paced</p>
         <p class="text-slate-500 text-xs mt-1">Start whenever you're ready and move at your own pace.</p>
         <a href="/enroll?plan=online" data-event="location_page_cta_click" class="mt-4 inline-block text-center bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2.5 rounded-full">Enroll online →</a>
       </div>`;
@@ -204,8 +204,8 @@ const CALC = `
           </button>
           <button type="button" data-plan="online" class="pdacalc-opt text-left rounded-xl border-2 border-slate-200 bg-white p-4">
             <div class="text-[11px] uppercase tracking-wide font-bold text-slate-500">Online</div>
-            <div class="text-2xl font-bold text-slate-900" style="font-family:Fraunces,serif">$397</div>
-            <div class="text-xs text-slate-600">Sale (reg $997) &middot; start today</div>
+            <div class="text-2xl font-bold text-slate-900" style="font-family:Fraunces,serif">$997</div>
+            <div class="text-xs text-slate-600">One-time payment &middot; start today</div>
           </button>
         </div>
         <div id="pdacalc-body" class="mt-5">
@@ -246,7 +246,7 @@ const CALC = `
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
   function render(){
-    if(plan==="online"){reslbl.textContent="One-time (reg $997)";amt.textContent="$397";cnt.textContent="start today";return;}
+    if(plan==="online"){reslbl.textContent="One-time";amt.textContent="$997";cnt.textContent="start today";return;}
     var n=parseInt(term.value,10),per=Math.round((TOTAL-DOWN)/n),u=mode==="weekly"?"wk":"mo";
     reslbl.textContent="$500 down today, then";amt.textContent="$"+per.toLocaleString()+"/"+u;
     cnt.textContent=n+" payments";lbl.textContent=n+(mode==="weekly"?" weeks":" months");
@@ -326,7 +326,7 @@ ${twoWays(c)}
 ${learnSection(c, idx)}
     <section>
       <h2 class="display text-2xl font-bold">Pay &amp; funding</h2>
-      <p class="text-slate-600 mt-2">We keep tuition straightforward. In-person is <strong>$3,000 paid in full</strong>, or <strong>$500 down on a $3,500 payment plan</strong> with simple weekly or monthly payments. Online is a flat <strong>$397</strong>, self-paced. No surprises and nothing buried in fine print.</p>
+      <p class="text-slate-600 mt-2">We keep tuition straightforward. In-person is <strong>$3,000 paid in full</strong>, or <strong>$500 down on a $3,500 payment plan</strong> with simple weekly or monthly payments. Online is a flat <strong>$997</strong>, self-paced. No surprises and nothing buried in fine print.</p>
       <p class="text-slate-600 mt-3">Depending on your situation, you <em>may</em> qualify for WIOA workforce funding through your local Workforce Solutions office — we can't promise anything, but we're glad to point you in the right direction. <a href="/apply" class="text-teal-700 underline">Apply or reach out</a> and we'll talk through your options. Wondering what dental assistants earn in East Texas? See our <a href="/salary" class="text-teal-700 underline">salary page</a>.</p>
     </section>
 

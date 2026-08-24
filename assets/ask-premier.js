@@ -32,7 +32,7 @@
       cta: { label: 'Get the Study Pack ($19) →', href: '/study-pack' } },
 
     { match: /\b(price|cost|tuition|how much|fee|charge)\b/i,
-      reply: '🔥 **LIMITED TIME** — Online is **$397 one-time** (regularly $997). Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a plan** ($500 down, then weekly or monthly payments).\n\nOnline is non-refundable at the sale price, but if it isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program — your money is never lost.',
+      reply: '🔥 **** — Online is **$997 one-time**. Start any day, no class schedule.\n\n**In-Person** at our Longview campus is **$3,000 paid in full**, or **$3,500 on a plan** ($500 down, then weekly or monthly payments).\n\nOnline is non-refundable at the price, but if it isn\'t right for you we\'ll transfer your full $997 as credit toward the In-Person program — your money is never lost.',
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
@@ -44,7 +44,7 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $397 one-time payment (limited-time sale, normally $997). At that price it\'s one-and-done.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $997 one-time payment (regular price, normally $997). At that price it\'s one-and-done.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
       cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
     { match: /\b(sponsor|sponsorship|adopt a student|can'?t afford|cant afford)\b/i,
@@ -88,7 +88,7 @@
       cta: { label: 'Send a message →', href: '/contact' } },
 
     { match: /\b(refund|money back|guarantee|cancel)\b/i,
-      reply: '**Online ($397 sale):** non-refundable at the sale price — but if Online isn\'t right for you we\'ll transfer your full $397 as credit toward the In-Person program. Your money is never lost.\n\n**In-Person ($3,000, or $3,500 on a plan):** pro-rated refund per Texas state proprietary-school guidelines.',
+      reply: '**Online ($997):** non-refundable — but if Online isn\'t right for you we\'ll transfer your full $997 as credit toward the In-Person program. Your money is never lost.\n\n**In-Person ($3,000, or $3,500 on a plan):** pro-rated refund per Texas state proprietary-school guidelines.',
       cta: { label: 'See full policy →', href: '/terms' } },
 
     { match: /\b(certification|certificate|license|state board|rda|register|registration|texas)\b/i,

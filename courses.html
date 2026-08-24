@@ -61,7 +61,7 @@
     <li>Texas RDA exam preparation — infection control, jurisprudence &amp; radiography</li>
     <li>Resume, interview &amp; job-placement preparation</li>
   </ul>
-  <p class="mt-3">In-person tuition is $3,000 paid in full, or $500 down on a $3,500 payment plan. The self-paced online course is $397 through Friday, Aug 21, 2026 ($997 regular price after) and starts any day. <a class="text-teal-700 font-semibold" href="/enroll">Compare both options →</a></p>
+  <p class="mt-3">In-person tuition is $3,000 paid in full, or $500 down on a $3,500 payment plan. The self-paced online course is $997 one time and starts any day. <a class="text-teal-700 font-semibold" href="/enroll">Compare both options →</a></p>
 </section>
 <div class="text-center"><div class="w-8 h-8 border-2 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>Loading live course details…</div>
     </div>
@@ -83,7 +83,7 @@
   function facts(){ return (window.PDA_FACTS && window.PDA_FACTS.pricing) || null; }
   function priceCard(flag){
     var f = facts();
-    var online = f && f.online ? f.online : { priceDisplay:'$397', regularDisplay:'$997' };
+    var online = f && f.online ? f.online : { priceDisplay:'$997', regularDisplay:'$997' };
     var ip = f && f.inPerson ? f.inPerson : { pifDisplay:'$3,000', planTotalDisplay:'$3,500', downDisplay:'$500' };
     if (flag === 'career_vault') {
       return { rows: [
@@ -91,7 +91,7 @@
       ]};
     }
     return { rows: [
-      { label:'Online program', price:online.priceDisplay, sub:(online.sale===false ? 'one-time · train from home' : 'promo through Fri, Aug 21 · reg. <s>'+online.regularDisplay+'</s> · train from home'), href:'/enroll', cta:'Enroll online — '+online.priceDisplay, style:'bg-teal-700 hover:bg-teal-800' },
+      { label:'Online program', price:online.priceDisplay, sub:'one-time · train from home', href:'/enroll', cta:'Enroll online — '+online.priceDisplay, style:'bg-teal-700 hover:bg-teal-800' },
       { label:'In-person program (Longview)', price:ip.pifDisplay, sub:'paid in full — or '+ip.planTotalDisplay+' on a plan ('+ip.downDisplay+' down)', href:'/enroll', cta:'Enroll in person', style:'bg-[#16294a] hover:bg-[#1e355e]' }
     ]};
   }
@@ -103,10 +103,10 @@
   };
   function catalogPrice(c){
     var f = facts();
-    var online = f && f.online ? f.online : { priceDisplay:'$397', regularDisplay:'$997' };
+    var online = f && f.online ? f.online : { priceDisplay:'$997', regularDisplay:'$997' };
     var ip = f && f.inPerson ? f.inPerson : { pifDisplay:'$3,000', planTotalDisplay:'$3,500', downDisplay:'$500' };
     if (c.flag === 'career_vault' || c.slug === 'career-vault') return { price:'$147', sub:'founding · reg <s>$247</s>' };
-    if (c.slug === 'online-rda-12-week' || c.flag === 'online') return { price: online.priceDisplay, sub:(online.sale===false ? 'one-time payment' : 'through Aug 21 · reg <s>'+online.regularDisplay+'</s>') };
+    if (c.slug === 'online-rda-12-week' || c.flag === 'online') return { price: online.priceDisplay, sub:'one-time payment' };
     return { price: ip.pifDisplay, sub:'paid in full · or '+ip.planTotalDisplay+' plan ('+ip.downDisplay+' down)' };
   };
 
