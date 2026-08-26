@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Funding Finder: See What You Might Qualify For in Two Minutes</title>
+  <meta name="description" content="A walkthrough of our free Funding Finder tool — five honest questions, what each one is really asking, and which tuition-help paths it points you toward. No signup, no promises, no pressure." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .q-btn.open { background:#0f766e; color:#fff; border-color:#0f766e; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/funding-finder-tool-walkthrough" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/funding-finder-tool-walkthrough" />
+  <meta property="og:title" content="The Funding Finder: See What You Might Qualify For in Two Minutes" />
+  <meta property="og:description" content="Five honest questions, what each one is really asking, and which tuition-help paths the free tool points you toward." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-funding-finder-tool-walkthrough.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="The Funding Finder, Explained" />
+  <meta name="twitter:description" content="Our free tuition-help tool: five questions, no signup, no promises." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-funding-finder-tool-walkthrough.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"The Funding Finder: See What You Might Qualify For in Two Minutes","description":"Five honest questions, what each one is really asking, and which tuition-help paths the free tool points you toward.","datePublished":"2026-08-26","dateModified":"2026-08-26","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og/blog-funding-finder-tool-walkthrough.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/funding-finder-tool-walkthrough"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Free Tool · Funding</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">The Funding Finder: see what you might qualify for in two minutes</h1>
+  <p class="text-slate-500 mt-3 text-lg">Money is the number one reason people talk themselves out of this career before they ever call us. Not doubt about the work — money. So we built a small free tool that asks five plain questions and shows you which tuition-help paths are worth going and asking about. It doesn't approve anything and it doesn't collect your email. Here is exactly what it does.</p>
+
+  <div class="grid grid-cols-3 gap-3 mt-8 not-prose">
+    <div class="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-teal-700">5</div><div class="text-xs text-slate-600 mt-1">yes-or-no questions</div></div>
+    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-amber-600">$0</div><div class="text-xs text-slate-600 mt-1">cost — and no signup</div></div>
+    <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-cyan-700">0</div><div class="text-xs text-slate-600 mt-1">promises made about approval</div></div>
+  </div>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">What it is — and what it absolutely is not</h2>
+    <p>The <a href="/tools/funding-finder" class="text-teal-700 font-semibold">Funding Finder</a> is a starting point. You answer five questions, tap a button, and it shows you a short set of cards: the funding routes that make sense to look into given your situation, plus the payment options that are open to everybody.</p>
+    <p>It is not an application. It is not a pre-approval. It cannot tell you an award amount, and neither can we — eligibility is decided by the programs themselves, not by a school and definitely not by a web page. The tool says as much right on the results screen. We would rather under-promise here than have someone build a plan on a number we made up.</p>
+
+    <div class="bg-slate-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">The line we hold</div>
+      <p class="mt-1 mb-0">No school can promise you funding. If anyone tells you they've "got you covered" before you have talked to the actual funding office, slow down and ask who is paying and when. Real help has paperwork and a timeline attached to it.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">The five questions (tap to see what each one is really asking)</h2>
+    <p>None of these are trick questions, and there are no wrong answers. But it helps to know why we ask, so you answer accurately instead of modestly.</p>
+    <div class="not-prose">
+      <div class="flex flex-wrap gap-2 mb-3">
+        <button class="q-btn open text-sm font-semibold border border-teal-600 text-teal-700 rounded-full px-4 py-1.5" data-q="0">1 · Work status</button>
+        <button class="q-btn text-sm font-semibold border border-teal-600 text-teal-700 rounded-full px-4 py-1.5" data-q="1">2 · Assistance or low income</button>
+        <button class="q-btn text-sm font-semibold border border-teal-600 text-teal-700 rounded-full px-4 py-1.5" data-q="2">3 · Household</button>
+        <button class="q-btn text-sm font-semibold border border-teal-600 text-teal-700 rounded-full px-4 py-1.5" data-q="3">4 · Diploma or GED</button>
+        <button class="q-btn text-sm font-semibold border border-teal-600 text-teal-700 rounded-full px-4 py-1.5" data-q="4">5 · How you'd pay</button>
+      </div>
+      <div id="qCard" class="bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg text-[15px] text-slate-700 min-h-[110px]"></div>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">What comes back</h2>
+    <p>Based on your answers, the tool assembles a set of cards. Some appear only if they fit you; others show up for everyone because they're open to everyone.</p>
+    <p><strong>Texas Workforce Solutions and WIOA.</strong> If you're unemployed, working part-time, recently laid off, or on limited income, this is the first card you'll see — and it's the one worth chasing hardest. You apply directly with Workforce Solutions East Texas, not through us. Their process takes time, so the tool tells you plainly to start early rather than waiting until a cohort is a week out. We wrote a longer piece on it: <a href="/blog/wioa-funding-dental-assistant-training-east-texas" class="text-teal-700 font-semibold">WIOA funding for dental assistant training in East Texas</a> and a step-by-step on <a href="/blog/workforce-solutions-vouchers-step-by-step" class="text-teal-700 font-semibold">Workforce Solutions vouchers</a>.</p>
+    <p><strong>The payment plan.</strong> This one shows for everybody, because it always applies: <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> — $500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments, up to twelve. Your certificate is issued once tuition is paid in full. If you want to see the actual dates your payments would land on, the <a href="/tools/tuition-planner" class="text-teal-700 font-semibold">tuition planner</a> maps them out.</p>
+    <p><strong>Sponsor-a-Student.</strong> Local businesses can sponsor a seat or part of one. It's free to apply and nothing about you goes public without your say-so. Details on the <a href="/sponsor-a-student" class="text-teal-700 font-semibold">sponsorship page</a>.</p>
+    <p><strong>The online route.</strong> If the upfront cost is simply too tight right now, the <a href="/online" class="text-teal-700 font-semibold">fully online program</a> is a flat $997 and starts any day. It is coursework rather than hands-on chairside training, and we'll always say that out loud — but for some people it's the honest first step.</p>
+
+    <div class="bg-slate-50 border-l-4 border-cyan-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">Veterans and military spouses</div>
+      <p class="mt-1 mb-0">We accept veterans benefits including the GI Bill. That path has its own paperwork and its own timeline — start with <a href="/blog/gi-bill-veterans-benefits-dental-assistant-school" class="text-teal-700 font-semibold">our guide to GI Bill and veterans benefits</a>, then call so we can point you at the right forms rather than guessing.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">If you don't have a diploma or GED yet</h2>
+    <p>The tool flags this honestly instead of quietly moving on. Most funding programs and registration paths in Texas ask for a high-school diploma or GED. If you answer no, you'll see a note saying exactly that, plus an invitation to call us. That isn't a brush-off — a GED is a solvable problem with a known path, and it's better to know now than to find out at the finish line.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">How to actually use it well</h2>
+    <p>Two minutes on the tool, then one phone call. That's the whole play. The Funding Finder is good at telling you which doors exist; it is not good at opening them. The opening happens when you call Workforce Solutions, or when you <a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> and Amanda walks you through what applies to you specifically.</p>
+    <p>Start early either way. Funding processes run on their own calendar, not on yours, and the next in-person cohorts start <strong>September 14</strong>, <strong>September 29</strong>, <strong>November 9</strong>, and <strong>November 17, 2026</strong> — eight seats each. The current list is always on the <a href="/calendar" class="text-teal-700 font-semibold">calendar</a>.</p>
+    <p>And if you want your name in front of a seat while you sort the money out, <a href="/apply" class="text-teal-700 font-semibold">applying is free</a> and commits you to nothing. It just starts the conversation.</p>
+
+    <div class="not-prose" data-pda-lead data-topic="funding-finder-tool-walkthrough" data-heading="Not sure which funding path is yours? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">Two minutes. Five questions. No signup.</h2>
+      <p class="text-teal-100 mb-5">See which tuition-help paths are worth asking about before you rule anything out.</p>
+      <a href="/tools/funding-finder" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Open the Funding Finder →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/what-dental-assistant-school-really-costs" class="text-teal-700 font-semibold">What dental assistant school really costs</a> · <a href="/blog/dental-assistant-school-payment-plan-explained" class="text-teal-700 font-semibold">The payment plan, explained</a> · <a href="/blog/savings-starter-first-500-cushion" class="text-teal-700 font-semibold">Building your first $500 cushion</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var items=[
+    "<strong>1. Are you currently unemployed, working part-time, or recently laid off?</strong><br>This is the single biggest signal for WIOA funding through Workforce Solutions East Texas. Answer honestly even if the situation feels temporary — \"between things right now\" counts, and it is exactly who that funding exists for.",
+    "<strong>2. Do you receive any assistance (SNAP, TANF, Medicaid) or have a limited income?</strong><br>Same reason. A lot of people skip past this one out of pride and quietly cost themselves a look at funding they were eligible for. The tool does not store your answer or report it anywhere.",
+    "<strong>3. Are you a parent or the main support for your household?</strong><br>Household responsibility affects which supports apply and how a funding office weighs your case. It also tells us something about your schedule, which matters when you pick between a daytime in-person cohort and the online route.",
+    "<strong>4. Do you have a high-school diploma or GED?</strong><br>Most funding and registration paths in Texas ask for one. If your answer is no, the tool says so directly instead of hiding it, and points you to a phone call. Better to solve it up front than at the end.",
+    "<strong>5. Would small weekly or monthly payments help more than paying all at once?</strong><br>This one is not about eligibility at all — it just decides which payment card gets highlighted for you: pay in full at $3,000, or the plan at $3,500 with $500 down and the balance spread out."
+  ];
+  var card=document.getElementById('qCard'),btns=document.querySelectorAll('.q-btn');
+  function show(i){card.innerHTML=items[i];btns.forEach(function(b,j){b.classList.toggle('open',i===j);});}
+  btns.forEach(function(b){b.addEventListener('click',function(){show(+b.dataset.q);});});
+  show(0);
+})();
+</script>
+</body>
+</html>
