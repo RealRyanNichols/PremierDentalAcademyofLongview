@@ -156,9 +156,16 @@
   const progOf = (e) => (e && e.progress_percent!=null) ? e.progress_percent : null;
 
   // seats grouped
+  // A seat is held by anyone still in the class: currently attending, OR enrolled
+  // and waiting for their start date. Only a student who has genuinely left frees
+  // the seat — withdrawals, refunds, cohort switches, and preserved paper-roster
+  // duplicates. Deny-list on purpose: a status we haven't seen yet counts as a real
+  // student rather than silently vanishing from the roster.
+  const SEAT_RELEASED = new Set(['withdrawn','dropped','drop','cancelled','canceled','refunded','transferred','no_show','no-show','deleted','removed']);
+  const isActiveSeat = (e) => !SEAT_RELEASED.has(String(e.status ?? 'active').trim().toLowerCase());
   const seatsByCohort = {};
-  enrollments.forEach(e => { if (e.cohort_id) (seatsByCohort[e.cohort_id] = seatsByCohort[e.cohort_id]||[]).push(e); });
-  const onlineSeats = enrollments.filter(e => !e.cohort_id && e.delivery==='online');
+  enrollments.filter(isActiveSeat).forEach(e => { if (e.cohort_id) (seatsByCohort[e.cohort_id] = seatsByCohort[e.cohort_id]||[]).push(e); });
+  const onlineSeats = enrollments.filter(e => isActiveSeat(e) && !e.cohort_id && e.delivery==='online');
   const assignedIds = new Set(enrollments.filter(e=>e.student_id).map(e=>e.student_id));
 
   const STAFF = new Set(['ryan@realryannichols.com','hello@premierdentalacademyoflongview.com','test@premierdentalacademyoflongview.com']);
