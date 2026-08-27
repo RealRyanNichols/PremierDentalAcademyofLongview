@@ -25,7 +25,7 @@
 
   // Real, published PDA figures (keep in sync with /salary + /enroll). No hype.
   var RDA_HR_LOW = 18, RDA_HR_HIGH = 25, RDA_HR_MID = 21;
-  var TUITION_INPERSON = 3000, TUITION_ONLINE = 397; // in-person paid in full ($3,500 on a plan)
+  var TUITION_INPERSON = 3000, TUITION_ONLINE = 997; // in-person paid in full ($3,500 on a plan)
   var PLAN_MONTHLY = 250, PLAN_WEEKLY = 250, MIN_DOWN = 500; // $500 down + $3,000 balance / up to 12 payments
 
   var sb = null;
