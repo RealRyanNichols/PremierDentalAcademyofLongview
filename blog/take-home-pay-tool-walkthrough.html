@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Take-Home Pay vs. the Number on the Job Listing</title>
+  <meta name="description" content="A job listing shows an hourly wage. Your bank account shows something smaller. Here's how to use the free take-home pay tool to see what a dental assistant paycheck really leaves you." />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; color: #0f172a; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    .prose p { margin-bottom: 1rem; color: #1e293b; font-size: 16px; }
+    .prose strong { color: #0f172a; }
+    .mini-in { width: 100%; border: 1px solid #cbd5e1; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-size: 15px; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+  <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-engage.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+  <script src="/assets/pda-social-proof.js" defer></script>
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/blog/take-home-pay-tool-walkthrough" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/blog/take-home-pay-tool-walkthrough" />
+  <meta property="og:title" content="Take-Home Pay vs. the Number on the Job Listing" />
+  <meta property="og:description" content="How to use the free take-home pay tool to see what a dental assistant paycheck really leaves you each month." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-take-home-pay-tool-walkthrough.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Take-Home Pay vs. the Number on the Job Listing" />
+  <meta name="twitter:description" content="Gross is the advertisement. Take-home is the truth. A walkthrough of the free tool." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og/blog-take-home-pay-tool-walkthrough.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Take-Home Pay vs. the Number on the Job Listing","description":"How to use the free take-home pay tool to see what a dental assistant paycheck really leaves you each month.","datePublished":"2026-08-28","dateModified":"2026-08-28","author":{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"https://www.premierdentalacademyoflongview.com"},"publisher":{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{"@type":"ImageObject","url":"https://www.premierdentalacademyoflongview.com/assets/logo-mark.png"}},"image":"https://www.premierdentalacademyoflongview.com/assets/og/blog-take-home-pay-tool-walkthrough.png","mainEntityOfPage":"https://www.premierdentalacademyoflongview.com/blog/take-home-pay-tool-walkthrough"}</script>
+</head>
+<body class="bg-white">
+
+<nav class="bg-white/95 backdrop-blur border-b border-slate-200 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 font-bold text-slate-900">
+      <img src="/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="36" height="36" class="w-9 h-9 rounded-lg shrink-0" />
+      <span class="text-base sm:text-lg">Premier Dental Academy</span>
+    </a>
+    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+      <a href="/#programs" class="hover:text-teal-700">Programs</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/contact" class="hover:text-teal-700">Contact</a>
+    </div>
+    <a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-sm">Enroll →</a>
+  </div>
+</nav>
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+  <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Feature spotlight · Free tool</p>
+  <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">Take-home pay vs. the number on the job listing</h1>
+  <p class="text-slate-500 mt-3 text-lg">Every job posting advertises a gross wage. Nobody has ever paid a light bill with a gross wage. The question that actually matters when you're deciding whether to change careers is simpler and harder: after taxes and after my bills, what is left? The free take-home pay tool exists to answer that with <em>your</em> numbers instead of somebody's average.</p>
+
+  <div class="grid grid-cols-3 gap-3 mt-8 not-prose">
+    <div class="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-teal-700">2</div><div class="text-xs text-slate-600 mt-1">sliders: wage and hours</div></div>
+    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-amber-600">5</div><div class="text-xs text-slate-600 mt-1">bill categories you fill in</div></div>
+    <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-cyan-700">$0</div><div class="text-xs text-slate-600 mt-1">cost, no signup, no email</div></div>
+  </div>
+
+  <div class="prose max-w-none mt-8">
+    <h2 class="display text-2xl font-bold mt-8">Gross, net, and the gap in between</h2>
+    <p>Gross pay is your hourly wage times the hours you actually work. Net pay — take-home — is what lands in the bank after withholding. In Texas there's no state income tax, so the gap is mostly federal income tax and FICA (Social Security and Medicare). Anything your employer withholds for health insurance or retirement comes out too.</p>
+    <p>That gap is why "$20 an hour" and "$20 an hour in my account" are two different sentences, and why people who budget off the advertised number end up surprised in month two.</p>
+
+    <div class="bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">What the tool does, exactly</div>
+      <p class="mt-1 mb-0">You set an hourly wage and how many hours a week you'd work. It calculates gross for the year, then estimates take-home by holding back roughly 15% for federal tax and FICA. You then type in five real monthly bills — housing, childcare, car payment plus gas, groceries, and phone/insurance/other — and it shows your estimated monthly take-home, your total bills, and what's left over. That's the whole thing. No account, no email.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Step one: put in a wage you can defend</h2>
+    <p>The wage slider is the part people fudge, usually upward. Don't. Use a number you've actually seen on a listing for the kind of office and the kind of town you'd work in — and if you don't know what that looks like yet, go read the real ranges on our <a href="/salary" class="text-teal-700 font-semibold">salary page</a> and <a href="/blog/dental-assistant-pay-by-city-east-texas" class="text-teal-700 font-semibold">pay by city across East Texas</a> before you touch the slider.</p>
+    <p>Then run it twice. Once at a realistic starting wage, once at where you'd hope to be after you've got experience and credentials behind you. The distance between those two numbers is the actual argument for finishing a program and getting registered rather than walking into a job cold.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Step two: be honest about hours</h2>
+    <p>The hours slider runs from 20 to 40 a week, and that range exists for a reason. Not every dental office runs five full days. Some are four ten-hour days. Some part-time roles are genuinely part-time. If you're weighing a schedule that isn't a straight forty, model it as it really is — a great hourly rate over 24 hours a week is a very different monthly number than the same rate over 40.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">Step three: your bills, not example bills</h2>
+    <p>The tool opens with placeholder figures so it isn't a blank screen. Replace every one of them. The five boxes are:</p>
+    <ul>
+      <li><strong>Rent / housing</strong> — the payment, plus anything escrowed with it.</li>
+      <li><strong>Childcare</strong> — this is the line that decides the whole picture for a lot of people, and it's the one most often left at zero by accident.</li>
+      <li><strong>Car payment + gas</strong> — include the commute. If you'd be driving in from Gilmer, Kilgore, Henderson, or Marshall, that fuel is a real monthly cost.</li>
+      <li><strong>Groceries</strong> — what you actually spend, not what you wish you spent.</li>
+      <li><strong>Phone, insurance + other</strong> — the catch-all: phone, auto insurance, subscriptions, minimum debt payments.</li>
+    </ul>
+    <p>The "left over" figure at the bottom only means something if these five numbers are true. Ten minutes with your bank app beforehand makes the answer worth having.</p>
+
+    <div class="bg-slate-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
+      <div class="font-semibold text-slate-900">This is an estimate, not tax advice</div>
+      <p class="mt-1 mb-0">The 15% withholding assumption is a rough planning figure. Your real withholding depends on your filing status, dependents, benefit elections, and what you put on your W-4. For anything that has to be exact, talk to a tax professional. Use this to make a decision, not to file a return.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">Try the quick version right here</h2>
+    <p>Two inputs, same math as the tool, so you can get a rough read before you open the full version:</p>
+
+    <div class="not-prose bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="mw" class="text-sm font-semibold text-slate-700">Hourly wage ($)</label>
+          <input id="mw" class="mini-in mt-1" type="number" min="0" step="0.25" value="20" inputmode="decimal" />
+        </div>
+        <div>
+          <label for="mh" class="text-sm font-semibold text-slate-700">Hours per week</label>
+          <input id="mh" class="mini-in mt-1" type="number" min="0" max="60" step="1" value="40" inputmode="numeric" />
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-3 mt-5 text-center">
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">Gross / year</div><div class="display text-xl font-bold text-slate-900" id="mGross">—</div></div>
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">Gross / month</div><div class="display text-xl font-bold text-slate-900" id="mGrossMo">—</div></div>
+        <div class="bg-teal-50 rounded-xl p-3"><div class="text-xs text-slate-500">Est. take-home / mo</div><div class="display text-xl font-bold text-teal-700" id="mNet">—</div></div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3 mb-0">Estimate only, using your inputs and a ~15% federal + FICA assumption. Texas has no state income tax. Add your bills in the <a href="/tools/take-home-pay" class="text-teal-700 font-semibold">full tool</a> to see what's left over.</p>
+    </div>
+
+    <h2 class="display text-2xl font-bold mt-10">What to do with the number you get</h2>
+    <p>If the leftover figure is comfortable, you have your answer and you can stop wondering. If it's tight, the useful question isn't "is this career worth it" — it's "which line do I have leverage on?" Sometimes it's the wage (experience, credentials, a different type of office). Sometimes it's the commute. Sometimes it's childcare hours. The tool makes those levers visible instead of leaving the whole thing as one anxious feeling.</p>
+    <p>And if the barrier is getting trained in the first place, that's a separate calculation with its own answers: WIOA funding through Workforce Solutions East Texas, GI Bill benefits, and payment plans. Start with the <a href="/tools/funding-finder" class="text-teal-700 font-semibold">funding finder</a>. For the wider picture of what a paycheck buys around here, <a href="/blog/salary-vs-cost-of-living-east-texas" class="text-teal-700 font-semibold">salary vs. cost of living in East Texas</a> is the companion read.</p>
+
+    <h2 class="display text-2xl font-bold mt-10">The part the calculator can't tell you</h2>
+    <p>A spreadsheet can compare two numbers. It can't tell you what it's like to leave a job you dread for work you're actually interested in, or what it does for a household when the schedule stops fighting everyone. Those things are real even though they don't have a line item. Run the numbers first — then make the decision with both halves in hand.</p>
+    <p>In-person training in Longview is $3,000 paid in full, or $3,500 on a payment plan ($500 down and a $3,000 balance). The self-paced online program is $997 and starts any day. Classes are daytime — <a href="tel:+19039136444" class="text-teal-700 font-semibold">call or text (903) 913-6444</a> for exact hours, or check the <a href="/calendar" class="text-teal-700 font-semibold">calendar</a> for start dates (next up: September 14 and September 29).</p>
+
+    <div class="not-prose" data-pda-lead data-topic="take-home-pay-tool-walkthrough" data-heading="Ran the numbers and want a second opinion? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
+
+    <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
+      <h2 class="display text-2xl font-bold mb-2">See the whole picture with your own bills.</h2>
+      <p class="text-teal-100 mb-5">The full take-home pay tool is free, takes two minutes, and never asks for your email.</p>
+      <a href="/tools/take-home-pay" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Open the free tool →</a>
+    </div>
+
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/salary-vs-cost-of-living-east-texas" class="text-teal-700 font-semibold">Salary vs. cost of living in East Texas</a> · <a href="/blog/dental-assistant-pay-by-city-east-texas" class="text-teal-700 font-semibold">Dental assistant pay by city</a> · <a href="/salary" class="text-teal-700 font-semibold">The salary page</a></p>
+  </div>
+</main>
+
+<footer class="bg-slate-900 text-slate-300 py-8 mt-16">
+  <div class="max-w-7xl mx-auto px-6 text-xs text-center">© 2026 Premier Dental Academy of Longview</div>
+</footer>
+<script>
+(function(){
+  var w=document.getElementById('mw'), h=document.getElementById('mh');
+  var g=document.getElementById('mGross'), gm=document.getElementById('mGrossMo'), n=document.getElementById('mNet');
+  function money(v){ return '$' + Math.round(v).toLocaleString(); }
+  function render(){
+    var wage=parseFloat(w.value)||0, hrs=parseFloat(h.value)||0;
+    var grossYr=wage*hrs*52, grossMo=grossYr/12, net=grossMo*0.85;
+    g.textContent=money(grossYr); gm.textContent=money(grossMo); n.textContent=money(net);
+  }
+  w.addEventListener('input',render); h.addEventListener('input',render);
+  render();
+})();
+</script>
+</body>
+</html>
