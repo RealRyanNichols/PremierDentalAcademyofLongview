@@ -4,13 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Career Direction Plan: Watch It Build Itself | Premier Dental Academy</title>
-<meta name="description" content="A guided plan builder for the after-high-school decision. Tap, type, or talk through short questions and watch your plan build itself live: your direction, your real numbers, your test week, your messages, and a one-pager for your parents. $20.">
+<meta name="description" content="A guided plan builder for the after-high-school decision. Tap, type, or talk through short questions and watch your plan build itself live: your direction, your real numbers, your test week, your messages, and a one-pager for your parents. $19.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/career-plan">
 <meta property="og:title" content="The Career Direction Plan: Watch It Build Itself">
-<meta property="og:description" content="Answer short questions by tap, type, or voice, and watch your after-high-school plan build itself live on screen. Instant access. $20.">
+<meta property="og:description" content="Answer short questions by tap, type, or voice, and watch your after-high-school plan build itself live on screen. Instant access. $19.">
 <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,6 +34,8 @@ tailwind.config = { theme: { extend: {
   body{font-family:'Inter',system-ui,sans-serif;color:#4A3F4C;-webkit-font-smoothing:antialiased;background:#FFF9F5}
   .display{font-family:'Fraunces',serif}
   #card-container{min-height:44px}
+  .ic{width:20px;height:20px;display:inline-block;vertical-align:-4px}
+  .ic-badge{width:44px;height:44px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center}
   .soft-card{background:#fff;border:1.5px solid #FBE5EB;border-radius:22px;box-shadow:0 10px 30px rgba(190,120,140,.10)}
   .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid #F7CFDA;border-radius:16px;padding:14px 16px;font-size:15px;font-weight:600;color:#5A4767;cursor:pointer;transition:transform .12s ease}
   .chip:hover{border-color:#D96C8A;transform:translateY(-1px)}
@@ -45,11 +47,11 @@ tailwind.config = { theme: { extend: {
   .scale-btn.on{background:linear-gradient(135deg,#D96C8A,#C4536F);border-color:#C4536F;color:#fff}
   .app-input{width:100%;border:2px solid #F7CFDA;border-radius:16px;padding:14px 16px;font-size:16px;background:#fff;color:#4A3F4C}
   .app-input:focus{outline:none;border-color:#D96C8A}
-  .btn-main{background:linear-gradient(135deg,#D96C8A,#C4536F);color:#fff;font-weight:800;border-radius:9999px;padding:14px 28px;font-size:15px;cursor:pointer;box-shadow:0 6px 18px rgba(196,83,111,.35);transition:transform .12s ease}
+  .btn-main{background:linear-gradient(135deg,#D96C8A,#C4536F);color:#fff;font-weight:800;border-radius:9999px;padding:14px 28px;font-size:15px;cursor:pointer;box-shadow:0 6px 18px rgba(196,83,111,.35);transition:transform .12s ease;border:none}
   .btn-main:hover{transform:translateY(-1px)}
   .btn-main:disabled{opacity:.35;cursor:default;box-shadow:none;transform:none}
-  .btn-ghost{background:transparent;color:#8A7691;font-weight:600;font-size:13px;cursor:pointer}
-  .mic-btn{width:48px;height:48px;border-radius:9999px;border:2px solid #F7CFDA;background:#fff;font-size:20px;cursor:pointer;flex:none}
+  .btn-ghost{background:transparent;color:#8A7691;font-weight:600;font-size:13px;cursor:pointer;border:none}
+  .mic-btn{width:48px;height:48px;border-radius:9999px;border:2px solid #F7CFDA;background:#fff;cursor:pointer;flex:none;color:#C4536F;display:flex;align-items:center;justify-content:center}
   .mic-btn.rec{background:#FBE5EB;border-color:#C4536F;animation:pulse 1s infinite}
   @keyframes pulse{50%{transform:scale(1.08)}}
   .bar-track{background:#FBE5EB;border-radius:9999px;height:10px;overflow:hidden}
@@ -60,27 +62,50 @@ tailwind.config = { theme: { extend: {
   .day-card .day-box{flex:none;width:24px;height:24px;border:2px solid #BCA9C4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;margin-top:1px}
   .day-card.done .day-box{background:#3F8A74;border-color:#3F8A74;color:#fff}
   .day-card.done{background:#F0F9F6;border-color:#6FB5A0}
-  .res-btn{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #DFF2EA;border-radius:16px;padding:13px 15px;font-size:14px;font-weight:700;color:#2F6B5A;text-decoration:none;transition:transform .12s ease}
+  .res-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:2px solid #DFF2EA;border-radius:16px;padding:13px 15px;font-size:14px;font-weight:700;color:#2F6B5A;text-decoration:none;transition:transform .12s ease}
   .res-btn:hover{border-color:#6FB5A0;transform:translateY(-1px)}
   .step-anim{animation:stepin .28s ease}
   @keyframes stepin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .calc-out{font-variant-numeric:tabular-nums}
-  .lp-slot{border:1.5px dashed #F2B8C6;border-radius:16px;padding:12px 14px;background:#FDF1F4}
+  .lp-slot{border:1.5px dashed #F2B8C6;border-radius:16px;padding:12px 14px;background:#FDF1F4;transition:background .3s ease,border-color .3s ease}
   .lp-slot.filled{border-style:solid;border-color:#C9E8DD;background:#fff}
   .lp-flash{animation:lpflash .9s ease}
   @keyframes lpflash{0%{box-shadow:0 0 0 4px rgba(217,108,138,.35)}100%{box-shadow:none}}
   #live-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(-8px);top:14px;z-index:60;background:linear-gradient(135deg,#D96C8A,#9F87CB);color:#fff;font-weight:700;font-size:13px;border-radius:9999px;padding:9px 18px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 22px rgba(159,135,203,.4)}
   #live-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #float-cta{position:fixed;right:18px;bottom:18px;z-index:55;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
+  #float-cta.show{opacity:1;pointer-events:auto;transform:none}
   .sparkle{position:absolute;pointer-events:none}
+  /* ── animated app preview (hero) ── */
+  .hd-wrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:560px;margin:0 auto;text-align:left}
+  @media(max-width:560px){.hd-wrap{grid-template-columns:1fr}}
+  .hd-card{background:#fff;border:1.5px solid #FBE5EB;border-radius:18px;box-shadow:0 14px 34px rgba(190,120,140,.16);padding:16px}
+  .hd-chip{border:2px solid #F7CFDA;border-radius:12px;padding:9px 12px;font-size:12.5px;font-weight:600;color:#5A4767;margin-top:8px;position:relative}
+  .hd-chip::after{content:'';position:absolute;right:10px;top:50%;width:8px;height:13px;border-right:2.5px solid #C4536F;border-bottom:2.5px solid #C4536F;transform:translateY(-60%) rotate(45deg);opacity:0}
+  .hd-c1{animation:hdchip 9s infinite}
+  .hd-c1::after{animation:hdtick 9s infinite}
+  .hd-bar{height:9px;border-radius:9999px;background:#FBE5EB;overflow:hidden;margin-top:7px}
+  .hd-bar i{display:block;height:100%;border-radius:9999px;background:linear-gradient(90deg,#8FCBB8,#6FB5A0)}
+  .hd-bar.rose i{background:linear-gradient(90deg,#E692A8,#C4536F)}
+  .hd-b1 i{animation:hdb1 9s infinite}
+  .hd-b2 i{animation:hdb2 9s infinite}
+  .hd-b3 i{animation:hdb3 9s infinite}
+  .hd-total{margin-top:10px;background:#F0F9F6;border:1.5px solid #C9E8DD;border-radius:12px;padding:8px 10px;font-size:12.5px;font-weight:800;color:#2F6B5A;opacity:0;animation:hdtotal 9s infinite}
+  @keyframes hdchip{0%,8%{background:#fff;border-color:#F7CFDA}12%,55%{background:#FDF1F4;border-color:#C4536F}60%,100%{background:#fff;border-color:#F7CFDA}}
+  @keyframes hdtick{0%,11%{opacity:0}14%,55%{opacity:1}60%,100%{opacity:0}}
+  @keyframes hdb1{0%,12%{width:12%}30%,60%{width:78%}78%,100%{width:12%}}
+  @keyframes hdb2{0%,16%{width:8%}36%,60%{width:44%}78%,100%{width:8%}}
+  @keyframes hdb3{0%,20%{width:5%}42%,60%{width:26%}78%,100%{width:5%}}
+  @keyframes hdtotal{0%,34%{opacity:0;transform:translateY(4px)}42%,68%{opacity:1;transform:none}78%,100%{opacity:0}}
   @media print{
-    .no-print,nav,footer,#live-toast{display:none!important} body{background:#fff}
+    .no-print,nav,footer,#live-toast,#float-cta{display:none!important} body{background:#fff}
     .soft-card{box-shadow:none!important;border-color:#eee!important}
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Product","name":"The Career Direction Plan (Guided Plan Builder)","description":"A guided plan builder for high-school seniors and recent grads. Answer short questions by tap, type, or voice, and watch a personal direction plan build itself live: your numbers, your test week, your messages, and a parent one-pager.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://www.premierdentalacademyoflongview.com/career-plan","offers":{"@type":"Offer","price":"20.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://www.premierdentalacademyoflongview.com/career-plan"}}
+{"@context":"https://schema.org","@type":"Product","name":"The Career Direction Plan (Guided Plan Builder)","description":"A guided plan builder for high-school seniors and recent grads. Answer short questions by tap, type, or voice, and watch a personal direction plan build itself live: your numbers, your test week, your messages, and a parent one-pager.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://www.premierdentalacademyoflongview.com/career-plan","offers":{"@type":"Offer","price":"19.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://www.premierdentalacademyoflongview.com/career-plan"}}
 </script>
 <script src="/assets/pda-seo.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
@@ -88,7 +113,8 @@ tailwind.config = { theme: { extend: {
 </head>
 <body class="min-h-screen">
 
-<div id="live-toast" role="status">✨ Added to your plan</div>
+<div id="live-toast" role="status">Added to your plan</div>
+<a id="float-cta" href="#buy" class="btn-main no-print" data-event="career_plan_float_cta">Get it · $19</a>
 
 <!-- LOADING -->
 <div id="gate-loading" class="max-w-2xl mx-auto px-6 py-24 text-center text-plum-300">
@@ -97,19 +123,37 @@ tailwind.config = { theme: { extend: {
 
 <!-- ===== SALES ===== -->
 <div id="sales" class="hidden">
-  <section class="relative overflow-hidden" style="background:linear-gradient(160deg,#FDF1F4 0%,#F1ECFA 55%,#F0F9F6 100%)">
-    <svg class="sparkle" style="top:40px;left:6%" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2D49B"/></svg>
-    <svg class="sparkle" style="top:120px;right:8%" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#D3C5EE"/></svg>
-    <svg class="sparkle" style="bottom:60px;left:12%" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2B8C6"/></svg>
+  <section id="hero" class="relative overflow-hidden" style="background:linear-gradient(160deg,#FDF1F4 0%,#F1ECFA 55%,#F0F9F6 100%)">
+    <svg class="sparkle" style="top:40px;left:6%" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="#F2D49B"/></svg>
+    <svg class="sparkle" style="top:120px;right:8%" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="#D3C5EE"/></svg>
+    <svg class="sparkle" style="bottom:60px;left:12%" width="13" height="13" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="#F2B8C6"/></svg>
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center relative">
-      <p class="text-rose-600 text-xs font-bold tracking-widest uppercase">Took the quiz? This is the rest 🌸</p>
+      <p class="text-rose-600 text-xs font-bold tracking-widest uppercase">Took the quiz? This is the rest</p>
       <h1 class="display text-3xl sm:text-5xl font-bold mt-2 text-plum-900">Watch your plan <span class="text-rose-600 italic">build itself.</span></h1>
       <p class="text-plum-700 mt-4 max-w-xl mx-auto text-base sm:text-lg">Tap. Type. Or just talk. You answer little questions, and your after-high-school plan builds itself on screen while you watch: your direction, your real numbers, your test week, and a one-pager for your parents.</p>
-      <img src="/assets/blog-art/what-should-i-do-after-high-school-quiz-hero.jpg" alt="Branded illustration: What Should I Do After High School, Premier Dental Academy of Longview" class="w-full max-w-2xl mx-auto rounded-3xl mt-8 shadow-xl ring-4 ring-white" loading="lazy" />
-      <div class="mt-8 inline-flex items-center gap-3 bg-white/80 border border-rose-200 rounded-2xl px-6 py-4 shadow-sm">
-        <span class="text-plum-300 line-through text-lg">$29</span>
-        <span class="display text-4xl font-bold text-rose-600">$20</span>
-        <span class="text-left text-xs text-plum-500 leading-tight">one-time<br>everything included</span>
+
+      <div class="hd-wrap mt-9" aria-hidden="true">
+        <div class="hd-card">
+          <p class="text-[11px] font-bold uppercase tracking-widest text-rose-600">You answer</p>
+          <p class="text-[13.5px] font-bold text-plum-900 mt-2">A perfect day at work feels like…</p>
+          <div class="hd-chip hd-c1">Making something real with my hands</div>
+          <div class="hd-chip">Deep quiet focus at a desk</div>
+          <div class="hd-chip">A team that counts on me</div>
+        </div>
+        <div class="hd-card">
+          <p class="text-[11px] font-bold uppercase tracking-widest text-sage-700">It builds, live</p>
+          <p class="text-[13.5px] font-bold text-plum-900 mt-2">Your direction</p>
+          <div class="hd-bar rose hd-b1"><i></i></div>
+          <div class="hd-bar hd-b2"><i></i></div>
+          <div class="hd-bar hd-b3"><i></i></div>
+          <div class="hd-total">Hands-on credential is pulling ahead</div>
+        </div>
+      </div>
+
+      <div class="mt-9 inline-flex items-center gap-3 bg-white/80 border border-rose-200 rounded-2xl px-6 py-4 shadow-sm">
+        <span class="text-left text-xs text-plum-500 leading-tight">regular<br><span class="line-through text-base text-plum-300">$47</span></span>
+        <span class="display text-4xl font-bold text-rose-600">$19</span>
+        <span class="text-left text-xs text-plum-500 leading-tight">launch price<br>one-time · yours forever</span>
       </div>
       <div class="mt-6"><a href="#buy" class="inline-block btn-main">Build my plan →</a></div>
       <p class="text-plum-500 text-xs mt-4">Prefer free? Send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="underline">quiz page</a> and she builds it personally. This is the instant version.</p>
@@ -117,11 +161,18 @@ tailwind.config = { theme: { extend: {
   </section>
 
   <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-plum-900">You answer. It builds. Live. ✨</h2>
+    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-plum-900">The honest conversation, on your terms</h2>
+    <p class="text-center text-sm text-plum-500 mt-2 max-w-xl mx-auto">Some things are easier to say to a screen than across the dinner table. This gives you a judgment-free place to get honest about what you actually want, and turns it into a plan you can hold.</p>
     <div class="grid sm:grid-cols-3 gap-4 mt-7">
-      <div class="soft-card p-5 text-center"><div class="text-3xl">💬</div><h3 class="font-bold text-plum-900 mt-2">Little questions</h3><p class="text-sm text-plum-500 mt-1">One at a time. Tap a choice, type a word, or hit the mic and say it.</p></div>
-      <div class="soft-card p-5 text-center"><div class="text-3xl">✨</div><h3 class="font-bold text-plum-900 mt-2">Your plan grows on screen</h3><p class="text-sm text-plum-500 mt-1">Every answer drops into your plan right in front of you. No waiting for the end.</p></div>
-      <div class="soft-card p-5 text-center"><div class="text-3xl">🌸</div><h3 class="font-bold text-plum-900 mt-2">Walk out with it</h3><p class="text-sm text-plum-500 mt-1">Direction, costs, test week, your messages, a parent one-pager. Printable. Yours.</p></div>
+      <div class="soft-card p-5 text-center">
+        <span class="ic-badge bg-rose-50 text-rose-600"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.5A3 3 0 017 3.5h10a3 3 0 013 3v7a3 3 0 01-3 3H9l-4.2 3.2c-.5.4-.8.1-.8-.4z"/></svg></span>
+        <h3 class="font-bold text-plum-900 mt-2">Little questions</h3><p class="text-sm text-plum-500 mt-1">One at a time. Tap a choice, type a word, or hit the mic and say it out loud.</p></div>
+      <div class="soft-card p-5 text-center">
+        <span class="ic-badge bg-lav-100 text-lav-700"><svg class="ic" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="currentColor"/></svg></span>
+        <h3 class="font-bold text-plum-900 mt-2">Your plan grows on screen</h3><p class="text-sm text-plum-500 mt-1">Every answer drops into your plan right in front of you. No waiting for the end.</p></div>
+      <div class="soft-card p-5 text-center">
+        <span class="ic-badge bg-sage-50 text-sage-700"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg></span>
+        <h3 class="font-bold text-plum-900 mt-2">Walk out with it</h3><p class="text-sm text-plum-500 mt-1">Direction, costs, test week, your messages, a parent one-pager. Printable. Yours.</p></div>
     </div>
 
     <div class="rounded-3xl p-6 sm:p-8 mt-10 relative overflow-hidden" style="background:linear-gradient(135deg,#F1ECFA,#FDF1F4)">
@@ -132,18 +183,18 @@ tailwind.config = { theme: { extend: {
         <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Stand in the actual room.</b> Tour a campus or walk a job site.</span></button>
         <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Run your real numbers.</b> The builder does the math for you.</span></button>
       </div>
-      <p id="demo-msg" class="text-center text-rose-600 text-sm font-bold mt-4" hidden>Exactly. Now imagine your whole plan building like that. 👇</p>
+      <p id="demo-msg" class="text-center text-rose-600 text-sm font-bold mt-4" hidden>Exactly. Now imagine your whole plan building like that.</p>
     </div>
 
     <h2 class="display text-2xl sm:text-3xl font-bold text-center text-plum-900 mt-10">Everything is included. Everything.</h2>
     <p class="text-center text-sm text-plum-500 mt-2 max-w-lg mx-auto">You paid. You get the whole thing. No teaser tiers, no locked extras.</p>
     <div class="grid sm:grid-cols-2 gap-4 mt-7">
-      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">🧭 Your direction, ranked live</h3><p class="text-sm text-plum-500 mt-1">Eight quick taps. All four paths ranked while you watch: hands-on credential, people-facing skill, academic, structured.</p></div>
-      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">🧮 Your numbers, computed for you</h3><p class="text-sm text-plum-500 mt-1">Trade costs compared side by side. Degree routes priced with what you'd likely borrow. Your inputs, its math.</p></div>
-      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">💌 Your messages, written for you</h3><p class="text-sm text-plum-500 mt-1">It writes your ask-to-shadow text. Tap to copy, send it today.</p></div>
-      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">👩‍👧 A parent one-pager, generated</h3><p class="text-sm text-plum-500 mt-1">Built from your answers, in their language. Print it, hand it over, have the talk once.</p></div>
+      <div class="soft-card p-5"><div class="flex items-center gap-3"><span class="ic-badge bg-rose-50 text-rose-600"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg></span><h3 class="font-bold text-plum-900">Your direction, ranked live</h3></div><p class="text-sm text-plum-500 mt-2">Eight quick taps. All four paths ranked while you watch: hands-on credential, people-facing skill, academic, structured.</p></div>
+      <div class="soft-card p-5"><div class="flex items-center gap-3"><span class="ic-badge bg-sage-50 text-sage-700"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/></svg></span><h3 class="font-bold text-plum-900">Your numbers, computed</h3></div><p class="text-sm text-plum-500 mt-2">Trade costs compared side by side. Degree routes priced with what you'd likely borrow. Your inputs, its math.</p></div>
+      <div class="soft-card p-5"><div class="flex items-center gap-3"><span class="ic-badge bg-lav-100 text-lav-700"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M4.5 7.5L12 13l7.5-5.5"/></svg></span><h3 class="font-bold text-plum-900">Your messages, written</h3></div><p class="text-sm text-plum-500 mt-2">It writes your ask-to-shadow text for you. Tap to copy, send it today.</p></div>
+      <div class="soft-card p-5"><div class="flex items-center gap-3"><span class="ic-badge bg-gold-100 text-gold-700"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><ellipse cx="12" cy="6.6" rx="2.2" ry="3"/><ellipse cx="17.1" cy="10.2" rx="2.2" ry="3" transform="rotate(72 17.1 10.2)"/><ellipse cx="15.2" cy="16.2" rx="2.2" ry="3" transform="rotate(144 15.2 16.2)"/><ellipse cx="8.8" cy="16.2" rx="2.2" ry="3" transform="rotate(-144 8.8 16.2)"/><ellipse cx="6.9" cy="10.2" rx="2.2" ry="3" transform="rotate(-72 6.9 10.2)"/></svg></span><h3 class="font-bold text-plum-900">A parent one-pager, generated</h3></div><p class="text-sm text-plum-500 mt-2">Built from your answers, in their language. Print it, hand it over, have the talk once.</p></div>
     </div>
-    <p class="text-xs text-plum-300 text-center mt-6 max-w-xl mx-auto">Honest fine print: this is a planning tool, not a scientific assessment, and nobody can guarantee you a job, admission, or income. It points you at official sources for every cost and requirement.</p>
+    <p class="text-xs text-plum-300 text-center mt-6 max-w-xl mx-auto">Honest fine print: this is a planning tool, not a scientific assessment, therapy, or counseling, and nobody can guarantee you a job, admission, or income. It points you at official sources for every cost and requirement. Big feelings deserve real people too.</p>
   </main>
 
   <!-- CHECKOUT -->
@@ -151,7 +202,8 @@ tailwind.config = { theme: { extend: {
     <div class="soft-card overflow-hidden border-2" style="border-color:#D96C8A">
       <div class="text-white px-6 py-4 text-center" style="background:linear-gradient(135deg,#D96C8A,#9F87CB)">
         <p class="text-xs uppercase tracking-widest text-rose-100">Instant access · everything included</p>
-        <p class="display text-2xl font-bold">Get the Career Direction Plan · <span class="text-gold-300">$20</span></p>
+        <p class="display text-2xl font-bold">The Career Direction Plan · <span class="text-gold-300">$19</span></p>
+        <p class="text-[11px] text-rose-100 mt-0.5">launch price · regular $47</p>
       </div>
       <div class="p-6 space-y-4">
         <div>
@@ -166,7 +218,7 @@ tailwind.config = { theme: { extend: {
           <label class="block text-sm font-semibold text-plum-700 mb-1">Card</label>
           <div id="card-container" class="border-2 rounded-2xl p-3 bg-white" style="border-color:#F7CFDA"></div>
         </div>
-        <button id="pay-btn" class="w-full btn-main disabled:opacity-40" disabled>Pay $20 &amp; start building</button>
+        <button id="pay-btn" class="w-full btn-main disabled:opacity-40" disabled>Pay $19 &amp; start building</button>
         <div id="err" hidden class="text-xs bg-rose-50 border border-rose-200 text-rose-700 rounded-xl p-2"></div>
         <p class="text-[11px] text-plum-300 text-center">Secure checkout by Square · we never see your card number. Already bought it? <a href="/login" class="text-rose-600 underline">Sign in</a>.</p>
       </div>
@@ -176,7 +228,7 @@ tailwind.config = { theme: { extend: {
       <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">How do I get it after I pay?</summary><p class="text-sm text-plum-500 mt-2">Instantly. You get an email with a one-tap sign-in link and the plan builder opens right here. Any device, forever.</p></details>
       <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Where are my answers saved?</summary><p class="text-sm text-plum-500 mt-2">On your device, automatically, as you go. Nothing you enter in the builder is sent to us. Come back on the same device and it picks up where you left off.</p></details>
       <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Is this just a pitch for your dental school?</summary><p class="text-sm text-plum-500 mt-2">No. We're a dental assisting academy and we say so where it's relevant. But the builder covers all four directions honestly, including the ones that have nothing to do with us. If college is your answer, it will tell you.</p></details>
-      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Will it tell me what to do with my life?</summary><p class="text-sm text-plum-500 mt-2">No tool can, and this one doesn't pretend to. It's a planning tool, not a scientific assessment, and it guarantees no job or outcome. It turns your answers into a concrete, testable plan. You decide.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Will it tell me what to do with my life?</summary><p class="text-sm text-plum-500 mt-2">No tool can, and this one doesn't pretend to. It's a planning tool, not a scientific assessment or counseling, and it guarantees no job or outcome. It turns your answers into a concrete, testable plan. You decide.</p></details>
       <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">I'm under 18. Can I buy this?</summary><p class="text-sm text-plum-500 mt-2">Have a parent or guardian purchase it with you. It's their card, and your plan ends with a one-pager written for them anyway. There's also a free option: send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="text-rose-600 underline">quiz page</a>.</p></details>
     </div>
   </section>
@@ -192,10 +244,10 @@ tailwind.config = { theme: { extend: {
         <div class="text-white px-5 py-4 no-print" style="background:linear-gradient(135deg,#C4536F,#9F87CB)">
           <div class="flex items-center justify-between gap-3">
             <div class="flex items-center gap-2">
-              <span class="text-xl">🌸</span>
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/></svg>
               <span class="display font-bold">Career Direction Plan</span>
             </div>
-            <button type="button" id="app-menu-btn" class="bg-white/20 hover:bg-white/30 border border-white/40 rounded-full px-3 py-1.5 text-xs font-bold" aria-label="Open menu">☰</button>
+            <button type="button" id="app-menu-btn" class="bg-white/20 hover:bg-white/30 border border-white/40 rounded-full px-3 py-1.5" aria-label="Open menu"><svg class="ic" style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
           </div>
           <div class="mt-3 flex items-center gap-3">
             <div class="bar-track flex-1" style="background:rgba(255,255,255,.25)"><div id="app-bar" class="bar-fill" style="background:linear-gradient(90deg,#F2D49B,#DFA84E)"></div></div>
@@ -219,13 +271,13 @@ tailwind.config = { theme: { extend: {
       <!-- Live plan column -->
       <aside id="live-col" class="lg:sticky lg:top-6">
         <div id="live-panel" class="soft-card p-5 relative overflow-hidden">
-          <svg class="sparkle" style="top:10px;right:12px" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2D49B"/></svg>
-          <p class="text-xs font-bold uppercase tracking-widest text-rose-600">Your plan · building live ✨</p>
+          <svg class="sparkle" style="top:10px;right:12px" width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="#F2D49B"/></svg>
+          <p class="text-xs font-bold uppercase tracking-widest text-rose-600">Your plan · building live</p>
           <div id="live-body" class="mt-3 space-y-3"></div>
         </div>
       </aside>
     </div>
-    <p class="text-[11px] text-plum-300 text-center mt-5 no-print">Saves on this device as you go. A planning tool, not a scientific assessment. No job, admission, or income is guaranteed by anyone. Verify every cost and requirement at the official source. Stuck? <a href="tel:+19039136444" class="underline">Call or text Amanda: (903) 913-6444</a>.</p>
+    <p class="text-[11px] text-plum-300 text-center mt-5 no-print">Saves on this device as you go. A planning tool, not a scientific assessment, therapy, or counseling. No job, admission, or income is guaranteed by anyone. Verify every cost and requirement at the official source. Stuck, or carrying something heavy? <a href="tel:+19039136444" class="underline">Call or text Amanda: (903) 913-6444</a>. She's a real person.</p>
   </div>
 </div>
 
@@ -244,8 +296,28 @@ tailwind.config = { theme: { extend: {
   function num(k){ var v=Number(S[k]); return isFinite(v)&&v>0?v:0; }
   function esc(x){ return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
-  var DIRS={ h:{label:'Hands-on credential',emoji:'🔧'}, p:{label:'People-facing skill',emoji:'🤝'},
-             s:{label:'Academic path',emoji:'📚'}, t:{label:'Structured path',emoji:'🧱'} };
+  var IC={
+    spark:'<path d="M12 2l1.9 6.9L21 12l-7.1 3.1L12 22l-1.9-6.9L3 12l7.1-3.1z" fill="currentColor" stroke="none"/>',
+    compass:'<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke="none"/>',
+    gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3M12 18.2v3M2.8 12h3M18.2 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/>',
+    people:'<circle cx="9" cy="9" r="3"/><path d="M3.5 19c.7-3 2.9-4.5 5.5-4.5s4.8 1.5 5.5 4.5"/><circle cx="16.5" cy="10" r="2.4"/><path d="M15.8 14.8c2.2.3 3.9 1.7 4.6 4.2"/>',
+    book:'<path d="M12 6.5C10.5 5 8 4.5 4.5 4.7v13c3.5-.2 6 .3 7.5 1.8 1.5-1.5 4-2 7.5-1.8v-13C16 4.5 13.5 5 12 6.5z"/><path d="M12 6.5v13"/>',
+    blocks:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
+    calc:'<rect x="5" y="3.5" width="14" height="17" rx="3"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 15.5h.01M12 15.5h.01M15.5 15.5h.01"/>',
+    mail:'<rect x="3.5" y="5.5" width="17" height="13" rx="3"/><path d="M4.5 7.5L12 13l7.5-5.5"/>',
+    cal:'<rect x="4" y="5.5" width="16" height="14.5" rx="3"/><path d="M8 3.5v4M16 3.5v4M4 10h16M9 14.5l2 2 4-4"/>',
+    go:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9h5.5v5.5M15 9l-6.5 6.5"/>',
+    flower:'<circle cx="12" cy="12" r="2.2" fill="currentColor" stroke="none"/><ellipse cx="12" cy="6.6" rx="2.2" ry="3"/><ellipse cx="17.1" cy="10.2" rx="2.2" ry="3" transform="rotate(72 17.1 10.2)"/><ellipse cx="15.2" cy="16.2" rx="2.2" ry="3" transform="rotate(144 15.2 16.2)"/><ellipse cx="8.8" cy="16.2" rx="2.2" ry="3" transform="rotate(-144 8.8 16.2)"/><ellipse cx="6.9" cy="10.2" rx="2.2" ry="3" transform="rotate(-72 6.9 10.2)"/>',
+    mic:'<rect x="9" y="3.5" width="6" height="11" rx="3"/><path d="M5.5 11.5a6.5 6.5 0 0013 0M12 18v2.5"/>',
+    print:'<path d="M7 8V4.5h10V8"/><rect x="4" y="8" width="16" height="8" rx="2"/><rect x="7" y="13.5" width="10" height="6" rx="1.5"/>',
+    phone:'<rect x="7" y="3" width="10" height="18" rx="3"/><path d="M10.5 17.5h3"/>',
+    heart:'<path d="M12 20s-7-4.4-7-9.5C5 7.5 7 5.7 9.3 5.7c1.3 0 2.2.7 2.7 1.5.5-.8 1.4-1.5 2.7-1.5C17 5.7 19 7.5 19 10.5c0 5.1-7 9.5-7 9.5z"/>',
+    chat:'<path d="M4 6.5A3 3 0 017 3.5h10a3 3 0 013 3v7a3 3 0 01-3 3H9l-4.2 3.2c-.5.4-.8.1-.8-.4z"/>'
+  };
+  function ico(n,cls,sz){ return '<svg class="ic '+(cls||'')+'"'+(sz?' style="width:'+sz+'px;height:'+sz+'px"':'')+' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+IC[n]+'</svg>'; }
+
+  var DIRS={ h:{label:'Hands-on credential',icon:'gear'}, p:{label:'People-facing skill',icon:'people'},
+             s:{label:'Academic path',icon:'book'}, t:{label:'Structured path',icon:'blocks'} };
 
   var FIT=[ ['I would rather fix or make something real than write about it.','h'],
             ['Long lectures drain me, even when I care about the topic.','h'],
@@ -300,11 +372,18 @@ tailwind.config = { theme: { extend: {
         'Apprenticeships pay you to train, and spots are competitive. Apply broadly.',
         'GI Bill benefits are real but change. Read va.gov/education yourself before counting on them.' ] };
 
+  var FEARS={
+    'Money':'Money is the most solvable one on this list. Real funding exists in East Texas for short training, and the FAFSA is free to file. Your plan links straight to both.',
+    'I’m scared of failing':'That is exactly what the test week is for. You cannot fail a test week. It is designed to be cheap to be wrong in, and every "no" you find this week saves you a year later.',
+    'Disappointing my family':'Your plan ends with a one-pager written for your people, built from your own answers and your real numbers. You will not walk into that conversation empty-handed.',
+    'Picking wrong and wasting time':'Nothing here locks. Your answers stay saved, switching directions takes one tap, and deciding with real numbers beats deciding by default. Wrong discovered early is cheap.',
+    'I don’t know anyone who’s done it':'Your shadow message is already written, and one person saying yes to one afternoon is how everyone starts. And Amanda answers her own texts.' };
+
   var RES={
-    h:[ ['💰','Funding finder','/tools/funding-finder'], ['📝','Free practice exam','/tools/practice-exam'], ['🏫','Free campus tour','/tour'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['🦷','TX dental board','https://tsbde.texas.gov'] ],
-    p:[ ['📝','Free practice exam','/tools/practice-exam'], ['💵','East Texas salary page','/salary'], ['🎤','Interview prep','/tools/interview-prep'], ['🏫','Free campus tour','/tour'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'] ],
-    s:[ ['🎓','FAFSA (studentaid.gov)','https://studentaid.gov'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['⚖️','Trade school vs. college','/blog/trade-school-vs-college-what-nobody-tells-you'] ],
-    t:[ ['🔨','apprenticeship.gov','https://www.apprenticeship.gov'], ['🎖️','GI Bill (va.gov)','https://www.va.gov/education/'], ['💰','Funding finder','/tools/funding-finder'], ['🏫','Free campus tour','/tour'] ] };
+    h:[ ['Funding finder','/tools/funding-finder'], ['Free practice exam','/tools/practice-exam'], ['Free campus tour','/tour'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['TX dental board','https://tsbde.texas.gov'] ],
+    p:[ ['Free practice exam','/tools/practice-exam'], ['East Texas salary page','/salary'], ['Interview prep','/tools/interview-prep'], ['Free campus tour','/tour'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'] ],
+    s:[ ['FAFSA (studentaid.gov)','https://studentaid.gov'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['Trade school vs. college','/blog/trade-school-vs-college-what-nobody-tells-you'] ],
+    t:[ ['apprenticeship.gov','https://www.apprenticeship.gov'], ['GI Bill (va.gov)','https://www.va.gov/education/'], ['Funding finder','/tools/funding-finder'], ['Free campus tour','/tour'] ] };
 
   var TRADES=['Dental assisting','Medical assisting','Welding','HVAC','Electrical','Cosmetology','CDL driving'];
   var ROLES=['Dental assisting','Medical assisting','Patient coordinator','Pharmacy tech','Teaching aide / child care'];
@@ -314,38 +393,46 @@ tailwind.config = { theme: { extend: {
   function fitAnswered(){ var n=0; FIT.forEach(function(q,i){ if(S['fit'+i]) n++; }); return n; }
   function dir(){ if(S.dirOverride) return S.dirOverride; var sc=fitScores(); return Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]; }
 
+  function realTalkSteps(){
+    return [
+      { id:'rt-pick', type:'text', title:'Real talk: if nobody had an opinion, what would you pick?', sub:'Not your parents, not your friends, not your teachers. Just you. Say it or type it. Nobody sees this but you.', key:'rt_pick', voice:true, placeholder:'Be honest. This stays on your device.' },
+      { id:'rt-fear', type:'chips', title:'And what’s actually in the way?', sub:'Name it and your plan will answer it.', key:'rt_fear', options:Object.keys(FEARS), multi:0 },
+      { id:'rt-25', type:'text', title:'Last one: what does a good life look like for you at 25?', sub:'A sentence is plenty. Your plan will hold onto it for you.', key:'rt_25', voice:true, placeholder:'e.g. my own place, work I’m proud of, weekends with my people' } ];
+  }
+
   function pathSteps(d){
     if(d==='h') return [
       { id:'h-trades', type:'chips', title:'Pick two trades worth testing.', sub:'Tap two. That gives you a real comparison.', key:'h_trades', options:TRADES, multi:2, other:true },
-      { id:'h-honest', type:'info', title:'Quick honesty check 🔧', bullets:HONEST.h },
+      { id:'h-honest', type:'info', title:'Quick honesty check', bullets:HONEST.h },
       { id:'h-costA', type:'money', title:function(){ return 'Price your first pick: '+esc((S.h_trades||[])[0]||'trade #1'); }, sub:'Numbers from the school’s own price sheet. Skip what you don’t know yet.', fields:[['h_a_tuition','Tuition ($)'],['h_a_extra','Gear + fees + licensing ($)'],['h_a_months','Months of training'],['h_a_living','Your living costs per month ($)']] },
       { id:'h-costB', type:'money', title:function(){ return 'Now your second pick: '+esc((S.h_trades||[])[1]||'trade #2'); }, sub:'Same four numbers.', fields:[['h_b_tuition','Tuition ($)'],['h_b_extra','Gear + fees + licensing ($)'],['h_b_months','Months of training'],['h_b_living','Your living costs per month ($)']] },
       { id:'h-fund', type:'chips', title:'Want help paying for it?', key:'h_fund', options:['Yes, show me funding options','I’m covered'], multi:0 } ];
     if(d==='p') return [
       { id:'p-roles', type:'chips', title:'Which people-facing roles sound like you?', sub:'Every one of these carries a real skill. Tap up to two.', key:'p_roles', options:ROLES, multi:2, other:true },
-      { id:'p-honest', type:'info', title:'Quick honesty check 🤝', bullets:HONEST.p },
+      { id:'p-honest', type:'info', title:'Quick honesty check', bullets:HONEST.p },
       { id:'p-who', type:'text', title:'Who could you watch work for an afternoon?', sub:'Your own dentist, doctor, pharmacist, or a teacher you trust. First name is fine.', key:'p_who', voice:true, placeholder:'e.g. Ms. Rivera' },
       { id:'p-status', type:'chips', title:'And you are a…', key:'p_status', options:['senior at my high school','recent high-school graduate','student figuring out my next step'], multi:0 } ];
     if(d==='s') return [
       { id:'s-become', type:'text', title:'Finish the sentence: I’m going to college to become a…', sub:'If the blank won’t fill, that’s not failure. It’s data.', key:'s_become', voice:true, placeholder:'e.g. registered nurse' },
-      { id:'s-honest', type:'info', title:'Quick honesty check 📚', bullets:HONEST.s },
+      { id:'s-honest', type:'info', title:'Quick honesty check', bullets:HONEST.s },
       { id:'s-r1', type:'money', title:'Price route 1: your target school.', sub:'Use the school’s own net-price calculator, never the sticker.', fields:[['s_r1_net','Net price per year ($)'],['s_r1_living','Living costs per year ($)'],['s_r1_years','Years'],['s_r1_aid','Aid + family help per year ($)']] },
       { id:'s-r2', type:'money', title:'Price route 2: community college, then transfer.', sub:'Same diploma at the end. See what it changes.', fields:[['s_r2_net','Net price per year ($)'],['s_r2_living','Living costs per year ($)'],['s_r2_years','Years'],['s_r2_aid','Aid + family help per year ($)']] },
       { id:'s-backup', type:'chips', title:'If year two says the plan is wrong, your pre-decided move is…', sub:'Deciding now is what makes changing course cheap.', key:'s_backup', options:['Transfer somewhere cheaper','Change major, keep credits that carry','Step out to a short credential and work'], multi:0 },
       { id:'s-checkin', type:'text', title:'Who gets to call your two-year check-in?', sub:'Someone who won’t let you quietly skip it.', key:'s_checkin', voice:true, placeholder:'e.g. Mom' } ];
     return [
       { id:'t-opts', type:'chips', title:'Which structured paths are on your list?', sub:'Tap all that apply.', key:'t_opts', options:['Military service','Registered apprenticeship','Small cohort program (like our 8-seat classes)'], multi:3 },
-      { id:'t-honest', type:'info', title:'Quick honesty check 🧱', bullets:HONEST.t },
+      { id:'t-honest', type:'info', title:'Quick honesty check', bullets:HONEST.t },
       { id:'t-people', type:'text', title:'Name one veteran or apprentice you can ask this week.', sub:'Their stories are the honest brochure.', key:'t_people', voice:true, placeholder:'e.g. Uncle Marcus' },
       { id:'t-sign', type:'date', title:'When might someone ask you to sign?', sub:'The builder adds a 14-day cooling-off rule. Nobody decides under sales pressure.', key:'t_sign' } ];
   }
 
   function flow(){
-    return [ { id:'welcome', type:'info', title:'Let’s build your plan. 🌸', bullets:['Little questions. Tap, type, or talk.','Your plan builds itself, live, right beside you.','About 3 minutes. It saves as you go.'] },
+    return [ { id:'welcome', type:'info', title:'Let’s build your plan.', bullets:['Little questions. Tap, type, or talk.','Your plan builds itself, live, right beside you.','It saves as you go, and nothing you write leaves this device.'] },
              { id:'name', type:'text', title:'First up: what’s your name?', key:'name', voice:true, placeholder:'First name' },
              { id:'crew', type:'chips', title:function(){ return 'Who’s in this with you'+(S.name?', '+esc(S.name):'')+'?'; }, sub:'Your plan ends with a one-pager written just for them.', key:'crew', options:['Mom','Dad','Grandparent','Guardian','I’m on my own'], multi:0 } ]
       .concat(fitSteps())
       .concat([{ id:'reveal', type:'reveal' }])
+      .concat(realTalkSteps())
       .concat(pathSteps(dir()))
       .concat([{ id:'week', type:'week' },{ id:'plan', type:'plan' }]);
   }
@@ -357,7 +444,7 @@ tailwind.config = { theme: { extend: {
   var toastT=null;
 
   function toast(msg){
-    var t=document.getElementById('live-toast'); t.textContent=msg||'✨ Added to your plan';
+    var t=document.getElementById('live-toast'); t.textContent=msg||'Added to your plan';
     t.classList.add('show');
     clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('show'); },1400);
     var lp=document.getElementById('live-panel');
@@ -368,8 +455,8 @@ tailwind.config = { theme: { extend: {
   function setNext(enabled,label){ nextBtn.disabled=!enabled; nextBtn.textContent=label||'Next →'; }
 
   // ── LIVE PLAN PANEL ──
-  function slot(filled,emoji,titleTxt,bodyHtml){
-    return '<div class="lp-slot'+(filled?' filled':'')+'"><p class="text-xs font-bold text-plum-700">'+emoji+' '+titleTxt+'</p>'+
+  function slot(filled,icn,titleTxt,bodyHtml){
+    return '<div class="lp-slot'+(filled?' filled':'')+'"><p class="text-xs font-bold text-plum-700 flex items-center gap-1.5">'+ico(icn,filled?'text-sage-700':'text-rose-400',15)+' '+titleTxt+'</p>'+
       '<div class="text-[13px] text-plum-500 mt-1">'+bodyHtml+'</div></div>';
   }
   function shadowMsg(d){
@@ -390,20 +477,25 @@ tailwind.config = { theme: { extend: {
     var body=document.getElementById('live-body'); if(!body) return;
     var d=dir(), sc=fitScores(), ans=fitAnswered(), name=(S.name||'').trim();
     var html='';
-    // Greeting
     html+='<p class="display text-lg font-bold text-plum-900">'+(name?esc(name)+'’s plan':'Your plan')+(S.crew&&S.crew!=='I’m on my own'?' <span class="text-[12px] font-sans font-semibold text-plum-300">· with '+esc(S.crew)+'</span>':'')+'</p>';
-    // Direction slot with live mini bars
     var dirBody='';
     Object.keys(DIRS).forEach(function(k){
       var pc=Math.round(sc[k]/10*100);
-      dirBody+='<div class="flex items-center gap-2 mt-1"><span class="w-5 text-center">'+DIRS[k].emoji+'</span>'+
+      dirBody+='<div class="flex items-center gap-2 mt-1"><span class="w-5 text-center text-plum-500">'+ico(DIRS[k].icon,'',14)+'</span>'+
         '<div class="bar-track flex-1"><div class="bar-fill'+(ans===8&&k===d?' lead':'')+'" style="width:'+pc+'%"></div></div>'+
         '<span class="text-[10px] w-8 text-right calc-out text-plum-300">'+sc[k]+'/10</span></div>';
     });
-    if(ans===8) dirBody+='<p class="mt-2 font-bold text-rose-600">'+DIRS[d].emoji+' '+DIRS[d].label+(S.dirOverride?' (your pick)':'')+'</p>';
+    if(ans===8) dirBody+='<p class="mt-2 font-bold text-rose-600">'+DIRS[d].label+(S.dirOverride?' (your pick)':'')+'</p>';
     else dirBody+='<p class="mt-2">'+(8-ans)+' little taps to go…</p>';
-    html+=slot(ans===8,'🧭','Direction',dirBody);
-    // Numbers slot
+    html+=slot(ans===8,'compass','Direction',dirBody);
+    if(S.rt_pick||S.rt_25||S.rt_fear){
+      var rt='';
+      if(S.rt_pick) rt+='<p class="italic">“'+esc(String(S.rt_pick).slice(0,70))+(String(S.rt_pick).length>70?'…':'')+'”</p>';
+      if(S.rt_fear) rt+='<p class="mt-1">Naming the fear: <b>'+esc(S.rt_fear)+'</b>. Your plan answers it.</p>';
+      html+=slot(true,'heart','In your own words',rt||'<p></p>');
+    } else if(ans===8){
+      html+=slot(false,'heart','In your own words','<p>The honest part comes next. Nobody sees it but you.</p>');
+    }
     if(d==='h'){
       var t=handsTotals(), t1=(S.h_trades||[])[0], t2=(S.h_trades||[])[1];
       var nb='';
@@ -411,37 +503,34 @@ tailwind.config = { theme: { extend: {
       if(t2) nb+='<p><b>'+esc(t2)+'</b>'+(t[1]>0?': <b class="calc-out">'+money(t[1])+'</b> all-in':'')+'</p>';
       if(t[0]>0&&t[1]>0&&t[0]!==t[1]) nb+='<p class="text-sage-700 font-bold mt-1 calc-out">'+esc(t[0]<t[1]?t1:t2)+' costs '+money(Math.abs(t[0]-t[1]))+' less</p>';
       if(!nb) nb='<p>Your trades and costs land here.</p>';
-      html+=slot(!!(t1||t[0]>0),'🧮','Your numbers',nb);
+      html+=slot(!!(t1||t[0]>0),'calc','Your numbers',nb);
     } else if(d==='s'){
       var r=routeTotals(); var nb2='';
       if(S.s_become) nb2+='<p>Becoming a <b>'+esc(S.s_become)+'</b></p>';
       if(r[0]>0) nb2+='<p>Target school: <b class="calc-out">'+money(r[0])+'</b> · borrow ~<b class="calc-out">'+money(r[1])+'</b></p>';
       if(r[2]>0) nb2+='<p>CC + transfer: <b class="calc-out">'+money(r[2])+'</b> · borrow ~<b class="calc-out">'+money(r[3])+'</b></p>';
       if(!nb2) nb2='<p>Your destination and routes land here.</p>';
-      html+=slot(!!(S.s_become||r[0]>0),'🧮','Your routes',nb2);
+      html+=slot(!!(S.s_become||r[0]>0),'calc','Your routes',nb2);
     } else if(d==='t'){
       var nb3='';
       if(S.t_opts&&S.t_opts.length) nb3+='<p><b>'+esc(S.t_opts.join(', '))+'</b></p>';
       if(S.t_sign){ var dd=new Date(S.t_sign+'T12:00:00'); if(!isNaN(dd)){ dd.setDate(dd.getDate()+14);
-        nb3+='<p>🧊 Earliest signing day: <b>'+dd.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</b></p>'; } }
+        nb3+='<p>Earliest signing day: <b>'+dd.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</b></p>'; } }
       if(!nb3) nb3='<p>Your options and cooling-off date land here.</p>';
-      html+=slot(!!(S.t_opts&&S.t_opts.length),'🧱','Your options',nb3);
+      html+=slot(!!(S.t_opts&&S.t_opts.length),'blocks','Your options',nb3);
     } else {
       var nb4='';
       if(S.p_roles&&S.p_roles.length) nb4+='<p><b>'+esc(S.p_roles.join(' · '))+'</b></p>';
       if(!nb4) nb4='<p>Your roles land here.</p>';
-      html+=slot(!!(S.p_roles&&S.p_roles.length),'🤝','Your roles',nb4);
+      html+=slot(!!(S.p_roles&&S.p_roles.length),'people','Your roles',nb4);
     }
-    // Message slot (p and h)
     if(d==='p'||d==='h'){
       var ready=(d==='p'&&S.p_who)||(d==='h'&&(S.h_trades||[]).length>0);
-      html+=slot(!!ready,'💌','Your shadow message', ready?'<p class="italic">“'+esc(shadowMsg(d).slice(0,90))+'…”</p><p class="text-sage-700 font-bold mt-1">Written. Copy it on your plan page.</p>':'<p>It writes your ask-to-shadow text for you.</p>');
+      html+=slot(!!ready,'mail','Your shadow message', ready?'<p class="italic">“'+esc(shadowMsg(d).slice(0,90))+'…”</p><p class="text-sage-700 font-bold mt-1">Written. Copy it on your plan page.</p>':'<p>It writes your ask-to-shadow text for you.</p>');
     }
-    // Week slot
     var wd=weekDone(dir());
-    html+=slot(wd>0,'📅','Your test week', ans===8?('<p><b class="calc-out">'+wd+'/7</b> moves done'+(wd===7?' · tested! 🎉':'')+'</p>'):'<p>Seven small moves, mostly free.</p>');
-    // One-pager slot
-    html+=slot(!!S.crew,'💐','One-pager for '+esc(S.crew&&S.crew!=='I’m on my own'?S.crew:'your people'), S.crew?'<p class="text-sage-700 font-bold">Generating from your answers. Printable from your plan page.</p>':'<p>The parent conversation, handled.</p>');
+    html+=slot(wd>0,'cal','Your test week', ans===8?('<p><b class="calc-out">'+wd+'/7</b> moves done'+(wd===7?' · tested!':'')+'</p>'):'<p>Seven small moves, mostly free.</p>');
+    html+=slot(!!S.crew,'flower','One-pager for '+esc(S.crew&&S.crew!=='I’m on my own'?S.crew:'your people'), S.crew?'<p class="text-sage-700 font-bold">Generating from your answers. Printable from your plan page.</p>':'<p>The parent conversation, handled.</p>');
     body.innerHTML=html;
   }
 
@@ -454,7 +543,7 @@ tailwind.config = { theme: { extend: {
     var st=steps[idx];
     var pct=Math.round(idx/(steps.length-1)*100);
     document.getElementById('app-bar').style.width=pct+'%';
-    document.getElementById('app-step-label').textContent=(st.type==='plan')?'All yours 🌸':(idx+1)+' / '+steps.length;
+    document.getElementById('app-step-label').textContent=(st.type==='plan')?'All yours':(idx+1)+' / '+steps.length;
     backBtn.style.visibility=idx===0?'hidden':'visible';
     nextBtn.style.visibility='visible';
     document.getElementById('live-col').style.display=st.type==='plan'?'none':'';
@@ -472,7 +561,7 @@ tailwind.config = { theme: { extend: {
       st.bullets.forEach(function(b){
         var li=document.createElement('div'); li.className='flex items-start gap-3 rounded-2xl p-4 text-sm text-plum-700';
         li.style.background='#FDF1F4';
-        li.innerHTML='<span class="text-rose-500 font-bold">✿</span><span>'+b+'</span>'; ul.appendChild(li);
+        li.innerHTML='<span class="text-rose-500" style="flex:none">'+ico('spark','',15)+'</span><span>'+b+'</span>'; ul.appendChild(li);
       });
       wrap.appendChild(ul);
       setNext(true, st.id==='welcome'?'Start →':'Got it →');
@@ -484,7 +573,7 @@ tailwind.config = { theme: { extend: {
       var qNum=Number(st.id.replace('fit',''))+1;
       var tag=document.createElement('p'); tag.className='text-xs font-bold uppercase tracking-widest text-rose-600'; tag.textContent='Sounds like you? '+qNum+' of '+FIT.length; wrap.appendChild(tag);
       h2(title);
-      var hint=document.createElement('p'); hint.className='text-xs text-plum-300 mt-2'; hint.textContent='Watch your direction bars move as you tap. →'; wrap.appendChild(hint);
+      var hint=document.createElement('p'); hint.className='text-xs text-plum-300 mt-2'; hint.textContent='Watch your direction bars move as you tap.'; wrap.appendChild(hint);
       var row=document.createElement('div'); row.className='flex items-center gap-2 sm:gap-3 mt-6';
       var lo=document.createElement('span'); lo.className='text-[11px] text-plum-300 w-10'; lo.textContent='not me'; row.appendChild(lo);
       for(var v=1;v<=5;v++){
@@ -559,7 +648,7 @@ tailwind.config = { theme: { extend: {
       inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&inp.value.trim()) next(); });
       row2.appendChild(inp);
       if(st.voice&&SRec){
-        var mic=document.createElement('button'); mic.type='button'; mic.className='mic-btn'; mic.textContent='🎤';
+        var mic=document.createElement('button'); mic.type='button'; mic.className='mic-btn'; mic.innerHTML=ico('mic','',20);
         mic.setAttribute('aria-label','Say it instead of typing');
         mic.addEventListener('click',function(){
           try{
@@ -590,7 +679,7 @@ tailwind.config = { theme: { extend: {
         ni.setAttribute('aria-label',f[1]);
         ni.value=S[f[0]]!=null?S[f[0]]:'';
         var mT=null;
-        ni.addEventListener('input',function(){ S[f[0]]=ni.value; save(); renderLive(); clearTimeout(mT); if(ni.value) mT=setTimeout(function(){ toast('🧮 Doing your math…'); },600); });
+        ni.addEventListener('input',function(){ S[f[0]]=ni.value; save(); renderLive(); clearTimeout(mT); if(ni.value) mT=setTimeout(function(){ toast('Doing your math…'); },600); });
         lab.appendChild(ni); grid.appendChild(lab);
       });
       wrap.appendChild(grid);
@@ -610,7 +699,7 @@ tailwind.config = { theme: { extend: {
         if(!S[st.key]){ outP.textContent=''; return; }
         var d=new Date(S[st.key]+'T12:00:00'); if(isNaN(d)){ outP.textContent=''; return; }
         d.setDate(d.getDate()+14);
-        outP.innerHTML='🧊 Your earliest signing day: <span class="text-sage-700">'+d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})+'</span>';
+        outP.innerHTML='Your earliest signing day: <span class="text-sage-700">'+d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})+'</span>';
       }
       di.addEventListener('change',function(){ put(st.key,di.value); cool(); setNext(true); });
       wrap.appendChild(di); wrap.appendChild(outP); cool();
@@ -621,26 +710,26 @@ tailwind.config = { theme: { extend: {
 
     if(st.type==='reveal'){
       var sc=fitScores(), d=dir(), max=10;
-      h2((S.name?esc(S.name)+', y':'Y')+'our direction: '+DIRS[d].emoji+' <span class="text-rose-600">'+DIRS[d].label+'</span>');
+      h2((S.name?esc(S.name)+', y':'Y')+'our direction: <span class="text-rose-600">'+DIRS[d].label+'</span>');
       subP('From your eight answers. Tap a different one if you already know your path. Nothing gets locked.');
       var bx=document.createElement('div'); bx.className='mt-5 space-y-3';
       Object.keys(DIRS).forEach(function(k){
         var row=document.createElement('button'); row.type='button'; row.className='w-full text-left';
         row.setAttribute('aria-label','Choose '+DIRS[k].label);
         var top=document.createElement('div'); top.className='flex items-center justify-between text-sm';
-        top.innerHTML='<span class="font-semibold text-plum-900">'+DIRS[k].emoji+' '+DIRS[k].label+(k===d?' <span class="text-gold-500">★</span>':'')+'</span><span class="text-xs font-bold text-plum-300 calc-out">'+sc[k]+' / '+max+'</span>';
+        top.innerHTML='<span class="font-semibold text-plum-900 flex items-center gap-2"><span class="'+(k===d?'text-rose-600':'text-plum-300')+'">'+ico(DIRS[k].icon,'',17)+'</span>'+DIRS[k].label+(k===d?' <span class="text-gold-500">'+ico('spark','',13)+'</span>':'')+'</span><span class="text-xs font-bold text-plum-300 calc-out">'+sc[k]+' / '+max+'</span>';
         var trk=document.createElement('div'); trk.className='bar-track mt-1';
         var fill=document.createElement('div'); fill.className='bar-fill'+(k===d?' lead':'');
         trk.appendChild(fill); row.appendChild(top); row.appendChild(trk); bx.appendChild(row);
         setTimeout(function(){ fill.style.width=Math.round(sc[k]/max*100)+'%'; },60);
         row.addEventListener('click',function(){
           if(k===dir()&&S.dirOverride) delete S.dirOverride; else S.dirOverride=k;
-          save(); toast('🧭 Direction updated'); render();
+          save(); toast('Direction updated'); render();
         });
       });
       wrap.appendChild(bx);
       track('career_plan_fit',{leader:d});
-      setNext(true,'Build my '+DIRS[d].label.split(' ')[0].toLowerCase()+' plan →');
+      setNext(true,'Keep going →');
       renderLive();
       return;
     }
@@ -667,7 +756,7 @@ tailwind.config = { theme: { extend: {
       return;
     }
 
-    if(st.type==='plan'){ renderPlan(wrap); nextBtn.style.visibility='hidden'; setNext(false,'✓'); return; }
+    if(st.type==='plan'){ renderPlan(wrap); nextBtn.style.visibility='hidden'; setNext(false,'Done'); return; }
   }
 
   // ── FULL PLAN PAGE ──
@@ -675,55 +764,66 @@ tailwind.config = { theme: { extend: {
     var d=dir(), name=(S.name||'').trim(), crew=S.crew||'';
     track('career_plan_plan_ready',{dir:d});
     var head=document.createElement('div');
-    head.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-rose-600">Built for you · '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+' ✨</p>'+
-      '<h2 class="display text-2xl sm:text-3xl font-bold text-plum-900 mt-1">'+(name?esc(name)+', h':'H')+'ere’s your plan. '+DIRS[d].emoji+'</h2>'+
-      '<p class="text-sm text-plum-500 mt-1">Direction: <b class="text-plum-900">'+DIRS[d].label+'</b></p>';
+    head.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-rose-600">Built for you · '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'</p>'+
+      '<h2 class="display text-2xl sm:text-3xl font-bold text-plum-900 mt-1">'+(name?esc(name)+', h':'H')+'ere’s your plan.</h2>'+
+      '<p class="text-sm text-plum-500 mt-1 flex items-center gap-2">Direction: <b class="text-plum-900 flex items-center gap-1.5"><span class="text-rose-600">'+ico(DIRS[d].icon,'',16)+'</span>'+DIRS[d].label+'</b></p>';
     wrap.appendChild(head);
-    function panel(emoji,titleTxt,tint){ var p=document.createElement('div'); p.className='mt-4 rounded-2xl p-4 border';
+    function panel(icn,titleTxt,tint){ var p=document.createElement('div'); p.className='mt-4 rounded-2xl p-4 border';
       p.style.background=tint||'#FDF1F4'; p.style.borderColor='#F7CFDA';
-      p.innerHTML='<p class="font-bold text-plum-900 text-sm">'+emoji+' '+titleTxt+'</p>'; return p; }
+      p.innerHTML='<p class="font-bold text-plum-900 text-sm flex items-center gap-1.5"><span class="text-rose-600">'+ico(icn,'',16)+'</span>'+titleTxt+'</p>'; return p; }
+
+    // In your own words
+    if(S.rt_pick||S.rt_25||S.rt_fear){
+      var rt=panel('heart','In your own words','#F7F4FC');
+      var rtHtml='';
+      if(S.rt_pick) rtHtml+='<p class="mt-2 text-sm text-plum-700 italic bg-white border rounded-xl p-3" style="border-color:#D3C5EE">“'+esc(S.rt_pick)+'”<span class="not-italic text-[11px] text-plum-300 block mt-1">what you’d pick if nobody had an opinion</span></p>';
+      if(S.rt_25) rtHtml+='<p class="mt-2 text-sm text-plum-700 italic bg-white border rounded-xl p-3" style="border-color:#D3C5EE">“'+esc(S.rt_25)+'”<span class="not-italic text-[11px] text-plum-300 block mt-1">your good life at 25</span></p>';
+      if(S.rt_fear&&FEARS[S.rt_fear]) rtHtml+='<p class="mt-2 text-sm text-plum-700"><b>You named the fear: '+esc(S.rt_fear)+'.</b> '+esc(FEARS[S.rt_fear])+'</p>';
+      rt.innerHTML+=rtHtml;
+      wrap.appendChild(rt);
+    }
 
     if(d==='h'){
       var t=handsTotals(), t1=(S.h_trades||[])[0]||'Trade 1', t2=(S.h_trades||[])[1]||'Trade 2';
-      var np=panel('🧮','Your numbers','#F0F9F6');
+      var np=panel('calc','Your numbers','#F0F9F6');
       if(t[0]>0||t[1]>0){
         var rows='<div class="grid grid-cols-2 gap-3 mt-2 text-center">'+
-          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t1)+'</p><p class="display text-xl font-bold text-plum-900 calc-out" id="pl-tot-a">'+money(t[0])+'</p><p class="text-[10px] text-plum-300">all-in</p></div>'+
-          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t2)+'</p><p class="display text-xl font-bold text-plum-900 calc-out" id="pl-tot-b">'+money(t[1])+'</p><p class="text-[10px] text-plum-300">all-in</p></div></div>';
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t1)+'</p><p class="display text-xl font-bold text-plum-900 calc-out">'+money(t[0])+'</p><p class="text-[10px] text-plum-300">all-in</p></div>'+
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t2)+'</p><p class="display text-xl font-bold text-plum-900 calc-out">'+money(t[1])+'</p><p class="text-[10px] text-plum-300">all-in</p></div></div>';
         if(t[0]>0&&t[1]>0&&t[0]!==t[1]) rows+='<p class="text-sm font-bold text-sage-700 text-center mt-2 calc-out">'+esc(t[0]<t[1]?t1:t2)+' costs '+money(Math.abs(t[0]-t[1]))+' less all-in.</p>';
         np.innerHTML+=rows;
       } else np.innerHTML+='<p class="text-sm text-plum-500 mt-1">Add costs and the comparison lands here. <button type="button" class="underline text-rose-600" data-jump="h-costA">Add my numbers</button></p>';
-      if(S.h_fund&&S.h_fund.indexOf('Yes')===0) np.innerHTML+='<a href="/tools/funding-finder" class="res-btn mt-3">💰 Your funding walkthrough starts here</a>';
+      if(S.h_fund&&S.h_fund.indexOf('Yes')===0) np.innerHTML+='<a href="/tools/funding-finder" class="res-btn mt-3"><span>Your funding walkthrough starts here</span>'+ico('go','text-sage-500',18)+'</a>';
       wrap.appendChild(np);
     }
     if(d==='s'){
       var r=routeTotals();
-      var np2=panel('🧮','Your routes to '+(S.s_become?'becoming a '+esc(S.s_become):'the degree'),'#F0F9F6');
+      var np2=panel('calc','Your routes to '+(S.s_become?'becoming a '+esc(S.s_become):'the degree'),'#F0F9F6');
       if(r[0]>0||r[2]>0){
         np2.innerHTML+='<div class="grid grid-cols-2 gap-3 mt-2 text-center">'+
           '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">Target school</p><p class="display text-lg font-bold text-plum-900 calc-out">'+money(r[0])+'</p><p class="text-[10px] text-plum-300">borrow ~'+money(r[1])+'</p></div>'+
           '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">CC + transfer</p><p class="display text-lg font-bold text-plum-900 calc-out">'+money(r[2])+'</p><p class="text-[10px] text-plum-300">borrow ~'+money(r[3])+'</p></div></div>';
       } else np2.innerHTML+='<p class="text-sm text-plum-500 mt-1">Run each school’s net-price calculator, drop the numbers in, and your routes compare here. <button type="button" class="underline text-rose-600" data-jump="s-r1">Add my numbers</button></p>';
-      if(S.s_backup) np2.innerHTML+='<p class="text-sm text-plum-700 mt-2">🛟 Year-two backup, pre-decided: <b>'+esc(S.s_backup)+'</b>'+(S.s_checkin?' · check-in called by <b>'+esc(S.s_checkin)+'</b>':'')+'</p>';
+      if(S.s_backup) np2.innerHTML+='<p class="text-sm text-plum-700 mt-2">Year-two backup, pre-decided: <b>'+esc(S.s_backup)+'</b>'+(S.s_checkin?' · check-in called by <b>'+esc(S.s_checkin)+'</b>':'')+'</p>';
       wrap.appendChild(np2);
     }
     if(d==='t'&&S.t_sign){
       var dd=new Date(S.t_sign+'T12:00:00');
       if(!isNaN(dd)){ dd.setDate(dd.getDate()+14);
-        var cp=panel('🧊','Your cooling-off rule','#F1ECFA');
+        var cp=panel('cal','Your cooling-off rule','#F1ECFA');
         cp.innerHTML+='<p class="text-sm text-plum-700 mt-1">Earliest day you sign anything binding: <b class="text-lav-700">'+dd.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</b>. Until then: one veteran, one apprentice'+(S.t_people?' (starting with <b>'+esc(S.t_people)+'</b>)':'')+', and benefits read at the official source.</p>';
         wrap.appendChild(cp); }
     }
 
     if(d==='p'||d==='h'){
-      var sp=panel('💌','Your shadow message, written for you','#FDF1F4');
+      var sp=panel('mail','Your shadow message, written for you','#FDF1F4');
       sp.innerHTML+='<p class="text-sm text-plum-700 mt-2 bg-white border rounded-xl p-3" style="border-color:#F7CFDA" id="pl-script">'+esc(shadowMsg(d))+'</p>'+
-        '<button type="button" id="pl-copy" class="mt-3 btn-main !py-2 !px-5 text-sm">📋 Copy it, send it today</button>';
+        '<button type="button" id="pl-copy" class="mt-3 btn-main !py-2 !px-5 text-sm">Copy it, send it today</button>';
       wrap.appendChild(sp);
     }
 
     var wkDone=weekDone(d);
-    var wp=panel('📅','Your test week · '+wkDone+'/7 done'+(wkDone===7?' 🎉':''),'#F7F4FC');
+    var wp=panel('cal','Your test week · '+wkDone+'/7 done','#F7F4FC');
     var wl=document.createElement('div'); wl.className='mt-2 space-y-2';
     WEEK[d].forEach(function(txt,i){
       var b=document.createElement('button'); b.type='button'; b.className='day-card'+(S['wk_'+d+'_'+i]?' done':'');
@@ -736,12 +836,12 @@ tailwind.config = { theme: { extend: {
     });
     wp.appendChild(wl); wrap.appendChild(wp);
 
-    var rp=panel('🔗','Tap-and-go resources · real links only','#F0F9F6');
+    var rp=panel('go','Tap-and-go resources · real links only','#F0F9F6');
     var rg=document.createElement('div'); rg.className='grid sm:grid-cols-2 gap-2 mt-2';
     RES[d].forEach(function(r2){
-      var aEl=document.createElement('a'); aEl.className='res-btn'; aEl.href=r2[2];
-      if(/^https:/.test(r2[2])) aEl.rel='noopener';
-      aEl.innerHTML='<span>'+r2[0]+'</span><span>'+r2[1]+'</span>';
+      var aEl=document.createElement('a'); aEl.className='res-btn'; aEl.href=r2[1];
+      if(/^https:/.test(r2[1])) aEl.rel='noopener';
+      aEl.innerHTML='<span>'+r2[0]+'</span>'+ico('go','text-sage-500',18);
       rg.appendChild(aEl);
     });
     rp.appendChild(rg); wrap.appendChild(rp);
@@ -760,7 +860,7 @@ tailwind.config = { theme: { extend: {
       facts.push('Routes get priced with each school’s own net-price calculator, never the sticker.'); }
     if(d==='t'){ var ol=(S.t_opts||[]).join(', '); if(ol) facts.push('Paths on the list: <b>'+esc(ol)+'</b>.');
       facts.push('House rule: veterans and apprentices first, benefits read at the official source, and a 14-day cooling-off before any signature.'); }
-    pp.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-gold-700">💐 One-pager for '+esc(pWho)+'</p>'+
+    pp.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-gold-700 flex items-center gap-1.5">'+ico('flower','',15)+' One-pager for '+esc(pWho)+'</p>'+
       '<p class="display text-lg font-bold text-plum-900 mt-1">'+(name?esc(name):'Your student')+' has a plan, not a guess.</p>'+
       '<div class="mt-2 space-y-1.5 text-sm text-plum-700">'+facts.map(function(f){ return '<p>• '+f+'</p>'; }).join('')+
       '<p>• The deal: one test week before any money or signatures. Then decide together.</p></div>'+
@@ -768,8 +868,8 @@ tailwind.config = { theme: { extend: {
     wrap.appendChild(pp);
 
     var act=document.createElement('div'); act.className='mt-5 flex flex-wrap gap-3 no-print';
-    act.innerHTML='<button type="button" onclick="window.print()" data-event="career_plan_print" class="btn-main">🖨️ Print my plan</button>'+
-      '<a href="tel:+19039136444" class="res-btn">📱 Text Amanda where you landed</a>';
+    act.innerHTML='<button type="button" onclick="window.print()" data-event="career_plan_print" class="btn-main flex items-center gap-2">'+ico('print','',17)+' Print my plan</button>'+
+      '<a href="tel:+19039136444" class="res-btn"><span>Text Amanda where you landed</span>'+ico('phone','text-sage-500',18)+'</a>';
     wrap.appendChild(act);
 
     var swp=document.createElement('p'); swp.className='text-xs text-plum-300 mt-4 no-print';
@@ -779,7 +879,7 @@ tailwind.config = { theme: { extend: {
     var copyBtn=document.getElementById('pl-copy');
     if(copyBtn) copyBtn.addEventListener('click',function(){
       var txt=document.getElementById('pl-script').textContent;
-      function done(){ copyBtn.textContent='✓ Copied. Go send it.'; track('career_plan_script_copy'); setTimeout(function(){ copyBtn.textContent='📋 Copy it, send it today'; },2500); }
+      function done(){ copyBtn.textContent='Copied. Go send it.'; track('career_plan_script_copy'); setTimeout(function(){ copyBtn.textContent='Copy it, send it today'; },2500); }
       if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){ fb(); }); } else fb();
       function fb(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(ta); }
     });
@@ -810,11 +910,11 @@ tailwind.config = { theme: { extend: {
 </script>
 
 <script>
-/* Sales-page demo checklist. Not saved; it is the teaser. */
+/* Sales-page demo checklist + floating buy button. */
 (function(){
   'use strict';
-  var box=document.getElementById('demo-days'); if(!box) return;
-  box.addEventListener('click',function(e){
+  var box=document.getElementById('demo-days');
+  if(box) box.addEventListener('click',function(e){
     var btn=e.target.closest('.day-card'); if(!btn) return;
     var on=!btn.classList.contains('done');
     btn.classList.toggle('done',on);
@@ -823,6 +923,17 @@ tailwind.config = { theme: { extend: {
     document.getElementById('demo-msg').hidden=!all;
     try{ if(window.PDA&&window.PDA.track) window.PDA.track('career_plan_demo',{checked:on}); }catch(err){}
   });
+  var cta=document.getElementById('float-cta');
+  function updCta(){
+    var sales=document.getElementById('sales');
+    if(!cta||!sales||sales.classList.contains('hidden')){ if(cta) cta.classList.remove('show'); return; }
+    var buy=document.getElementById('buy'), r=buy.getBoundingClientRect();
+    var buyVisible=r.top<window.innerHeight&&r.bottom>0;
+    cta.classList.toggle('show', window.scrollY>420&&!buyVisible);
+  }
+  window.addEventListener('scroll',updCta,{passive:true});
+  window.addEventListener('resize',updCta);
+  setInterval(updCta,800);
 })();
 </script>
 
@@ -879,22 +990,22 @@ tailwind.config = { theme: { extend: {
     LOCK=true; btn.disabled=true; btn.textContent='Processing…';
     var tok;
     try{ tok=await card.tokenize(); if(tok.status!=='OK'){ throw new Error((tok.errors&&tok.errors[0]&&tok.errors[0].message)||'Card was rejected.'); } }
-    catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $20 & start building'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
-    try{ if(window.PDA&&window.PDA.track) window.PDA.track('begin_checkout',{product:'career_plan',value:20}); }catch(e){}
+    catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $19 & start building'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
+    try{ if(window.PDA&&window.PDA.track) window.PDA.track('begin_checkout',{product:'career_plan',value:19}); }catch(e){}
     try{
       var resp=await fetch(SB_URL+'/functions/v1/buy-product',{ method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY}, body:JSON.stringify({ product_key:'career_plan', sourceId:tok.token, email:email, name:name }) });
       var out=await resp.json().catch(function(){return{};});
       if(out.alreadyOwned){ location.reload(); return; }
       if(resp.ok&&out.ok){
-        try{ if(window.PDA&&window.PDA.track) window.PDA.track('purchase',{product:'career_plan',value:20,currency:'USD'}); }catch(e){}
-        try{ if(typeof fbq==='function') fbq('track','Purchase',{content_name:'Career Direction Plan',value:20,currency:'USD'}); }catch(e){}
-        document.getElementById('buy').innerHTML='<div class="soft-card p-8 text-center border-2" style="border-color:#6FB5A0"><p class="display text-2xl font-bold text-plum-900">You’re in! 🎉</p><p class="text-plum-500 mt-2">Check <b>'+email.replace(/</g,'&lt;')+'</b> for your one-tap sign-in link. Your plan builder unlocks right here once you sign in.</p><a href="/login" class="inline-block mt-4 btn-main">Sign in &amp; build my plan →</a></div>';
+        try{ if(window.PDA&&window.PDA.track) window.PDA.track('purchase',{product:'career_plan',value:19,currency:'USD'}); }catch(e){}
+        try{ if(typeof fbq==='function') fbq('track','Purchase',{content_name:'Career Direction Plan',value:19,currency:'USD'}); }catch(e){}
+        document.getElementById('buy').innerHTML='<div class="soft-card p-8 text-center border-2" style="border-color:#6FB5A0"><p class="display text-2xl font-bold text-plum-900">You’re in!</p><p class="text-plum-500 mt-2">Check <b>'+email.replace(/</g,'&lt;')+'</b> for your one-tap sign-in link. Your plan builder unlocks right here once you sign in.</p><a href="/login" class="inline-block mt-4 btn-main">Sign in &amp; build my plan →</a></div>';
         document.getElementById('buy').scrollIntoView({behavior:'smooth',block:'center'});
         return;
       }
       throw new Error(out.error||'Something went wrong.');
     }catch(e){
-      btn.textContent='⛔ Call (903) 913-6444 if charged';
+      btn.textContent='Charged? Call (903) 913-6444';
       err.innerHTML='<b>Hold on.</b> '+((e.message||'Checkout error.').replace(/</g,'&lt;'))+' If your card shows a charge, text Amanda at (903) 913-6444 and she’ll sort it instantly.';
       err.hidden=false;
     }
