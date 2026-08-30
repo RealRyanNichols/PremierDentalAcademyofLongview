@@ -48,6 +48,26 @@
   ],
   "redirects": [
     {
+      "source": "/post/:path*",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/service-page/:path*",
+      "destination": "/classes",
+      "permanent": true
+    },
+    {
+      "source": "/intake-form",
+      "destination": "/apply",
+      "permanent": true
+    },
+    {
+      "source": "/members",
+      "destination": "/login",
+      "permanent": true
+    },
+    {
       "source": "/night-class",
       "destination": "/classes",
       "permanent": true
