@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Career Direction Plan — All Four Paths + Worksheets | Premier Dental Academy</title>
-<meta name="description" content="The complete interactive workbook behind our after-high-school quiz: all four directions explained honestly — hands-on credential, people-facing skill, academic path, structured path — with fill-in worksheets that save, cost calculators, test-it-cheap checklists, and a parent one-pager for each. $20.">
+<title>The Career Direction Plan: Watch It Build Itself | Premier Dental Academy</title>
+<meta name="description" content="A guided plan builder for the after-high-school decision. Tap, type, or talk through short questions and watch your plan build itself live: your direction, your real numbers, your test week, your messages, and a one-pager for your parents. $20.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/career-plan">
-<meta property="og:title" content="The Career Direction Plan — All Four Paths + Worksheets">
-<meta property="og:description" content="An interactive reflection-and-planning workbook for the &quot;what now?&quot; season: four honest direction plans, saving worksheets, calculators, test-it-cheap weeks, and parent one-pagers. Instant access. $20.">
+<meta property="og:title" content="The Career Direction Plan: Watch It Build Itself">
+<meta property="og:description" content="Answer short questions by tap, type, or voice, and watch your after-high-school plan build itself live on screen. Instant access. $20.">
 <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,42 +20,67 @@
 <script>
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
+  colors: {
+    cream:'#FFF9F5',
+    plum:{900:'#3D2E44',700:'#5A4767',500:'#8A7691',300:'#BCA9C4'},
+    rose:{50:'#FDF1F4',100:'#FBE5EB',200:'#F7CFDA',300:'#F2B8C6',400:'#E692A8',500:'#D96C8A',600:'#C4536F',700:'#A93E58'},
+    sage:{50:'#F0F9F6',100:'#DFF2EA',200:'#C9E8DD',400:'#8FCBB8',500:'#6FB5A0',700:'#3F8A74',800:'#2F6B5A'},
+    gold:{50:'#FDF7EA',100:'#FBF0DC',300:'#F2D49B',500:'#DFA84E',700:'#B9822B'},
+    lav:{50:'#F7F4FC',100:'#F1ECFA',300:'#D3C5EE',500:'#9F87CB',700:'#77619F'}
+  }
 }}}
 </script>
 <style>
-  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
+  body{font-family:'Inter',system-ui,sans-serif;color:#4A3F4C;-webkit-font-smoothing:antialiased;background:#FFF9F5}
   .display{font-family:'Fraunces',serif}
   #card-container{min-height:44px}
-  .ws-input{width:100%;border:2px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:14px;background:#fff}
-  .ws-input:focus{outline:none;border-color:#0d9488}
-  textarea.ws-input{resize:none;overflow:hidden;min-height:44px;line-height:1.5}
-  .day-card{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:2px solid #e2e8f0;border-radius:12px;padding:12px 14px;cursor:pointer;color:#334155}
-  .day-card:hover{border-color:#5eead4}
-  .day-card .day-box{flex:none;width:24px;height:24px;border:2px solid #94a3b8;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;margin-top:1px}
-  .day-card.done{background:#f0fdfa;border-color:#0f766e}
-  .day-card.done .day-box{background:#0f766e;border-color:#0f766e;color:#fff}
-  .day-card.done .day-text{color:#334155}
-  .fit-dot{width:34px;height:34px;border-radius:9999px;border:2px solid #cbd5e1;background:#fff;font-size:12px;font-weight:700;color:#64748b;cursor:pointer}
-  .fit-dot:hover{border-color:#0d9488}
-  .fit-dot.on{background:#0d9488;border-color:#0d9488;color:#fff}
-  .bar-track{background:#e2e8f0;border-radius:9999px;height:12px;overflow:hidden}
-  .bar-fill{height:100%;border-radius:9999px;background:#0d9488;width:0%;transition:width .4s ease}
-  .bar-fill.lead{background:#f59e0b}
+  .soft-card{background:#fff;border:1.5px solid #FBE5EB;border-radius:22px;box-shadow:0 10px 30px rgba(190,120,140,.10)}
+  .chip{display:block;width:100%;text-align:left;background:#fff;border:2px solid #F7CFDA;border-radius:16px;padding:14px 16px;font-size:15px;font-weight:600;color:#5A4767;cursor:pointer;transition:transform .12s ease}
+  .chip:hover{border-color:#D96C8A;transform:translateY(-1px)}
+  .chip.on{background:#FDF1F4;border-color:#C4536F;color:#A93E58}
+  .chip .tick{float:right;color:#C4536F;opacity:0;font-weight:800}
+  .chip.on .tick{opacity:1}
+  .scale-btn{width:50px;height:50px;border-radius:18px;border:2px solid #F2B8C6;background:#fff;font-size:17px;font-weight:800;color:#8A7691;cursor:pointer;transition:transform .12s ease}
+  .scale-btn:hover{border-color:#D96C8A;transform:translateY(-2px)}
+  .scale-btn.on{background:linear-gradient(135deg,#D96C8A,#C4536F);border-color:#C4536F;color:#fff}
+  .app-input{width:100%;border:2px solid #F7CFDA;border-radius:16px;padding:14px 16px;font-size:16px;background:#fff;color:#4A3F4C}
+  .app-input:focus{outline:none;border-color:#D96C8A}
+  .btn-main{background:linear-gradient(135deg,#D96C8A,#C4536F);color:#fff;font-weight:800;border-radius:9999px;padding:14px 28px;font-size:15px;cursor:pointer;box-shadow:0 6px 18px rgba(196,83,111,.35);transition:transform .12s ease}
+  .btn-main:hover{transform:translateY(-1px)}
+  .btn-main:disabled{opacity:.35;cursor:default;box-shadow:none;transform:none}
+  .btn-ghost{background:transparent;color:#8A7691;font-weight:600;font-size:13px;cursor:pointer}
+  .mic-btn{width:48px;height:48px;border-radius:9999px;border:2px solid #F7CFDA;background:#fff;font-size:20px;cursor:pointer;flex:none}
+  .mic-btn.rec{background:#FBE5EB;border-color:#C4536F;animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+  .bar-track{background:#FBE5EB;border-radius:9999px;height:10px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:9999px;background:linear-gradient(90deg,#8FCBB8,#6FB5A0);width:0%;transition:width .5s ease}
+  .bar-fill.lead{background:linear-gradient(90deg,#E692A8,#C4536F)}
+  .day-card{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:2px solid #F7CFDA;border-radius:14px;padding:12px 14px;cursor:pointer;color:#5A4767}
+  .day-card:hover{border-color:#8FCBB8}
+  .day-card .day-box{flex:none;width:24px;height:24px;border:2px solid #BCA9C4;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;color:transparent;margin-top:1px}
+  .day-card.done .day-box{background:#3F8A74;border-color:#3F8A74;color:#fff}
+  .day-card.done{background:#F0F9F6;border-color:#6FB5A0}
+  .res-btn{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #DFF2EA;border-radius:16px;padding:13px 15px;font-size:14px;font-weight:700;color:#2F6B5A;text-decoration:none;transition:transform .12s ease}
+  .res-btn:hover{border-color:#6FB5A0;transform:translateY(-1px)}
+  .step-anim{animation:stepin .28s ease}
+  @keyframes stepin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   .calc-out{font-variant-numeric:tabular-nums}
-  .plan-banner{position:relative;overflow:hidden;border-radius:18px;color:#fff;padding:22px 22px}
-  .plan-banner .medal{width:58px;height:58px;border-radius:9999px;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:28px}
-  .plan-banner svg.deco{position:absolute;right:-30px;top:-30px;opacity:.18}
+  .lp-slot{border:1.5px dashed #F2B8C6;border-radius:16px;padding:12px 14px;background:#FDF1F4}
+  .lp-slot.filled{border-style:solid;border-color:#C9E8DD;background:#fff}
+  .lp-flash{animation:lpflash .9s ease}
+  @keyframes lpflash{0%{box-shadow:0 0 0 4px rgba(217,108,138,.35)}100%{box-shadow:none}}
+  #live-toast{position:fixed;left:50%;transform:translateX(-50%) translateY(-8px);top:14px;z-index:60;background:linear-gradient(135deg,#D96C8A,#9F87CB);color:#fff;font-weight:700;font-size:13px;border-radius:9999px;padding:9px 18px;opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;box-shadow:0 8px 22px rgba(159,135,203,.4)}
+  #live-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .sparkle{position:absolute;pointer-events:none}
   @media print{
-    .no-print{display:none!important} body{background:#fff}
-    .ws-input,textarea.ws-input{border:none;border-bottom:1.5px solid #cbd5e1;border-radius:0;padding:4px 0}
-    .day-card{break-inside:avoid} section{break-inside:avoid-page}
+    .no-print,nav,footer,#live-toast{display:none!important} body{background:#fff}
+    .soft-card{box-shadow:none!important;border-color:#eee!important}
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Product","name":"The Career Direction Plan (All Four Paths + Worksheets)","description":"An interactive reflection-and-planning workbook for high-school seniors and recent grads: four career directions explained honestly, each with a saving decision worksheet, a seven-day test-it-cheap checklist, cost calculators, an East Texas resource list, and a parent-conversation one-pager.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://www.premierdentalacademyoflongview.com/career-plan","offers":{"@type":"Offer","price":"20.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://www.premierdentalacademyoflongview.com/career-plan"}}
+{"@context":"https://schema.org","@type":"Product","name":"The Career Direction Plan (Guided Plan Builder)","description":"A guided plan builder for high-school seniors and recent grads. Answer short questions by tap, type, or voice, and watch a personal direction plan build itself live: your numbers, your test week, your messages, and a parent one-pager.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://www.premierdentalacademyoflongview.com/career-plan","offers":{"@type":"Offer","price":"20.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://www.premierdentalacademyoflongview.com/career-plan"}}
 </script>
 <script src="/assets/pda-seo.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
@@ -63,842 +88,729 @@ tailwind.config = { theme: { extend: {
 </head>
 <body class="min-h-screen">
 
+<div id="live-toast" role="status">✨ Added to your plan</div>
+
 <!-- LOADING -->
-<div id="gate-loading" class="max-w-2xl mx-auto px-6 py-24 text-center text-slate-400">
-  <p class="display text-xl">Loading your Career Direction Plan…</p>
+<div id="gate-loading" class="max-w-2xl mx-auto px-6 py-24 text-center text-plum-300">
+  <p class="display text-xl">Opening your plan builder…</p>
 </div>
 
-<!-- ===== SALES (shown to people who don't own it yet) ===== -->
+<!-- ===== SALES ===== -->
 <div id="sales" class="hidden">
-  <section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
-      <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Took the quiz? · This is the rest</p>
-      <h1 class="display text-3xl sm:text-5xl font-bold mt-2">The Career <span class="text-amber-400 italic">Direction Plan</span></h1>
-      <p class="text-slate-200 mt-4 max-w-2xl mx-auto text-base sm:text-lg">Our free <a href="/blog/what-should-i-do-after-high-school-quiz" class="underline text-white">after-high-school quiz</a> points you at one direction. This interactive workbook is all four — hands-on credential, people-facing skill, academic path, structured path — with worksheets that save as you type, cost calculators, tap-to-check test weeks, and a one-pager for the parent conversation.</p>
-      <img src="/assets/blog-art/what-should-i-do-after-high-school-quiz-hero.jpg" alt="Branded illustration: What Should I Do After High School — Premier Dental Academy of Longview" class="w-full max-w-2xl mx-auto rounded-2xl mt-8 shadow-2xl ring-1 ring-white/20" loading="lazy" />
-      <div class="mt-8 inline-flex items-center gap-3 bg-white/10 border border-white/20 rounded-2xl px-6 py-4">
-        <span class="text-slate-300 line-through text-lg">$29</span>
-        <span class="display text-4xl font-bold text-amber-400">$20</span>
-        <span class="text-left text-xs text-slate-200 leading-tight">one-time<br>instant access</span>
+  <section class="relative overflow-hidden" style="background:linear-gradient(160deg,#FDF1F4 0%,#F1ECFA 55%,#F0F9F6 100%)">
+    <svg class="sparkle" style="top:40px;left:6%" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2D49B"/></svg>
+    <svg class="sparkle" style="top:120px;right:8%" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#D3C5EE"/></svg>
+    <svg class="sparkle" style="bottom:60px;left:12%" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2B8C6"/></svg>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center relative">
+      <p class="text-rose-600 text-xs font-bold tracking-widest uppercase">Took the quiz? This is the rest 🌸</p>
+      <h1 class="display text-3xl sm:text-5xl font-bold mt-2 text-plum-900">Watch your plan <span class="text-rose-600 italic">build itself.</span></h1>
+      <p class="text-plum-700 mt-4 max-w-xl mx-auto text-base sm:text-lg">Tap. Type. Or just talk. You answer little questions, and your after-high-school plan builds itself on screen while you watch: your direction, your real numbers, your test week, and a one-pager for your parents.</p>
+      <img src="/assets/blog-art/what-should-i-do-after-high-school-quiz-hero.jpg" alt="Branded illustration: What Should I Do After High School, Premier Dental Academy of Longview" class="w-full max-w-2xl mx-auto rounded-3xl mt-8 shadow-xl ring-4 ring-white" loading="lazy" />
+      <div class="mt-8 inline-flex items-center gap-3 bg-white/80 border border-rose-200 rounded-2xl px-6 py-4 shadow-sm">
+        <span class="text-plum-300 line-through text-lg">$29</span>
+        <span class="display text-4xl font-bold text-rose-600">$20</span>
+        <span class="text-left text-xs text-plum-500 leading-tight">one-time<br>everything included</span>
       </div>
-      <div class="mt-6"><a href="#buy" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md">Get the full plan →</a></div>
-      <p class="text-teal-100 text-xs mt-4">Prefer free? Send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="underline">quiz page</a> and she'll build your plan personally — this is the instant, self-serve version.</p>
+      <div class="mt-6"><a href="#buy" class="inline-block btn-main">Build my plan →</a></div>
+      <p class="text-plum-500 text-xs mt-4">Prefer free? Send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="underline">quiz page</a> and she builds it personally. This is the instant version.</p>
     </div>
   </section>
 
   <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 text-sm text-slate-600">
-      <b class="text-navy-900">What this is (and isn't):</b> a reflection-and-planning workbook, not a scientific assessment. It won't tell you who you are, and it doesn't guarantee any job, income, or outcome — nothing can. What it does is put structure around the "what now?" decision: honest write-ups of four real directions, working tools that make you answer the hard questions, and cheap ways to test a direction before you bet years or money on it.
+    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-plum-900">You answer. It builds. Live. ✨</h2>
+    <div class="grid sm:grid-cols-3 gap-4 mt-7">
+      <div class="soft-card p-5 text-center"><div class="text-3xl">💬</div><h3 class="font-bold text-plum-900 mt-2">Little questions</h3><p class="text-sm text-plum-500 mt-1">One at a time. Tap a choice, type a word, or hit the mic and say it.</p></div>
+      <div class="soft-card p-5 text-center"><div class="text-3xl">✨</div><h3 class="font-bold text-plum-900 mt-2">Your plan grows on screen</h3><p class="text-sm text-plum-500 mt-1">Every answer drops into your plan right in front of you. No waiting for the end.</p></div>
+      <div class="soft-card p-5 text-center"><div class="text-3xl">🌸</div><h3 class="font-bold text-plum-900 mt-2">Walk out with it</h3><p class="text-sm text-plum-500 mt-1">Direction, costs, test week, your messages, a parent one-pager. Printable. Yours.</p></div>
     </div>
 
-    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-navy-900 mt-10">What's inside — four complete direction plans</h2>
-    <div class="grid sm:grid-cols-2 gap-4 mt-7">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">🔧 The Hands-On Credential path</h3><p class="text-sm text-slate-600 mt-1">Short, skills-first training that puts tools in your hands fast — dental assisting, welding, HVAC, medical assisting and more. Includes a <b>true-cost calculator</b> that compares two trades side by side with your real numbers.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">🤝 The People-Facing Skill path</h3><p class="text-sm text-slate-600 mt-1">"Good with people" only pays when it's attached to a skill. Includes a <b>shadowing-script builder</b> that writes your ask-to-shadow message for you — tap to copy, send it today.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">📚 The Academic path — on purpose</h3><p class="text-sm text-slate-600 mt-1">College is genuinely right for some people. Includes a <b>three-route degree cost comparator</b> (target school vs. community-college transfer vs. in-state) and the two-year backup plan.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">🧱 The Structured path</h3><p class="text-sm text-slate-600 mt-1">Military, registered apprenticeships, earn-while-you-learn cohorts. Includes a <b>commitment comparator</b>, honest GI Bill notes, and a cooling-off date calculator so nobody signs under sales pressure.</p></div>
-    </div>
-
-    <div class="bg-gradient-to-br from-navy-900 to-teal-800 rounded-2xl text-white p-6 sm:p-8 mt-8">
-      <h2 class="display text-2xl font-bold text-center">Try a live piece of it</h2>
-      <p class="text-teal-100 text-sm text-center mt-1">Every plan has a tap-to-check test week like this. In the real workbook your progress saves.</p>
+    <div class="rounded-3xl p-6 sm:p-8 mt-10 relative overflow-hidden" style="background:linear-gradient(135deg,#F1ECFA,#FDF1F4)">
+      <h2 class="display text-2xl font-bold text-center text-plum-900">Try a live piece of it</h2>
+      <p class="text-plum-500 text-sm text-center mt-1">This is how the whole thing feels. Tap them.</p>
       <div class="max-w-md mx-auto mt-5 space-y-2" id="demo-days">
-        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 2:</b> Find one real person doing the work and ask for 15 minutes.</span></button>
-        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 5:</b> Stand in the actual room — tour a campus or walk a job site.</span></button>
-        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 7:</b> Do the decision worksheet with everything you learned.</span></button>
+        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Watch one real person</b> do the job for an afternoon.</span></button>
+        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Stand in the actual room.</b> Tour a campus or walk a job site.</span></button>
+        <button type="button" class="day-card" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Run your real numbers.</b> The builder does the math for you.</span></button>
       </div>
-      <p id="demo-msg" class="text-center text-amber-300 text-sm font-semibold mt-4" hidden>That's the idea. The full workbook has 28 test-day actions, 4 worksheets, and 4 calculators. 👇</p>
+      <p id="demo-msg" class="text-center text-rose-600 text-sm font-bold mt-4" hidden>Exactly. Now imagine your whole plan building like that. 👇</p>
     </div>
 
-    <div class="grid sm:grid-cols-2 gap-4 mt-8">
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">📝 Worksheets that save as you type</h3><p class="text-sm text-slate-600 mt-1">Fill-in-the-blanks that force the honest questions — what it costs, what you'd give up, what has to be true in 12 months. Saved on your device, printable any time.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">🧭 Direction Fit Ranker</h3><p class="text-sm text-slate-600 mt-1">Eight honest statements, tap how much each sounds like you, and watch all four directions rank live — a finer-grained read than the free quiz.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">📍 East Texas resource lists</h3><p class="text-sm text-slate-600 mt-1">Real links only: free practice tools, funding help through Workforce Solutions, the Texas dental board, and official sources for looking up real pay data yourself.</p></div>
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-5"><h3 class="font-bold text-navy-900">🖨️ "My Plan" — built from YOUR answers</h3><p class="text-sm text-slate-600 mt-1">The workbook compiles your ranker result, your worksheet answers, and your next unchecked actions into one clean personal plan — with a parent one-pager for each path.</p></div>
+    <h2 class="display text-2xl sm:text-3xl font-bold text-center text-plum-900 mt-10">Everything is included. Everything.</h2>
+    <p class="text-center text-sm text-plum-500 mt-2 max-w-lg mx-auto">You paid. You get the whole thing. No teaser tiers, no locked extras.</p>
+    <div class="grid sm:grid-cols-2 gap-4 mt-7">
+      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">🧭 Your direction, ranked live</h3><p class="text-sm text-plum-500 mt-1">Eight quick taps. All four paths ranked while you watch: hands-on credential, people-facing skill, academic, structured.</p></div>
+      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">🧮 Your numbers, computed for you</h3><p class="text-sm text-plum-500 mt-1">Trade costs compared side by side. Degree routes priced with what you'd likely borrow. Your inputs, its math.</p></div>
+      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">💌 Your messages, written for you</h3><p class="text-sm text-plum-500 mt-1">It writes your ask-to-shadow text. Tap to copy, send it today.</p></div>
+      <div class="soft-card p-5"><h3 class="font-bold text-plum-900">👩‍👧 A parent one-pager, generated</h3><p class="text-sm text-plum-500 mt-1">Built from your answers, in their language. Print it, hand it over, have the talk once.</p></div>
     </div>
+    <p class="text-xs text-plum-300 text-center mt-6 max-w-xl mx-auto">Honest fine print: this is a planning tool, not a scientific assessment, and nobody can guarantee you a job, admission, or income. It points you at official sources for every cost and requirement.</p>
   </main>
 
   <!-- CHECKOUT -->
   <section id="buy" class="max-w-md mx-auto px-4 sm:px-6 pb-16">
-    <div class="bg-white rounded-2xl border-2 border-teal-600 shadow-xl overflow-hidden">
-      <div class="bg-teal-700 text-white px-6 py-4 text-center">
-        <p class="text-xs uppercase tracking-widest text-teal-100">Instant access</p>
-        <p class="display text-2xl font-bold">Get the Career Direction Plan — <span class="text-amber-300">$20</span></p>
+    <div class="soft-card overflow-hidden border-2" style="border-color:#D96C8A">
+      <div class="text-white px-6 py-4 text-center" style="background:linear-gradient(135deg,#D96C8A,#9F87CB)">
+        <p class="text-xs uppercase tracking-widest text-rose-100">Instant access · everything included</p>
+        <p class="display text-2xl font-bold">Get the Career Direction Plan · <span class="text-gold-300">$20</span></p>
       </div>
       <div class="p-6 space-y-4">
         <div>
-          <label for="bp-name" class="block text-sm font-semibold text-slate-700 mb-1">Your name</label>
-          <input id="bp-name" type="text" autocomplete="name" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          <label for="bp-name" class="block text-sm font-semibold text-plum-700 mb-1">Your name</label>
+          <input id="bp-name" type="text" autocomplete="name" class="app-input text-sm" />
         </div>
         <div>
-          <label for="bp-email" class="block text-sm font-semibold text-slate-700 mb-1">Email (your login + receipt)</label>
-          <input id="bp-email" type="email" autocomplete="email" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none" />
+          <label for="bp-email" class="block text-sm font-semibold text-plum-700 mb-1">Email (your login + receipt)</label>
+          <input id="bp-email" type="email" autocomplete="email" class="app-input text-sm" />
         </div>
         <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-1">Card</label>
-          <div id="card-container" class="border-2 border-slate-200 rounded-lg p-3 bg-white"></div>
+          <label class="block text-sm font-semibold text-plum-700 mb-1">Card</label>
+          <div id="card-container" class="border-2 rounded-2xl p-3 bg-white" style="border-color:#F7CFDA"></div>
         </div>
-        <button id="pay-btn" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3.5 rounded-full shadow-md disabled:opacity-40" disabled>Pay $20 &amp; unlock</button>
-        <div id="err" hidden class="text-xs bg-rose-50 border border-rose-200 text-rose-900 rounded p-2"></div>
-        <p class="text-[11px] text-slate-400 text-center">Secure checkout by Square · we never see your card number. Already bought it? <a href="/login" class="text-teal-700 underline">Sign in</a>.</p>
+        <button id="pay-btn" class="w-full btn-main disabled:opacity-40" disabled>Pay $20 &amp; start building</button>
+        <div id="err" hidden class="text-xs bg-rose-50 border border-rose-200 text-rose-700 rounded-xl p-2"></div>
+        <p class="text-[11px] text-plum-300 text-center">Secure checkout by Square · we never see your card number. Already bought it? <a href="/login" class="text-rose-600 underline">Sign in</a>.</p>
       </div>
     </div>
 
     <div class="mt-8 space-y-3">
-      <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold text-navy-900 cursor-pointer text-sm">How do I get it after I pay?</summary><p class="text-sm text-slate-600 mt-2">Instantly. You'll get an email with a one-tap sign-in link, and the full workbook opens right here on this page — on any device, forever. Print any worksheet or one-pager whenever you want.</p></details>
-      <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold text-navy-900 cursor-pointer text-sm">Where are my answers saved?</summary><p class="text-sm text-slate-600 mt-2">On the device you're using, automatically as you type — nothing you write in the workbook is sent to us. Use the same phone or computer to pick up where you left off, and print your plan any time.</p></details>
-      <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold text-navy-900 cursor-pointer text-sm">Is this just a pitch for your dental school?</summary><p class="text-sm text-slate-600 mt-2">No. We're a dental assisting academy, and we say so where it's relevant — but all four plans are written to help you pick <i>your</i> direction, including the ones that have nothing to do with us. The academic-path plan will genuinely tell you when college is the right call.</p></details>
-      <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold text-navy-900 cursor-pointer text-sm">Will this tell me what I should do with my life?</summary><p class="text-sm text-slate-600 mt-2">No workbook can, and this one doesn't pretend to. It's a reflection-and-planning tool — not a scientific assessment, and not a guarantee of any job or outcome. It gives you honest information, structured questions, and cheap tests so <i>you</i> can decide with better footing.</p></details>
-      <details class="bg-white rounded-xl border border-slate-200 p-4"><summary class="font-semibold text-navy-900 cursor-pointer text-sm">I'm under 18 — can I buy this?</summary><p class="text-sm text-slate-600 mt-2">Have a parent or guardian purchase it with you — it's their card and, honestly, the plan works best when they're in the loop. Every path includes a one-pager written for exactly that conversation. There's also a free option: send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="text-teal-700 underline">quiz page</a>.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">How do I get it after I pay?</summary><p class="text-sm text-plum-500 mt-2">Instantly. You get an email with a one-tap sign-in link and the plan builder opens right here. Any device, forever.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Where are my answers saved?</summary><p class="text-sm text-plum-500 mt-2">On your device, automatically, as you go. Nothing you enter in the builder is sent to us. Come back on the same device and it picks up where you left off.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Is this just a pitch for your dental school?</summary><p class="text-sm text-plum-500 mt-2">No. We're a dental assisting academy and we say so where it's relevant. But the builder covers all four directions honestly, including the ones that have nothing to do with us. If college is your answer, it will tell you.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">Will it tell me what to do with my life?</summary><p class="text-sm text-plum-500 mt-2">No tool can, and this one doesn't pretend to. It's a planning tool, not a scientific assessment, and it guarantees no job or outcome. It turns your answers into a concrete, testable plan. You decide.</p></details>
+      <details class="soft-card p-4"><summary class="font-semibold text-plum-900 cursor-pointer text-sm">I'm under 18. Can I buy this?</summary><p class="text-sm text-plum-500 mt-2">Have a parent or guardian purchase it with you. It's their card, and your plan ends with a one-pager written for them anyway. There's also a free option: send Amanda your quiz result from the <a href="/blog/what-should-i-do-after-high-school-quiz" class="text-rose-600 underline">quiz page</a>.</p></details>
     </div>
   </section>
 </div>
 
-<!-- ===== OWNED CONTENT (shown to people who own it) ===== -->
+<!-- ===== OWNED: THE PLAN BUILDER ===== -->
 <div id="owned" class="hidden">
-  <section class="bg-gradient-to-br from-navy-900 to-teal-800 text-white no-print">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <div class="flex items-center justify-between gap-4">
-        <div><p class="text-teal-200 text-xs font-bold uppercase tracking-widest">Your workbook</p><h2 class="display text-2xl sm:text-3xl font-bold">The Career Direction Plan</h2></div>
-        <button onclick="window.print()" class="shrink-0 bg-white/15 hover:bg-white/25 border border-white/30 rounded-full px-4 py-2 text-sm font-semibold">🖨️ Print</button>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    <div class="grid lg:grid-cols-[minmax(0,1fr)_360px] gap-6 items-start">
+
+      <!-- Question column -->
+      <div id="app-shell" class="soft-card overflow-hidden">
+        <div class="text-white px-5 py-4 no-print" style="background:linear-gradient(135deg,#C4536F,#9F87CB)">
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🌸</span>
+              <span class="display font-bold">Career Direction Plan</span>
+            </div>
+            <button type="button" id="app-menu-btn" class="bg-white/20 hover:bg-white/30 border border-white/40 rounded-full px-3 py-1.5 text-xs font-bold" aria-label="Open menu">☰</button>
+          </div>
+          <div class="mt-3 flex items-center gap-3">
+            <div class="bar-track flex-1" style="background:rgba(255,255,255,.25)"><div id="app-bar" class="bar-fill" style="background:linear-gradient(90deg,#F2D49B,#DFA84E)"></div></div>
+            <span id="app-step-label" class="text-[11px] font-bold text-gold-300 calc-out"></span>
+          </div>
+        </div>
+        <div id="app-menu" class="hidden border-b px-5 py-3 no-print" style="border-color:#FBE5EB;background:#FDF1F4">
+          <div class="flex flex-wrap gap-3">
+            <button type="button" class="btn-ghost underline" data-nav="plan">My plan</button>
+            <button type="button" class="btn-ghost underline" data-nav="reveal">My direction</button>
+            <button type="button" class="btn-ghost underline" data-nav="restart">Start over</button>
+          </div>
+        </div>
+        <div id="app-card" class="px-5 sm:px-8 py-8 min-h-[360px]"></div>
+        <div class="px-5 sm:px-8 pb-6 flex items-center justify-between no-print">
+          <button type="button" id="app-back" class="btn-ghost">← Back</button>
+          <button type="button" id="app-next" class="btn-main">Next →</button>
+        </div>
       </div>
-      <div class="mt-4 flex items-center gap-3">
-        <div class="bar-track flex-1 bg-white/20"><div id="wb-bar" class="bar-fill" style="background:#fbbf24"></div></div>
-        <span id="wb-pct" class="text-xs font-bold text-amber-300 calc-out">0% worked</span>
-      </div>
+
+      <!-- Live plan column -->
+      <aside id="live-col" class="lg:sticky lg:top-6">
+        <div id="live-panel" class="soft-card p-5 relative overflow-hidden">
+          <svg class="sparkle" style="top:10px;right:12px" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0l2.6 9.4L24 12l-9.4 2.6L12 24l-2.6-9.4L0 12l9.4-2.6z" fill="#F2D49B"/></svg>
+          <p class="text-xs font-bold uppercase tracking-widest text-rose-600">Your plan · building live ✨</p>
+          <div id="live-body" class="mt-3 space-y-3"></div>
+        </div>
+      </aside>
     </div>
-  </section>
-  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-12">
-
-    <section>
-      <h2 class="display text-2xl font-bold text-navy-900 border-b-2 border-teal-600 pb-2">How to use this workbook</h2>
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700 space-y-2">
-        <p><b>Start with the Fit Ranker below</b> — then read your top plan first, and skim the other three anyway. Plenty of people discover their real answer in the plan they almost skipped.</p>
-        <p><b>Type your answers right into the page.</b> Everything saves on this device as you go — the progress bar up top tracks how much of the workbook you've actually worked.</p>
-        <p><b>Run the test-it-cheap week before you commit to anything.</b> Tap each day done as you do it. One afternoon of shadowing beats a semester of wondering.</p>
-        <p><b>Bring your parents in with the one-pager.</b> These decisions involve real money and real years. If you're under 18, do the whole thing together.</p>
-        <p class="text-slate-500">Honest framing, one more time: this is a reflection-and-planning workbook, not a scientific assessment. Nothing here guarantees admission, licensure, employment, or income. Where pay matters to the decision, we point you at official sources to look up current, real numbers yourself instead of quoting figures that go stale.</p>
-      </div>
-    </section>
-
-    <!-- ============ FIT RANKER ============ -->
-    <section id="fit-ranker">
-      <h2 class="display text-2xl font-bold text-navy-900 border-b-2 border-amber-500 pb-2">🧭 Direction Fit Ranker</h2>
-      <p class="text-sm text-slate-600 mt-3">Eight statements. Tap 1 (not me) to 5 (very me) for each — the four directions rank live as you go. A reflection aid, not a verdict.</p>
-      <div id="fit-qs" class="mt-4 space-y-3"></div>
-      <div class="bg-white rounded-xl border-2 border-slate-300 p-5 mt-5">
-        <h3 class="font-bold text-navy-900 text-base">Your ranking so far</h3>
-        <div class="mt-3 space-y-3" id="fit-bars"></div>
-        <p id="fit-verdict" class="mt-4 text-sm font-semibold text-slate-500">Answer the statements above and your leading direction shows up here.</p>
-      </div>
-    </section>
-
-    <!-- ============ PLAN 1: HANDS-ON CREDENTIAL ============ -->
-    <section id="plan-hands">
-      <div class="plan-banner bg-gradient-to-br from-teal-800 to-teal-600">
-        <svg class="deco" width="220" height="220" viewBox="0 0 220 220" aria-hidden="true"><circle cx="110" cy="110" r="100" fill="none" stroke="#fff" stroke-width="14"/><circle cx="110" cy="110" r="60" fill="none" stroke="#fff" stroke-width="10"/></svg>
-        <div class="flex items-center gap-4 relative">
-          <div class="medal">🔧</div>
-          <div><p class="text-teal-100 text-xs font-bold uppercase tracking-widest">Plan 1</p><h2 class="display text-2xl sm:text-3xl font-bold">The Hands-On Credential path</h2></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700 space-y-2">
-        <h3 class="font-bold text-navy-900 text-base">The direction, honestly</h3>
-        <p>This path trades the long lecture route for short, skills-first training that ends in a credential employers recognize — dental assisting, welding, HVAC, electrical, medical assisting, cosmetology, CDL driving. Programs are usually measured in weeks or months, not years, and most of the learning happens with tools in your hands.</p>
-        <p><b>What's genuinely good about it:</b> you find out fast whether you like the work, you start earning sooner, and the cost of being wrong is a season — not four years and a loan balance. Skills also compound: many people stack credentials over time instead of betting everything on one up front.</p>
-        <p><b>What nobody puts in the brochure:</b> the work is physical and you'll feel it; entry-level pay is entry-level, and growth comes from experience and added credentials, not automatically; and quality varies a LOT between programs — a credential from a program employers don't respect is close to worthless. Vetting the school matters as much as picking the trade (our <a href="/blog/dental-assistant-school-red-flags" class="text-teal-700 underline">red-flags guide</a> applies to any trade school, not just ours).</p>
-        <p><b>Who it fits:</b> people who think with their hands, who want finished results they can point to, and for whom classroom-style school was the price they paid to get to shop class. <b>Who it doesn't:</b> if you loved the academic side of school and want a career that requires a degree, don't let anyone — including a trade school — talk you out of Plan 3.</p>
-      </div>
-
-      <div class="bg-teal-50 border border-teal-100 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="font-bold text-navy-900 text-base">📅 Test it cheap — one week</h3>
-          <span class="text-xs font-bold text-teal-700 calc-out" data-daycount="h">0/7 days</span>
-        </div>
-        <div class="mt-3 space-y-2" data-days="h">
-          <button type="button" class="day-card" data-ck="h-d1" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 1:</b> Pick your top TWO trades (not one — you want a comparison). Write one sentence each on why.</span></button>
-          <button type="button" class="day-card" data-ck="h-d2" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 2:</b> For each, find one real person doing it — a family friend, a neighbor, the assistant at your own dentist's office. Ask for 15 minutes or a shadow visit.</span></button>
-          <button type="button" class="day-card" data-ck="h-d3" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 3:</b> Look up the real training requirements from an official source, not ads. For dental assisting in Texas that's <a href="https://tsbde.texas.gov" class="text-teal-700 underline" rel="noopener">tsbde.texas.gov</a>; other trades have their own boards.</span></button>
-          <button type="button" class="day-card" data-ck="h-d4" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 4:</b> Sample the actual study material. If dental assisting made your list, our <a href="/tools/practice-exam" class="text-teal-700 underline">free practice exam</a> and <a href="/tools/is-it-for-me" class="text-teal-700 underline">is-it-for-me quiz</a> show exactly what it feels like.</span></button>
-          <button type="button" class="day-card" data-ck="h-d5" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 5:</b> Visit somewhere the work happens. Tour a campus (ours is <a href="/tour" class="text-teal-700 underline">free to tour</a>), walk a job site, or sit in a shop.</span></button>
-          <button type="button" class="day-card" data-ck="h-d6" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 6:</b> Price it for real in the calculator below, then check what funding exists — start with our <a href="/tools/funding-finder" class="text-teal-700 underline">funding finder</a> (Workforce Solutions East Texas and other real programs).</span></button>
-          <button type="button" class="day-card" data-ck="h-d7" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 7:</b> Do the decision worksheet with everything you learned. Wrong answers discovered this week are a win.</span></button>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-teal-600 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">🧮 True-cost calculator — compare your two trades</h3>
-        <p class="text-slate-500 mt-1">Your numbers, from each program's own price sheet — no averages, no guesses. Totals update as you type.</p>
-        <div class="grid sm:grid-cols-2 gap-4 mt-4">
-          <div class="border border-slate-200 rounded-xl p-4 space-y-2">
-            <input class="ws-input font-bold" data-ws="h-ta-name" placeholder="Trade A (e.g. dental assisting)" aria-label="Trade A name">
-            <label class="block text-xs font-semibold text-slate-500">Tuition ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-ta-tuition" data-calc="hands" aria-label="Trade A tuition"></label>
-            <label class="block text-xs font-semibold text-slate-500">Gear + supplies ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-ta-gear" data-calc="hands" aria-label="Trade A gear cost"></label>
-            <label class="block text-xs font-semibold text-slate-500">Fees + licensing/exams ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-ta-fees" data-calc="hands" aria-label="Trade A fees"></label>
-            <label class="block text-xs font-semibold text-slate-500">Months of training<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-ta-months" data-calc="hands" aria-label="Trade A months of training"></label>
-            <label class="block text-xs font-semibold text-slate-500">My living costs per month while training ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-ta-living" data-calc="hands" aria-label="Trade A monthly living costs"></label>
-            <div class="bg-teal-50 rounded-lg p-3 text-center"><span class="text-xs font-bold text-teal-700 uppercase">All-in total</span><div class="display text-2xl font-bold text-navy-900 calc-out" id="h-ta-total">$0</div></div>
-          </div>
-          <div class="border border-slate-200 rounded-xl p-4 space-y-2">
-            <input class="ws-input font-bold" data-ws="h-tb-name" placeholder="Trade B (e.g. HVAC)" aria-label="Trade B name">
-            <label class="block text-xs font-semibold text-slate-500">Tuition ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-tb-tuition" data-calc="hands" aria-label="Trade B tuition"></label>
-            <label class="block text-xs font-semibold text-slate-500">Gear + supplies ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-tb-gear" data-calc="hands" aria-label="Trade B gear cost"></label>
-            <label class="block text-xs font-semibold text-slate-500">Fees + licensing/exams ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-tb-fees" data-calc="hands" aria-label="Trade B fees"></label>
-            <label class="block text-xs font-semibold text-slate-500">Months of training<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-tb-months" data-calc="hands" aria-label="Trade B months of training"></label>
-            <label class="block text-xs font-semibold text-slate-500">My living costs per month while training ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="h-tb-living" data-calc="hands" aria-label="Trade B monthly living costs"></label>
-            <div class="bg-teal-50 rounded-lg p-3 text-center"><span class="text-xs font-bold text-teal-700 uppercase">All-in total</span><div class="display text-2xl font-bold text-navy-900 calc-out" id="h-tb-total">$0</div></div>
-          </div>
-        </div>
-        <p class="mt-3 text-center text-sm font-semibold text-slate-600 calc-out" id="h-diff">Fill in both columns to compare.</p>
-        <p class="mt-2 text-xs text-slate-400">Cheapest isn't automatically best — but knowing the real difference is how you weigh it. Funding may cover part of either: <a href="/tools/funding-finder" class="text-teal-700 underline">funding finder</a>.</p>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📍 East Texas resources — real links only</h3>
-        <ul class="list-disc ml-5 mt-2 space-y-1.5">
-          <li><a href="/tools/funding-finder" class="text-teal-700 underline font-semibold">Funding Finder</a> — free walkthrough of the funding routes that exist for East Texas training, including Workforce Solutions East Texas (their application lives at <a href="https://www.easttexasworkforce.org/apply" class="text-teal-700 underline" rel="noopener">easttexasworkforce.org/apply</a>).</li>
-          <li><a href="https://tsbde.texas.gov" class="text-teal-700 underline font-semibold" rel="noopener">Texas State Board of Dental Examiners</a> — the official word on what dental assisting requires in Texas. Every licensed trade has an equivalent; always read the board, not just the school.</li>
-          <li><a href="https://www.bls.gov/ooh/" class="text-teal-700 underline font-semibold" rel="noopener">Occupational Outlook Handbook (bls.gov)</a> — look up real, current pay and outlook data for ANY trade yourself. For dental assisting locally, our <a href="/salary" class="text-teal-700 underline">salary page</a> explains how to read East Texas numbers honestly.</li>
-          <li><a href="/tools/practice-exam" class="text-teal-700 underline font-semibold">Free RDA practice exam</a> · <a href="/tools/is-it-for-me" class="text-teal-700 underline font-semibold">Is-it-for-me quiz</a> · <a href="/tools/career-paths" class="text-teal-700 underline font-semibold">Career paths explorer</a> — free samples of one hands-on field, from us.</li>
-          <li><a href="/tour" class="text-teal-700 underline font-semibold">Free campus tour</a> + <a href="/calendar" class="text-teal-700 underline font-semibold">class calendar</a> — if dental assisting is your test case. Questions? Call or text <a href="tel:+19039136444" class="text-teal-700 underline">(903) 913-6444</a>.</li>
-        </ul>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-slate-300 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📝 Decision worksheet — hands-on credential</h3>
-        <p class="text-slate-500 mt-1">Type right here — it saves as you go. Vague plans survive in your head; they don't survive on the page. That's the point.</p>
-        <div class="mt-3 space-y-4">
-          <label class="block">The two trades I'm comparing, and why each made the list:<textarea class="ws-input mt-1" data-ws="h-trades" rows="2"></textarea></label>
-          <label class="block">How long until I'm credentialed and job-hunting, for each:<textarea class="ws-input mt-1" data-ws="h-timeline" rows="2"></textarea></label>
-          <label class="block">What the person I shadowed said they'd redo:<textarea class="ws-input mt-1" data-ws="h-shadow" rows="2"></textarea></label>
-          <label class="block">Real starting pay I found on bls.gov (starting, not average):<textarea class="ws-input mt-1" data-ws="h-pay" rows="1"></textarea></label>
-          <label class="block">Funding I might qualify for, and its deadline:<textarea class="ws-input mt-1" data-ws="h-funding" rows="1"></textarea></label>
-          <label class="block">What has to be true in 12 months for me to call this the right call:<textarea class="ws-input mt-1" data-ws="h-12mo" rows="2"></textarea></label>
-          <label class="block">The thing that could make me quit — and my honest plan for it:<textarea class="ws-input mt-1" data-ws="h-quit" rows="2"></textarea></label>
-        </div>
-      </div>
-
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">👨‍👩‍👧 Parent one-pager — the hands-on credential path</h3>
-        <p class="mt-2"><b>What your student is considering:</b> a short, skills-first training program that ends in an employer-recognized credential, instead of (or before) a four-year degree.</p>
-        <p class="mt-2"><b>What this is:</b> a faster, cheaper way to test a career with real stakes. If it's right, they're working and earning while classmates are still in lecture halls. If it's wrong, they've lost a season, not four years — and credentials stack, so this doesn't close the college door later.</p>
-        <p class="mt-2"><b>What this isn't:</b> the "easy way out." Good programs are demanding, the work is physical, and entry pay is entry pay. It also isn't a guarantee — no school can honestly promise a job at the end, and any school that does is showing you a red flag.</p>
-        <p class="mt-2"><b>Questions worth deciding together:</b> Which program, and what do its own graduates say? What does it cost all-in (the calculator above has your student's real numbers)? What funding applies — Workforce Solutions East Texas exists for exactly this? What's the 12-month check-in where you'll both assess honestly?</p>
-        <p class="mt-2 text-slate-500">One free thing to do together this week: tour a real program. Ours is <a href="/tour" class="text-teal-700 underline">free to schedule</a>, and touring anyone's program — including not-ours — beats deciding from a brochure. Our <a href="/tools/family-talk" class="text-teal-700 underline">family-talk tool</a> helps with this exact conversation.</p>
-      </div>
-    </section>
-
-    <!-- ============ PLAN 2: PEOPLE-FACING SKILL ============ -->
-    <section id="plan-people">
-      <div class="plan-banner bg-gradient-to-br from-navy-800 to-teal-700">
-        <svg class="deco" width="220" height="220" viewBox="0 0 220 220" aria-hidden="true"><circle cx="80" cy="110" r="70" fill="none" stroke="#fff" stroke-width="12"/><circle cx="150" cy="110" r="70" fill="none" stroke="#fff" stroke-width="12"/></svg>
-        <div class="flex items-center gap-4 relative">
-          <div class="medal">🤝</div>
-          <div><p class="text-teal-100 text-xs font-bold uppercase tracking-widest">Plan 2</p><h2 class="display text-2xl sm:text-3xl font-bold">The People-Facing Skill path</h2></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700 space-y-2">
-        <h3 class="font-bold text-navy-900 text-base">The direction, honestly</h3>
-        <p>Your energy comes from humans — you read rooms, people relax around you, and the best part of school was the people. That's a real professional asset. It's also, on its own, not a career. "People person" becomes a paycheck when it's attached to a <b>skill</b>: a thing you can do that someone will pay for, delivered in a people-facing way.</p>
-        <p><b>The move:</b> pick the craft first, then let your people-strength be your multiplier. Fields where care meets craft: dental assisting (half chairside care, half technical skill), medical assisting, patient coordination and front-office healthcare roles, pharmacy tech, teaching-adjacent roles like paraprofessional or child care, hospitality management. In every one, the credential gets you in the door and the people skill gets you promoted.</p>
-        <p><b>What nobody tells you:</b> people-facing work spends your emotional energy — the same patients who make the day meaningful can make it exhausting, and you'll meet them on their worst days too. Also, watch out for "people jobs" with no skill attached; they tend to be the lowest-paid and most replaceable roles in any building. The craft is what protects you.</p>
-        <p><b>Who it fits:</b> people who genuinely refill on human contact and want to see the person they helped walk out better. <b>Who it doesn't:</b> if a full day of people sounds draining and you'd rather solve the problem than talk it through, look hard at Plans 1 and 3 instead — better to know now.</p>
-      </div>
-
-      <div class="bg-teal-50 border border-teal-100 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="font-bold text-navy-900 text-base">📅 Test it cheap — one week</h3>
-          <span class="text-xs font-bold text-teal-700 calc-out" data-daycount="p">0/7 days</span>
-        </div>
-        <div class="mt-3 space-y-2" data-days="p">
-          <button type="button" class="day-card" data-ck="p-d1" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 1:</b> List three people-facing roles that also carry a skill. For each, write what the <i>skill</i> is — if you can't name it, that's your warning.</span></button>
-          <button type="button" class="day-card" data-ck="p-d2" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 2:</b> Build your ask with the script generator below and send it. Your own dentist, doctor, pharmacist, or a teacher you trust is the easiest yes you'll ever get.</span></button>
-          <button type="button" class="day-card" data-ck="p-d3" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 3:</b> Look up real pay for each role on <a href="https://www.bls.gov/ooh/" class="text-teal-700 underline" rel="noopener">bls.gov</a> — starting pay, not averages. For dental assisting in East Texas, our <a href="/salary" class="text-teal-700 underline">salary page</a> shows how to read local numbers.</span></button>
-          <button type="button" class="day-card" data-ck="p-d4" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 4:</b> Do the shadow visit. Watch the <i>worst</i> part of the job on purpose — the scheduling mess, the anxious patient, the cleanup. The worst parts make the decision.</span></button>
-          <button type="button" class="day-card" data-ck="p-d5" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 5:</b> Try the technical half. If dental assisting is on your list, the free <a href="/tools/practice-exam" class="text-teal-700 underline">practice exam</a> and <a href="/tools/is-it-for-me" class="text-teal-700 underline">is-it-for-me quiz</a> sample it honestly.</span></button>
-          <button type="button" class="day-card" data-ck="p-d6" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 6:</b> Ask your shadow host one closing question by text: "What separates the people who last in this job from the people who don't?" Save the answer.</span></button>
-          <button type="button" class="day-card" data-ck="p-d7" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 7:</b> Decision worksheet below. If two roles tied, the tiebreaker is the skill you'd rather practice on a bad day.</span></button>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-teal-600 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">💬 Shadowing-script builder</h3>
-        <p class="text-slate-500 mt-1">Fill in four blanks and it writes your ask. Specific + flattering + low-commitment = yes.</p>
-        <div class="grid sm:grid-cols-2 gap-3 mt-3">
-          <label class="block text-xs font-semibold text-slate-500">My first name<input class="ws-input mt-1" data-ws="p-sb-name" data-calc="script" aria-label="Your first name"></label>
-          <label class="block text-xs font-semibold text-slate-500">I am a…<select class="ws-input mt-1" data-ws="p-sb-status" data-calc="script" aria-label="Your status"><option value="">choose one</option><option>senior at my high school</option><option>recent high-school graduate</option><option>student figuring out my next step</option></select></label>
-          <label class="block text-xs font-semibold text-slate-500">The role I want to watch<input class="ws-input mt-1" data-ws="p-sb-role" data-calc="script" placeholder="e.g. dental assistant" aria-label="Role to shadow"></label>
-          <label class="block text-xs font-semibold text-slate-500">Who I'm asking (name or "you")<input class="ws-input mt-1" data-ws="p-sb-who" data-calc="script" placeholder="e.g. Ms. Rivera" aria-label="Person you are asking"></label>
-        </div>
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-4">
-          <p class="text-xs font-bold uppercase tracking-widest text-teal-700">Your message</p>
-          <p id="p-script-out" class="mt-2 text-sm text-slate-700 leading-relaxed">Fill in the blanks above and your message appears here.</p>
-          <button type="button" id="p-script-copy" class="mt-3 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm" hidden>📋 Copy message</button>
-        </div>
-        <p class="mt-2 text-xs text-slate-400">If they say no, they'll usually name someone who'll say yes — ask "who should I ask instead?"</p>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📍 East Texas resources — real links only</h3>
-        <ul class="list-disc ml-5 mt-2 space-y-1.5">
-          <li><a href="https://www.bls.gov/ooh/" class="text-teal-700 underline font-semibold" rel="noopener">Occupational Outlook Handbook</a> — real pay and outlook for every role on your list. Look each one up yourself; don't take any school's word for it, including ours.</li>
-          <li><a href="/salary" class="text-teal-700 underline font-semibold">Our salary page</a> — how dental assistant pay actually works in East Texas, with the caveats stated plainly, plus a <a href="/tools/take-home-pay" class="text-teal-700 underline">take-home pay calculator</a>.</li>
-          <li><a href="/tools/career-paths" class="text-teal-700 underline font-semibold">Career paths explorer</a> — where one people-facing credential can lead over time (free).</li>
-          <li><a href="/tools/interview-prep" class="text-teal-700 underline font-semibold">Interview prep tool</a> — free, and useful for ANY people-facing interview, not just dental.</li>
-          <li><a href="/tools/funding-finder" class="text-teal-700 underline font-semibold">Funding Finder</a> — training funding routes including Workforce Solutions East Texas (<a href="https://www.easttexasworkforce.org/apply" class="text-teal-700 underline" rel="noopener">application</a>).</li>
-          <li><a href="/tour" class="text-teal-700 underline font-semibold">Free campus tour</a> — see one care-meets-craft field up close in Longview. <a href="/calendar" class="text-teal-700 underline">Class calendar</a> · <a href="tel:+19039136444" class="text-teal-700 underline">(903) 913-6444</a>.</li>
-        </ul>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-slate-300 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📝 Decision worksheet — people-facing skill</h3>
-        <div class="mt-3 space-y-4">
-          <label class="block">The three roles I compared, and the SKILL each carries:<textarea class="ws-input mt-1" data-ws="p-roles" rows="2"></textarea></label>
-          <label class="block">Who I shadowed / talked to, and the one thing that surprised me:<textarea class="ws-input mt-1" data-ws="p-shadow" rows="2"></textarea></label>
-          <label class="block">The worst part of the job I watched — could I do that daily?<textarea class="ws-input mt-1" data-ws="p-worst" rows="1"></textarea></label>
-          <label class="block">Starting pay I verified myself (source + number):<textarea class="ws-input mt-1" data-ws="p-pay" rows="1"></textarea></label>
-          <label class="block">Training cost + length for the winning role:<textarea class="ws-input mt-1" data-ws="p-cost" rows="1"></textarea></label>
-          <label class="block">What "the people who last" have, per my shadow host:<textarea class="ws-input mt-1" data-ws="p-last" rows="1"></textarea></label>
-          <label class="block">My honest answer: do people refill me or drain me by 3pm?<textarea class="ws-input mt-1" data-ws="p-drain" rows="1"></textarea></label>
-          <label class="block">What has to be true in 12 months for this to be the right call:<textarea class="ws-input mt-1" data-ws="p-12mo" rows="2"></textarea></label>
-        </div>
-      </div>
-
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">👨‍👩‍👧 Parent one-pager — the people-facing skill path</h3>
-        <p class="mt-2"><b>What your student is considering:</b> building a career around their strongest natural asset — people — by attaching it to a marketable skill through short, focused training rather than a four-year degree.</p>
-        <p class="mt-2"><b>Why this can be smart:</b> "great with people" is the thing employers say they can't teach. Paired with a real credential, it tends to show up in promotions and trust — the person patients ask for by name. The training is short enough to test cheaply and doesn't foreclose college later.</p>
-        <p class="mt-2"><b>The honest risks:</b> people-facing jobs without a skill attached pay poorly — hold the line that the credential comes first. Care work also has real emotional load; the shadowing week exists so your student sees the hard parts before committing. And nobody can guarantee employment — treat any promise otherwise as a red flag.</p>
-        <p class="mt-2"><b>Questions worth deciding together:</b> Which skill, exactly, and what does its training cost all-in? What did the shadow visit actually show? Have you looked up the real pay numbers together (bls.gov, not brochures)? Who's the mentor or employer in their corner locally?</p>
-        <p class="mt-2 text-slate-500">Free thing to do together: come along on a program tour and watch who asks better questions — you or your kid. Ours is <a href="/tour" class="text-teal-700 underline">free</a>, and the <a href="/tools/family-talk" class="text-teal-700 underline">family-talk tool</a> was built for this conversation.</p>
-      </div>
-    </section>
-
-    <!-- ============ PLAN 3: ACADEMIC PATH ============ -->
-    <section id="plan-study">
-      <div class="plan-banner bg-gradient-to-br from-navy-900 to-navy-700">
-        <svg class="deco" width="220" height="220" viewBox="0 0 220 220" aria-hidden="true"><rect x="40" y="60" width="140" height="20" rx="8" fill="#fff"/><rect x="55" y="95" width="110" height="20" rx="8" fill="#fff"/><rect x="70" y="130" width="80" height="20" rx="8" fill="#fff"/></svg>
-        <div class="flex items-center gap-4 relative">
-          <div class="medal">📚</div>
-          <div><p class="text-teal-100 text-xs font-bold uppercase tracking-widest">Plan 3</p><h2 class="display text-2xl sm:text-3xl font-bold">The Academic path — on purpose</h2></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700 space-y-2">
-        <h3 class="font-bold text-navy-900 text-base">The direction, honestly</h3>
-        <p>Let's say it clearly, from a trade school: <b>college is genuinely the right call for some people</b> — and if deep reading, writing, and analysis are where you come alive, you may be one of them. Careers like nursing, engineering, education, accounting, and law <i>require</i> the degree; there is no shortcut into them, and nobody should talk you out of a destination you actually want.</p>
-        <p><b>The one rule of this path:</b> go <i>on purpose</i>. The expensive mistake isn't college — it's <b>undecided</b> at college prices: enrolling to defer the decision, borrowing to fund it, and discovering in year three that you were buying time, not education. A degree with a destination is an investment; a degree as a waiting room is the most expensive way to wait ever invented.</p>
-        <p><b>What nobody tells you at the college fair:</b> the sticker price and the real price differ at every school, so you have to price YOUR offer, not the average; where you start matters less than finishing — transfer routes through community college are a legitimate, cheaper on-ramp to the same diploma; and changing majors late is one of the most common and costly detours, which is exactly what the destination checklist below exists to prevent.</p>
-        <p><b>Who it fits:</b> you liked the academic part of school itself (not just being good at it), and your target career requires the degree. <b>Who it doesn't:</b> if you're choosing college mainly because it's the default and the people around you expect it — while everything in you wants to build, fix, or care for something real this year — read Plans 1, 2, and 4 before you sign anything.</p>
-      </div>
-
-      <div class="bg-teal-50 border border-teal-100 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="font-bold text-navy-900 text-base">📅 Test it cheap — one week</h3>
-          <span class="text-xs font-bold text-teal-700 calc-out" data-daycount="s">0/7 days</span>
-        </div>
-        <div class="mt-3 space-y-2" data-days="s">
-          <button type="button" class="day-card" data-ck="s-d1" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 1:</b> Write your destination in one sentence: "I'm going to college to become a ______." If the blank won't fill, that's not failure — it's data.</span></button>
-          <button type="button" class="day-card" data-ck="s-d2" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 2:</b> Reality-check the destination on <a href="https://www.bls.gov/ooh/" class="text-teal-700 underline" rel="noopener">bls.gov</a>: what it pays, what it requires, whether it's growing. Find one person in that career and ask for 15 minutes.</span></button>
-          <button type="button" class="day-card" data-ck="s-d3" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 3:</b> Sit in on one real college class this month — admissions will usually arrange it. A community-college intro class in your intended major is the truest sample.</span></button>
-          <button type="button" class="day-card" data-ck="s-d4" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 4:</b> Find the net-price calculator on each target school's own site (every U.S. college is required to have one) and run YOUR numbers — not the sticker price.</span></button>
-          <button type="button" class="day-card" data-ck="s-d5" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 5:</b> Fill out the three-route comparator below with those numbers, including living costs.</span></button>
-          <button type="button" class="day-card" data-ck="s-d6" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 6:</b> Build the two-year backup plan (worksheet below). Deciding it NOW, calmly, is what makes changing course later cheap instead of catastrophic.</span></button>
-          <button type="button" class="day-card" data-ck="s-d7" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 7:</b> Decision worksheet with your parents in the room. This is the path where their signature is likely on the paperwork — they've earned a voice.</span></button>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-teal-600 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">🧮 Three routes to the same degree — cost comparator</h3>
-        <p class="text-slate-500 mt-1">Use each school's own net-price calculator for the yearly numbers. "Likely borrowed" = total cost minus what aid + family can cover.</p>
-        <div class="grid sm:grid-cols-3 gap-4 mt-4">
-          <div class="border border-slate-200 rounded-xl p-4 space-y-2">
-            <input class="ws-input font-bold" data-ws="s-r1-name" placeholder="Route 1: target school" aria-label="Route 1 name">
-            <label class="block text-xs font-semibold text-slate-500">Net price / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r1-net" data-calc="study" aria-label="Route 1 net price per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Living costs / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r1-living" data-calc="study" aria-label="Route 1 living costs per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Years<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r1-years" data-calc="study" aria-label="Route 1 years"></label>
-            <label class="block text-xs font-semibold text-slate-500">Aid + family help / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r1-aid" data-calc="study" aria-label="Route 1 aid per year"></label>
-            <div class="bg-teal-50 rounded-lg p-3 text-center"><span class="text-[11px] font-bold text-teal-700 uppercase">Total · likely borrowed</span><div class="text-sm font-bold text-navy-900 calc-out" id="s-r1-out">$0 · $0</div></div>
-          </div>
-          <div class="border border-slate-200 rounded-xl p-4 space-y-2">
-            <input class="ws-input font-bold" data-ws="s-r2-name" placeholder="Route 2: CC + transfer" aria-label="Route 2 name">
-            <label class="block text-xs font-semibold text-slate-500">Net price / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r2-net" data-calc="study" aria-label="Route 2 net price per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Living costs / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r2-living" data-calc="study" aria-label="Route 2 living costs per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Years<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r2-years" data-calc="study" aria-label="Route 2 years"></label>
-            <label class="block text-xs font-semibold text-slate-500">Aid + family help / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r2-aid" data-calc="study" aria-label="Route 2 aid per year"></label>
-            <div class="bg-teal-50 rounded-lg p-3 text-center"><span class="text-[11px] font-bold text-teal-700 uppercase">Total · likely borrowed</span><div class="text-sm font-bold text-navy-900 calc-out" id="s-r2-out">$0 · $0</div></div>
-          </div>
-          <div class="border border-slate-200 rounded-xl p-4 space-y-2">
-            <input class="ws-input font-bold" data-ws="s-r3-name" placeholder="Route 3: in-state option" aria-label="Route 3 name">
-            <label class="block text-xs font-semibold text-slate-500">Net price / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r3-net" data-calc="study" aria-label="Route 3 net price per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Living costs / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r3-living" data-calc="study" aria-label="Route 3 living costs per year"></label>
-            <label class="block text-xs font-semibold text-slate-500">Years<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r3-years" data-calc="study" aria-label="Route 3 years"></label>
-            <label class="block text-xs font-semibold text-slate-500">Aid + family help / year ($)<input type="number" min="0" inputmode="decimal" class="ws-input mt-1" data-ws="s-r3-aid" data-calc="study" aria-label="Route 3 aid per year"></label>
-            <div class="bg-teal-50 rounded-lg p-3 text-center"><span class="text-[11px] font-bold text-teal-700 uppercase">Total · likely borrowed</span><div class="text-sm font-bold text-navy-900 calc-out" id="s-r3-out">$0 · $0</div></div>
-          </div>
-        </div>
-        <div class="mt-4 space-y-2" id="s-route-bars"></div>
-        <p class="mt-3 text-xs text-slate-400">Cheapest isn't automatically best. The worksheet asks what the cheaper route gives up — that's your call, made with real numbers.</p>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📍 Resources — real links only</h3>
-        <ul class="list-disc ml-5 mt-2 space-y-1.5">
-          <li><a href="https://www.bls.gov/ooh/" class="text-teal-700 underline font-semibold" rel="noopener">Occupational Outlook Handbook</a> — verify the destination career's real requirements and pay before you buy the degree that leads to it.</li>
-          <li><a href="https://studentaid.gov" class="text-teal-700 underline font-semibold" rel="noopener">studentaid.gov</a> — the official FAFSA site. File it regardless of what you expect; aid decisions start here, and it's free.</li>
-          <li><b>Every college's own net-price calculator</b> — search "[school name] net price calculator." Price your actual offer, not the sticker.</li>
-          <li><a href="/blog/trade-school-vs-college-what-nobody-tells-you" class="text-teal-700 underline font-semibold">Trade school vs. college, honestly</a> — our no-spin comparison, useful even (especially) if you land on college.</li>
-          <li><b>The reverse door exists too:</b> if year two reveals you want hands-on work after all, short credentials like ours will still be here — <a href="/classes" class="text-teal-700 underline">see how our classes work</a>. Plenty of our students tried college first; that's not a failure story, it's a route.</li>
-        </ul>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-slate-300 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📝 Decision worksheets — academic path</h3>
-        <p class="font-semibold text-navy-900 mt-3">A. The destination-degree checklist</p>
-        <div class="mt-2 space-y-4">
-          <label class="block">I'm going to college to become a:<input class="ws-input mt-1" data-ws="s-become" aria-label="Destination career"></label>
-          <label class="block">That career requires this degree/major (verified on bls.gov or the field's licensing body, not assumed):<textarea class="ws-input mt-1" data-ws="s-requires" rows="1"></textarea></label>
-          <label class="block">One person actually in that career I've talked to, and what they said:<textarea class="ws-input mt-1" data-ws="s-person" rows="2"></textarea></label>
-          <label class="block">The class I sat in on, and my honest reaction to two hours of it:<textarea class="ws-input mt-1" data-ws="s-class" rows="2"></textarea></label>
-        </div>
-        <p class="font-semibold text-navy-900 mt-5">B. What the cheaper route gives up</p>
-        <div class="mt-2 space-y-4">
-          <label class="block">Looking at the comparator above: what does the cheapest route give up vs. the target school — and in my own words, is it worth the difference?<textarea class="ws-input mt-1" data-ws="s-tradeoff" rows="2"></textarea></label>
-        </div>
-        <p class="font-semibold text-navy-900 mt-5">C. The two-year backup plan</p>
-        <div class="mt-2 space-y-4">
-          <div class="grid sm:grid-cols-2 gap-3">
-            <label class="block">GPA I'll consider on-track at the two-year check-in:<input class="ws-input mt-1" data-ws="s-gpa" aria-label="On-track GPA"></label>
-            <label class="block">Borrowing total I'll consider acceptable at that point:<input class="ws-input mt-1" data-ws="s-borrow" aria-label="Acceptable borrowing total"></label>
-          </div>
-          <label class="block">If the destination sentence no longer reads true, my pre-decided move is (transfer / change major with credits that carry / step out to a credential and work — be specific):<textarea class="ws-input mt-1" data-ws="s-backup" rows="2"></textarea></label>
-          <label class="block">The person who gets to call this check-in with me, so I can't quietly skip it:<input class="ws-input mt-1" data-ws="s-checkin" aria-label="Check-in person"></label>
-        </div>
-      </div>
-
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">👨‍👩‍👧 Parent one-pager — the academic path</h3>
-        <p class="mt-2"><b>What your student is considering:</b> a four-year (or longer) degree — chosen on purpose, with a destination career attached, not as the default next step.</p>
-        <p class="mt-2"><b>What "on purpose" means here:</b> they can finish the sentence "I'm going to become a ______," the career actually requires the degree, they've priced three routes to it using net-price calculators (the comparator above holds their real numbers), and there's a written two-year check-in with pre-decided options if the plan changes. That last one is the difference between a course correction and a crisis.</p>
-        <p class="mt-2"><b>The honest risks:</b> the most expensive outcome in American education is borrowing for "undecided." Watch for destination drift (major changes that reset the clock), and remember that the cheapest route to a diploma — community college then transfer — carries the same diploma at the end.</p>
-        <p class="mt-2"><b>Questions worth deciding together:</b> What's the destination, and have they met someone living it? What will each route cost YOUR family after real aid offers arrive? Who initiates the two-year check-in? And what does everyone agree "change the plan" looks like — calmly, now, while nobody needs it?</p>
-        <p class="mt-2 text-slate-500">If the honest answer to "why college?" turns out to be "everyone expected it" — the other three plans in this workbook are the alternative conversation, and having it at 18 is a gift.</p>
-      </div>
-    </section>
-
-    <!-- ============ PLAN 4: STRUCTURED PATH ============ -->
-    <section id="plan-structure">
-      <div class="plan-banner bg-gradient-to-br from-teal-700 to-navy-800">
-        <svg class="deco" width="220" height="220" viewBox="0 0 220 220" aria-hidden="true"><rect x="45" y="45" width="55" height="55" rx="10" fill="#fff"/><rect x="120" y="45" width="55" height="55" rx="10" fill="#fff"/><rect x="45" y="120" width="55" height="55" rx="10" fill="#fff"/><rect x="120" y="120" width="55" height="55" rx="10" fill="#fff"/></svg>
-        <div class="flex items-center gap-4 relative">
-          <div class="medal">🧱</div>
-          <div><p class="text-teal-100 text-xs font-bold uppercase tracking-widest">Plan 4</p><h2 class="display text-2xl sm:text-3xl font-bold">The Structured path</h2></div>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700 space-y-2">
-        <h3 class="font-bold text-navy-900 text-base">The direction, honestly</h3>
-        <p>You run best with clear expectations, a defined mission, and a team that notices whether you showed up. That's not a weakness to outgrow — it's a real operating style, and there are whole paths built for it: <b>military service</b>, <b>registered apprenticeships</b>, and <b>earn-while-you-learn structures</b> like small cohort programs where a schedule and a group carry you through.</p>
-        <p><b>Military, honestly:</b> it can provide training, discipline, pay, and education benefits afterward — and it is also a serious commitment you cannot quietly quit, with real risks, moves, and years that belong to the service. The single best move before deciding: talk to people who <i>served and got out</i>, not only recruiters. Ask what they'd redo. A recruiter's job is enrollment; a veteran's stories are the honest brochure.</p>
-        <p><b>Apprenticeships, honestly:</b> registered apprenticeships pay you while you train toward a credential — the classic earn-while-you-learn deal. The trade-offs: openings are competitive and specific (you apply to a program, not a vibe), progress is structured over years, and quality depends on the sponsor. The official national finder is linked below.</p>
-        <p><b>Structured cohorts, honestly:</b> some training programs are built cohort-style — a small group, a fixed schedule, people who notice when you're absent. Our own classes run that way (8 seats, daytime schedule), and we've watched structure carry students that motivation alone wouldn't have. That's one local example of the shape, not the only one — the shape is the point.</p>
-        <p><b>Who it fits:</b> people who thrive on external structure and want a team. <b>Who it doesn't:</b> if being told where to be chafes more than it comforts, a multi-year service commitment is the wrong experiment — test with a shorter structured program first.</p>
-      </div>
-
-      <div class="bg-teal-50 border border-teal-100 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <div class="flex items-center justify-between gap-3">
-          <h3 class="font-bold text-navy-900 text-base">📅 Test it cheap — one week</h3>
-          <span class="text-xs font-bold text-teal-700 calc-out" data-daycount="t">0/7 days</span>
-        </div>
-        <div class="mt-3 space-y-2" data-days="t">
-          <button type="button" class="day-card" data-ck="t-d1" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 1:</b> Write what "structure" means to you, specifically: a schedule? a team? a mission? someone checking your work? Different needs point to different paths.</span></button>
-          <button type="button" class="day-card" data-ck="t-d2" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 2:</b> Find one veteran (family, church, a teacher who served). Ask: "What did the military give you, what did it cost you, and what would you tell an 18-year-old considering it?"</span></button>
-          <button type="button" class="day-card" data-ck="t-d3" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 3:</b> Find one current or former apprentice — electricians and plumbers are everywhere and usually happy to talk. Same three questions.</span></button>
-          <button type="button" class="day-card" data-ck="t-d4" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 4:</b> Browse real apprenticeship openings within driving distance on <a href="https://www.apprenticeship.gov" class="text-teal-700 underline" rel="noopener">apprenticeship.gov</a>. Note what they require and when they open.</span></button>
-          <button type="button" class="day-card" data-ck="t-d5" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 5:</b> If the military is seriously on your list, read the education benefits yourself at <a href="https://www.va.gov/education/" class="text-teal-700 underline" rel="noopener">va.gov/education</a> — then, if still interested, talk to a recruiter with your veteran's questions in hand.</span></button>
-          <button type="button" class="day-card" data-ck="t-d6" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 6:</b> Experience a structured cohort in person: tour a small-class program (ours is <a href="/tour" class="text-teal-700 underline">free to tour</a> — ask what an 8-seat class day actually looks like) or visit any team environment you might join.</span></button>
-          <button type="button" class="day-card" data-ck="t-d7" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-sm"><b>Day 7:</b> Decision worksheet below, and set your cooling-off date in the calculator — real structure includes not deciding under sales pressure.</span></button>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-teal-600 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">⚖️ Commitment comparator + cooling-off calculator</h3>
-        <p class="text-slate-500 mt-1">Structured paths differ most in what it costs to leave. Put your three options side by side.</p>
-        <div class="mt-3 overflow-x-auto">
-          <div class="min-w-[560px] grid grid-cols-4 gap-2 text-xs font-bold text-slate-500 uppercase tracking-wide px-1">
-            <span>Option</span><span>Commitment length</span><span>Cost of leaving early</span><span>Benefits verified?</span>
-          </div>
-          <div class="min-w-[560px] grid grid-cols-4 gap-2 mt-2">
-            <input class="ws-input" data-ws="t-o1-name" placeholder="e.g. Army enlistment" aria-label="Option 1 name">
-            <input class="ws-input" data-ws="t-o1-len" placeholder="e.g. 4 years" aria-label="Option 1 commitment length">
-            <input class="ws-input" data-ws="t-o1-exit" placeholder="honest answer" aria-label="Option 1 exit cost">
-            <button type="button" class="day-card !p-2 justify-center" data-ck="t-o1-ver" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-xs">at official source</span></button>
-          </div>
-          <div class="min-w-[560px] grid grid-cols-4 gap-2 mt-2">
-            <input class="ws-input" data-ws="t-o2-name" placeholder="e.g. electrician apprenticeship" aria-label="Option 2 name">
-            <input class="ws-input" data-ws="t-o2-len" placeholder="e.g. 4 years" aria-label="Option 2 commitment length">
-            <input class="ws-input" data-ws="t-o2-exit" placeholder="honest answer" aria-label="Option 2 exit cost">
-            <button type="button" class="day-card !p-2 justify-center" data-ck="t-o2-ver" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-xs">at official source</span></button>
-          </div>
-          <div class="min-w-[560px] grid grid-cols-4 gap-2 mt-2">
-            <input class="ws-input" data-ws="t-o3-name" placeholder="e.g. 12-week cohort program" aria-label="Option 3 name">
-            <input class="ws-input" data-ws="t-o3-len" placeholder="e.g. 12 weeks" aria-label="Option 3 commitment length">
-            <input class="ws-input" data-ws="t-o3-exit" placeholder="honest answer" aria-label="Option 3 exit cost">
-            <button type="button" class="day-card !p-2 justify-center" data-ck="t-o3-ver" aria-pressed="false"><span class="day-box">✓</span><span class="day-text text-xs">at official source</span></button>
-          </div>
-        </div>
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mt-4 sm:flex items-center gap-4">
-          <label class="block text-xs font-semibold text-slate-500 flex-1">The day I'd be asked to sign something binding:<input type="date" class="ws-input mt-1" data-ws="t-signdate" data-calc="cooloff" aria-label="Signing date"></label>
-          <div class="mt-3 sm:mt-0 text-center flex-1"><span class="text-[11px] font-bold text-teal-700 uppercase">My cooling-off rule: earliest I'll actually sign</span><div class="display text-xl font-bold text-navy-900 calc-out" id="t-cooloff-out">pick a date →</div></div>
-        </div>
-        <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 mt-3">
-          <b>GI Bill notes, honestly:</b> education benefits for service members are real and substantial — for many veterans they cover significant tuition and support after service. But the details (eligibility, transfer to family, what's covered, service-time requirements) change over time and vary by your situation, so <b>never</b> plan around a number you heard secondhand or from a recruiter's summary. Before you count on any benefit: read it yourself at <a href="https://www.va.gov/education/" class="text-teal-700 underline" rel="noopener">va.gov/education</a>, confirm what applies to the specific service and term you'd sign for, and have a veteran sanity-check your understanding. "Free college later" is a real possibility, not a guarantee — treat it as a benefit you verify, not a reason by itself to enlist.
-        </div>
-      </div>
-
-      <div class="bg-white rounded-xl border border-slate-200 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📍 Resources — real links only</h3>
-        <ul class="list-disc ml-5 mt-2 space-y-1.5">
-          <li><a href="https://www.apprenticeship.gov" class="text-teal-700 underline font-semibold" rel="noopener">apprenticeship.gov</a> — the official U.S. Department of Labor finder for registered apprenticeships. Search by trade and ZIP.</li>
-          <li><a href="https://www.va.gov/education/" class="text-teal-700 underline font-semibold" rel="noopener">va.gov/education</a> — the official source on GI Bill education benefits.</li>
-          <li><a href="https://www.easttexasworkforce.org/apply" class="text-teal-700 underline font-semibold" rel="noopener">Workforce Solutions East Texas</a> — funding and job-training help locally; our <a href="/tools/funding-finder" class="text-teal-700 underline">funding finder</a> walks you through it.</li>
-          <li><a href="/classes" class="text-teal-700 underline font-semibold">How our cohort classes work</a> — one local example of the small-cohort shape (8 seats, daytime, 12 weeks). <a href="/calendar" class="text-teal-700 underline">Upcoming start dates</a> · <a href="/tour" class="text-teal-700 underline">free tour</a> · <a href="tel:+19039136444" class="text-teal-700 underline">(903) 913-6444</a>.</li>
-        </ul>
-      </div>
-
-      <div class="bg-white rounded-xl border-2 border-slate-300 p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">📝 Decision worksheet — structured path</h3>
-        <div class="mt-3 space-y-4">
-          <label class="block">What "structure" specifically means for me (schedule / team / mission / accountability):<textarea class="ws-input mt-1" data-ws="t-means" rows="1"></textarea></label>
-          <label class="block">What my veteran said they'd redo:<textarea class="ws-input mt-1" data-ws="t-vet" rows="2"></textarea></label>
-          <label class="block">What my apprentice contact said about years 1 vs. 3:<textarea class="ws-input mt-1" data-ws="t-appr" rows="1"></textarea></label>
-          <label class="block">Benefits I verified MYSELF at the official source (not secondhand):<textarea class="ws-input mt-1" data-ws="t-verified" rows="1"></textarea></label>
-          <label class="block">What has to be true in 12 months for this to be the right call:<textarea class="ws-input mt-1" data-ws="t-12mo" rows="2"></textarea></label>
-        </div>
-      </div>
-
-      <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-4 text-sm text-slate-700">
-        <h3 class="font-bold text-navy-900 text-base">👨‍👩‍👧 Parent one-pager — the structured path</h3>
-        <p class="mt-2"><b>What your student is considering:</b> a path with built-in structure — military service, a registered apprenticeship, or a small-cohort training program — because they run best with clear expectations and a team.</p>
-        <p class="mt-2"><b>Why this can be smart:</b> structure is a legitimate success strategy, not a crutch. Apprenticeships pay while training; service can provide training, discipline, and education benefits afterward; cohort programs give a schedule and a group that notices. All three beat drifting.</p>
-        <p class="mt-2"><b>The honest risks, by option:</b> military service is a binding multi-year commitment with real risks — insist on conversations with veterans, not just recruiters, and the cooling-off date your student set above before any signature. Apprenticeship spots are competitive and take years — apply broadly, verify the sponsor's reputation. Any program promising guaranteed outcomes is waving a red flag; none can.</p>
-        <p class="mt-2"><b>Questions worth deciding together:</b> What is the exact commitment length, and what does leaving early cost (the comparator above holds their answers)? What did the veteran and the apprentice actually say? Which benefits have you both read at the official source (va.gov, apprenticeship.gov) rather than heard about? What's the fallback if the first application cycle says no?</p>
-        <p class="mt-2 text-slate-500">Free thing to do together: visit one structured environment in person this month — an apprenticeship open house, or a small cohort classroom (<a href="/tour" class="text-teal-700 underline">ours tours free</a>). Watching the structure beats imagining it.</p>
-      </div>
-    </section>
-
-    <!-- ============ MY PLAN ============ -->
-    <section id="my-plan">
-      <h2 class="display text-2xl font-bold text-navy-900 border-b-2 border-amber-500 pb-2">🗺️ My Plan — built from your answers</h2>
-      <p class="text-sm text-slate-600 mt-3">This assembles what you've actually written and checked above into one page. Fill in the two blanks, and print it when it reads true.</p>
-      <div class="grid sm:grid-cols-2 gap-3 mt-4">
-        <label class="block text-sm">My name (for the printout):<input class="ws-input mt-1" data-ws="mp-name" data-calc="myplan" aria-label="Your name for the plan"></label>
-        <label class="block text-sm">My direction:<select class="ws-input mt-1" data-ws="mp-dir" data-calc="myplan" aria-label="Chosen direction"><option value="">use my Fit Ranker leader</option><option value="h">🔧 Hands-on credential</option><option value="p">🤝 People-facing skill</option><option value="s">📚 Academic path</option><option value="t">🧱 Structured path</option></select></label>
-      </div>
-      <label class="block text-sm mt-3">Who keeps me honest (they get to ask "did you do the week?"):<input class="ws-input mt-1" data-ws="mp-honest" data-calc="myplan" aria-label="Accountability person"></label>
-      <div class="bg-white rounded-2xl border-2 border-navy-800 p-6 mt-5" id="mp-card">
-        <div class="flex items-center justify-between gap-3 border-b-2 border-slate-100 pb-3">
-          <div>
-            <p class="text-xs font-bold uppercase tracking-widest text-teal-700">My Career Direction Plan</p>
-            <p class="display text-2xl font-bold text-navy-900" id="mp-title">Your plan</p>
-          </div>
-          <span class="text-3xl" id="mp-emoji">🧭</span>
-        </div>
-        <div class="mt-4 space-y-3 text-sm text-slate-700" id="mp-body">
-          <p class="text-slate-400">Work the ranker, the checklists, and a worksheet above — this page writes itself from your answers.</p>
-        </div>
-        <p class="text-[11px] text-slate-400 mt-5">A reflection-and-planning workbook from Premier Dental Academy of Longview — not a scientific assessment; no admission, licensure, employment, or income is guaranteed by anyone. Verify every requirement, cost, and benefit at the official source before you commit.</p>
-      </div>
-      <div class="mt-4 flex flex-wrap gap-3 no-print">
-        <button onclick="window.print()" data-event="career_plan_print" class="bg-navy-800 hover:bg-navy-700 text-white font-bold px-6 py-2.5 rounded-full text-sm">🖨️ Print my plan</button>
-        <a href="tel:+19039136444" class="border-2 border-teal-700 text-teal-700 font-bold px-6 py-2.5 rounded-full text-sm hover:bg-teal-50">Stuck? Call or text Amanda</a>
-      </div>
-      <p class="text-sm text-slate-600 mt-5 no-print">And if your plan pointed at hands-on healthcare, your free next steps are the <a href="/tools/is-it-for-me" class="text-teal-700 underline font-semibold">is-it-for-me quiz</a>, the <a href="/tools/practice-exam" class="text-teal-700 underline font-semibold">practice exam</a>, and a <a href="/tour" class="text-teal-700 underline font-semibold">free tour</a>.</p>
-    </section>
-  </main>
+    <p class="text-[11px] text-plum-300 text-center mt-5 no-print">Saves on this device as you go. A planning tool, not a scientific assessment. No job, admission, or income is guaranteed by anyone. Verify every cost and requirement at the official source. Stuck? <a href="tel:+19039136444" class="underline">Call or text Amanda: (903) 913-6444</a>.</p>
+  </div>
 </div>
 
 <script>
-/* ── Workbook engine: persistence, checklists, fit ranker, calculators, My Plan.
-   Answers live in localStorage on the buyer's device only (see sales FAQ). ── */
+/* ── The plan builder. One question per screen. The plan panel builds live
+   with every answer. Everything saves to localStorage on this device only. ── */
 (function(){
   'use strict';
-  var KEY='pda_career_plan_v1';
-  var state={};
-  try{ state=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ state={}; }
-  var saveT=null;
-  function save(){ clearTimeout(saveT); saveT=setTimeout(function(){ try{ localStorage.setItem(KEY,JSON.stringify(state)); }catch(e){} },300); }
+  if(!document.getElementById('owned')) return;
+  var KEY='pda_career_plan_app_v1';
+  var S={};
+  try{ S=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ S={}; }
+  function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
   function track(ev,props){ try{ if(window.PDA&&window.PDA.track) window.PDA.track(ev,props||{}); }catch(e){} }
-  var owned=document.getElementById('owned');
-  if(!owned) return;
+  function money(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
+  function num(k){ var v=Number(S[k]); return isFinite(v)&&v>0?v:0; }
+  function esc(x){ return String(x==null?'':x).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
 
-  var PLANS={ h:{label:'Hands-on credential',emoji:'🔧',anchor:'#plan-hands',mo12:'h-12mo'},
-              p:{label:'People-facing skill',emoji:'🤝',anchor:'#plan-people',mo12:'p-12mo'},
-              s:{label:'Academic path',emoji:'📚',anchor:'#plan-study',mo12:'s-become'},
-              t:{label:'Structured path',emoji:'🧱',anchor:'#plan-structure',mo12:'t-12mo'} };
+  var DIRS={ h:{label:'Hands-on credential',emoji:'🔧'}, p:{label:'People-facing skill',emoji:'🤝'},
+             s:{label:'Academic path',emoji:'📚'}, t:{label:'Structured path',emoji:'🧱'} };
 
-  function autosize(t){ if(t.tagName==='TEXTAREA'){ t.style.height='auto'; t.style.height=(t.scrollHeight+2)+'px'; } }
-
-  // ── Fit ranker (rendered from data) ──
-  var FIT=[ ['I’d rather fix or make something real than write about it.','h'],
-            ['Long lectures drain me even when I care about the topic.','h'],
+  var FIT=[ ['I would rather fix or make something real than write about it.','h'],
+            ['Long lectures drain me, even when I care about the topic.','h'],
             ['Helping a specific person beats finishing a task, every time.','p'],
             ['People tend to open up to me without me trying.','p'],
-            ['I genuinely enjoy reading, analyzing, and writing — not just the grades.','s'],
-            ['There’s a career I want that truly requires a degree.','s'],
+            ['I genuinely enjoy reading, analyzing, and writing. Not just the grades.','s'],
+            ['There is a career I want that truly requires a degree.','s'],
             ['I do my best work when expectations are crystal clear.','t'],
             ['A team counting on me gets me moving better than my own plans do.','t'] ];
-  var fitBox=document.getElementById('fit-qs');
-  FIT.forEach(function(q,i){
-    var row=document.createElement('div');
-    row.className='bg-white rounded-xl border border-slate-200 p-4';
-    var head=document.createElement('div');
-    head.className='flex items-start justify-between gap-3';
-    var pText=document.createElement('p'); pText.className='text-sm font-semibold text-navy-900'; pText.textContent=(i+1)+'. '+q[0];
-    head.appendChild(pText); row.appendChild(head);
-    var dots=document.createElement('div'); dots.className='flex items-center gap-2 mt-3';
-    var lo=document.createElement('span'); lo.className='text-[11px] text-slate-400'; lo.textContent='not me'; dots.appendChild(lo);
-    for(var v=1;v<=5;v++){
-      var b=document.createElement('button'); b.type='button'; b.className='fit-dot'; b.textContent=v;
-      b.setAttribute('data-fit',String(i)); b.setAttribute('data-val',String(v));
-      b.setAttribute('aria-label','Statement '+(i+1)+': '+v+' of 5');
-      dots.appendChild(b);
-    }
-    var hi=document.createElement('span'); hi.className='text-[11px] text-slate-400'; hi.textContent='very me'; dots.appendChild(hi);
-    row.appendChild(dots); fitBox.appendChild(row);
-  });
-  var barsBox=document.getElementById('fit-bars');
-  Object.keys(PLANS).forEach(function(k){
-    var row=document.createElement('div');
-    var top=document.createElement('div'); top.className='flex items-center justify-between text-sm';
-    var name=document.createElement('span'); name.className='font-semibold text-navy-900'; name.textContent=PLANS[k].emoji+' '+PLANS[k].label;
-    var pct=document.createElement('span'); pct.className='text-xs font-bold text-slate-500 calc-out'; pct.id='fit-pct-'+k; pct.textContent='—';
-    top.appendChild(name); top.appendChild(pct); row.appendChild(top);
-    var trk=document.createElement('div'); trk.className='bar-track mt-1';
-    var fill=document.createElement('div'); fill.className='bar-fill'; fill.id='fit-bar-'+k;
-    trk.appendChild(fill); row.appendChild(trk); barsBox.appendChild(row);
-  });
-  function fitLeader(){
-    var scores={h:0,p:0,s:0,t:0}, answered=0;
-    FIT.forEach(function(q,i){ var v=Number(state['fit-'+i]||0); if(v){ scores[q[1]]+=v; answered++; } });
-    return {scores:scores, answered:answered,
-            leader:Object.keys(scores).sort(function(a,b){return scores[b]-scores[a];})[0]};
+
+  var WEEK={
+    h:[ 'Pick your top two trades. One sentence each on why.',
+        'Find one real person doing each. Ask for 15 minutes.',
+        'Read the real requirements at the official board, like tsbde.texas.gov.',
+        'Sample the material free: our practice exam and is-it-for-me quiz.',
+        'Stand in the actual room. Tour a campus or walk a job site.',
+        'Run your numbers in this builder, then check funding.',
+        'Review your plan with everything you learned.' ],
+    p:[ 'Name the skill inside each role you like. No skill, no role.',
+        'Send your shadow message. The builder wrote it for you.',
+        'Look up real starting pay yourself at bls.gov.',
+        'Do the shadow visit. Watch the worst part on purpose.',
+        'Try the technical half free: our practice exam.',
+        'Text your host: what separates people who last from people who quit?',
+        'Review your plan with everything you learned.' ],
+    s:[ 'Say your destination out loud: I will become a ______.',
+        'Reality-check it at bls.gov. Then meet one person living it.',
+        'Sit in on one real college class. Admissions will set it up.',
+        'Run each school’s own net-price calculator. Never the sticker.',
+        'Put the numbers in this builder and compare routes.',
+        'Lock your two-year check-in person and backup move.',
+        'Review your plan with your parents in the room.' ],
+    t:[ 'Write what structure means to you: schedule, team, mission, or coach.',
+        'Ask one veteran: what did it give you, cost you, and what would you redo?',
+        'Ask one apprentice the same three questions.',
+        'Browse real openings near you at apprenticeship.gov.',
+        'Read benefits yourself at va.gov/education. Never secondhand.',
+        'Tour one structured cohort in person. Ours is free to tour.',
+        'Review your plan. No signatures before your cooling-off date.' ] };
+
+  var HONEST={
+    h:[ 'The work is physical and entry pay is entry pay. Growth comes from stacking skills.',
+        'Program quality varies a lot. A credential employers ignore is worthless. Vet the school.',
+        'The win: you find out fast, you earn sooner, and being wrong costs a season, not four years.' ],
+    p:[ 'A people job with no skill attached is the lowest-paid job in the building. Craft first.',
+        'Care work spends emotional energy. You will meet people on their worst days.',
+        'The win: the credential gets you hired, your people skill gets you promoted.' ],
+    s:[ 'College is right for some people. If your career needs the degree, own it proudly.',
+        'The expensive mistake is "undecided" at college prices. Go with a destination.',
+        'Community college then transfer carries the same diploma for less. Finishing is what matters.' ],
+    t:[ 'The military cannot be quietly quit. Talk to veterans, not just recruiters.',
+        'Apprenticeships pay you to train, and spots are competitive. Apply broadly.',
+        'GI Bill benefits are real but change. Read va.gov/education yourself before counting on them.' ] };
+
+  var RES={
+    h:[ ['💰','Funding finder','/tools/funding-finder'], ['📝','Free practice exam','/tools/practice-exam'], ['🏫','Free campus tour','/tour'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['🦷','TX dental board','https://tsbde.texas.gov'] ],
+    p:[ ['📝','Free practice exam','/tools/practice-exam'], ['💵','East Texas salary page','/salary'], ['🎤','Interview prep','/tools/interview-prep'], ['🏫','Free campus tour','/tour'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'] ],
+    s:[ ['🎓','FAFSA (studentaid.gov)','https://studentaid.gov'], ['📊','Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['⚖️','Trade school vs. college','/blog/trade-school-vs-college-what-nobody-tells-you'] ],
+    t:[ ['🔨','apprenticeship.gov','https://www.apprenticeship.gov'], ['🎖️','GI Bill (va.gov)','https://www.va.gov/education/'], ['💰','Funding finder','/tools/funding-finder'], ['🏫','Free campus tour','/tour'] ] };
+
+  var TRADES=['Dental assisting','Medical assisting','Welding','HVAC','Electrical','Cosmetology','CDL driving'];
+  var ROLES=['Dental assisting','Medical assisting','Patient coordinator','Pharmacy tech','Teaching aide / child care'];
+
+  function fitSteps(){ return FIT.map(function(q,i){ return { id:'fit'+i, type:'scale', title:q[0], key:'fit'+i }; }); }
+  function fitScores(){ var sc={h:0,p:0,s:0,t:0}; FIT.forEach(function(q,i){ sc[q[1]]+=Number(S['fit'+i]||0); }); return sc; }
+  function fitAnswered(){ var n=0; FIT.forEach(function(q,i){ if(S['fit'+i]) n++; }); return n; }
+  function dir(){ if(S.dirOverride) return S.dirOverride; var sc=fitScores(); return Object.keys(sc).sort(function(a,b){return sc[b]-sc[a];})[0]; }
+
+  function pathSteps(d){
+    if(d==='h') return [
+      { id:'h-trades', type:'chips', title:'Pick two trades worth testing.', sub:'Tap two. That gives you a real comparison.', key:'h_trades', options:TRADES, multi:2, other:true },
+      { id:'h-honest', type:'info', title:'Quick honesty check 🔧', bullets:HONEST.h },
+      { id:'h-costA', type:'money', title:function(){ return 'Price your first pick: '+esc((S.h_trades||[])[0]||'trade #1'); }, sub:'Numbers from the school’s own price sheet. Skip what you don’t know yet.', fields:[['h_a_tuition','Tuition ($)'],['h_a_extra','Gear + fees + licensing ($)'],['h_a_months','Months of training'],['h_a_living','Your living costs per month ($)']] },
+      { id:'h-costB', type:'money', title:function(){ return 'Now your second pick: '+esc((S.h_trades||[])[1]||'trade #2'); }, sub:'Same four numbers.', fields:[['h_b_tuition','Tuition ($)'],['h_b_extra','Gear + fees + licensing ($)'],['h_b_months','Months of training'],['h_b_living','Your living costs per month ($)']] },
+      { id:'h-fund', type:'chips', title:'Want help paying for it?', key:'h_fund', options:['Yes, show me funding options','I’m covered'], multi:0 } ];
+    if(d==='p') return [
+      { id:'p-roles', type:'chips', title:'Which people-facing roles sound like you?', sub:'Every one of these carries a real skill. Tap up to two.', key:'p_roles', options:ROLES, multi:2, other:true },
+      { id:'p-honest', type:'info', title:'Quick honesty check 🤝', bullets:HONEST.p },
+      { id:'p-who', type:'text', title:'Who could you watch work for an afternoon?', sub:'Your own dentist, doctor, pharmacist, or a teacher you trust. First name is fine.', key:'p_who', voice:true, placeholder:'e.g. Ms. Rivera' },
+      { id:'p-status', type:'chips', title:'And you are a…', key:'p_status', options:['senior at my high school','recent high-school graduate','student figuring out my next step'], multi:0 } ];
+    if(d==='s') return [
+      { id:'s-become', type:'text', title:'Finish the sentence: I’m going to college to become a…', sub:'If the blank won’t fill, that’s not failure. It’s data.', key:'s_become', voice:true, placeholder:'e.g. registered nurse' },
+      { id:'s-honest', type:'info', title:'Quick honesty check 📚', bullets:HONEST.s },
+      { id:'s-r1', type:'money', title:'Price route 1: your target school.', sub:'Use the school’s own net-price calculator, never the sticker.', fields:[['s_r1_net','Net price per year ($)'],['s_r1_living','Living costs per year ($)'],['s_r1_years','Years'],['s_r1_aid','Aid + family help per year ($)']] },
+      { id:'s-r2', type:'money', title:'Price route 2: community college, then transfer.', sub:'Same diploma at the end. See what it changes.', fields:[['s_r2_net','Net price per year ($)'],['s_r2_living','Living costs per year ($)'],['s_r2_years','Years'],['s_r2_aid','Aid + family help per year ($)']] },
+      { id:'s-backup', type:'chips', title:'If year two says the plan is wrong, your pre-decided move is…', sub:'Deciding now is what makes changing course cheap.', key:'s_backup', options:['Transfer somewhere cheaper','Change major, keep credits that carry','Step out to a short credential and work'], multi:0 },
+      { id:'s-checkin', type:'text', title:'Who gets to call your two-year check-in?', sub:'Someone who won’t let you quietly skip it.', key:'s_checkin', voice:true, placeholder:'e.g. Mom' } ];
+    return [
+      { id:'t-opts', type:'chips', title:'Which structured paths are on your list?', sub:'Tap all that apply.', key:'t_opts', options:['Military service','Registered apprenticeship','Small cohort program (like our 8-seat classes)'], multi:3 },
+      { id:'t-honest', type:'info', title:'Quick honesty check 🧱', bullets:HONEST.t },
+      { id:'t-people', type:'text', title:'Name one veteran or apprentice you can ask this week.', sub:'Their stories are the honest brochure.', key:'t_people', voice:true, placeholder:'e.g. Uncle Marcus' },
+      { id:'t-sign', type:'date', title:'When might someone ask you to sign?', sub:'The builder adds a 14-day cooling-off rule. Nobody decides under sales pressure.', key:'t_sign' } ];
   }
-  function renderFit(){
-    var r=fitLeader(), max=10; // 2 statements × 5
-    Object.keys(PLANS).forEach(function(k){
-      var pctEl=document.getElementById('fit-pct-'+k), barEl=document.getElementById('fit-bar-'+k);
-      var pc=Math.round(r.scores[k]/max*100);
-      pctEl.textContent=r.scores[k]?r.scores[k]+' / '+max:'—';
-      barEl.style.width=pc+'%';
-      barEl.classList.toggle('lead', r.answered===FIT.length && k===r.leader && r.scores[k]>0);
+
+  function flow(){
+    return [ { id:'welcome', type:'info', title:'Let’s build your plan. 🌸', bullets:['Little questions. Tap, type, or talk.','Your plan builds itself, live, right beside you.','About 3 minutes. It saves as you go.'] },
+             { id:'name', type:'text', title:'First up: what’s your name?', key:'name', voice:true, placeholder:'First name' },
+             { id:'crew', type:'chips', title:function(){ return 'Who’s in this with you'+(S.name?', '+esc(S.name):'')+'?'; }, sub:'Your plan ends with a one-pager written just for them.', key:'crew', options:['Mom','Dad','Grandparent','Guardian','I’m on my own'], multi:0 } ]
+      .concat(fitSteps())
+      .concat([{ id:'reveal', type:'reveal' }])
+      .concat(pathSteps(dir()))
+      .concat([{ id:'week', type:'week' },{ id:'plan', type:'plan' }]);
+  }
+
+  var idx=Number(S._idx||0);
+  var card=document.getElementById('app-card');
+  var backBtn=document.getElementById('app-back'), nextBtn=document.getElementById('app-next');
+  var SRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+  var toastT=null;
+
+  function toast(msg){
+    var t=document.getElementById('live-toast'); t.textContent=msg||'✨ Added to your plan';
+    t.classList.add('show');
+    clearTimeout(toastT); toastT=setTimeout(function(){ t.classList.remove('show'); },1400);
+    var lp=document.getElementById('live-panel');
+    lp.classList.remove('lp-flash'); void lp.offsetWidth; lp.classList.add('lp-flash');
+  }
+  function put(k,v,quiet){ S[k]=v; save(); renderLive(); if(!quiet) toast(); }
+
+  function setNext(enabled,label){ nextBtn.disabled=!enabled; nextBtn.textContent=label||'Next →'; }
+
+  // ── LIVE PLAN PANEL ──
+  function slot(filled,emoji,titleTxt,bodyHtml){
+    return '<div class="lp-slot'+(filled?' filled':'')+'"><p class="text-xs font-bold text-plum-700">'+emoji+' '+titleTxt+'</p>'+
+      '<div class="text-[13px] text-plum-500 mt-1">'+bodyHtml+'</div></div>';
+  }
+  function shadowMsg(d){
+    var name=(S.name||'').trim();
+    var role=d==='p'?((S.p_roles||[])[0]||'the role'):((S.h_trades||[])[0]||'the trade');
+    var who=d==='p'?(S.p_who||''):'';
+    var status=S.p_status||'student figuring out my next step';
+    return 'Hi '+(who||'there')+', I’m '+(name||'a local student')+', a '+status+', and I’m seriously considering '+role.toLowerCase()+'. Could I watch you work for an hour or two some afternoon, or ask you a few questions over a coffee? I’m trying to test this before I commit to training, and you’re the person I most want to learn from.';
+  }
+  function handsTotals(){ return [ num('h_a_tuition')+num('h_a_extra')+num('h_a_months')*num('h_a_living'),
+                                   num('h_b_tuition')+num('h_b_extra')+num('h_b_months')*num('h_b_living') ]; }
+  function routeTotals(){ var r1=(num('s_r1_net')+num('s_r1_living'))*num('s_r1_years'), c1=num('s_r1_aid')*num('s_r1_years');
+    var r2=(num('s_r2_net')+num('s_r2_living'))*num('s_r2_years'), c2=num('s_r2_aid')*num('s_r2_years');
+    return [r1,Math.max(0,r1-c1),r2,Math.max(0,r2-c2)]; }
+  function weekDone(d){ var n=0; for(var i=0;i<7;i++) if(S['wk_'+d+'_'+i]) n++; return n; }
+
+  function renderLive(){
+    var body=document.getElementById('live-body'); if(!body) return;
+    var d=dir(), sc=fitScores(), ans=fitAnswered(), name=(S.name||'').trim();
+    var html='';
+    // Greeting
+    html+='<p class="display text-lg font-bold text-plum-900">'+(name?esc(name)+'’s plan':'Your plan')+(S.crew&&S.crew!=='I’m on my own'?' <span class="text-[12px] font-sans font-semibold text-plum-300">· with '+esc(S.crew)+'</span>':'')+'</p>';
+    // Direction slot with live mini bars
+    var dirBody='';
+    Object.keys(DIRS).forEach(function(k){
+      var pc=Math.round(sc[k]/10*100);
+      dirBody+='<div class="flex items-center gap-2 mt-1"><span class="w-5 text-center">'+DIRS[k].emoji+'</span>'+
+        '<div class="bar-track flex-1"><div class="bar-fill'+(ans===8&&k===d?' lead':'')+'" style="width:'+pc+'%"></div></div>'+
+        '<span class="text-[10px] w-8 text-right calc-out text-plum-300">'+sc[k]+'/10</span></div>';
     });
-    var verdict=document.getElementById('fit-verdict');
-    if(r.answered===FIT.length){
-      var L=PLANS[r.leader];
-      verdict.innerHTML='Your leading direction: <b>'+L.emoji+' '+L.label+'</b> — <a href="'+L.anchor+'" class="text-teal-700 underline">start with that plan</a>, then skim the other three anyway.';
-      verdict.classList.remove('text-slate-500'); verdict.classList.add('text-navy-900');
+    if(ans===8) dirBody+='<p class="mt-2 font-bold text-rose-600">'+DIRS[d].emoji+' '+DIRS[d].label+(S.dirOverride?' (your pick)':'')+'</p>';
+    else dirBody+='<p class="mt-2">'+(8-ans)+' little taps to go…</p>';
+    html+=slot(ans===8,'🧭','Direction',dirBody);
+    // Numbers slot
+    if(d==='h'){
+      var t=handsTotals(), t1=(S.h_trades||[])[0], t2=(S.h_trades||[])[1];
+      var nb='';
+      if(t1) nb+='<p><b>'+esc(t1)+'</b>'+(t[0]>0?': <b class="calc-out">'+money(t[0])+'</b> all-in':'')+'</p>';
+      if(t2) nb+='<p><b>'+esc(t2)+'</b>'+(t[1]>0?': <b class="calc-out">'+money(t[1])+'</b> all-in':'')+'</p>';
+      if(t[0]>0&&t[1]>0&&t[0]!==t[1]) nb+='<p class="text-sage-700 font-bold mt-1 calc-out">'+esc(t[0]<t[1]?t1:t2)+' costs '+money(Math.abs(t[0]-t[1]))+' less</p>';
+      if(!nb) nb='<p>Your trades and costs land here.</p>';
+      html+=slot(!!(t1||t[0]>0),'🧮','Your numbers',nb);
+    } else if(d==='s'){
+      var r=routeTotals(); var nb2='';
+      if(S.s_become) nb2+='<p>Becoming a <b>'+esc(S.s_become)+'</b></p>';
+      if(r[0]>0) nb2+='<p>Target school: <b class="calc-out">'+money(r[0])+'</b> · borrow ~<b class="calc-out">'+money(r[1])+'</b></p>';
+      if(r[2]>0) nb2+='<p>CC + transfer: <b class="calc-out">'+money(r[2])+'</b> · borrow ~<b class="calc-out">'+money(r[3])+'</b></p>';
+      if(!nb2) nb2='<p>Your destination and routes land here.</p>';
+      html+=slot(!!(S.s_become||r[0]>0),'🧮','Your routes',nb2);
+    } else if(d==='t'){
+      var nb3='';
+      if(S.t_opts&&S.t_opts.length) nb3+='<p><b>'+esc(S.t_opts.join(', '))+'</b></p>';
+      if(S.t_sign){ var dd=new Date(S.t_sign+'T12:00:00'); if(!isNaN(dd)){ dd.setDate(dd.getDate()+14);
+        nb3+='<p>🧊 Earliest signing day: <b>'+dd.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</b></p>'; } }
+      if(!nb3) nb3='<p>Your options and cooling-off date land here.</p>';
+      html+=slot(!!(S.t_opts&&S.t_opts.length),'🧱','Your options',nb3);
     } else {
-      verdict.textContent='Answer all '+FIT.length+' statements ('+r.answered+' done) and your leading direction shows up here.';
+      var nb4='';
+      if(S.p_roles&&S.p_roles.length) nb4+='<p><b>'+esc(S.p_roles.join(' · '))+'</b></p>';
+      if(!nb4) nb4='<p>Your roles land here.</p>';
+      html+=slot(!!(S.p_roles&&S.p_roles.length),'🤝','Your roles',nb4);
     }
-  }
-  fitBox.addEventListener('click',function(e){
-    var b=e.target.closest('[data-fit]'); if(!b) return;
-    var qi=b.getAttribute('data-fit');
-    state['fit-'+qi]=Number(b.getAttribute('data-val')); save();
-    b.parentElement.querySelectorAll('.fit-dot').forEach(function(d){ d.classList.toggle('on', d===b); });
-    var r=fitLeader(); if(r.answered===FIT.length) track('career_plan_fit',{leader:r.leader});
-    renderFit(); renderProgress(); renderMyPlan();
-  });
-  function restoreFit(){
-    FIT.forEach(function(q,i){
-      var v=state['fit-'+i]; if(!v) return;
-      fitBox.querySelectorAll('[data-fit="'+i+'"]').forEach(function(d){ d.classList.toggle('on', Number(d.getAttribute('data-val'))===v); });
-    });
-    renderFit();
+    // Message slot (p and h)
+    if(d==='p'||d==='h'){
+      var ready=(d==='p'&&S.p_who)||(d==='h'&&(S.h_trades||[]).length>0);
+      html+=slot(!!ready,'💌','Your shadow message', ready?'<p class="italic">“'+esc(shadowMsg(d).slice(0,90))+'…”</p><p class="text-sage-700 font-bold mt-1">Written. Copy it on your plan page.</p>':'<p>It writes your ask-to-shadow text for you.</p>');
+    }
+    // Week slot
+    var wd=weekDone(dir());
+    html+=slot(wd>0,'📅','Your test week', ans===8?('<p><b class="calc-out">'+wd+'/7</b> moves done'+(wd===7?' · tested! 🎉':'')+'</p>'):'<p>Seven small moves, mostly free.</p>');
+    // One-pager slot
+    html+=slot(!!S.crew,'💐','One-pager for '+esc(S.crew&&S.crew!=='I’m on my own'?S.crew:'your people'), S.crew?'<p class="text-sage-700 font-bold">Generating from your answers. Printable from your plan page.</p>':'<p>The parent conversation, handled.</p>');
+    body.innerHTML=html;
   }
 
-  // ── Inputs (data-ws) ──
-  function restoreInputs(){
-    owned.querySelectorAll('[data-ws]').forEach(function(el){
-      var v=state[el.getAttribute('data-ws')];
-      if(v!=null && v!=='') el.value=v;
-      autosize(el);
-    });
-  }
-  owned.addEventListener('input',function(e){
-    var el=e.target.closest('[data-ws]'); if(!el) return;
-    state[el.getAttribute('data-ws')]=el.value; save(); autosize(el);
-    var c=el.getAttribute('data-calc');
-    if(c==='hands') calcHands(); else if(c==='study') calcStudy(); else if(c==='script') calcScript(); else if(c==='cooloff') calcCooloff();
-    if(c) renderMyPlan();
-    renderProgress();
-  });
-  owned.addEventListener('change',function(e){
-    var el=e.target.closest('select[data-ws], input[type="date"][data-ws]'); if(!el) return;
-    state[el.getAttribute('data-ws')]=el.value; save();
-    var c=el.getAttribute('data-calc');
-    if(c==='script') calcScript(); else if(c==='cooloff') calcCooloff();
-    renderMyPlan(); renderProgress();
-  });
+  // ── STEP RENDER ──
+  function render(){
+    var steps=flow();
+    if(idx>=steps.length) idx=steps.length-1;
+    if(idx<0) idx=0;
+    S._idx=idx; save();
+    var st=steps[idx];
+    var pct=Math.round(idx/(steps.length-1)*100);
+    document.getElementById('app-bar').style.width=pct+'%';
+    document.getElementById('app-step-label').textContent=(st.type==='plan')?'All yours 🌸':(idx+1)+' / '+steps.length;
+    backBtn.style.visibility=idx===0?'hidden':'visible';
+    nextBtn.style.visibility='visible';
+    document.getElementById('live-col').style.display=st.type==='plan'?'none':'';
+    card.innerHTML='';
+    var wrap=document.createElement('div'); wrap.className='step-anim';
+    card.appendChild(wrap);
+    var title=typeof st.title==='function'?st.title():st.title;
 
-  // ── Check cards (data-ck) ──
-  function setCk(btn,on){
-    btn.classList.toggle('done',on);
-    btn.setAttribute('aria-pressed',on?'true':'false');
-  }
-  owned.addEventListener('click',function(e){
-    var btn=e.target.closest('[data-ck]'); if(!btn) return;
-    if(e.target.closest('a')) return; // let links inside cards navigate
-    var k=btn.getAttribute('data-ck'), on=!state[k];
-    state[k]=on; save(); setCk(btn,on);
-    if(on&&/-d\d$/.test(k)) track('career_plan_day',{day:k});
-    renderDayCounts(); renderProgress(); renderMyPlan();
-  });
-  function restoreCks(){
-    owned.querySelectorAll('[data-ck]').forEach(function(btn){ setCk(btn,!!state[btn.getAttribute('data-ck')]); });
-    renderDayCounts();
-  }
-  function renderDayCounts(){
-    owned.querySelectorAll('[data-daycount]').forEach(function(span){
-      var p=span.getAttribute('data-daycount'), done=0;
-      for(var d=1;d<=7;d++) if(state[p+'-d'+d]) done++;
-      span.textContent=done+'/7 days';
-    });
-  }
+    function h2(txt){ var el=document.createElement('h2'); el.className='display text-xl sm:text-2xl font-bold text-plum-900'; el.innerHTML=txt; wrap.appendChild(el); }
+    function subP(txt){ if(!txt) return; var el=document.createElement('p'); el.className='text-sm text-plum-500 mt-2'; el.innerHTML=txt; wrap.appendChild(el); }
 
-  // ── Calculators ──
-  function num(k){ var v=Number(state[k]); return isFinite(v)&&v>0?v:0; }
-  function money(n){ return '$'+Math.round(n).toLocaleString('en-US'); }
-  function handsTotal(pfx){ return num(pfx+'-tuition')+num(pfx+'-gear')+num(pfx+'-fees')+num(pfx+'-months')*num(pfx+'-living'); }
-  function calcHands(){
-    var a=handsTotal('h-ta'), b=handsTotal('h-tb');
-    document.getElementById('h-ta-total').textContent=money(a);
-    document.getElementById('h-tb-total').textContent=money(b);
-    var out=document.getElementById('h-diff');
-    if(a>0&&b>0){
-      var an=state['h-ta-name']||'Trade A', bn=state['h-tb-name']||'Trade B';
-      if(a===b) out.textContent='Dead even — decide on the work, not the price.';
-      else{ var cheap=a<b?an:bn; out.textContent=cheap+' costs '+money(Math.abs(a-b))+' less all-in.'; }
-    } else out.textContent='Fill in both columns to compare.';
-  }
-  function studyRoute(pfx){
-    var total=(num(pfx+'-net')+num(pfx+'-living'))*num(pfx+'-years');
-    var covered=num(pfx+'-aid')*num(pfx+'-years');
-    return {total:total, borrowed:Math.max(0,total-covered)};
-  }
-  function calcStudy(){
-    var routes=['s-r1','s-r2','s-r3'], vals=[], maxB=0;
-    routes.forEach(function(pfx){
-      var r=studyRoute(pfx); vals.push(r);
-      document.getElementById(pfx+'-out').textContent=money(r.total)+' · '+money(r.borrowed);
-      if(r.borrowed>maxB) maxB=r.borrowed;
-    });
-    var bars=document.getElementById('s-route-bars'); bars.innerHTML='';
-    if(!vals.some(function(r){return r.total>0;})) return;
-    routes.forEach(function(pfx,i){
-      var r=vals[i]; if(!r.total) return;
-      var row=document.createElement('div');
-      var top=document.createElement('div'); top.className='flex items-center justify-between text-xs';
-      var nm=document.createElement('span'); nm.className='font-semibold text-navy-900'; nm.textContent=state[pfx+'-name']||('Route '+(i+1));
-      var val=document.createElement('span'); val.className='font-bold text-slate-500 calc-out'; val.textContent='borrow ~'+money(r.borrowed);
-      top.appendChild(nm); top.appendChild(val); row.appendChild(top);
-      var trk=document.createElement('div'); trk.className='bar-track mt-1';
-      var fill=document.createElement('div'); fill.className='bar-fill';
-      fill.style.width=(maxB?Math.max(4,Math.round(r.borrowed/maxB*100)):4)+'%';
-      trk.appendChild(fill); row.appendChild(trk); bars.appendChild(row);
-    });
-  }
-  function calcScript(){
-    var name=(state['p-sb-name']||'').trim(), status=(state['p-sb-status']||'').trim(),
-        role=(state['p-sb-role']||'').trim(), who=(state['p-sb-who']||'').trim();
-    var out=document.getElementById('p-script-out'), btn=document.getElementById('p-script-copy');
-    if(!name||!status||!role||!who){ out.textContent='Fill in the blanks above and your message appears here.'; btn.hidden=true; return; }
-    out.textContent='Hi '+who+' — I’m '+name+', a '+status+', and I’m seriously considering becoming a '+role+'. Could I watch you work for an hour or two some afternoon, or buy you a coffee and ask a few questions? I’m trying to test this before I commit to training, and you’re the person I most want to learn from.';
-    btn.hidden=false;
-  }
-  document.getElementById('p-script-copy').addEventListener('click',function(){
-    var txt=document.getElementById('p-script-out').textContent, btn=this;
-    function done(){ btn.textContent='✓ Copied — now send it'; track('career_plan_script_copy'); setTimeout(function(){ btn.textContent='📋 Copy message'; },2500); }
-    if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){ fallback(); }); } else fallback();
-    function fallback(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(ta); }
-  });
-  function calcCooloff(){
-    var out=document.getElementById('t-cooloff-out'), v=state['t-signdate'];
-    if(!v){ out.textContent='pick a date →'; return; }
-    var d=new Date(v+'T12:00:00'); if(isNaN(d)){ out.textContent='pick a date →'; return; }
-    d.setDate(d.getDate()+14);
-    out.textContent=d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
-  }
+    if(st.type==='info'){
+      h2(title);
+      var ul=document.createElement('div'); ul.className='mt-5 space-y-3';
+      st.bullets.forEach(function(b){
+        var li=document.createElement('div'); li.className='flex items-start gap-3 rounded-2xl p-4 text-sm text-plum-700';
+        li.style.background='#FDF1F4';
+        li.innerHTML='<span class="text-rose-500 font-bold">✿</span><span>'+b+'</span>'; ul.appendChild(li);
+      });
+      wrap.appendChild(ul);
+      setNext(true, st.id==='welcome'?'Start →':'Got it →');
+      renderLive();
+      return;
+    }
 
-  // ── Progress ──
-  function renderProgress(){
-    var total=0, done=0;
-    owned.querySelectorAll('[data-ws]').forEach(function(el){ total++; var v=state[el.getAttribute('data-ws')]; if(v!=null&&String(v).trim()!=='') done++; });
-    owned.querySelectorAll('[data-ck]').forEach(function(el){ total++; if(state[el.getAttribute('data-ck')]) done++; });
-    total+=FIT.length; FIT.forEach(function(q,i){ if(state['fit-'+i]) done++; });
-    var pc=total?Math.round(done/total*100):0;
-    document.getElementById('wb-bar').style.width=pc+'%';
-    document.getElementById('wb-pct').textContent=pc+'% worked';
-  }
-
-  // ── My Plan compiler ──
-  function firstUnchecked(p,n){
-    var out=[];
-    owned.querySelectorAll('[data-days="'+p+'"] [data-ck]').forEach(function(btn){
-      if(out.length>=n) return;
-      if(!state[btn.getAttribute('data-ck')]){
-        var t=btn.querySelector('.day-text'); if(t) out.push(t.textContent.trim());
+    if(st.type==='scale'){
+      var qNum=Number(st.id.replace('fit',''))+1;
+      var tag=document.createElement('p'); tag.className='text-xs font-bold uppercase tracking-widest text-rose-600'; tag.textContent='Sounds like you? '+qNum+' of '+FIT.length; wrap.appendChild(tag);
+      h2(title);
+      var hint=document.createElement('p'); hint.className='text-xs text-plum-300 mt-2'; hint.textContent='Watch your direction bars move as you tap. →'; wrap.appendChild(hint);
+      var row=document.createElement('div'); row.className='flex items-center gap-2 sm:gap-3 mt-6';
+      var lo=document.createElement('span'); lo.className='text-[11px] text-plum-300 w-10'; lo.textContent='not me'; row.appendChild(lo);
+      for(var v=1;v<=5;v++){
+        (function(v){
+          var b=document.createElement('button'); b.type='button'; b.className='scale-btn'+(Number(S[st.key])===v?' on':''); b.textContent=v;
+          b.setAttribute('aria-label',title+': '+v+' of 5');
+          b.addEventListener('click',function(){
+            put(st.key,v);
+            row.querySelectorAll('.scale-btn').forEach(function(x){ x.classList.toggle('on',x===b); });
+            setTimeout(next,240);
+          });
+          row.appendChild(b);
+        })(v);
       }
-    });
-    return out;
-  }
-  function line(label,val){
-    var d=document.createElement('div');
-    var b=document.createElement('p'); b.className='text-xs font-bold uppercase tracking-widest text-teal-700'; b.textContent=label;
-    var p=document.createElement('p'); p.className='mt-0.5';
-    if(val){ p.textContent=val; } else { p.textContent='(not filled in yet — it’s in the plan above)'; p.className+=' text-slate-400'; }
-    d.appendChild(b); d.appendChild(p); return d;
-  }
-  function renderMyPlan(){
-    var body=document.getElementById('mp-body'); body.innerHTML='';
-    var r=fitLeader();
-    var dir=state['mp-dir']||((r.answered===FIT.length&&r.scores[r.leader]>0)?r.leader:'');
-    var title=document.getElementById('mp-title'), emoji=document.getElementById('mp-emoji');
-    var name=(state['mp-name']||'').trim();
-    title.textContent=name?name+'’s plan':'Your plan';
-    if(!dir){
-      emoji.textContent='🧭';
-      var p=document.createElement('p'); p.className='text-slate-400';
-      p.textContent='Finish the Fit Ranker (or pick a direction above) and this page writes itself from your answers.';
-      body.appendChild(p); return;
+      var hi=document.createElement('span'); hi.className='text-[11px] text-plum-300 w-12 text-right'; hi.textContent='very me'; row.appendChild(hi);
+      wrap.appendChild(row);
+      setNext(!!S[st.key]);
+      renderLive();
+      return;
     }
-    var P=PLANS[dir]; emoji.textContent=P.emoji;
-    body.appendChild(line('My direction', P.label+(state['mp-dir']?'':' (from my Fit Ranker)')));
-    var next=firstUnchecked(dir,3);
-    var nd=document.createElement('div');
-    var nb=document.createElement('p'); nb.className='text-xs font-bold uppercase tracking-widest text-teal-700'; nb.textContent='My next test-it-cheap actions'; nd.appendChild(nb);
-    if(next.length){ next.forEach(function(t){ var li=document.createElement('p'); li.className='mt-0.5'; li.textContent='• '+t; nd.appendChild(li); }); }
-    else { var doneP=document.createElement('p'); doneP.className='mt-0.5 font-semibold text-teal-700'; doneP.textContent='All 7 test days checked off. That’s a tested direction, not a guess. ✅'; nd.appendChild(doneP); }
-    body.appendChild(nd);
-    body.appendChild(line(dir==='s'?'What I’m going to college to become':'What has to be true in 12 months', (state[P.mo12]||'').trim()));
-    body.appendChild(line('Who keeps me honest', (state['mp-honest']||'').trim()));
-    var stamp=document.createElement('p'); stamp.className='text-xs text-slate-400 pt-1';
-    stamp.textContent='Written '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+' — revisit it in 12 months and be honest.';
-    body.appendChild(stamp);
+
+    if(st.type==='chips'){
+      h2(title); subP(st.sub);
+      var max=st.multi||0;
+      var sel=max?(Array.isArray(S[st.key])?S[st.key].slice():[]):(S[st.key]||'');
+      var box=document.createElement('div'); box.className='mt-5 space-y-2';
+      st.options.forEach(function(o){
+        var b=document.createElement('button'); b.type='button'; b.className='chip';
+        b.innerHTML=esc(o)+'<span class="tick">✓</span>';
+        if(max?sel.indexOf(o)>=0:sel===o) b.classList.add('on');
+        b.addEventListener('click',function(){
+          if(max){
+            var i=sel.indexOf(o);
+            if(i>=0){ sel.splice(i,1); b.classList.remove('on'); }
+            else{ if(sel.length>=max) return; sel.push(o); b.classList.add('on'); }
+            put(st.key,sel.slice()); setNext(sel.length>0);
+          } else {
+            put(st.key,o);
+            box.querySelectorAll('.chip').forEach(function(x){ x.classList.toggle('on',x===b); });
+            setTimeout(next,240);
+          }
+        });
+        box.appendChild(b);
+      });
+      if(st.other){
+        var oi=document.createElement('input'); oi.className='app-input mt-1'; oi.placeholder='Or type your own + Enter';
+        oi.setAttribute('aria-label','Add your own option');
+        oi.addEventListener('keydown',function(e){
+          if(e.key==='Enter'&&oi.value.trim()){
+            var val=oi.value.trim(); oi.value='';
+            if(max){ if(sel.length>=max) sel.pop(); sel.push(val); put(st.key,sel.slice()); }
+            else put(st.key,val);
+            render();
+          }
+        });
+        box.appendChild(oi);
+      }
+      wrap.appendChild(box);
+      setNext(max?sel.length>0:!!S[st.key]);
+      renderLive();
+      return;
+    }
+
+    if(st.type==='text'){
+      h2(title); subP(st.sub);
+      var row2=document.createElement('div'); row2.className='mt-5 flex items-center gap-3';
+      var inp=document.createElement('input'); inp.className='app-input'; inp.placeholder=st.placeholder||'';
+      inp.setAttribute('aria-label',title);
+      inp.value=S[st.key]||'';
+      var tT=null;
+      inp.addEventListener('input',function(){ S[st.key]=inp.value; save(); setNext(!!inp.value.trim()); renderLive(); clearTimeout(tT); if(inp.value.trim()) tT=setTimeout(function(){ toast(); },700); });
+      inp.addEventListener('keydown',function(e){ if(e.key==='Enter'&&inp.value.trim()) next(); });
+      row2.appendChild(inp);
+      if(st.voice&&SRec){
+        var mic=document.createElement('button'); mic.type='button'; mic.className='mic-btn'; mic.textContent='🎤';
+        mic.setAttribute('aria-label','Say it instead of typing');
+        mic.addEventListener('click',function(){
+          try{
+            var r=new SRec(); r.lang='en-US'; r.interimResults=false; r.maxAlternatives=1;
+            mic.classList.add('rec');
+            r.onresult=function(ev){ var t=ev.results[0][0].transcript||''; inp.value=t.trim(); put(st.key,inp.value); setNext(!!inp.value.trim()); };
+            r.onend=function(){ mic.classList.remove('rec'); };
+            r.onerror=function(){ mic.classList.remove('rec'); };
+            r.start();
+          }catch(e){ mic.classList.remove('rec'); }
+        });
+        row2.appendChild(mic);
+      }
+      wrap.appendChild(row2);
+      setNext(!!(S[st.key]||'').trim());
+      renderLive();
+      setTimeout(function(){ try{ inp.focus(); }catch(e){} },50);
+      return;
+    }
+
+    if(st.type==='money'){
+      h2(title); subP(st.sub);
+      var grid=document.createElement('div'); grid.className='mt-5 grid grid-cols-2 gap-3';
+      st.fields.forEach(function(f){
+        var lab=document.createElement('label'); lab.className='block text-xs font-semibold text-plum-500';
+        lab.textContent=f[1];
+        var ni=document.createElement('input'); ni.type='number'; ni.min='0'; ni.inputMode='decimal'; ni.className='app-input mt-1';
+        ni.setAttribute('aria-label',f[1]);
+        ni.value=S[f[0]]!=null?S[f[0]]:'';
+        var mT=null;
+        ni.addEventListener('input',function(){ S[f[0]]=ni.value; save(); renderLive(); clearTimeout(mT); if(ni.value) mT=setTimeout(function(){ toast('🧮 Doing your math…'); },600); });
+        lab.appendChild(ni); grid.appendChild(lab);
+      });
+      wrap.appendChild(grid);
+      var hint2=document.createElement('p'); hint2.className='text-xs text-plum-300 mt-3'; hint2.textContent='Watch the totals build in your plan as you type. Not sure yet? Leave it blank and keep going.';
+      wrap.appendChild(hint2);
+      setNext(true);
+      renderLive();
+      return;
+    }
+
+    if(st.type==='date'){
+      h2(title); subP(st.sub);
+      var di=document.createElement('input'); di.type='date'; di.className='app-input mt-5'; di.setAttribute('aria-label',title);
+      di.value=S[st.key]||'';
+      var outP=document.createElement('p'); outP.className='mt-4 text-sm font-bold text-plum-900 calc-out';
+      function cool(){
+        if(!S[st.key]){ outP.textContent=''; return; }
+        var d=new Date(S[st.key]+'T12:00:00'); if(isNaN(d)){ outP.textContent=''; return; }
+        d.setDate(d.getDate()+14);
+        outP.innerHTML='🧊 Your earliest signing day: <span class="text-sage-700">'+d.toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'})+'</span>';
+      }
+      di.addEventListener('change',function(){ put(st.key,di.value); cool(); setNext(true); });
+      wrap.appendChild(di); wrap.appendChild(outP); cool();
+      setNext(true);
+      renderLive();
+      return;
+    }
+
+    if(st.type==='reveal'){
+      var sc=fitScores(), d=dir(), max=10;
+      h2((S.name?esc(S.name)+', y':'Y')+'our direction: '+DIRS[d].emoji+' <span class="text-rose-600">'+DIRS[d].label+'</span>');
+      subP('From your eight answers. Tap a different one if you already know your path. Nothing gets locked.');
+      var bx=document.createElement('div'); bx.className='mt-5 space-y-3';
+      Object.keys(DIRS).forEach(function(k){
+        var row=document.createElement('button'); row.type='button'; row.className='w-full text-left';
+        row.setAttribute('aria-label','Choose '+DIRS[k].label);
+        var top=document.createElement('div'); top.className='flex items-center justify-between text-sm';
+        top.innerHTML='<span class="font-semibold text-plum-900">'+DIRS[k].emoji+' '+DIRS[k].label+(k===d?' <span class="text-gold-500">★</span>':'')+'</span><span class="text-xs font-bold text-plum-300 calc-out">'+sc[k]+' / '+max+'</span>';
+        var trk=document.createElement('div'); trk.className='bar-track mt-1';
+        var fill=document.createElement('div'); fill.className='bar-fill'+(k===d?' lead':'');
+        trk.appendChild(fill); row.appendChild(top); row.appendChild(trk); bx.appendChild(row);
+        setTimeout(function(){ fill.style.width=Math.round(sc[k]/max*100)+'%'; },60);
+        row.addEventListener('click',function(){
+          if(k===dir()&&S.dirOverride) delete S.dirOverride; else S.dirOverride=k;
+          save(); toast('🧭 Direction updated'); render();
+        });
+      });
+      wrap.appendChild(bx);
+      track('career_plan_fit',{leader:d});
+      setNext(true,'Build my '+DIRS[d].label.split(' ')[0].toLowerCase()+' plan →');
+      renderLive();
+      return;
+    }
+
+    if(st.type==='week'){
+      var d2=dir();
+      h2('Your test week: 7 little moves, mostly free.');
+      subP('Tap them off as you do them. One afternoon of testing beats a semester of wondering.');
+      var lb=document.createElement('div'); lb.className='mt-5 space-y-2';
+      WEEK[d2].forEach(function(txt,i){
+        var b=document.createElement('button'); b.type='button'; b.className='day-card'+(S['wk_'+d2+'_'+i]?' done':'');
+        b.setAttribute('aria-pressed',S['wk_'+d2+'_'+i]?'true':'false');
+        b.innerHTML='<span class="day-box">✓</span><span class="day-text text-sm"><b>Day '+(i+1)+':</b> '+txt+'</span>';
+        b.addEventListener('click',function(){
+          var on=!S['wk_'+d2+'_'+i]; put('wk_'+d2+'_'+i,on);
+          b.classList.toggle('done',on); b.setAttribute('aria-pressed',on?'true':'false');
+          if(on) track('career_plan_day',{day:d2+'-'+(i+1)});
+        });
+        lb.appendChild(b);
+      });
+      wrap.appendChild(lb);
+      setNext(true,'Show me my full plan →');
+      renderLive();
+      return;
+    }
+
+    if(st.type==='plan'){ renderPlan(wrap); nextBtn.style.visibility='hidden'; setNext(false,'✓'); return; }
   }
 
-  // init
-  restoreInputs(); restoreCks(); restoreFit();
-  calcHands(); calcStudy(); calcScript(); calcCooloff();
-  renderProgress(); renderMyPlan();
+  // ── FULL PLAN PAGE ──
+  function renderPlan(wrap){
+    var d=dir(), name=(S.name||'').trim(), crew=S.crew||'';
+    track('career_plan_plan_ready',{dir:d});
+    var head=document.createElement('div');
+    head.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-rose-600">Built for you · '+new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+' ✨</p>'+
+      '<h2 class="display text-2xl sm:text-3xl font-bold text-plum-900 mt-1">'+(name?esc(name)+', h':'H')+'ere’s your plan. '+DIRS[d].emoji+'</h2>'+
+      '<p class="text-sm text-plum-500 mt-1">Direction: <b class="text-plum-900">'+DIRS[d].label+'</b></p>';
+    wrap.appendChild(head);
+    function panel(emoji,titleTxt,tint){ var p=document.createElement('div'); p.className='mt-4 rounded-2xl p-4 border';
+      p.style.background=tint||'#FDF1F4'; p.style.borderColor='#F7CFDA';
+      p.innerHTML='<p class="font-bold text-plum-900 text-sm">'+emoji+' '+titleTxt+'</p>'; return p; }
+
+    if(d==='h'){
+      var t=handsTotals(), t1=(S.h_trades||[])[0]||'Trade 1', t2=(S.h_trades||[])[1]||'Trade 2';
+      var np=panel('🧮','Your numbers','#F0F9F6');
+      if(t[0]>0||t[1]>0){
+        var rows='<div class="grid grid-cols-2 gap-3 mt-2 text-center">'+
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t1)+'</p><p class="display text-xl font-bold text-plum-900 calc-out" id="pl-tot-a">'+money(t[0])+'</p><p class="text-[10px] text-plum-300">all-in</p></div>'+
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">'+esc(t2)+'</p><p class="display text-xl font-bold text-plum-900 calc-out" id="pl-tot-b">'+money(t[1])+'</p><p class="text-[10px] text-plum-300">all-in</p></div></div>';
+        if(t[0]>0&&t[1]>0&&t[0]!==t[1]) rows+='<p class="text-sm font-bold text-sage-700 text-center mt-2 calc-out">'+esc(t[0]<t[1]?t1:t2)+' costs '+money(Math.abs(t[0]-t[1]))+' less all-in.</p>';
+        np.innerHTML+=rows;
+      } else np.innerHTML+='<p class="text-sm text-plum-500 mt-1">Add costs and the comparison lands here. <button type="button" class="underline text-rose-600" data-jump="h-costA">Add my numbers</button></p>';
+      if(S.h_fund&&S.h_fund.indexOf('Yes')===0) np.innerHTML+='<a href="/tools/funding-finder" class="res-btn mt-3">💰 Your funding walkthrough starts here</a>';
+      wrap.appendChild(np);
+    }
+    if(d==='s'){
+      var r=routeTotals();
+      var np2=panel('🧮','Your routes to '+(S.s_become?'becoming a '+esc(S.s_become):'the degree'),'#F0F9F6');
+      if(r[0]>0||r[2]>0){
+        np2.innerHTML+='<div class="grid grid-cols-2 gap-3 mt-2 text-center">'+
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">Target school</p><p class="display text-lg font-bold text-plum-900 calc-out">'+money(r[0])+'</p><p class="text-[10px] text-plum-300">borrow ~'+money(r[1])+'</p></div>'+
+          '<div class="bg-white rounded-xl p-3 border" style="border-color:#C9E8DD"><p class="text-xs text-plum-500">CC + transfer</p><p class="display text-lg font-bold text-plum-900 calc-out">'+money(r[2])+'</p><p class="text-[10px] text-plum-300">borrow ~'+money(r[3])+'</p></div></div>';
+      } else np2.innerHTML+='<p class="text-sm text-plum-500 mt-1">Run each school’s net-price calculator, drop the numbers in, and your routes compare here. <button type="button" class="underline text-rose-600" data-jump="s-r1">Add my numbers</button></p>';
+      if(S.s_backup) np2.innerHTML+='<p class="text-sm text-plum-700 mt-2">🛟 Year-two backup, pre-decided: <b>'+esc(S.s_backup)+'</b>'+(S.s_checkin?' · check-in called by <b>'+esc(S.s_checkin)+'</b>':'')+'</p>';
+      wrap.appendChild(np2);
+    }
+    if(d==='t'&&S.t_sign){
+      var dd=new Date(S.t_sign+'T12:00:00');
+      if(!isNaN(dd)){ dd.setDate(dd.getDate()+14);
+        var cp=panel('🧊','Your cooling-off rule','#F1ECFA');
+        cp.innerHTML+='<p class="text-sm text-plum-700 mt-1">Earliest day you sign anything binding: <b class="text-lav-700">'+dd.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})+'</b>. Until then: one veteran, one apprentice'+(S.t_people?' (starting with <b>'+esc(S.t_people)+'</b>)':'')+', and benefits read at the official source.</p>';
+        wrap.appendChild(cp); }
+    }
+
+    if(d==='p'||d==='h'){
+      var sp=panel('💌','Your shadow message, written for you','#FDF1F4');
+      sp.innerHTML+='<p class="text-sm text-plum-700 mt-2 bg-white border rounded-xl p-3" style="border-color:#F7CFDA" id="pl-script">'+esc(shadowMsg(d))+'</p>'+
+        '<button type="button" id="pl-copy" class="mt-3 btn-main !py-2 !px-5 text-sm">📋 Copy it, send it today</button>';
+      wrap.appendChild(sp);
+    }
+
+    var wkDone=weekDone(d);
+    var wp=panel('📅','Your test week · '+wkDone+'/7 done'+(wkDone===7?' 🎉':''),'#F7F4FC');
+    var wl=document.createElement('div'); wl.className='mt-2 space-y-2';
+    WEEK[d].forEach(function(txt,i){
+      var b=document.createElement('button'); b.type='button'; b.className='day-card'+(S['wk_'+d+'_'+i]?' done':'');
+      b.setAttribute('aria-pressed',S['wk_'+d+'_'+i]?'true':'false');
+      b.innerHTML='<span class="day-box">✓</span><span class="day-text text-sm"><b>Day '+(i+1)+':</b> '+txt+'</span>';
+      b.addEventListener('click',function(){
+        var on=!S['wk_'+d+'_'+i]; S['wk_'+d+'_'+i]=on; save(); render();
+      });
+      wl.appendChild(b);
+    });
+    wp.appendChild(wl); wrap.appendChild(wp);
+
+    var rp=panel('🔗','Tap-and-go resources · real links only','#F0F9F6');
+    var rg=document.createElement('div'); rg.className='grid sm:grid-cols-2 gap-2 mt-2';
+    RES[d].forEach(function(r2){
+      var aEl=document.createElement('a'); aEl.className='res-btn'; aEl.href=r2[2];
+      if(/^https:/.test(r2[2])) aEl.rel='noopener';
+      aEl.innerHTML='<span>'+r2[0]+'</span><span>'+r2[1]+'</span>';
+      rg.appendChild(aEl);
+    });
+    rp.appendChild(rg); wrap.appendChild(rp);
+
+    var pWho=crew&&crew!=='I’m on my own'?crew:'your people';
+    var pp=document.createElement('div'); pp.className='mt-4 rounded-2xl p-5 border-2';
+    pp.style.background='#FDF7EA'; pp.style.borderColor='#F2D49B';
+    var facts=[];
+    if(d==='h'){ var tl=(S.h_trades||[]).join(' and '); if(tl) facts.push('Testing: <b>'+esc(tl)+'</b>.');
+      var t3=handsTotals(); if(t3[0]>0) facts.push('Real all-in cost they priced: <b>'+money(t3[0])+'</b> (their numbers, from the school’s own sheet).');
+      facts.push('Funding exists for this: Workforce Solutions East Texas. The plan links straight to it.'); }
+    if(d==='p'){ var rl=(S.p_roles||[]).join(' and '); if(rl) facts.push('Roles on the list: <b>'+esc(rl)+'</b>, each with a real skill attached.');
+      if(S.p_who) facts.push('First move: shadowing <b>'+esc(S.p_who)+'</b> for one afternoon. The ask is already written.'); }
+    if(d==='s'){ if(S.s_become) facts.push('Destination: <b>becoming a '+esc(S.s_become)+'</b>. Chosen on purpose, not by default.');
+      if(S.s_backup) facts.push('Year-two backup, already decided: <b>'+esc(S.s_backup)+'</b>.');
+      facts.push('Routes get priced with each school’s own net-price calculator, never the sticker.'); }
+    if(d==='t'){ var ol=(S.t_opts||[]).join(', '); if(ol) facts.push('Paths on the list: <b>'+esc(ol)+'</b>.');
+      facts.push('House rule: veterans and apprentices first, benefits read at the official source, and a 14-day cooling-off before any signature.'); }
+    pp.innerHTML='<p class="text-xs font-bold uppercase tracking-widest text-gold-700">💐 One-pager for '+esc(pWho)+'</p>'+
+      '<p class="display text-lg font-bold text-plum-900 mt-1">'+(name?esc(name):'Your student')+' has a plan, not a guess.</p>'+
+      '<div class="mt-2 space-y-1.5 text-sm text-plum-700">'+facts.map(function(f){ return '<p>• '+f+'</p>'; }).join('')+
+      '<p>• The deal: one test week before any money or signatures. Then decide together.</p></div>'+
+      '<p class="text-[11px] text-plum-500 mt-3">No school, employer, or program can guarantee outcomes, ours included. Every cost and requirement gets verified at the official source.</p>';
+    wrap.appendChild(pp);
+
+    var act=document.createElement('div'); act.className='mt-5 flex flex-wrap gap-3 no-print';
+    act.innerHTML='<button type="button" onclick="window.print()" data-event="career_plan_print" class="btn-main">🖨️ Print my plan</button>'+
+      '<a href="tel:+19039136444" class="res-btn">📱 Text Amanda where you landed</a>';
+    wrap.appendChild(act);
+
+    var swp=document.createElement('p'); swp.className='text-xs text-plum-300 mt-4 no-print';
+    swp.innerHTML='Curious about another path? <button type="button" class="underline" data-nav="reveal">Switch direction</button>. Your answers stay saved.';
+    wrap.appendChild(swp);
+
+    var copyBtn=document.getElementById('pl-copy');
+    if(copyBtn) copyBtn.addEventListener('click',function(){
+      var txt=document.getElementById('pl-script').textContent;
+      function done(){ copyBtn.textContent='✓ Copied. Go send it.'; track('career_plan_script_copy'); setTimeout(function(){ copyBtn.textContent='📋 Copy it, send it today'; },2500); }
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,function(){ fb(); }); } else fb();
+      function fb(){ var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); done(); }catch(e){} document.body.removeChild(ta); }
+    });
+    wrap.querySelectorAll('[data-jump]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var steps=flow(), target=btn.getAttribute('data-jump');
+        for(var i=0;i<steps.length;i++) if(steps[i].id===target){ idx=i; break; }
+        render();
+      });
+    });
+  }
+
+  function next(){ idx++; render(); }
+  nextBtn.addEventListener('click',function(){ if(!nextBtn.disabled) next(); });
+  backBtn.addEventListener('click',function(){ idx--; render(); });
+  document.getElementById('app-menu-btn').addEventListener('click',function(){ document.getElementById('app-menu').classList.toggle('hidden'); });
+  document.getElementById('owned').addEventListener('click',function(e){
+    var nv=e.target.closest('[data-nav]'); if(!nv) return;
+    var steps=flow(), go=nv.getAttribute('data-nav');
+    document.getElementById('app-menu').classList.add('hidden');
+    if(go==='restart'){ if(confirm('Start over? This clears your answers on this device.')){ S={}; save(); idx=0; render(); } return; }
+    for(var i=0;i<steps.length;i++) if(steps[i].id===go){ idx=i; break; }
+    render();
+  });
+
+  window.__pdaRenderApp=render;
 })();
 </script>
 
 <script>
-/* Sales-page demo checklist (not saved — it's the teaser). */
+/* Sales-page demo checklist. Not saved; it is the teaser. */
 (function(){
   'use strict';
   var box=document.getElementById('demo-days'); if(!box) return;
@@ -927,7 +839,7 @@ tailwind.config = { theme: { extend: {
   var owned=document.getElementById('owned');
   var card=null, payments=null;
 
-  function show(el){ loading.classList.add('hidden'); sales.classList.add('hidden'); owned.classList.add('hidden'); el.classList.remove('hidden'); }
+  function show(el){ loading.classList.add('hidden'); sales.classList.add('hidden'); owned.classList.add('hidden'); el.classList.remove('hidden'); if(el===owned&&window.__pdaRenderApp) window.__pdaRenderApp(); }
 
   async function check(){
     try{
@@ -963,11 +875,11 @@ tailwind.config = { theme: { extend: {
     var name=document.getElementById('bp-name').value.trim();
     var email=document.getElementById('bp-email').value.trim();
     if(!name||!email){ err.textContent='Please enter your name and email.'; err.hidden=false; return; }
-    if(!card){ err.textContent='Card form is still loading — one second.'; err.hidden=false; return; }
+    if(!card){ err.textContent='Card form is still loading. One second.'; err.hidden=false; return; }
     LOCK=true; btn.disabled=true; btn.textContent='Processing…';
     var tok;
     try{ tok=await card.tokenize(); if(tok.status!=='OK'){ throw new Error((tok.errors&&tok.errors[0]&&tok.errors[0].message)||'Card was rejected.'); } }
-    catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $20 & unlock'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
+    catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $20 & start building'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
     try{ if(window.PDA&&window.PDA.track) window.PDA.track('begin_checkout',{product:'career_plan',value:20}); }catch(e){}
     try{
       var resp=await fetch(SB_URL+'/functions/v1/buy-product',{ method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY}, body:JSON.stringify({ product_key:'career_plan', sourceId:tok.token, email:email, name:name }) });
@@ -976,7 +888,7 @@ tailwind.config = { theme: { extend: {
       if(resp.ok&&out.ok){
         try{ if(window.PDA&&window.PDA.track) window.PDA.track('purchase',{product:'career_plan',value:20,currency:'USD'}); }catch(e){}
         try{ if(typeof fbq==='function') fbq('track','Purchase',{content_name:'Career Direction Plan',value:20,currency:'USD'}); }catch(e){}
-        document.getElementById('buy').innerHTML='<div class="bg-white rounded-2xl border-2 border-teal-600 shadow-xl p-8 text-center"><p class="display text-2xl font-bold text-navy-900">You’re in! 🎉</p><p class="text-slate-600 mt-2">Check <b>'+email.replace(/</g,'&lt;')+'</b> for your one-tap sign-in link — your Career Direction Plan is unlocked right here once you sign in.</p><a href="/login" class="inline-block mt-4 bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full">Sign in &amp; open my plan →</a></div>';
+        document.getElementById('buy').innerHTML='<div class="soft-card p-8 text-center border-2" style="border-color:#6FB5A0"><p class="display text-2xl font-bold text-plum-900">You’re in! 🎉</p><p class="text-plum-500 mt-2">Check <b>'+email.replace(/</g,'&lt;')+'</b> for your one-tap sign-in link. Your plan builder unlocks right here once you sign in.</p><a href="/login" class="inline-block mt-4 btn-main">Sign in &amp; build my plan →</a></div>';
         document.getElementById('buy').scrollIntoView({behavior:'smooth',block:'center'});
         return;
       }
