@@ -17,7 +17,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, "05_Live_Site") if os.path.isdir(os.path.join(ROOT, "05_Live_Site")) else ROOT
 OUT_DIR = os.path.join(SITE, "directory")
 VERIFIED = "July 30, 2026"
-DOMAIN = "https://premierdentalacademyoflongview.com"
+DOMAIN = "https://www.premierdentalacademyoflongview.com"
 
 # ---------------------------------------------------------------- load + dedupe
 def norm_addr(a):
