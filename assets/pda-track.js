@@ -26,6 +26,17 @@
   var path = location.pathname.replace(/\/$/, '') || '/';
   if (path.indexOf('/admin') === 0) return; // don't count staff
 
+  // Keep ad-attribution params on the pageview entry (utm_* + click ids only,
+  // never form data) so paid traffic is measurable per ad/metro in page_visits.
+  var adQS = '';
+  try {
+    var sp = new URLSearchParams(location.search), keep = [];
+    sp.forEach(function (v, k) {
+      if (/^utm_/i.test(k) || k === 'fbclid' || k === 'gclid') keep.push(k + '=' + v.slice(0, 60));
+    });
+    if (keep.length) adQS = '?' + keep.join('&');
+  } catch (e) {}
+
   var URL_ = 'https://lmbsuwslsycukynzpzik.supabase.co/rest/v1/page_visits';
   var KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
 
@@ -62,7 +73,7 @@
   }
 
   // ── Pageview ──
-  log('pv:' + path);
+  log('pv:' + path + adQS);
 
   // ── CTA / navigation clicks (event delegation, capture phase) ──
   function classify(a) {

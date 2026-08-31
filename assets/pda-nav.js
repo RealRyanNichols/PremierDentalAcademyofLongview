@@ -32,7 +32,16 @@
     if (pdaPixelPath === '/enroll') {
       window.fbq('track', 'InitiateCheckout');
     } else if (pdaPixelPath === '/enroll-success') {
-      window.fbq('track', 'Purchase', { currency: 'USD', value: 500.00 });
+      // Real purchase value: enroll.html passes ?plan=&total= (cents).
+      // online -> 997, in-person PIF -> 3000, in-person plan -> 3500.
+      // Falls back to 500 (the historical down-payment value) if params are missing.
+      var pdaVal = 500.00;
+      try {
+        var pdaQP = new URLSearchParams(location.search);
+        var pdaTot = parseInt(pdaQP.get('total'), 10);
+        if (pdaTot > 0) pdaVal = Math.round(pdaTot) / 100;
+      } catch (e2) {}
+      window.fbq('track', 'Purchase', { currency: 'USD', value: pdaVal, content_name: (function(){ try { return new URLSearchParams(location.search).get('plan') || 'enroll'; } catch (e3) { return 'enroll'; } })() });
     }
   } catch (e) { /* pixel must never break the nav */ }
 
