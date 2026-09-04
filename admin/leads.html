@@ -124,6 +124,8 @@
         </label>
         <button id="density-toggle" type="button" title="Switch between the calm one-line view and full detail" class="bg-white border border-slate-300 hover:border-teal-600 rounded-lg px-3 py-2 text-sm font-semibold text-slate-700"></button>
       </div>
+      <!-- Quick filters — one active at a time; tap again to clear -->
+      <div id="quick-filters" class="flex flex-wrap items-center gap-2 mb-4"></div>
 
       <!-- Leads list -->
       <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
@@ -259,6 +261,8 @@
   let allLeads = [];
   let allSubs = [];
   let allComms = [];
+  let touchCounts = new Map(); // leadId → { calls, texts, emails, other, last } — rebuilt once per load
+  let quickFilter = '';        // one active quick-filter chip ('' = none)
   let expandedThreads = new Set();
   let currentTab = 'leads';
   // Calm view = one friendly line per person, tap to open the full card.
@@ -295,6 +299,7 @@
     allLeads = leadsRes.data || [];
     allSubs  = subsRes.data || [];
     allComms = commsRes.data || [];
+    rebuildTouchCounts();
     buildSourceFilter();
     render();
     renderMessages();
@@ -518,6 +523,7 @@
   // After any contact write: refresh the drawer's timeline in place and the list rows.
   // A simple-view card that is mid-outcome (chips showing) is left alone until she finishes.
   function afterContactLogged(id) {
+    rebuildTouchCounts();
     if (drawerLeadId === id) { const l = allLeads.find(x => x.id === id); if (l) renderLeadHistory(l); }
     render({ keepSimple: !!document.querySelector('#simple-list [data-outcome-row]') });
   }
@@ -690,11 +696,15 @@
       hotStrip.classList.add('hidden');
     }
 
+    // ── Quick-filter chips (one active at a time)
+    paintQuickFilters();
+
     // ── Filtered list
     let leads = allLeads.filter(l => {
       if (stageF && stageOf(l) !== stageF) return false;
       if (sourceF && l.source !== sourceF) return false;
       if (uncontactedOnly && l.last_contact_at) return false;
+      if (quickFilter && !quickMatch(l, quickFilter)) return false;
       if (q) {
         const hay = `${l.first_name||''} ${l.last_name||''} ${l.email||''} ${l.phone||''} ${l.source||''} ${l.interest_path||''} ${l.message||''} ${l.amanda_notes||''} ${l.lead_grade||''} ${l.ready_timeline||''}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -733,6 +743,7 @@
             <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${m.chip}">${m.label}</span>
             ${l.ready_timeline ? `<span class="text-[10px] font-semibold bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">📅 ${esc(readinessLabel(l.ready_timeline))}</span>` : ''}
           </div>
+          ${metaLine(l)}
           <div class="text-sm text-slate-600 truncate mt-0.5">${storyLine(l)}</div>
           <div class="text-xs font-semibold mt-0.5 ${step.tone}">→ ${step.text}</div>
         </div>
@@ -761,6 +772,7 @@
                 <span class="text-xs mono text-slate-500">${timeAgo(l.created_at)}</span>
                 <span class="text-xs bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full">${esc(l.source || 'site')}</span>
               </div>
+              ${metaLine(l)}
               <div class="text-sm text-slate-600 mt-1">
                 ${l.email ? `<a href="mailto:${esc(l.email)}" class="text-teal-700 hover:underline">${esc(l.email)}</a>` : '<span class="text-slate-400">no email</span>'}
                 · ${l.phone ? `<a href="tel:${esc((l.phone||'').replace(/[^\d+]/g,''))}" class="text-teal-700 hover:underline">${esc(l.phone)}</a>` : '<span class="text-slate-400">no phone</span>'}
@@ -768,7 +780,6 @@
               ${cleanInterest(l) ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Interest:</strong> ${esc(cleanInterest(l))}</div>` : ''}
               ${l.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${esc(l.message)}</div>` : ''}
               ${paySignal(l)}
-              ${l.last_contact_at ? `<div class="text-xs text-slate-500 mt-1.5">Last contacted ${timeAgo(l.last_contact_at)}</div>` : `<div class="text-xs text-rose-600 font-semibold mt-1.5">Never contacted</div>`}
               <div class="mt-2">
                 <textarea data-notes="${l.id}" rows="1" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
                 <span data-notes-status="${l.id}" class="text-[11px] text-slate-400"></span>
@@ -1034,6 +1045,11 @@
   document.getElementById('stage-filter').onchange = render;
   document.getElementById('source-filter').onchange = render;
   document.getElementById('uncontacted-only').onchange = render;
+  document.getElementById('quick-filters').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-qf]'); if (!b) return;
+    quickFilter = quickFilter === b.dataset.qf ? '' : b.dataset.qf; // tap again to clear
+    render();
+  });
   // Calm ↔ Detailed view toggle — Amanda's preference is remembered on this device
   const densBtn = document.getElementById('density-toggle');
   function syncDensityBtn() { densBtn.textContent = density === 'calm' ? '🗂 Show full detail' : '🌿 Back to calm view'; }
@@ -1167,6 +1183,72 @@
       || (p && phoneDigits(c.contact_phone) === p)
       || (e && (c.contact_email || '').toLowerCase().trim() === e))
       .sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
+  }
+
+  // leadId → { calls, texts, emails, other, last } from the loaded communications.
+  // Rows that were never linked are matched by phone / email, same as the drawer.
+  function rebuildTouchCounts() {
+    touchCounts = new Map();
+    const byPhone = new Map(), byEmail = new Map();
+    allLeads.forEach(l => {
+      const p = phoneDigits(l.phone); if (p) { if (!byPhone.has(p)) byPhone.set(p, []); byPhone.get(p).push(l.id); }
+      const e = (l.email || '').toLowerCase().trim(); if (e) { if (!byEmail.has(e)) byEmail.set(e, []); byEmail.get(e).push(l.id); }
+    });
+    allComms.forEach(c => {
+      const ids = new Set();
+      if (c.related_lead_id) ids.add(c.related_lead_id);
+      const p = phoneDigits(c.contact_phone); if (p) (byPhone.get(p) || []).forEach(id => ids.add(id));
+      const e = (c.contact_email || '').toLowerCase().trim(); if (e) (byEmail.get(e) || []).forEach(id => ids.add(id));
+      const ch = (c.channel || '').toLowerCase();
+      ids.forEach(id => {
+        let t = touchCounts.get(id);
+        if (!t) { t = { calls: 0, texts: 0, emails: 0, other: 0, last: null }; touchCounts.set(id, t); }
+        if (ch === 'call') t.calls++; else if (ch === 'sms') t.texts++; else if (ch === 'email') t.emails++; else t.other++;
+        if (!t.last || new Date(c.occurred_at) > new Date(t.last)) t.last = c.occurred_at;
+      });
+    });
+  }
+  // Most recent touch from either the logged history or the hand-stamped last_contact_at.
+  function lastTouchIso(l) {
+    const tc = touchCounts.get(l.id);
+    const a = tc ? tc.last : null, b = l.last_contact_at || null;
+    if (!a) return b;
+    if (!b) return a;
+    return new Date(a) > new Date(b) ? a : b;
+  }
+  // One compact line under the name: what they want · where from · last contact · touches.
+  function metaLine(l) {
+    const tc = touchCounts.get(l.id);
+    const last = lastTouchIso(l);
+    const story = sourceStory(l);
+    const touches = tc ? [tc.calls ? plural(tc.calls, 'call') : '', tc.texts ? plural(tc.texts, 'text') : '', tc.emails ? plural(tc.emails, 'email') : ''].filter(Boolean).join(' · ') : '';
+    return `<div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">
+      ${wantBadge(l)}
+      <span class="truncate max-w-full">${esc(story.charAt(0).toUpperCase() + story.slice(1))}</span>
+      ${last ? `<span class="whitespace-nowrap">Last contact ${esc(agoWords(last))}</span>` : '<span class="text-amber-700 font-semibold whitespace-nowrap">Never contacted</span>'}
+      ${touches ? `<span class="whitespace-nowrap">${esc(touches)}</span>` : ''}
+    </div>`;
+  }
+  // Quick-filter chips above the list — one active at a time, counts shown so she can
+  // see the size of each bucket without tapping.
+  const QUICK_FILTERS = [['never', 'Never contacted'], ['stale', 'No contact in 7+ days'], ['hot', '🔥 Hot'], ['program', 'Program leads only'], ['tool', 'Free tool only']];
+  function quickMatch(l, k) {
+    if (k === 'never') return !lastTouchIso(l);
+    if (k === 'stale') { const t = lastTouchIso(l); return !!t && Date.now() - new Date(t).getTime() >= 7 * 864e5; }
+    if (k === 'hot') return isHot(l);
+    if (k === 'program') return wantLabel(l).tone !== 'tool';
+    if (k === 'tool') return wantLabel(l).tone === 'tool';
+    return true;
+  }
+  function paintQuickFilters() {
+    const row = document.getElementById('quick-filters');
+    if (!row) return;
+    row.innerHTML = QUICK_FILTERS.map(([k, label]) => {
+      const n = allLeads.filter(l => quickMatch(l, k)).length;
+      return quickFilter === k
+        ? `<button type="button" data-qf="${k}" aria-pressed="true" class="min-h-[40px] px-3 rounded-full text-sm font-semibold border bg-slate-900 text-white border-slate-900">${label} · ${n} ✕</button>`
+        : `<button type="button" data-qf="${k}" aria-pressed="false" class="min-h-[40px] px-3 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-300 hover:border-teal-600">${label} · ${n}</button>`;
+    }).join('');
   }
 
   function drawerSection(title, inner) {
@@ -1344,7 +1426,7 @@
       historyFetched.add(l.id);
       const known = new Set(allComms.map(c => c.id));
       const fresh = (res.data || []).filter(r => !known.has(r.id));
-      if (fresh.length) allComms.push(...fresh);
+      if (fresh.length) { allComms.push(...fresh); rebuildTouchCounts(); render(); }
       return renderLeadHistory(l);
     }
     if (!rows.length) {
