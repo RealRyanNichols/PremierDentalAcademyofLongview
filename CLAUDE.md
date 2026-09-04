@@ -106,8 +106,17 @@ system) is itself the asset — investors and other academies will want it.
 - /night-class is a redirect stub → /classes. The blog post night-class-training-after-work
   was published and removed the same day. Do not recreate night-class content.
 - CONFIRMED by Amanda (Jul 7, 2026): classes are DAYTIME now; cohort start dates are
-  unchanged (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17). Exact daytime hours NOT yet
-  provided — say "daytime classes" and point to (903) 913-6444 / /calendar. NEVER invent times.
+  unchanged (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17).
+- **HOURS NOW CONFIRMED AND PUBLISHABLE (Amanda, Sep 4, 2026).** She reviewed and approved
+  these two lines verbatim. They are the ONLY approved class-hour strings:
+    * Mon/Wed/Fri cohorts (Sep 14, Nov 9) — **8:30 AM – 12:30 PM**
+    * Tue/Thu cohorts (Sep 29, Nov 17)   — **9:00 AM – 3:00 PM**
+  Source of truth = `assets/site-facts.js` (`programs.inPerson.schedule`) + the Supabase
+  `cohorts.schedule` column, which /classes and /calendar both render. The earlier
+  "never state hours" rule is LIFTED for these two strings only. Any OTHER hours are still
+  invented — never publish them. Still NO evening/night/Saturday times, ever.
+- Note: 61 older blog posts still say "call or text for exact hours." That is not wrong
+  (calling still works), so they were intentionally left alone rather than mass-edited.
 - Per Amanda: LEAVE the weekend-evening-dental-assistant-classes-texas post (now generic,
   no PDA evening claims) and the index.html "evenings-and-weekends" testimonial (real
   historical quote). Revisit once exact daytime hours are published.

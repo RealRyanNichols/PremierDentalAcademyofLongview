@@ -1,0 +1,989 @@
+[
+ {
+  "slug": "accredited-licensed-or-registered-texas-dental-assistant",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "ada-claims-eob-training-practice-pro",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "august-dental-assistant-classes-longview",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "august-dental-assistant-classes-longview",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "best-dental-assistant-programs-east-texas",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "budgeting-for-dental-assistant-school",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "budgeting-for-dental-assistant-school",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "budgeting-for-dental-assistant-school",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "can-you-work-while-training-dental-assistant",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "career-change-to-dental-assistant",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "career-paths-tool-walkthrough",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "career-paths-tool-walkthrough",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "class-size-hands-on-hours-vs-program-length",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "commuting-to-dental-school-from-marshall-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "cost-to-get-fully-certified-dental-assistant-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "cost-to-get-fully-certified-dental-assistant-texas",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "credentials-east-texas-dental-offices-ask-for",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-certifications-near-tyler-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-grants-financial-aid-texas",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 4,
+  "strength": 4
+ },
+ {
+  "slug": "dental-assistant-grants-financial-aid-texas",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-interview-questions-and-answers",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-jobs-in-longview-tyler",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-longview-tx",
+  "path": "/tools/schedule-planner",
+  "label": "Schedule Planner",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-carthage-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-carthage-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-gilmer-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-gilmer-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-gladewater-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-gladewater-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-hallsville-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-hallsville-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-henderson-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-henderson-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-kilgore-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-kilgore-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-lindale-tx",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-overton-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-overton-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-pittsburg-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-tatum-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-white-oak-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-near-white-oak-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-school-near-winnsboro-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-payment-plan-explained",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-school-payment-plan-explained",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assistant-to-dental-hygienist-path",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assistant-training-from-anywhere-in-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assisting-east-texas-complete-guide",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assisting-east-texas-complete-guide",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-assisting-east-texas-complete-guide",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-assisting-east-texas-complete-guide",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-offices-in-kilgore-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-offices-in-kilgore-tx",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "dental-offices-in-marshall-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-offices-in-tyler-tx",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "dental-xray-safety-basics-for-assistants",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "do-dental-assistants-need-a-degree",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "do-dental-assistants-need-a-degree",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "does-fafsa-cover-dental-assistant-school-texas",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "does-wioa-cover-dental-assistant-certifications",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "east-texas-dental-assistant-job-market-2026",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "employer-paid-dental-assistant-training",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "fall-2026-dental-assistant-class-dates-longview",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "fall-2026-dental-assistant-class-dates-longview",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "fastest-way-to-become-a-dental-assistant-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "free-dental-assistant-practice-resources",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "free-dental-assistant-practice-resources",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "free-rda-practice-exam-what-your-score-means",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "free-texas-rda-practice-exam-online",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "gi-bill-veterans-benefits-dental-assistant-school",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "hidden-costs-of-dental-assistant-school-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "hidden-costs-of-dental-assistant-school-texas",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-hard-is-the-texas-rda-exam",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-hard-is-the-texas-rda-exam",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "how-long-is-dental-assistant-school-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-much-does-dental-assistant-school-cost-in-texas",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-to-become-a-pediatric-dental-assistant",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-to-become-a-pediatric-dental-assistant",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 4,
+  "strength": 4
+ },
+ {
+  "slug": "how-to-pass-the-rda-exam-study-plan",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "how-to-study-dental-anatomy-tooth-numbering",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-to-tell-your-boss-youre-going-back-to-school",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "how-to-tell-your-boss-youre-going-back-to-school",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "infection-control-basics-texas-dental-assistants",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "infection-control-basics-texas-dental-assistants",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "is-dental-radiology-certification-hard",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "local-schools-vs-online-mega-courses",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "local-schools-vs-online-mega-courses",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "men-in-dental-assisting",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "missed-july-cohort-august-options",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "november-dental-assistant-classes-longview",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "november-dental-assistant-classes-longview",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "online-dental-assistant-course-397-what-you-get",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "online-rda-program-self-check",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "online-rda-program-self-check",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "online-vs-in-person-dental-assistant-training",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "pass-dental-radiography-portion-rda-exam",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "pass-dental-radiography-portion-rda-exam",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "pass-infection-control-portion-rda-exam",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "pass-infection-control-portion-rda-exam",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "pass-texas-dental-jurisprudence-exam",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "periapical-vs-bitewing-xray-basics",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "practice-exam-tool-walkthrough",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "practice-exam-tool-walkthrough",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "practice-exam-tool-walkthrough",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "questions-to-ask-dental-assistant-school-tour",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "rda-classes-starting-july-2026-longview",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "rda-exam-day-what-to-expect",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "rda-exam-day-what-to-expect",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "rda-state-board-prep-one-on-one-longview",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "salary-vs-cost-of-living-east-texas",
+  "path": "/tools/resource-hub",
+  "label": "Student Life Resource Hub",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "saturday-only-vs-multi-day-dental-assistant-training",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "second-act-careers-healthcare",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "staying-motivated-online-dental-assistant-course",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "switching-from-cna-to-dental-assistant",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "take-home-pay-tool-walkthrough",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "take-home-pay-tool-walkthrough",
+  "path": "/tools/resource-hub",
+  "label": "Student Life Resource Hub",
+  "signals": 4,
+  "strength": 4
+ },
+ {
+  "slug": "telling-your-family-going-back-to-school",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "telling-your-family-going-back-to-school",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "telling-your-family-going-back-to-school",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "texas-dental-assistant-certifications-checklist",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "texas-rda-exam-cost-explained",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "tuition-planner-tool-walkthrough",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "tuition-planner-tool-walkthrough",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "vital-signs-for-dental-assistants",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "weekend-evening-dental-assistant-classes-texas",
+  "path": "/tools/resource-hub",
+  "label": "Student Life Resource Hub",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "weekend-evening-dental-assistant-classes-texas",
+  "path": "/tools/schedule-planner",
+  "label": "Schedule Planner",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "what-dental-assistant-school-really-costs",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "what-dental-assistant-school-really-costs",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "what-dental-assistant-school-really-costs",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "what-if-im-not-good-with-blood-dental-assistant",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "what-if-you-fail-the-rda-exam",
+  "path": "/exam-prep-course",
+  "label": "Exam-Prep Mini-Course (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "what-if-you-fail-the-rda-exam",
+  "path": "/tools/state-board-prep",
+  "label": "1-on-1 State Board Prep",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "what-to-do-if-you-cant-afford-dental-assistant-school",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "what-to-do-if-you-cant-afford-dental-assistant-school",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "what-to-wear-dental-assistant-interview",
+  "path": "/career-vault",
+  "label": "Career Vault (paid)",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "what-you-can-practice-before-day-one",
+  "path": "/study-pack",
+  "label": "Study Pack (paid)",
+  "signals": 4,
+  "strength": 4
+ },
+ {
+  "slug": "what-you-can-practice-before-day-one",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "who-should-take-the-397-online-course",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ },
+ {
+  "slug": "who-should-take-the-397-online-course",
+  "path": "/tools/funding-finder",
+  "label": "Funding Finder",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "wioa-funding-dental-assistant-training-east-texas",
+  "path": "/tuition",
+  "label": "Tuition page",
+  "signals": 3,
+  "strength": 3
+ },
+ {
+  "slug": "you-dont-have-to-be-good-at-school-to-be-good-at-this",
+  "path": "/online",
+  "label": "Online program ($997, no seat cap)",
+  "signals": 2,
+  "strength": 2
+ }
+]

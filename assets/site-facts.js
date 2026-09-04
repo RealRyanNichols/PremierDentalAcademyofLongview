@@ -34,7 +34,7 @@
     citiesServedNote: "Campus is in Longview. Students commute from surrounding East Texas towns (also Overton, Tatum, Hallsville, Waskom, etc.). Do NOT claim campuses in other cities.",
 
     programs: {
-      inPerson: { name: "In-Person", location: "Longview campus", schedule: "Daytime classes — call (903) 913-6444 for exact hours", format: "Live, hands-on training" },
+      inPerson: { name: "In-Person", location: "Longview campus", schedule: "Daytime classes — Mon/Wed/Fri 8:30 AM–12:30 PM or Tue/Thu 9:00 AM–3:00 PM (varies by cohort)", format: "Live, hands-on training" },
       online:   { name: "Online",    location: "From home",      schedule: "Self-paced",      format: "Same curriculum, fully online" }
     },
 
