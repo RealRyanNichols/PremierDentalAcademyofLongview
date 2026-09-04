@@ -140,6 +140,14 @@
     sb.from('enrollments').select('id, student_id, cohort_id, status, progress_percent, student_name, delivery, source, roster_note, enrolled_at'),
     sb.from('profiles').select('id, first_name, last_name, email, phone, city, state, program, cohort, enrolled_at, created_at, is_admin, tags, kajabi_id, portal_status').neq('is_admin', true)
   ]);
+  const loadErr = cohRes.error || enrRes.error || profRes.error;
+  if (loadErr) {
+    $('loading').classList.add('hidden');
+    $('view').classList.remove('hidden');
+    $('cohorts-empty').classList.add('hidden');
+    $('cohorts').innerHTML = '<div class="md:col-span-2 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load classes: ' + esc(loadErr.message) + '</div>';
+    return;
+  }
   const cohorts = cohRes.data || [];
   const enrollments = (enrRes.data || []).map((e,i)=>({ ...e, _i:i }));
   const profiles = {}; (profRes.data||[]).forEach(p => profiles[p.id]=p);

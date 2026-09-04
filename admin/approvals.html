@@ -54,7 +54,7 @@
 <main id="view" class="hidden max-w-5xl mx-auto px-4 sm:px-6 py-8">
   <div class="mb-6">
     <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Your approval</p>
-    <h1 class="display text-3xl font-bold">Course changes waiting on you</h1>
+    <h1 class="display text-3xl font-bold">Course changes waiting on you <span id="h1-pending" class="hidden align-middle text-sm font-sans font-semibold bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full whitespace-nowrap">0 pending</span></h1>
     <p class="text-slate-600 text-sm mt-2 max-w-3xl">Each card below is a change to the course that is <b>not live yet</b>. Read what is wrong, read the proposed wording exactly as a student would see it, then Approve or Reject. Approving publishes it to every copy of that lesson immediately. Nothing here reaches a student until you click.</p>
   </div>
 
@@ -73,6 +73,16 @@
     <button data-f="rejected" class="ap-filter bg-white border border-slate-300 px-3 py-1.5 rounded-lg">Rejected</button>
   </div>
 
+  <div class="flex flex-wrap items-center gap-2 mb-5 text-sm">
+    <label for="ap-sort" class="text-slate-500 font-semibold">Sort</label>
+    <select id="ap-sort" class="bg-white border border-slate-300 rounded-lg px-3 h-10 text-sm max-w-full">
+      <option value="newest">Newest</option>
+      <option value="confidence">Confidence (low risk first)</option>
+      <option value="quick">Quick review</option>
+    </select>
+    <p id="ap-sort-note" class="hidden basis-full min-w-0 text-xs text-slate-500">Quick review puts short, single-passage, non-clinical wording fixes first. Clinical or unclear changes are still listed &mdash; just further down. Every change still needs your Approve.</p>
+  </div>
+
   <div id="list" class="space-y-5"></div>
   <div id="empty" class="hidden text-center text-slate-500 py-12">Nothing here right now.</div>
 </main>
@@ -88,8 +98,32 @@
   document.getElementById('view').classList.remove('hidden');
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
-  let rows = [], filter = 'pending';
+  let rows = [], filter = 'pending', sort = 'newest';
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  // Confidence comes from content_drafts.confidence: 'high' | 'medium' | 'needs_review'. Anything else is treated as needs_review.
+  function confidenceRank(r) {
+    const c = String(r.confidence || '').toLowerCase();
+    return c === 'high' ? 0 : (c === 'medium' ? 1 : 2);
+  }
+  function confidenceBadge(r) {
+    const rank = confidenceRank(r);
+    if (rank === 0) return '<span class="text-[10px] uppercase tracking-wider font-bold border bg-emerald-50 text-emerald-800 border-emerald-200 px-2 py-0.5 rounded-full" title="Confidence: high">Low risk</span>';
+    if (rank === 1) return '<span class="text-[10px] uppercase tracking-wider font-bold border bg-amber-50 text-amber-800 border-amber-200 px-2 py-0.5 rounded-full" title="Confidence: medium">Check wording</span>';
+    return '<span class="text-[10px] uppercase tracking-wider font-bold border bg-rose-50 text-rose-800 border-rose-200 px-2 py-0.5 rounded-full" title="Confidence: needs review">Needs careful review</span>';
+  }
+
+  // "Quick review" = short, non-clinical wording corrections the DB did not flag as needs_review. Anything clinical or unclear is never hidden, only ordered later.
+  // (lesson_ids counts mirrored course copies of the same passage, so it is not a "single passage" signal.)
+  const CLINICAL_WORDS = ['avulsed', 'avulsion', 'tooth', 'teeth', 'bleeding', 'hemorrhage', 'anaphyla', 'allerg', 'infection', 'steril', 'disinfect', 'needle', 'sharps', 'anesthe', 'dose', 'dosage', 'medication', 'drug', 'emergency', 'airway', 'cpr', 'aspirat', 'x-ray', 'radiat', 'exposure', 'patient safety', 'contraindicat'];
+  function isQuickReview(r) {
+    if (r.change_type !== 'correction') return false;
+    if (confidenceRank(r) === 2) return false;
+    const body = r.proposed_plain || String(r.proposed_html || '').replace(/<[^>]+>/g, ' ');
+    if (body.length >= 400) return false;
+    const text = [r.what_is_wrong, body, r.section_title, r.lesson_title].map(s => s || '').join(' ').toLowerCase();
+    return !CLINICAL_WORDS.some(w => text.includes(w));
+  }
 
   async function loadData() {
     const { data, error } = await sb.from('content_drafts')
@@ -99,6 +133,10 @@
     rows = data || [];
     const pend = rows.filter(r => r.status === 'pending');
     document.getElementById('s-pending').textContent = pend.length;
+    document.title = 'Course approvals (' + pend.length + ' pending) — PDA Admin';
+    const h1Pending = document.getElementById('h1-pending');
+    h1Pending.textContent = pend.length + ' pending';
+    h1Pending.classList.remove('hidden');
     document.getElementById('s-new').textContent  = pend.filter(r => r.change_type === 'new_section').length;
     document.getElementById('s-corr').textContent = pend.filter(r => r.change_type === 'correction').length;
     document.getElementById('s-done').textContent = rows.filter(r => r.status === 'approved').length;
@@ -107,12 +145,17 @@
 
   function render() {
     const list = document.getElementById('list');
-    const shown = rows.filter(r => {
+    let shown = rows.filter(r => {
       if (filter === 'pending')  return r.status === 'pending';
       if (filter === 'approved') return r.status === 'approved';
       if (filter === 'rejected') return r.status === 'rejected';
       return r.status === 'pending' && r.change_type === filter;
     });
+    // 'newest' keeps the load order. The other two are stable: ties break by confidence, then load order.
+    if (sort === 'confidence' || sort === 'quick') {
+      const rank = sort === 'confidence' ? confidenceRank : (r => (isQuickReview(r) ? 0 : 1));
+      shown = shown.map((r, i) => ({ r, i, k: rank(r), c: confidenceRank(r) })).sort((a, b) => a.k - b.k || a.c - b.c || a.i - b.i).map(x => x.r);
+    }
     document.getElementById('empty').classList.toggle('hidden', shown.length > 0);
     list.innerHTML = shown.map(r => {
       const isNew = r.change_type === 'new_section';
@@ -126,7 +169,7 @@
         ? (r.current_text ? 'Replaces the current section in place' : 'Added at the end of the lesson')
         : 'Replaces one passage in place';
       return '<div class="bg-white rounded-2xl border border-slate-200 p-5 sm:p-6" data-row="' + r.id + '">'
-        + '<div class="flex items-center gap-2 flex-wrap mb-2">' + typeBadge + statusBadge
+        + '<div class="flex items-center gap-2 flex-wrap mb-2">' + typeBadge + confidenceBadge(r) + statusBadge
           + '<span class="ml-auto text-xs text-slate-400">' + esc(r.lesson_title || '') + ' &middot; ' + esc(where) + ' &middot; ' + (r.lesson_ids || []).length + ' cop' + ((r.lesson_ids || []).length === 1 ? 'y' : 'ies') + '</span></div>'
         + '<h2 class="display text-xl font-extrabold text-slate-900">' + esc(r.section_title || '') + '</h2>'
         + '<div class="mt-3 rounded-xl bg-amber-50 border border-amber-200 p-3"><p class="text-[11px] uppercase tracking-widest text-amber-700 font-bold">What is wrong now</p>'
@@ -184,6 +227,11 @@
     b.className = 'ap-filter bg-slate-900 text-white px-3 py-1.5 rounded-lg';
     render();
   });
+  document.getElementById('ap-sort').onchange = (e) => {
+    sort = e.target.value;
+    document.getElementById('ap-sort-note').classList.toggle('hidden', sort !== 'quick');
+    render();
+  };
   await loadData();
 })();
 </script>

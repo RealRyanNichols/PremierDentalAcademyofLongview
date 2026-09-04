@@ -44,6 +44,13 @@
     <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
   </div>
 
+  <div id="instructor-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">📋</div>
+    <h2 class="display text-2xl font-bold">Gradebook</h2>
+    <p class="text-slate-600 mt-2">This page is currently admin-only. Ask Amanda for access to the gradebook.</p>
+    <a href="/dashboard" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">← Back to dashboard</a>
+  </div>
+
   <div id="loading" class="hidden text-center text-slate-500 py-16">Loading your roster…</div>
 
   <div id="view" class="hidden">
@@ -124,7 +131,12 @@
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
   let profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data;
   if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin,is_instructor').eq('id', session.user.id).maybeSingle()).data; }
-  if (!(profile?.is_admin === true || profile?.is_instructor === true || session?.user?.app_metadata?.is_admin === true)) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
+  // Admin-only: the admin_student_progress() RPC rejects non-admins, so instructors get a plain explanation instead of a failed load.
+  const isAdmin = profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true;
+  if (!isAdmin) {
+    if (profile?.is_instructor === true) { document.getElementById('instructor-wall').classList.remove('hidden'); return; }
+    document.getElementById('auth-wall').classList.remove('hidden'); return;
+  }
 
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
   document.getElementById('loading').classList.remove('hidden');

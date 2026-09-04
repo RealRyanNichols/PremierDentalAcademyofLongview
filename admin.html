@@ -70,7 +70,7 @@
     </a>
 
     <!-- Counters -->
-    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8" id="counters">
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8" id="counters">
       <div class="bg-white rounded-xl border border-slate-200 p-4">
         <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Total students</div>
         <div id="c-students" class="text-2xl font-bold mono mt-1 text-teal-700">—</div>
@@ -95,6 +95,23 @@
         <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Chat questions (today)</div>
         <div id="c-chat" class="text-2xl font-bold mono mt-1 text-cyan-700">—</div>
       </div>
+      <!-- Waiting-work counters — same four counts as the nav badges; each links to its queue -->
+      <a href="/admin/questions" class="bg-white rounded-xl border border-slate-200 p-4 block hover:border-teal-600 transition">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Unanswered student questions</div>
+        <div id="c-questions" class="text-2xl font-bold mono mt-1 text-slate-400">—</div>
+      </a>
+      <a href="/admin/approvals" class="bg-white rounded-xl border border-slate-200 p-4 block hover:border-teal-600 transition">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Course changes to approve</div>
+        <div id="c-approvals" class="text-2xl font-bold mono mt-1 text-slate-400">—</div>
+      </a>
+      <a href="/admin/reports" class="bg-white rounded-xl border border-slate-200 p-4 block hover:border-teal-600 transition">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">New lesson problems</div>
+        <div id="c-reports" class="text-2xl font-bold mono mt-1 text-slate-400">—</div>
+      </a>
+      <a href="/admin/leads" class="bg-white rounded-xl border border-slate-200 p-4 block hover:border-teal-600 transition">
+        <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Leads never contacted</div>
+        <div id="c-uncontacted" class="text-2xl font-bold mono mt-1 text-slate-400">—</div>
+      </a>
     </div>
 
     <!-- Quick links -->
@@ -109,6 +126,11 @@
         <h3 class="display text-xl font-bold">Student progress</h3>
         <p class="text-sm text-teal-50 mt-1">Your teacher gradebook: who's logged in, who's practicing, who's behind, their exam grades, and exactly which modules each student still needs.</p>
       </a>
+      <a href="/admin/kpi" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">📈</div>
+        <h3 class="display text-xl font-bold">Business numbers</h3>
+        <p class="text-sm text-slate-600 mt-1">How the school is doing, live from the database — and what to do today. Check it first thing.</p>
+      </a>
       <a href="/admin/students" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
         <div class="text-3xl mb-2">🎓</div>
         <h3 class="display text-xl font-bold">Students</h3>
@@ -116,7 +138,7 @@
       </a>
       <a href="/admin/leads" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
         <div class="text-3xl mb-2">📥</div>
-        <h3 class="display text-xl font-bold">Inbox</h3>
+        <h3 class="display text-xl font-bold">Leads</h3>
         <p class="text-sm text-slate-600 mt-1">Every application, tour request, SMS, and contact-form submission. Reply by text or email right from the inbox.</p>
       </a>
       <a href="/admin/instructors" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
@@ -144,10 +166,30 @@
         <h3 class="display text-xl font-bold">Student feedback</h3>
         <p class="text-sm text-slate-600 mt-1">Live pulse ratings + suggestions students send from their dashboard. Build the school around what they actually want.</p>
       </a>
+      <a href="/admin/courses" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">📚</div>
+        <h3 class="display text-xl font-bold">Lesson editor</h3>
+        <p class="text-sm text-slate-600 mt-1">Build and edit the course itself — modules, lessons, video — then publish. Students see published courses at /learn.</p>
+      </a>
+      <a href="/admin/approvals" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">✅</div>
+        <h3 class="display text-xl font-bold">Course approvals</h3>
+        <p class="text-sm text-slate-600 mt-1">Proposed lesson corrections and new sections wait here for your yes or no. Nothing reaches a student until you approve it.</p>
+      </a>
+      <a href="/admin/reports" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">🛠️</div>
+        <h3 class="display text-xl font-bold">Lesson problems</h3>
+        <p class="text-sm text-slate-600 mt-1">Typos, unclear passages, and things students think are wrong — flagged straight from the lesson they were reading.</p>
+      </a>
       <a href="/admin/brain" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
         <div class="text-3xl mb-2">🧠</div>
         <h3 class="display text-xl font-bold">Brain – PDA</h3>
         <p class="text-sm text-slate-600 mt-1">What people put into the blog tools (pay calculator, budget, fit quiz) and the answers they got. Contact-bearing rows also land in your Inbox.</p>
+      </a>
+      <a href="/admin/emails" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
+        <div class="text-3xl mb-2">📧</div>
+        <h3 class="display text-xl font-bold">Email campaigns</h3>
+        <p class="text-sm text-slate-600 mt-1">Schedule and preview broadcasts, switch drip sequences on or off, and see the send log. Nothing sends while a campaign is a draft.</p>
       </a>
       <a href="https://supabase.com/dashboard/project/lmbsuwslsycukynzpzik/editor" target="_blank" rel="noopener" class="bg-white border border-slate-200 hover:border-teal-600 hover:shadow-lg transition rounded-2xl p-6 block">
         <div class="text-3xl mb-2">🗄</div>
@@ -259,6 +301,34 @@
         </div>
       </li>`).join('');
   }
+
+  // Waiting-work counters — the same four counts the nav badges use. allSettled so one
+  // failed query can't blank the others; a failure shows "—" (never 0).
+  const paintQueue = (id, res) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('text-slate-400', 'text-teal-700', 'text-amber-700', 'text-rose-700');
+    const failed = res.status !== 'fulfilled' || !res.value || res.value.error || typeof res.value.count !== 'number';
+    if (failed) {
+      el.textContent = '—';
+      el.classList.add('text-slate-400');
+      el.title = "Couldn't load this count — refresh to try again";
+      return;
+    }
+    const n = res.value.count;
+    el.textContent = n;
+    el.title = '';
+    if (n >= 10) el.classList.add('text-rose-700');
+    else if (n >= 1) el.classList.add('text-amber-700');
+    else el.classList.add('text-teal-700');
+  };
+  const queueResults = await Promise.allSettled([
+    sb.from('student_questions').select('id', { count: 'exact', head: true }).is('answer', null),
+    sb.from('content_drafts').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+    sb.from('lesson_reports').select('id', { count: 'exact', head: true }).eq('status', 'new'),
+    sb.from('leads').select('id', { count: 'exact', head: true }).is('last_contact_at', null),
+  ]);
+  ['c-questions', 'c-approvals', 'c-reports', 'c-uncontacted'].forEach((id, i) => paintQueue(id, queueResults[i]));
 })();
 </script>
 <script defer src="/assets/admin-nav.js"></script>

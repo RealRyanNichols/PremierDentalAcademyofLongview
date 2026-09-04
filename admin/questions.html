@@ -84,9 +84,15 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   async function loadData() {
-    const { data } = await sb.from('student_questions')
+    const { data, error } = await sb.from('student_questions')
       .select('id, student_id, question, topic, answer, answered_at, created_at')
       .order('created_at', { ascending: false }).limit(300);
+    if (error) {
+      ['s-open', 's-done', 's-total', 's-week'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load questions: ' + esc(error.message) + '</div>';
+      return;
+    }
     rows = data || [];
     const ids = [...new Set(rows.map(r => r.student_id))];
     people = {};

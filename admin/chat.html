@@ -99,7 +99,11 @@
 
   async function load() {
     const { data, error } = await sb.from('chat_messages').select('*').order('created_at', { ascending: true });
-    if (error) { alert('Failed to load chat messages: ' + error.message); return; }
+    if (error) {
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load chat messages: ' + esc(error.message) + '</div>';
+      return;
+    }
     messages = data || [];
 
     // Group into conversations by session_id.

@@ -77,7 +77,13 @@
   let rows = [];
 
   async function loadData() {
-    const { data } = await sb.from('enrollment_forms').select('*').order('created_at', { ascending: false }).limit(200);
+    const { data, error } = await sb.from('enrollment_forms').select('*').order('created_at', { ascending: false }).limit(200);
+    if (error) {
+      ['s-today', 's-week', 's-cash', 's-total'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load paperwork: ' + esc(error.message) + '</div>';
+      return;
+    }
     rows = data || [];
     const dayStart = new Date(); dayStart.setHours(0, 0, 0, 0);
     const weekAgo = Date.now() - 7 * 864e5;

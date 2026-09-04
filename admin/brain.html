@@ -79,7 +79,12 @@
   let rows = [], filter = 'all';
   async function loadData() {
     const { data, error } = await sb.from('brain_events').select('*').order('created_at', { ascending: false }).limit(500);
-    if (error) { alert('Load failed: ' + error.message); return; }
+    if (error) {
+      ['s-total', 's-contact', 's-shared', 's-week'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load tool activity: ' + esc(error.message) + '</div>';
+      return;
+    }
     rows = data || [];
     document.getElementById('s-total').textContent = rows.length;
     document.getElementById('s-contact').textContent = rows.filter(r => r.contact_email || r.contact_phone).length;

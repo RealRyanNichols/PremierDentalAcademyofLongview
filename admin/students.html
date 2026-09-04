@@ -148,13 +148,19 @@
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   let all = [];
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
   async function load() {
-    const { data } = await sb.from('profiles')
+    const { data, error } = await sb.from('profiles')
       .select('id, email, first_name, last_name, phone, city, state, program, cohort, enrollment_path, enrolled_at, created_at, is_admin, kajabi_id')
       .neq('is_admin', true)
       .neq('is_instructor', true)
       .order('created_at', { ascending: false });
+    if (error) {
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="m-4 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load students: ' + esc(error.message) + '</div>';
+      return;
+    }
     all = data || [];
     render();
   }

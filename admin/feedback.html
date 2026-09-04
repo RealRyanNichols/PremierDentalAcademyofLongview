@@ -83,7 +83,13 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
   async function loadData() {
-    const { data } = await sb.from('student_feedback').select('id, kind, prompt, rating, comment, page, created_at').order('created_at', { ascending: false }).limit(300);
+    const { data, error } = await sb.from('student_feedback').select('id, kind, prompt, rating, comment, page, created_at').order('created_at', { ascending: false }).limit(300);
+    if (error) {
+      ['s-pulses', 's-sugg', 's-week'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = '—'; });
+      document.getElementById('empty').classList.add('hidden');
+      document.getElementById('list').innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-4 text-sm break-words">Could not load feedback: ' + esc(error.message) + '</div>';
+      return;
+    }
     rows = data || [];
     const pulses = rows.filter(r => r.kind === 'pulse' && r.rating);
     const avg = pulses.length ? (pulses.reduce((a, r) => a + r.rating, 0) / pulses.length) : 0;

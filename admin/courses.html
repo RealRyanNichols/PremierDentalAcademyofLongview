@@ -80,6 +80,10 @@
   // ---------- Course list ----------
   async function refreshCourses(){
     var r = await sb.from('courses').select('*').order('sort');
+    if (r.error) {
+      listEl.innerHTML = '<div class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 p-3 text-xs break-words">Could not load courses: ' + esc(r.error.message) + '</div>';
+      return;
+    }
     courses = r.data || [];
     listEl.innerHTML = courses.map(function(c){
       var active = current && current.id===c.id;
@@ -335,12 +339,14 @@
     if (!session) { document.getElementById('loading').classList.add('hidden'); document.getElementById('auth-wall').classList.remove('hidden'); return; }
     var profile = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
     var isAdmin = (profile && profile.is_admin === true) || (session.user.app_metadata && session.user.app_metadata.is_admin === true);
-    document.getElementById('loading').classList.add('hidden');
-    if (!isAdmin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
-    document.getElementById('app').classList.remove('hidden');
+    if (!isAdmin) { document.getElementById('loading').classList.add('hidden'); document.getElementById('auth-wall').classList.remove('hidden'); return; }
     document.getElementById('signout').onclick = function(){ location.href='/logout?then=home'; };
     document.getElementById('new-course-btn').onclick = showNewCourse;
-    await refreshCourses();
+    try { await refreshCourses(); }
+    finally {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
   })();
 })();
 </script>
