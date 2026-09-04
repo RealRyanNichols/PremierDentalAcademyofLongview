@@ -13,6 +13,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/pda-portal-guard.js"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
@@ -91,17 +92,22 @@
   </div>
 </nav>
 
-<!-- Auth wall -->
-<div id="auth-wall" class="hidden min-h-[80vh] flex items-center justify-center px-6">
-  <div class="max-w-md w-full bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center">
-    <div class="text-5xl mb-3">🔐</div>
-    <h1 class="display text-2xl font-bold">Sign in to access your dashboard.</h1>
-    <p class="text-slate-600 mt-2 text-sm">If you're a student or staff, sign in with the email Amanda set up for you.</p>
-    <div class="flex flex-wrap gap-2 justify-center mt-6">
-      <a href="/login" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2.5 rounded-full">Sign in →</a>
-      <a href="/enroll" class="bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2.5 rounded-lg">Enroll</a>
+<!-- Loading + fatal states: the page must never sit blank -->
+<div id="dash-loading" class="px-6 py-24">
+  <div class="flex flex-col items-center text-center text-sm text-slate-500">
+    <div class="w-8 h-8 mb-3 border-4 border-slate-200 border-t-teal-600 rounded-full animate-spin"></div>
+    Loading your dashboard…
+  </div>
+</div>
+<div id="dash-error" class="hidden max-w-md mx-auto my-10 px-6">
+  <div class="bg-white border border-rose-200 rounded-2xl shadow-sm p-6 text-center">
+    <div class="text-4xl mb-2">⚠️</div>
+    <h2 id="dash-error-title" class="display text-xl font-bold">We couldn't load your dashboard — please refresh.</h2>
+    <p id="dash-error-msg" class="text-xs text-slate-500 mt-2 break-words"></p>
+    <div class="flex flex-wrap gap-2 justify-center mt-5">
+      <button type="button" onclick="location.reload()" class="min-h-[40px] bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Refresh</button>
+      <a href="tel:+19039136444" class="min-h-[40px] inline-flex items-center bg-white border-2 border-slate-300 hover:border-teal-600 text-slate-700 font-semibold px-5 py-2 rounded-lg text-sm">Call (903) 913-6444</a>
     </div>
-    <p class="mt-5 text-xs text-slate-500"><a href="/" class="text-teal-700 hover:underline">← Back to home</a></p>
   </div>
 </div>
 
@@ -247,24 +253,13 @@
         <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">Trainer level</div>
       </div>
     </div>
-    <!-- progress to certificate -->
-    <div class="mb-4">
-      <div class="flex items-center justify-between text-xs font-semibold text-slate-600 mb-1">
-        <span>Hands-on completion</span>
-        <span id="cert-pct">0%</span>
-      </div>
-      <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-        <div id="cert-bar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full transition-all" style="width:0%"></div>
-      </div>
-      <div class="text-[11px] text-slate-500 mt-1" id="cert-hint">Touch all 12 trainer modules to finish your hands-on track.</div>
-    </div>
     <div id="badges-grid" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2"></div>
   </section>
 
   <div class="grid lg:grid-cols-3 gap-4">
 
     <!-- Continue learning -->
-    <section class="lg:col-span-2 space-y-4">
+    <section class="lg:col-span-2 space-y-4 min-w-0">
       <div id="trainers" class="scroll-mt-6">
         <h2 class="display text-xl font-bold mb-3">Continue learning</h2>
         <a href="/tools/how-to-chart" class="flex items-center gap-2 mb-3 text-sm bg-teal-50 border border-teal-200 text-teal-800 rounded-xl px-4 py-2.5 hover:bg-teal-100 transition">📘 <span><strong>New to ChairSide?</strong> Read the step-by-step "How to chart" tutorial →</span></a>
@@ -304,6 +299,8 @@
           <h2 class="display text-xl font-bold">Skills Lab — hands-on</h2>
           <a href="/skills-lab" class="text-xs font-semibold text-teal-700 hover:text-teal-900">Open Skills Lab →</a>
         </div>
+        <!-- per-competency status from skills_lab_progress (filled in by the page script) -->
+        <div id="skills-status" class="mb-3 text-xs text-slate-500">Checking your verified skills…</div>
         <div class="grid sm:grid-cols-2 gap-3">
           <a href="/skills-lab/virtual-office" data-event="tool_start" class="block bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-5 hover:shadow-xl transition">
             <div class="flex items-center gap-2 mb-2"><span class="w-8 h-8 bg-white/20 rounded grid place-items-center font-extrabold text-sm">3D</span><h3 class="font-bold">Virtual Dental Office</h3></div>
@@ -343,13 +340,17 @@
         <div id="pe-spark" class="mt-3"></div>
       </div>
 
-      <!-- Curriculum progress -->
+      <!-- Curriculum progress (real: module_progress × course lessons, same rules as /learn) -->
       <div id="progress-sec" class="scroll-mt-6 bg-white rounded-2xl border border-slate-200 p-5">
-        <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
           <h2 class="display text-xl font-bold">Curriculum progress</h2>
-          <span class="text-xs text-slate-500" id="progress-summary">0 of 12 modules touched</span>
+          <span class="text-xs text-slate-500" id="progress-summary">Loading your progress…</span>
         </div>
-        <div id="modules-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2"></div>
+        <div class="h-2.5 bg-slate-100 rounded-full overflow-hidden mb-3">
+          <div id="progress-bar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full transition-all" style="width:0%"></div>
+        </div>
+        <div id="modules-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
+        <div id="progress-actions" class="mt-3 flex flex-wrap gap-2"></div>
       </div>
 
       <!-- Recent activity -->
@@ -360,7 +361,7 @@
     </section>
 
     <!-- Sidebar -->
-    <aside class="space-y-4">
+    <aside class="space-y-4 min-w-0">
 
       <!-- Ask your teacher — two-way Q&A (student_questions table) -->
       <section id="ask-teacher" class="scroll-mt-6 bg-white rounded-2xl border-2 border-teal-600 p-5 shadow-sm">
@@ -412,7 +413,8 @@
         <dl class="space-y-2 text-sm">
           <div class="flex justify-between"><dt class="text-slate-500">Status</dt><dd id="cohort-status" class="font-semibold">—</dd></div>
           <div class="flex justify-between"><dt class="text-slate-500">Enrolled</dt><dd id="cohort-since" class="font-mono">—</dd></div>
-          <div class="flex justify-between"><dt class="text-slate-500">Cohort</dt><dd id="cohort-name">—</dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-slate-500">Cohort</dt><dd id="cohort-name" class="min-w-0 truncate text-right">—</dd></div>
+          <div class="flex justify-between gap-3"><dt class="text-slate-500">Starts</dt><dd id="cohort-start" class="font-mono">—</dd></div>
         </dl>
       </section>
 
@@ -430,38 +432,94 @@
 </main>
 
 <script>
+// Stop the page with a visible card (never a blank screen). Lives outside the
+// boot so the boot's .catch can reach it.
+const dashStop = (title, detail) => {
+  try {
+    const ld = document.getElementById('dash-loading'); if (ld) ld.classList.add('hidden');
+    const t = document.getElementById('dash-error-title'); if (t && title) t.textContent = title;
+    const m = document.getElementById('dash-error-msg'); if (m) m.textContent = detail || '';
+    const card = document.getElementById('dash-error'); if (card) card.classList.remove('hidden');
+  } catch (e) {}
+};
+const dashFatal = (err) => {
+  dashStop("We couldn't load your dashboard — please refresh.", err && err.message ? String(err.message) : (typeof err === 'string' ? err : ''));
+  if (err && window.console) console.error('dashboard boot failed', err);
+};
+
 (async () => {
   const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  // The Supabase client and the portal guard both arrive via <script src>. If
+  // either failed to load (blocked CDN, slow network), fail visibly instead of
+  // throwing and leaving a white page.
+  if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+    dashFatal('The Supabase library did not load.'); return;
+  }
+  if (!window.PDAPortal || typeof window.PDAPortal.requireEnrolled !== 'function') {
+    dashFatal('The portal guard did not load.'); return;
+  }
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-  let { data: sessData } = await sb.auth.getSession();
-  let session = sessData?.session || null;
-  if (!session) {
-    document.getElementById('auth-wall').classList.remove('hidden');
-    return;
-  }
+  // Server-side enrollment gate — the same my_portal_access() RPC /learn and
+  // /portal use. Not signed in → /login. Not enrolled → /enroll. Suspended →
+  // message here (the guard's default suspended path is this page, so it must
+  // never redirect back to itself).
+  const access = await PDAPortal.requireEnrolled({
+    onDenied: async (a) => {
+      // The guard swallows RPC errors and reports enrolled=false, so one transient
+      // failure would bounce every student to a sales page. Re-check the server
+      // here and only redirect on a real "not enrolled" answer; anything we can't
+      // verify gets a Refresh card instead.
+      const cantCheck = () => dashStop('We couldn\'t check your account just now.', 'Please refresh in a moment. If it keeps happening, call or text (903) 913-6444.');
+      try {
+        const uid = a && a.session && a.session.user && a.session.user.id;
+        if (!uid) { cantCheck(); return; }
+        const { data, error } = await sb.rpc('my_portal_access');
+        if (error) { cantCheck(); return; }
+        const row = Array.isArray(data) ? data[0] : data;
+        if (row && row.enrolled) { cantCheck(); return; } // guard and server disagree — never bounce a real student
+        // Instructors are a real role with no student dashboard; say so rather than selling to them.
+        const { data: pr, error: prErr } = await sb.from('profiles').select('is_instructor').eq('id', uid).maybeSingle();
+        if (prErr) { cantCheck(); return; }
+        if (pr && pr.is_instructor === true) {
+          dashStop('This is an instructor account — there is no student dashboard for it yet.', 'Ask Amanda for access to the admin pages.');
+          return;
+        }
+        const status = (row && row.portal_status) || (a && a.portal_status);
+        if (status === 'suspended') {
+          dashStop('Your portal access is paused.', 'Call or text (903) 913-6444 and we will get you sorted.');
+          return;
+        }
+        location.href = '/enroll';
+      } catch (e) { cantCheck(); }
+    },
+  });
+  const session = access && access.session;
+  if (!session || !session.user) { dashFatal('No session was returned.'); return; }
 
-  // getSession() can return an EXPIRED access token. If we query the database
-  // with it, RLS sees no user and returns no profile — which silently drops an
-  // admin into the logged-out "student" view. So if the token is expired (or
-  // about to be), refresh it first.
-  const nearExpiry = !session.expires_at || (session.expires_at * 1000 < Date.now() + 60000);
-  if (nearExpiry) {
-    try { const rs = await sb.auth.refreshSession(); if (rs?.data?.session) session = rs.data.session; } catch (e) {}
-  }
-
+  document.getElementById('dash-loading').classList.add('hidden');
   document.getElementById('dashboard').classList.remove('hidden');
 
   // Fetch profile; one more refresh + retry if it still comes back empty.
-  let profile = (await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()).data;
+  const readProfile = () => sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+  let { data: profile, error: profileErr } = await readProfile();
   if (!profile) {
     try { await sb.auth.refreshSession(); } catch (e) {}
-    profile = (await sb.from('profiles').select('*').eq('id', session.user.id).maybeSingle()).data;
+    ({ data: profile, error: profileErr } = await readProfile());
+  }
+  if (!profile && profileErr) {
+    // Say so instead of silently rendering a half-empty page. The program below
+    // comes from the server gate, so this never reads "Preview mode" to a
+    // verified student.
+    document.getElementById('hero-sub').textContent = 'We couldn\'t load your profile — some details may be missing. Refresh to try again.';
+    if (window.console) console.error('profile read failed', profileErr);
   }
   const p = profile || {
     id: session.user.id, email: session.user.email,
-    first_name: '', last_name: '', phone: '', program: 'preview', is_admin: false,
+    first_name: '', last_name: '', phone: '',
+    program: access.program || (access.is_admin === true ? 'admin' : 'preview'), is_admin: false,
   };
 
   // Top nav identity
@@ -473,11 +531,9 @@
   setText('dd-name', (p.first_name || '') + ' ' + (p.last_name || ''));
   setText('dd-email', p.email);
   setText('user-label', p.first_name || p.email);
-  // Admin = the owner email, profiles.is_admin, OR the is_admin claim baked
-  // into the JWT (app_metadata). The email + JWT checks survive even if the
-  // profile read fails, so the owner is never wrongly shown the student view.
-  const ownerEmail = (session?.user?.email || p.email || '').trim().toLowerCase() === 'hello@premierdentalacademyoflongview.com';
-  const isAdmin = ownerEmail || (p.is_admin === true) || (session?.user?.app_metadata?.is_admin === true);
+  // Admin comes from the server (my_portal_access().is_admin via the portal
+  // guard) — no hardcoded emails, and it survives a failed profile read.
+  const isAdmin = access.is_admin === true;
   if (isAdmin) {
     // Owner/admin: the admin tools are built right into this dashboard, so
     // there's no separate page to hunt for. ("Open full admin →" and the
@@ -504,50 +560,134 @@
   document.getElementById('stat-program-sub').textContent = prog.sub;
   document.getElementById('cohort-status').textContent = prog.name;
   document.getElementById('cohort-since').textContent = p.enrolled_at ? new Date(p.enrolled_at).toLocaleDateString() : '—';
-  document.getElementById('cohort-name').textContent = p.cohort || (p.program === 'preview' ? 'n/a' : 'TBD');
+  // Cohort: enrollments → cohorts (never the free-text profiles.cohort). Dates
+  // come only from the cohorts table. Resolves the picked enrollment (or null)
+  // so the progress block can tell a pre-start student when lessons unlock.
+  const cohortP = (async () => {
+    const nameEl = document.getElementById('cohort-name');
+    const startEl = document.getElementById('cohort-start');
+    const fail = () => { nameEl.textContent = 'Couldn\'t load'; nameEl.classList.add('text-rose-600'); startEl.textContent = '—'; };
+    nameEl.textContent = '…'; startEl.textContent = '…';
+    try {
+      const { data: enr, error: enrErr } = await sb.from('enrollments')
+        .select('status, cohorts(name,start_date,end_date)').eq('student_id', session.user.id);
+      if (enrErr) { fail(); return null; }
+      const rows = (enr || []).filter(e =>
+        ['cancelled','canceled','dropped','refunded'].indexOf(String(e.status || '').toLowerCase()) === -1 && e.cohorts);
+      const pick = rows.length ? rows.reduce((min, e) =>
+        (e.cohorts.start_date && (!min.cohorts.start_date || e.cohorts.start_date < min.cohorts.start_date)) ? e : min) : null;
+      if (!pick) { nameEl.textContent = 'Not assigned yet'; startEl.textContent = '—'; return null; }
+      nameEl.textContent = pick.cohorts.name || 'TBD';
+      const sd = pick.cohorts.start_date ? String(pick.cohorts.start_date) : '';
+      startEl.textContent = sd ? new Date(sd.length === 10 ? sd + 'T12:00:00' : sd).toLocaleDateString() : '—';
+      return pick;
+    } catch (e) { fail(); return null; }
+  })();
   if (p.program === 'preview') {
     document.getElementById('hero-tag').textContent = 'Preview mode';
     document.getElementById('hero-sub').textContent = 'You\'re in preview mode. Enroll to unlock save, PDFs, and your certificate.';
   }
 
-  // ── My prep tools: owned products (profile entitlement flags + purchases) ──
+  // ── My prep tools: the products table × this student's real entitlement flags
+  //    + purchases. "Included" is shown ONLY when the flag on the profile is true
+  //    (or admin); everything else is a product they can buy at the table's price. ──
   (async () => {
-    // Keep in sync with tools/index.html META + docs/mini-products-launch-checklist.md
-    const CATALOG = [
-      { flag: 'exam_pro',   name: 'RDA Exam Pro — Mock State Board', icon: '⏱️', href: '/exam-pro' },
-      { flag: 'study_pack', name: 'Dental Assistant Study Pack',     icon: '📚', href: '/study-pack' },
-      { flag: 'exam_prep',  name: 'RDA Exam-Prep Mini-Course',       icon: '🎯', href: '/exam-prep-course' },
-    ];
-    const enrolled = isAdmin || (p.program && p.program !== 'preview');
-    const owned = CATALOG.filter(c => p[c.flag] === true);
-    const shown = enrolled ? CATALOG : owned;
-    let history = [];
-    try {
-      const { data: rows } = await sb.from('purchases')
-        .select('product_label, amount_cents, status, created_at')
-        .eq('student_id', session.user.id).eq('status', 'completed')
-        .order('created_at', { ascending: false }).limit(10);
-      history = rows || [];
-    } catch (e) { /* purchases list is optional */ }
-    if (!shown.length && !history.length) return; // nothing owned — stay hidden, no upsell noise
-    document.getElementById('purchases-section').classList.remove('hidden');
-    document.getElementById('purchases-sub').textContent = enrolled
-      ? 'Included with your enrollment — open any of these anytime.'
-      : 'Everything you own, in one place.';
-    document.getElementById('purchases-grid').innerHTML = shown.map(c => `
-      <a href="${c.href}" class="flex items-center gap-3 bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition">
-        <span class="text-2xl">${c.icon}</span>
+    const section = document.getElementById('purchases-section');
+    const gridEl = document.getElementById('purchases-grid');
+    const subEl = document.getElementById('purchases-sub');
+    const histEl = document.getElementById('purchases-history');
+    // Whole dollars stay "$19"; anything with cents shows both digits ("$10.50").
+    const dollars = (cents) => {
+      const c = Math.round(Number(cents) || 0);
+      return '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: c % 100 ? 2 : 0, maximumFractionDigits: 2 });
+    };
+    // Where an owned product opens: an explicit delivery path if the row has one,
+    // /learn for the two course flags, otherwise the sales page (which doubles as
+    // the delivery page for the mini-products).
+    const openHref = (pr) => {
+      const d = String(pr.delivery || '');
+      if (/^(\/|https?:\/\/)/.test(d)) return d;
+      if (pr.entitlement_flag === 'online_program' || pr.entitlement_flag === 'career_vault') return '/learn';
+      return pr.sales_url || '/tools';
+    };
+
+    // Purchases: match student_id OR contact_email — guest checkouts write
+    // student_id null with only contact_email set.
+    let history = [], purchaseErr = null;
+    const purchasedKeys = new Set();
+    {
+      const email = String(session.user.email || p.email || '').trim();
+      const emailOk = /^[^,()\s"]+$/.test(email); // keep the .or() filter well-formed
+      let q = sb.from('purchases')
+        .select('product_key, product_label, amount_cents, status, created_at')
+        .eq('status', 'completed');
+      q = emailOk
+        ? q.or('student_id.eq.' + session.user.id + ',contact_email.eq.' + email)
+        : q.eq('student_id', session.user.id);
+      const { data: rows, error } = await q.order('created_at', { ascending: false }).limit(20);
+      if (error) purchaseErr = error;
+      else { history = rows || []; history.forEach(h => { if (h.product_key) purchasedKeys.add(h.product_key); }); }
+    }
+
+    const { data: prods, error: prodErr } = await sb.from('products')
+      .select('key,name,blurb,price_cents,reg_price_cents,entitlement_flag,active,sales_url,delivery,sort')
+      .eq('active', true).order('sort');
+    if (prodErr) {
+      section.classList.remove('hidden');
+      gridEl.innerHTML = '<div class="col-span-full text-sm text-rose-600">Couldn\'t load your products — refresh to try again.</div>';
+      return;
+    }
+    // Ownership mirrors the delivery pages' gates: the profile flag (or admin), or a
+    // completed purchase for that key. /learn opens online_program courses for any
+    // enrolled member, so that one flag counts as owned for everyone past the gate.
+    const owns = (pr) => {
+      if (isAdmin) return true;
+      if (purchasedKeys.has(pr.key)) return true;
+      const f = pr.entitlement_flag;
+      if (!f) return false;
+      if (f === 'online_program' && access.enrolled === true) return true;
+      return p[f] === true;
+    };
+    const list = prods || [];
+    const owned = list.filter(owns);
+    const buyable = list.filter(pr => !owns(pr) && pr.entitlement_flag && pr.sales_url);
+
+    if (!owned.length && !buyable.length && !history.length && !purchaseErr) return; // nothing to show — stay hidden
+    section.classList.remove('hidden');
+    subEl.textContent = owned.length ? 'Everything you own, in one place.'
+      : buyable.length ? 'Nothing on your account yet — here is what you can add.'
+      : 'Your purchase history.';
+    const ownedHtml = owned.map(pr => `
+      <a href="${esc(openHref(pr))}" class="flex items-center gap-3 min-h-[40px] bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition">
+        <span class="text-2xl shrink-0">✅</span>
         <span class="flex-1 min-w-0">
-          <span class="block font-bold text-sm">${c.name}</span>
-          <span class="block text-xs text-teal-700 font-semibold mt-0.5">${enrolled && p[c.flag] !== true ? '✓ Included with enrollment' : '✓ You own this'} · Open →</span>
+          <span class="block font-bold text-sm truncate">${esc(pr.name)}</span>
+          <span class="block text-xs text-teal-700 font-semibold mt-0.5">✓ Included · Open →</span>
         </span>
       </a>`).join('');
-    if (history.length) {
-      document.getElementById('purchases-history').innerHTML =
+    const buyHtml = buyable.map(pr => `
+      <a href="${esc(pr.sales_url)}" class="flex items-center gap-3 min-h-[40px] bg-white border border-slate-200 rounded-xl p-4 hover:border-teal-500 hover:shadow-md transition">
+        <span class="text-2xl shrink-0">🛒</span>
+        <span class="flex-1 min-w-0">
+          <span class="block font-bold text-sm truncate">${esc(pr.name)}</span>
+          <span class="block text-xs text-slate-500 mt-0.5 truncate">${esc(pr.blurb || '')}</span>
+          <span class="block text-xs text-teal-700 font-semibold mt-0.5">${esc(dollars(pr.price_cents))} · See details →</span>
+        </span>
+      </a>`).join('');
+    gridEl.innerHTML = ownedHtml +
+      (owned.length && buyable.length ? '<div class="col-span-full text-[11px] uppercase tracking-widest text-slate-500 font-semibold mt-1">Add to your toolkit</div>' : '') +
+      buyHtml;
+    if (purchaseErr) {
+      histEl.innerHTML = '<span class="text-rose-600">Couldn\'t load your purchase history — refresh to try again.</span>';
+    } else if (history.length) {
+      histEl.innerHTML =
         '<span class="font-semibold text-slate-600">Purchase history:</span> ' +
-        history.map(h => `${(h.product_label || 'Purchase')} — $${((h.amount_cents || 0) / 100).toFixed(0)} on ${new Date(h.created_at).toLocaleDateString()}`).join(' · ');
+        history.map(h => `${esc(h.product_label || 'Purchase')} — ${esc(dollars(h.amount_cents))} on ${new Date(h.created_at).toLocaleDateString()}`).join(' · ');
     }
-  })();
+  })().catch(() => {
+    document.getElementById('purchases-section').classList.remove('hidden');
+    document.getElementById('purchases-grid').innerHTML = '<div class="col-span-full text-sm text-rose-600">Couldn\'t load your products — refresh to try again.</div>';
+  });
 
   // ── Ask your teacher: send + show my question thread (student_questions) ──
   (async () => {
@@ -557,10 +697,14 @@
     const escQ = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
     async function loadQuestions() {
-      const { data: qs } = await sb.from('student_questions')
+      const { data: qs, error: qErr } = await sb.from('student_questions')
         .select('question, topic, answer, answered_at, created_at')
         .eq('student_id', session.user.id)
         .order('created_at', { ascending: false }).limit(15);
+      if (qErr) {
+        history.innerHTML = '<div class="text-xs text-rose-600">Couldn\'t load your questions — refresh to try again.</div>';
+        return;
+      }
       if (!qs || !qs.length) {
         history.innerHTML = '<div class="text-xs text-slate-400">Your questions and answers will show up here.</div>';
         return;
@@ -626,6 +770,31 @@
     } catch (e) { /* optional widget */ }
   })();
 
+  // ── Skills Lab: per-competency status from skills_lab_progress.competencies ──
+  (async () => {
+    const box = document.getElementById('skills-status');
+    if (!box) return;
+    const fail = () => { box.innerHTML = '<span class="text-rose-600">Couldn\'t load your Skills Lab progress — refresh to try again.</span>'; };
+    try {
+      const { data: row, error: skErr } = await sb.from('skills_lab_progress')
+        .select('competencies').eq('student_id', session.user.id).maybeSingle();
+      if (skErr) { fail(); return; }
+      const comp = (row && row.competencies && typeof row.competencies === 'object' && !Array.isArray(row.competencies)) ? row.competencies : {};
+      const keys = Object.keys(comp);
+      if (!keys.length) { box.textContent = 'No skills verified yet — start with the Virtual Dental Office.'; return; }
+      const statusOf = (v) => String((v && typeof v === 'object') ? (v.status || '') : (v || '')).toLowerCase();
+      const isDone = (s) => s === 'completed' || s === 'verified';
+      const done = keys.filter(k => isDone(statusOf(comp[k]))).length;
+      box.innerHTML = `<div class="font-semibold text-slate-700 mb-1.5">${done} of ${keys.length} skills verified</div><div class="flex flex-wrap gap-1.5">` +
+        keys.map(k => {
+          const s = statusOf(comp[k]);
+          const ok = isDone(s);
+          const started = !ok && !!s && s !== 'not_started';
+          return `<span class="inline-flex items-center min-w-0 max-w-full border rounded-full px-2.5 py-1 ${ok ? 'bg-teal-50 border-teal-200 text-teal-800' : started ? 'bg-amber-50 border-amber-200 text-amber-800' : 'bg-slate-50 border-slate-200 text-slate-600'}"><span class="truncate capitalize">${esc(String(k).replace(/[_-]+/g, ' '))}</span><span class="ml-1 shrink-0">${ok ? '✓' : started ? '· in progress' : '○'}</span></span>`;
+        }).join('') + '</div>';
+    } catch (e) { fail(); }
+  })();
+
   // Account form
   const accForm = document.getElementById('account-form');
   accForm.first_name.value = p.first_name || '';
@@ -648,15 +817,18 @@
     setTimeout(() => { btn.textContent = 'Save changes'; btn.classList.remove('bg-emerald-600'); btn.classList.add('bg-teal-700'); }, 1500);
   };
 
-  // Practice log → trainer activity stats + recent activity feed + curriculum progress
-  const { data: logs } = await sb.from('pp_practice_log')
+  // Real course progress runs in parallel with the practice log (defined below).
+  const courseProgressP = loadCourseProgress().catch((err) => { renderProgressError(err); return null; });
+
+  // Practice log → trainer activity stats + recent activity feed
+  const { data: logs, error: logErr } = await sb.from('pp_practice_log')
     .select('*').eq('student_id', p.id).order('created_at', { ascending: false }).limit(200);
 
   const all = logs || [];
   document.getElementById('stat-actions').textContent = all.length;
   // Show the "first time here?" quick-start card only for brand-new students
-  // who haven't logged any practice activity yet.
-  if (all.length === 0) {
+  // who haven't logged any practice activity yet (not when the log failed to load).
+  if (all.length === 0 && !logErr) {
     const qs = document.getElementById('quickstart');
     if (qs) qs.classList.remove('hidden');
   }
@@ -680,15 +852,17 @@
 
   // Recent activity feed
   const actList = document.getElementById('activity-list');
-  if (all.length === 0) {
+  if (logErr) {
+    actList.innerHTML = '<li class="text-rose-600">Couldn\'t load your practice history — refresh to try again.</li>';
+  } else if (all.length === 0) {
     actList.innerHTML = '<li class="text-slate-500">No practice activity yet. Open a trainer to start practicing.</li>';
   } else {
     actList.innerHTML = all.slice(0, 8).map(l => {
-      const action = l.action.replace(/_/g, ' ');
+      const action = String(l.action || '').replace(/_/g, ' ');
       const when = new Date(l.created_at);
       const ago = timeAgo(when);
       const app = l.app === 'practice_pro' ? 'Practice Pro' : 'ChairSide';
-      return `<li class="flex items-center justify-between border-b border-slate-100 pb-1.5"><span class="capitalize">${action}</span><span class="text-xs text-slate-500"><span class="mono">${ago}</span> · ${app}</span></li>`;
+      return `<li class="flex items-center justify-between gap-2 border-b border-slate-100 pb-1.5"><span class="capitalize min-w-0 truncate">${esc(action)}</span><span class="text-xs text-slate-500 shrink-0 whitespace-nowrap"><span class="mono">${ago}</span> · ${app}</span></li>`;
     }).join('');
   }
   const lastPP = all.find(l => l.app === 'practice_pro');
@@ -696,35 +870,113 @@
   if (lastPP) document.getElementById('last-pp').textContent = `Last used ${timeAgo(new Date(lastPP.created_at))} →`;
   if (lastCS) document.getElementById('last-cs').textContent = `Last used ${timeAgo(new Date(lastCS.created_at))} →`;
 
-  // Curriculum module progress (touched if action contains any matching keyword)
-  const MODULES = [
-    ['Patient check-in',   /patient|created|edit_demographics/i],
-    ['Medical history',    /medical|allergy|vitals/i],
-    ['Tooth chart',        /chart|tooth|surface/i],
-    ['Perio',              /perio/i],
-    ['Imaging',            /imaging|fmx/i],
-    ['Treatment plan',     /tx_|treatment|tx-add|tx-edit/i],
-    ['Insurance / claims', /claim|eob/i],
-    ['Ledger',             /procedure|payment|posted|walkout/i],
-    ['Communication',      /text|call|email|comm_logged/i],
-    ['Schedule',           /appt|sched/i],
-    ['Documentation',      /smartdoc|form_sign|note/i],
-    ['Analytics',          /report/i],
-  ];
-  const grid = document.getElementById('modules-grid');
-  let touched = 0;
-  grid.innerHTML = MODULES.map(([name, re]) => {
-    const hit = all.some(l => re.test(l.action || ''));
-    if (hit) touched++;
-    return `<div class="bg-${hit?'teal-50':'slate-50'} border border-${hit?'teal-200':'slate-200'} rounded-lg p-2.5 text-center">
-      <div class="text-lg">${hit ? '✅' : '⬜'}</div>
-      <div class="text-[11px] font-medium mt-0.5">${name}</div>
-    </div>`;
-  }).join('');
-  document.getElementById('progress-summary').textContent = `${touched} of ${MODULES.length} modules touched`;
+  // ── Curriculum progress: distinct completed lessons (module_progress.completed_at
+  //    set) over the active lessons of the student's course. Same tables and the
+  //    same counting rules as /learn, so the two pages always agree. ──
+  function renderProgressError(err) {
+    const s = document.getElementById('progress-summary');
+    s.textContent = 'Couldn\'t load your progress — refresh to try again.';
+    s.className = 'text-xs text-rose-600';
+    document.getElementById('modules-grid').innerHTML = '';
+    document.getElementById('progress-actions').innerHTML =
+      '<a href="/learn" class="inline-flex items-center min-h-[40px] bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2 rounded-full text-sm">Open my courses →</a>';
+    if (err && window.console) console.error('course progress failed', err);
+  }
+  async function loadCourseProgress() {
+    const sumEl = document.getElementById('progress-summary');
+    const barEl = document.getElementById('progress-bar');
+    const gridEl = document.getElementById('modules-grid');
+    const actEl = document.getElementById('progress-actions');
+    const learnBtn = (href, label) => `<a href="${esc(href)}" class="inline-flex items-center min-h-[40px] bg-teal-700 hover:bg-teal-800 text-white font-semibold px-4 py-2 rounded-full text-sm">${label}</a>`;
+
+    const { data: courses, error: cErr } = await sb.from('courses').select('*').order('sort');
+    if (cErr) throw cErr;
+    // Same entitlement rule as /learn: admins see everything; career_vault needs
+    // the flag; anything else is open to any enrolled member.
+    const mine = (courses || []).filter(c => {
+      if (isAdmin) return true;
+      if (c.active === false) return false;
+      if (c.entitlement_flag === 'career_vault') return p.career_vault === true;
+      return access.enrolled === true;
+    });
+    const course = mine.find(c => c.entitlement_flag === 'online_program') || mine[0] || null;
+    if (!course) {
+      sumEl.textContent = 'No course on your account yet.';
+      gridEl.innerHTML = '';
+      actEl.innerHTML = learnBtn('/learn', 'Open my courses →');
+      return null;
+    }
+    const { data: mods, error: mErr } = await sb.from('course_modules')
+      .select('id,module_number,title,sort').eq('course_id', course.id).order('sort');
+    if (mErr) throw mErr;
+    const modList = mods || [];
+    const ids = modList.map(m => m.id);
+    let lessons = [];
+    if (ids.length) {
+      const { data: ls, error: lErr } = await sb.from('course_lessons')
+        .select('id,module_id,lesson_number,sort,active').in('module_id', ids).order('sort');
+      if (lErr) throw lErr;
+      lessons = ls || [];
+    }
+    const { data: prog, error: pErr } = await sb.from('module_progress')
+      .select('module_number,lesson_number,completed_at').eq('student_id', session.user.id);
+    if (pErr) throw pErr;
+    const doneMap = {};
+    (prog || []).forEach(r => { if (r.completed_at) doneMap[r.module_number + ':' + r.lesson_number] = true; });
+
+    let total = 0, done = 0;
+    const perModule = modList.map(m => {
+      const ls = lessons.filter(l => l.module_id === m.id && (isAdmin || l.active !== false));
+      const d = ls.filter(l => doneMap[m.module_number + ':' + l.lesson_number]).length;
+      total += ls.length; done += d;
+      return { m, total: ls.length, done: d };
+    }).filter(x => x.total > 0 || isAdmin);
+    const slug = encodeURIComponent(course.slug || '');
+    const courseHref = '/learn?c=' + slug;
+
+    if (!total) {
+      // Honest empty state — never a fake 0%. Lessons are date-gated server-side
+      // until the cohort's start_date, so before day one say when they unlock
+      // (date from cohorts.start_date only, compared as local yyyy-mm-dd).
+      const ck = await cohortP.catch(() => null);
+      const sd = ck && ck.cohorts && ck.cohorts.start_date ? String(ck.cohorts.start_date).slice(0, 10) : '';
+      const now = new Date();
+      const today = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      if (/^\d{4}-\d{2}-\d{2}$/.test(sd) && sd > today) {
+        const when = new Date(sd + 'T12:00:00').toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        sumEl.textContent = 'Your lessons unlock on ' + when + ' — day one of class.';
+      } else {
+        sumEl.textContent = 'Progress isn\'t available yet — lessons are still being added.';
+      }
+      barEl.style.width = '0%';
+      gridEl.innerHTML = '';
+      actEl.innerHTML = learnBtn(courseHref, 'Open course →');
+      return { course, done: 0, total: 0, pct: 0 };
+    }
+    const pct = Math.round(done / total * 100);
+    sumEl.textContent = `${done} of ${total} lessons complete · ${pct}%`;
+    barEl.style.width = pct + '%';
+    gridEl.innerHTML = perModule.map(x => {
+      const full = x.total > 0 && x.done >= x.total;
+      const some = !full && x.done > 0;
+      return `<a href="${esc(courseHref)}" class="block min-w-0 border ${full ? 'bg-teal-50 border-teal-200' : some ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200'} rounded-lg p-2.5 text-center hover:border-teal-500 transition">
+        <div class="text-lg">${full ? '✅' : some ? '🟡' : '⬜'}</div>
+        <div class="text-[11px] font-medium mt-0.5 truncate">${esc('Module ' + x.m.module_number + (x.m.title ? ' · ' + x.m.title : ''))}</div>
+        <div class="text-[10px] text-slate-500 mt-0.5 mono">${x.done} / ${x.total}</div>
+      </a>`;
+    }).join('');
+    const complete = done >= total;
+    const certOk = complete && course.cert_enabled !== false;
+    actEl.innerHTML = learnBtn(courseHref, complete ? 'Review course →' : (done ? 'Resume course →' : 'Start course →')) +
+      (certOk
+        ? `<a href="/certificate?c=${slug}" class="inline-flex items-center min-h-[40px] bg-amber-500 hover:bg-amber-600 text-white font-semibold px-4 py-2 rounded-full text-sm">🎓 Get my certificate →</a>`
+        : (complete ? '' : '<span class="inline-flex items-center min-h-[40px] bg-slate-100 text-slate-500 font-semibold px-4 py-2 rounded-full text-sm" title="Complete every lesson to unlock your certificate">🔒 Certificate · unlocks at 100%</span>'));
+    return { course, done, total, pct };
+  }
 
   // ── Achievements / gamification (all driven by real practice data) ──
   (async () => {
+    const cp = await courseProgressP;
     let bestExam = 0;
     try {
       const { data: atts } = await sb.from('practice_exam_attempts')
@@ -741,7 +993,7 @@
       { icon:'🔥', name:'On a Roll',    earned: streak >= 3,                     hint:'Practice 3 days in a row' },
       { icon:'💪', name:'Week Warrior', earned: streak >= 7,                     hint:'7-day streak' },
       { icon:'🧠', name:'Exam Ready',   earned: bestExam >= 75,                  hint:'Score 75%+ on the practice exam' },
-      { icon:'🏆', name:'Full Sweep',   earned: touched >= MODULES.length,       hint:'Touch all 12 modules' },
+      { icon:'🏆', name:'Full Sweep',   earned: !!(cp && cp.total > 0 && cp.done >= cp.total), hint:'Complete every course lesson' },
     ];
     const earnedCount = BADGES.filter(b => b.earned).length;
 
@@ -759,14 +1011,6 @@
     document.getElementById('ach-sub').textContent =
       earnedCount === BADGES.length ? 'Every badge earned — you are a machine. 🎉'
       : `${earnedCount} of ${BADGES.length} badges earned. Keep going!`;
-
-    // Hands-on completion = modules touched / total
-    const pct = Math.round((touched / MODULES.length) * 100);
-    document.getElementById('cert-pct').textContent = pct + '%';
-    document.getElementById('cert-bar').style.width = pct + '%';
-    document.getElementById('cert-hint').textContent = pct >= 100
-      ? '🎓 Hands-on track complete — you have touched every module.'
-      : `${MODULES.length - touched} module(s) left to touch in the trainers.`;
   })();
 
   function timeAgo(d) {
@@ -792,7 +1036,7 @@
       location.href = '/logout?then=home';
     };
   }
-})();
+})().catch(dashFatal);
 </script>
 <script defer src="/assets/pda-track.js"></script>
 </body>
