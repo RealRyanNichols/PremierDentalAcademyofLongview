@@ -437,11 +437,17 @@
     // Wire the big buttons.
     const msgsLink = document.getElementById('simple-msgs');
     if (msgsLink) msgsLink.onclick = (e) => { e.preventDefault(); goFull(); document.getElementById('tab-messages').click(); };
-    listEl.querySelectorAll('[data-sc-call]').forEach(a => a.addEventListener('click', () => stampContacted(a.dataset.scCall)));
+    listEl.querySelectorAll('[data-sc-call]').forEach(a => a.addEventListener('click', () => {
+      const id = a.dataset.scCall;
+      stampContacted(id);
+      logContact(allLeads.find(x => x.id === id), { channel: 'call', body: 'Called from admin' });
+      setTimeout(() => showOutcomeCard(id, '📞 Call logged'), 0); // let the tel: link fire first
+    }));
     listEl.querySelectorAll('[data-sc-text]').forEach(b => b.onclick = () => openSms(b.dataset.phone, b.dataset.name, b.dataset.scText));
     listEl.querySelectorAll('[data-sc-done]').forEach(b => b.onclick = async () => {
-      await stampContacted(b.dataset.scDone, true);
-      renderSimple();
+      const id = b.dataset.scDone;
+      await stampContacted(id, true);      // one tap — the stamp is already done
+      showOutcomeCard(id, '✓ Marked handled');
     });
   }
 
@@ -454,7 +460,7 @@
       : storyLine(l);
     const initials = esc((l.first_name?.[0] || name[0] || '?').toUpperCase()) + esc((l.last_name?.[0] || '').toUpperCase());
     return `
-      <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 mb-3">
+      <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 mb-3" data-sc-card="${l.id}">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold shrink-0">${initials}</div>
           <div class="min-w-0">
@@ -483,6 +489,83 @@
     if (bump && t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
     if (t) Object.assign(t, patch);
     try { await sb.from('leads').update(patch).eq('id', id); } catch (e) {}
+  }
+
+  // One shared writer for contact history. Every admin-initiated call, text and
+  // handled-marking lands in public.communications, linked to the lead. Never blocks the UI.
+  async function logContact(lead, { channel, direction = 'outbound', body = '', durationSeconds = null }) {
+    if (!lead || !lead.id) return;
+    const row = {
+      related_lead_id: lead.id,
+      contact_phone: lead.phone || null,
+      contact_email: lead.email || null,
+      contact_name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || null,
+      channel, direction, body,
+      duration_seconds: durationSeconds,
+      source: 'admin_manual',
+      occurred_at: new Date().toISOString(),
+    };
+    let saved = null;
+    try {
+      const { data, error } = await sb.from('communications').insert(row).select().single();
+      if (error) throw error;
+      saved = data;
+    } catch (e) { console.warn('logContact failed', e); }   // never block the UI
+    // Show it in the timeline either way — a local stub is flagged "not saved".
+    allComms.unshift(saved || Object.assign({ id: 'local-' + Date.now(), created_at: row.occurred_at, metadata: {} }, row));
+    afterContactLogged(lead.id);
+  }
+  // After any contact write: refresh the drawer's timeline in place and the list rows.
+  // A simple-view card that is mid-outcome (chips showing) is left alone until she finishes.
+  function afterContactLogged(id) {
+    if (drawerLeadId === id) { const l = allLeads.find(x => x.id === id); if (l) renderLeadHistory(l); }
+    render({ keepSimple: !!document.querySelector('#simple-list [data-outcome-row]') });
+  }
+
+  // "I handled this" outcomes — one tap each, optional one-line note. Writes channel 'note'.
+  const OUTCOMES = ['Talked to them', 'Left voicemail', 'No answer', 'Texted them'];
+  function outcomeRowHtml(withSkip) {
+    return `<div data-outcome-row class="mt-2">
+      <div class="text-xs text-slate-500 font-semibold mb-1.5">What happened? One tap — optional.</div>
+      <div class="flex flex-wrap gap-1.5">
+        ${OUTCOMES.map(o => `<button type="button" data-outcome="${esc(o)}" class="min-h-[40px] px-3 rounded-full border border-slate-300 bg-white hover:border-teal-600 hover:bg-teal-50 text-sm font-semibold text-slate-700">${esc(o)}</button>`).join('')}
+      </div>
+      <div class="flex gap-2 mt-2">
+        <input data-outcome-note placeholder="Optional one-line note" class="flex-1 min-w-0 min-h-[40px] text-sm px-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none" />
+        <button type="button" data-outcome-save class="min-h-[40px] px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shrink-0">Save</button>
+        ${withSkip ? '<button type="button" data-outcome-skip class="min-h-[40px] px-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 shrink-0">Skip</button>' : ''}
+      </div>
+      <div data-outcome-status class="text-[11px] text-slate-400 mt-1 min-h-[1rem]"></div>
+    </div>`;
+  }
+  function wireOutcomeRow(root, lead, onDone) {
+    const note = root.querySelector('[data-outcome-note]');
+    const status = root.querySelector('[data-outcome-status]');
+    const go = async (outcome) => {
+      const n = (note?.value || '').trim();
+      if (status) status.textContent = 'Saving…';
+      await logContact(lead, { channel: 'note', body: outcome + (n ? ' — ' + n : '') });
+      if (note) note.value = '';
+      if (status) { status.textContent = '✓ Logged'; setTimeout(() => { status.textContent = ''; }, 1500); }
+      if (onDone) onDone();
+    };
+    root.querySelectorAll('[data-outcome]').forEach(b => b.onclick = () => go(b.dataset.outcome));
+    const save = root.querySelector('[data-outcome-save]');
+    if (save) save.onclick = () => {
+      if (!(note?.value || '').trim()) { if (status) status.textContent = 'Type a note or tap an outcome.'; return; }
+      go('Handled');
+    };
+    const skip = root.querySelector('[data-outcome-skip]');
+    if (skip) skip.onclick = () => { if (onDone) onDone(); };
+  }
+  // Swap a simple-view card for the outcome chips (after Call or "I handled this").
+  function showOutcomeCard(id, headline) {
+    const lead = allLeads.find(x => x.id === id);
+    const card = document.querySelector(`#simple-list [data-sc-card="${CSS.escape(id)}"]`);
+    if (!lead || !card) { renderSimple(); return; }
+    card.innerHTML = `<div class="font-bold text-lg leading-tight">${esc(leadName(lead))}</div>
+      <div class="text-sm text-emerald-700 font-semibold mt-0.5">${headline}</div>` + outcomeRowHtml(true);
+    wireOutcomeRow(card, lead, renderSimple);
   }
 
   function applyViewMode() {
@@ -566,7 +649,7 @@
     </div>`;
   }
 
-  function render() {
+  function render(opts) {
     const q = (document.getElementById('search').value || '').toLowerCase().trim();
     const stageF = document.getElementById('stage-filter').value;
     const sourceF = document.getElementById('source-filter').value;
@@ -626,7 +709,7 @@
     wireRowHandlers();
     renderStoryCard();
     renderSubs();
-    renderSimple(); // keep the simple queue in sync with any full-view edits
+    if (!opts?.keepSimple) renderSimple(); // keep the simple queue in sync with any full-view edits
   }
 
   // Calm view: one friendly line per person — who they are, what they did,
@@ -749,13 +832,12 @@
       btn.onclick = () => openSms(btn.dataset.phone, btn.dataset.name, btn.dataset.id);
     });
 
-    // Tapping "Call" stamps last_contact_at so the office knows it was dialed
+    // Tapping "Call" stamps last_contact_at so the office knows it was dialed, and logs the call
     document.querySelectorAll('[data-action="call"]').forEach(a => {
-      a.addEventListener('click', async () => {
+      a.addEventListener('click', () => {
         const id = a.dataset.id; if (!id) return;
-        await sb.from('leads').update({ last_contact_at: new Date().toISOString() }).eq('id', id);
-        const t = allLeads.find(x => x.id === id);
-        if (t) t.last_contact_at = new Date().toISOString();
+        stampContacted(id);
+        logContact(allLeads.find(x => x.id === id), { channel: 'call', body: 'Called from admin' });
       });
     });
 
@@ -1042,6 +1124,7 @@
         if (t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
         await sb.from('leads').update(patch).eq('id', smsLeadId);
         if (t) Object.assign(t, patch);
+        logContact(t, { channel: 'sms', body });
         render();
       }
       setTimeout(() => modal.classList.add('hidden'), 700);
@@ -1132,9 +1215,12 @@
     body.scrollTop = 0;
     // Reach them — Call stamps last_contact_at like the list button; Text opens the SMS composer.
     const callBtn = body.querySelector('[data-drawer-call]');
-    if (callBtn) callBtn.addEventListener('click', () => { stampContacted(l.id); render(); });
+    if (callBtn) callBtn.addEventListener('click', () => { stampContacted(l.id); logContact(l, { channel: 'call', body: 'Called from admin' }); render(); });
     const textBtn = body.querySelector('[data-drawer-text]');
     if (textBtn) textBtn.onclick = () => openSms(textBtn.dataset.phone, leadName(l), l.id);
+    // Log what happened — same one-tap outcome chips as the simple view.
+    const logBox = body.querySelector('#lead-log');
+    if (logBox) { logBox.innerHTML = outcomeRowHtml(false); wireOutcomeRow(logBox, l, null); }
     // Notes — the same debounced save as the list card.
     const ta = body.querySelector('[data-drawer-notes]');
     if (ta) wireNotes(ta, l.id, body.querySelector('[data-drawer-notes-status]'));
@@ -1203,7 +1289,7 @@
           ${kv('Landing page', lp ? (lpIsUrl ? `<a href="${esc(lp)}" target="_blank" rel="noopener" class="text-teal-700 hover:underline break-all">${esc(lp)}</a>` : esc(lp)) : '<span class="text-slate-400">—</span>')}
           ${utmRows.length ? utmRows.map(r => kv(r[0], esc(r[1]))).join('') : kv('Campaign', '<span class="text-slate-400">No campaign data</span>')}
         </div>`)}
-      ${drawerSection('Contact history', '<div id="lead-history"><div class="text-sm text-slate-500 py-2">Loading contact history…</div></div>')}
+      ${drawerSection('Contact history', '<div id="lead-history"><div class="text-sm text-slate-500 py-2">Loading contact history…</div></div><div id="lead-log" class="mt-3 pt-3 border-t border-slate-100"></div>')}
       ${drawerSection('Notes', `
         <textarea data-drawer-notes rows="3" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
         <span data-drawer-notes-status class="text-[11px] text-slate-400"></span>`)}
@@ -1226,6 +1312,7 @@
           <span>${esc(ch || 'contact')}</span>
           <span>${esc(fmtWhen(c.occurred_at))}</span>
           ${dur ? `<span class="mono">${esc(dur)}</span>` : ''}
+          ${String(c.id || '').startsWith('local-') ? '<span class="text-rose-600 font-semibold">not saved</span>' : ''}
         </div>
         ${c.body ? `<div class="text-sm text-slate-800 whitespace-pre-wrap break-words mt-0.5">${esc(c.body)}</div>` : ''}
         ${summary ? `<div class="text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mt-1 whitespace-pre-wrap break-words"><span class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Summary</span><br>${esc(summary)}</div>` : ''}
