@@ -34,6 +34,9 @@
     /* Tooth SVG default + states */
     .tooth { cursor: pointer; }
     .tooth:hover .tooth-shape { stroke: #0d9488; stroke-width: 1.5; }
+    .tooth:focus { outline: none; }
+    .tooth:focus-visible .tooth-shape { stroke: #0d9488; stroke-width: 2.2; }
+    .tooth text { user-select: none; }
     .surface { fill: #ffffff; stroke: #94a3b8; }
     .surface.s-amalgam   { fill: #475569; }
     .surface.s-composite { fill: #0d9488; }
@@ -140,6 +143,7 @@
 <script src="/auth.js"></script>
 <script src="/assets/pda-shared.js"></script>
 <script src="/assets/pda-seed-patients.js"></script>
+<script src="/assets/tooth-shapes.js"></script>
 
 <script>
 /* ============================================================
@@ -2150,81 +2154,6 @@
   }
   function statusColor(status) { return STATUS_COLORS[status] || STATUS_COLORS.existing; }
 
-  // Center coordinates of the crown (y=50–106). Sealant "S" sits at the
-  // occlusal center, drawn outside the maxillary/mandibular flip so it stays
-  // upright either way.
-  const OCC_CENTER = {
-    molar: [28, 82], premolar: [28, 82], canine: [28, 82], central: [28, 82], lateral: [28, 82],
-  };
-
-  // Anatomical crown silhouettes (maxillary orientation; gingival line y=50,
-  // biting/incisal edge at the bottom ~y104). The whole SVG flips for the
-  // mandibular arch in renderTooth. Each class has its real morphology:
-  //   incisors  — flat incisal edge (central wider than lateral)
-  //   canine    — single pointed cusp tip
-  //   premolar  — two cusps (buccal + lingual)
-  //   molar     — wide crown, multi-cusp occlusal silhouette
-  const CROWN_PATHS = {
-    central: 'M 12 50 L 44 50 L 49 97 Q 49.5 104 42 104 L 14 104 Q 6.5 104 7 97 Z',
-    lateral: 'M 17 50 L 39 50 L 43 96 Q 43 103 37 103 L 19 103 Q 13 103 13 96 Z',
-    canine:  'M 15 50 L 41 50 L 44 86 L 30 105 Q 28 107.5 26 105 L 12 86 Z',
-    premolar:'M 12 50 L 44 50 L 45 88 Q 37 101 28.5 91 Q 19 101 11 88 Z',
-    molar:   'M 6 50 L 50 50 L 49 88 Q 42 101 35 91 Q 28 101 21 91 Q 14 101 7 88 Z',
-  };
-  // Occlusal / incisal detail strokes (cusp ridges, central groove).
-  const OCC_DETAIL = {
-    central: ['M 13 100 L 43 100'],
-    lateral: ['M 16 99.5 L 40 99.5'],
-    canine:  ['M 18 88 L 28 103 L 38 88'],
-    premolar:['M 28.5 70 L 28.5 91','M 20 92 L 20 86','M 37 92 L 37 86'],
-    molar:   ['M 28 68 L 28 92','M 13 90 L 49 90'],
-  };
-  // Roots are ANATOMICALLY ARCH-AWARE (this is the part students must learn):
-  //   maxillary molars   → 3 roots (mesiobuccal, distobuccal, palatal)
-  //   mandibular molars  → 2 roots (mesial, distal)
-  //   maxillary 1st PM   → 2 roots (buccal, palatal); all other premolars → 1
-  //   canine             → 1 very long root; incisors → 1 root
-  function rootsFor(num, cls) {
-    const max = num <= 16;
-    if (cls === 'molar') {
-      if (max) return [
-        { d: 'M 10 50 C 6 35 3 16 9 4 Q 11 1.5 14 4 C 19 16 18 35 19 50 Z', opacity: 1 },    // mesiobuccal
-        { d: 'M 37 50 C 38 35 37 16 42 4 Q 45 1.5 47 4 C 53 16 50 35 46 50 Z', opacity: 1 },  // distobuccal
-        { d: 'M 23 50 C 22 34 22 18 28 6 C 34 18 34 34 33 50 Z', opacity: 0.85 },             // palatal
-      ];
-      return [
-        { d: 'M 11 50 C 8 34 6 16 12 4 Q 14 1.5 17 4 C 22 16 21 34 21 50 Z', opacity: 1 },    // mesial
-        { d: 'M 36 50 C 37 35 36 19 41 7 Q 43 4.5 45 7 C 49 19 48 35 45 50 Z', opacity: 1 },  // distal
-      ];
-    }
-    if (cls === 'premolar') {
-      if (max && (num === 5 || num === 12)) return [
-        { d: 'M 17 50 C 15 36 14 20 19 7 Q 21 4 24 7 C 27 20 26 36 26 50 Z', opacity: 1 },
-        { d: 'M 30 50 C 30 36 30 20 33 7 Q 35 4 38 7 C 41 20 40 36 39 50 Z', opacity: 0.9 },
-      ];
-      return [{ d: 'M 16 50 C 14 34 13 17 19 5 C 21 2 26 1.5 28 1.5 C 30 1.5 35 2 37 5 C 43 17 40 34 38 50 Z', opacity: 1 }];
-    }
-    if (cls === 'canine') return [{ d: 'M 20 50 C 16 28 14 10 22 2 C 24 0.5 26 0 28 0 C 30 0 32 0.5 34 2 C 42 10 36 28 33 50 Z', opacity: 1 }];
-    const w = cls === 'central' ? 0 : 1.5; // lateral root a touch narrower
-    return [{ d: `M ${20 + w} 50 C ${18 + w} 35 ${18 + w} 21 ${22 + w} 7 C 23 5 26 4 27 4 C 28 4 31 5 ${32 - w} 7 C ${36 - w} 21 ${36 - w} 35 ${34 - w} 50 Z`, opacity: 1 }];
-  }
-  // RCT canals drawn down each root (matches the real root count above).
-  function rctLinesFor(num, cls) {
-    const max = num <= 16;
-    if (cls === 'molar')    return max ? [[12,8,12,46],[44,8,44,46],[28,12,28,46]] : [[14,8,14,46],[43,12,43,46]];
-    if (cls === 'premolar') return (max && (num === 5 || num === 12)) ? [[22,10,22,46],[35,10,35,46]] : [[27,8,27,46]];
-    if (cls === 'canine')   return [[28,4,28,46]];
-    return [[28,8,28,46]];
-  }
-  // Abscess dot at the apex of each root.
-  function abscessFor(num, cls) {
-    const max = num <= 16;
-    if (cls === 'molar')    return max ? [[11,3],[45,3],[28,5]] : [[13,3],[43,6]];
-    if (cls === 'premolar') return (max && (num === 5 || num === 12)) ? [[21,5],[36,5]] : [[27,2]];
-    if (cls === 'canine')   return [[28,1]];
-    return [[28,5]];
-  }
-
   // Tooth class by universal number (1-32)
   function toothClass(n) {
     if ([1,2,3, 14,15,16, 17,18,19, 30,31,32].includes(n)) return 'molar';
@@ -2235,37 +2164,9 @@
   }
   function isAnterior(n) { return (n >= 6 && n <= 11) || (n >= 22 && n <= 27); }
 
-  // Anatomically-shaped tooth SVG paths.
-  // viewBox is 0 0 40 76 — root (top), gingival line, crown body, occlusal/incisal edge.
-  // Crown SVG path is the only thing that gets surface-marked; the root stays neutral.
-  // For maxillary teeth (1-16) we draw root-up, crown-down (the way you see them in patient's mouth).
-  // For mandibular teeth (17-32) we flip so crown faces up.
-  // Anatomically-detailed tooth SVGs.
-  // viewBox is 0 0 56 110 — root at top (y 4–48), gingival line at y=50, crown at y=50–106.
-  // Crown SVG path is the only thing that gets surface-marked; root + gingiva are decorative.
-  // Maxillary teeth (1-16) draw root-up / crown-down (the anatomical convention).
-  // Mandibular teeth (17-32) get vertically flipped at render time.
-  function toothShapes(cls, num) {
-    // Five trapezoid surfaces (occlusal-view grid: O/I center, with M/D/B/L
-    // around it) overlaid on an ANATOMICAL crown silhouette + arch-aware roots.
-    // The surface fills/grid get clipped to the crown outline in renderTooth so
-    // they conform to the real tooth shape. The whole SVG flips vertically for
-    // mandibular teeth so the root ends up below the crown for the bottom arch.
-    const isAnt = (cls === 'central' || cls === 'lateral' || cls === 'canine');
-    const centerKey = isAnt ? 'I' : 'O';
-    const zones = {
-      B: 'M 2 50 L 54 50 L 40 66 L 16 66 Z',
-      M: 'M 2 50 L 2 106 L 16 90 L 16 66 Z',
-      D: 'M 54 50 L 54 106 L 40 90 L 40 66 Z',
-      L: 'M 2 106 L 54 106 L 40 90 L 16 90 Z',
-    };
-    zones[centerKey] = 'M 16 66 L 40 66 L 40 90 L 16 90 Z';
-    const crown = CROWN_PATHS[cls] || CROWN_PATHS.molar;
-    return { crown, zones, roots: rootsFor(num, cls), occlusal: (OCC_DETAIL[cls] || []) };
-  }
-
-  function toothLabel(num) {
-    // Quadrant + tooth name for chart hover
+  function toothLabel(num, plain) {
+    // Quadrant + tooth name for chart hover. plain=true → "upper right first molar"
+    // (the wording students hear chairside); default → "Maxillary right 1st molar".
     const isUpper = num <= 16;
     const isRight = (num <= 8) || (num >= 25 && num <= 32);
     const cls = toothClass(num);
@@ -2274,108 +2175,176 @@
                    17:'3M', 18:'2M', 19:'1M', 20:'2PM', 21:'1PM', 22:'C', 23:'LI', 24:'CI',
                    25:'CI', 26:'LI', 27:'C', 28:'1PM', 29:'2PM', 30:'1M', 31:'2M', 32:'3M' })[num] || '';
     const names = { '3M':'3rd molar','2M':'2nd molar','1M':'1st molar','2PM':'2nd premolar','1PM':'1st premolar','C':'canine','LI':'lateral incisor','CI':'central incisor' };
+    const plainNames = { '3M':'third molar','2M':'second molar','1M':'first molar','2PM':'second premolar','1PM':'first premolar','C':'canine','LI':'lateral incisor','CI':'central incisor' };
+    if (plain) return `${isUpper?'upper':'lower'} ${isRight?'right':'left'} ${plainNames[idx] || cls}`;
     return `${isUpper?'Maxillary':'Mandibular'} ${isRight?'right':'left'} ${names[idx] || cls}`;
   }
 
-  function renderTooth(num, marks, isUpper) {
-    // 5-surface SQUARE crown (y3-53) + anatomy-sized root(s) below (y52-87).
-    // Molars biggest (2 roots), bicuspids 2 roots just under molars, canine
-    // longest single, incisors single sized like a bicuspid. The MAXILLARY arch
-    // flips vertically (so its roots point UP/buccal, away from the midline);
-    // the mandibular arch is un-flipped (its roots stay DOWN/buccal). See the
-    // `flip` assignment below for the full orientation rationale. Text (SSC,
-    // sealant S) is drawn outside the flip so it always reads upright. Surface
-    // hit zones keep click-to-mark working.
+  // ── Anatomical odontogram ──────────────────────────────────────
+  // The geometry (facial crowns + roots per tooth type, chewing-surface
+  // silhouettes, and the two elliptical arches) lives in
+  // /assets/tooth-shapes.js (window.PDA_TOOTH_SHAPES). Each tooth is ONE
+  // <g data-tooth> holding two views that share the tooth number:
+  //   • facial view — placed on the arch and rotated so the roots point
+  //     OUTWARD (upper roots up, lower roots down), mirrored so the mesial
+  //     surface always faces the midline;
+  //   • chewing-surface view — the 5-zone surface picker (M, O/I, D, B/F, L)
+  //     in a straight row just inside the arch, aligned with its facial
+  //     tooth. Zones carry data-surface + class="surface s-…" and are the
+  //     click targets for surface markers (a click on the facial view marks
+  //     the facial/B surface, or applies a whole-tooth marker).
+  // Whole-tooth states: missing → dashed ghost + ✕ in both views; implant →
+  // screw-shaped body replacing the roots; PFM/FGC/SSC/crown → the whole
+  // crown takes the marker colour; RCT → canals filled down each root.
+  const TOOTH_INK = { enamel: '#fbfaf6', enamelLine: '#5b6b7c', root: '#f1dfc9', rootBack: '#e6cdb0', rootLine: '#b48c6a', gum: '#f0a2b1', zoneLine: '#94a3b8' };
+  const SURF_NAMES = { M: 'mesial', O: 'occlusal', I: 'incisal', D: 'distal', B: 'buccal / facial', L: 'lingual' };
+  const WHOLE_TYPES = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
+  const SURF_TYPES = ['caries','composite','amalgam','watch'];
+  const CROWN_TYPES = ['crown','pfm','fgc','ssc'];
+  const NSS = 'vector-effect="non-scaling-stroke"'; // strokes stay crisp when the chart scales down on tablets/phones
+  function chartLayout() {
+    const TS = window.PDA_TOOTH_SHAPES;
+    if (!TS) return null;
+    if (!chartLayout._cache) chartLayout._cache = TS.layout({ unit: 6, width: 1000 });
+    return chartLayout._cache;
+  }
+  const n1 = (v) => (Math.round(v * 10) / 10).toString();
+
+  function renderTooth(num, marks, T, L) {
+    // T = this tooth's placement from the layout (x/y/deg on the arch, sx/sy
+    // mirror flags, picker size/row), L = the whole layout.
+    const TS = window.PDA_TOOTH_SHAPES;
     const m = marks || {};
     const center = isAnterior(num) ? 'I' : 'O';
-    const baseZones = {
-      B: 'M3 3 L53 3 L40 16 L16 16 Z',
-      M: 'M3 3 L3 53 L16 40 L16 16 Z',
-      D: 'M53 3 L53 53 L40 40 L40 16 Z',
-      L: 'M3 53 L53 53 L40 40 L16 40 Z',
-    };
-    baseZones[center] = 'M16 16 L40 16 L40 40 L16 40 Z';
-    // Mesial faces midline: patient's right (1-8, 25-32) -> mesial on the right.
+    // Mesial faces midline: patient's right (1-8, 25-32) -> mesial on the viewer's right.
     const swapMD = (num <= 8) || (num >= 25 && num <= 32);
-    let zones = { ...baseZones };
-    if (swapMD) { const M = zones.M, D = zones.D; zones = { ...zones, M: D, D: M }; }
-
-    const WHOLE = ['crown','pfm','fgc','ssc','rct','implant','missing','extract','impacted','drift_m','drift_d'];
-    const SURF = ['caries','composite','amalgam','watch'];
-    const wholeRaw = m.whole || Object.values(m).find(function (v) { return WHOLE.includes(parseMarker(v).type); });
+    const wholeRaw = m.whole || Object.values(m).find(function (v) { return WHOLE_TYPES.includes(parseMarker(v).type); });
     const parsedWhole = parseMarker(wholeRaw);
     const wType = parsedWhole.type, wStatus = parsedWhole.status;
     const wCol = wType ? statusColor(wStatus) : '#475569';
     const hideSurf = ['pfm','fgc','ssc','missing','crown'].includes(wType);
-
-    const cls = toothClass(num);
-    const APEX = cls === 'molar' ? [[18,86],[38,86]]
-              : cls === 'premolar' ? [[18,84],[38,84]]
-              : cls === 'canine' ? [[28,87]]
-              : [[28,84]];
-    function rootShape() {
-      if (cls === 'molar') return 'M9 52 L26 52 C26 69 23 81 18 86 C13 81 9 69 9 52 Z M30 52 L47 52 C47 69 43 81 38 86 C33 81 30 69 30 52 Z';
-      if (cls === 'premolar') return 'M11 52 L25 52 C25 68 22 79 18 84 C14 79 11 68 11 52 Z M31 52 L45 52 C45 68 42 79 38 84 C34 79 31 68 31 52 Z';
-      if (cls === 'canine') return 'M17 52 L39 52 C38 69 33 84 28 87 C23 84 18 69 17 52 Z';
-      return 'M19 52 L37 52 C36 67 32 80 28 84 C24 80 20 67 19 52 Z';
-    }
-    const rootGrad = 'tr-' + num;
-    const rootPeg = wType === 'implant'
-      ? '<rect x="21" y="55" width="14" height="27" rx="2.5" fill="' + wCol + '"/>' + [59,63,67,71,75,79].map(function (y) { return '<line x1="21" y1="' + y + '" x2="35" y2="' + (y+2) + '" stroke="#fff" stroke-width="1.1"/>'; }).join('')
-      : '<path d="' + rootShape() + '" fill="url(#' + rootGrad + ')" stroke="#cda287" stroke-width="0.5" stroke-linejoin="round" opacity="' + (wType==='missing'?0.4:1) + '" pointer-events="none"/>';
-    const rctLines = wType === 'rct' ? APEX.map(function (p) { return '<line x1="' + p[0] + '" y1="56" x2="' + p[0] + '" y2="' + (p[1]-3) + '" stroke="' + wCol + '" stroke-width="2.4" stroke-linecap="round" pointer-events="none"/>'; }).join('') : '';
+    const ghost = wType === 'missing';
+    const crowned = CROWN_TYPES.includes(wType);
     const all = Object.entries(m).map(function (e) { const pm = parseMarker(e[1]); return { k: e[0], type: pm.type, status: pm.status }; });
     const seal = all.find(function (p) { return p.type === 'sealant'; });
     const frac = all.find(function (p) { return p.type === 'fracture'; });
     const absc = all.find(function (p) { return p.type === 'abscess'; });
-    const abscDot = absc ? APEX.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + (p[1]-2) + '" r="4" fill="' + statusColor(absc.status) + '" stroke="#fff" stroke-width="0.8" pointer-events="none"/>'; }).join('') : '';
+    const dash = 'stroke-dasharray="3 2.5"';
 
-    let fills = '';
-    if (!hideSurf) { for (const k in zones) { const v = m[k]; if (!v) continue; const pm = parseMarker(v); if (!SURF.includes(pm.type)) continue;
-      const c = (pm.type === 'watch') ? '#facc15' : statusColor(pm.status);
-      fills += (pm.type === 'composite') ? '<path d="' + zones[k] + '" fill="none" stroke="' + c + '" stroke-width="2" pointer-events="none"/>' : '<path d="' + zones[k] + '" fill="' + c + '" opacity="0.82" pointer-events="none"/>'; } }
-    let grid = '';
-    if (!hideSurf) { for (const k in zones) { grid += '<path d="' + zones[k] + '" fill="none" stroke="#94a3b8" stroke-width="0.7" pointer-events="none"/>'; } }
-    const hitZones = !hideSurf ? Object.entries(zones).map(function (e) { return '<path d="' + e[1] + '" fill="transparent" data-surface="' + e[0] + '" class="surface-hit cursor-pointer"/>'; }).join('') : '';
-    const boxFill = wType === 'crown' ? wCol : '#ffffff';
-    const box = '<rect x="3" y="3" width="50" height="50" rx="4" fill="' + boxFill + '" stroke="#475569" stroke-width="1.2"/>';
-
-    let ov = '';
-    if (wType === 'missing' || wType === 'extract') {
-      ov += '<line x1="7" y1="7" x2="49" y2="49" stroke="' + wCol + '" stroke-width="3" stroke-linecap="round" pointer-events="none"/><line x1="49" y1="7" x2="7" y2="49" stroke="' + wCol + '" stroke-width="3" stroke-linecap="round" pointer-events="none"/>';
-      if (wType === 'missing') ov += '<rect x="3" y="3" width="50" height="50" rx="4" fill="none" stroke="' + wCol + '" stroke-width="1" stroke-dasharray="3 2" pointer-events="none"/>';
+    // ── Facial view (local coords: mesial −x, incisal edge y=0, roots toward −y) ──
+    const f = TS.facial(num, L.U);
+    const w = f.w, Hc = f.crownH, Hr = f.rootH, Ht = f.totalH;
+    let fac = '';
+    if (wType === 'implant') {
+      // Screw-shaped implant body replaces the roots; the crown sits on top of it.
+      const cw = w * 0.2, top = -Hc + 1.5, len = Hr * 0.82;
+      fac += `<path d="M${n1(-cw)} ${n1(top)} L${n1(cw)} ${n1(top)} L${n1(cw * 0.62)} ${n1(top - len)} Q0 ${n1(top - len - 3)} ${n1(-cw * 0.62)} ${n1(top - len)} Z" fill="${wCol}" stroke="#fff" stroke-width="0.8" data-mark="implant" pointer-events="none"/>`;
+      for (let y = top - 4.5; y > top - len + 3; y -= 4.5) { const k = (top - y) / len; const hw = cw * (1 - 0.35 * k); fac += `<line x1="${n1(-hw)}" y1="${n1(y)}" x2="${n1(hw)}" y2="${n1(y - 1.8)}" stroke="#fff" stroke-width="1.1" pointer-events="none"/>`; }
+      fac += `<rect x="${n1(-cw * 0.7)}" y="${n1(-Hc - 1)}" width="${n1(cw * 1.4)}" height="3.2" fill="${wCol}" pointer-events="none"/>`;
+    } else {
+      f.roots.forEach(function (rt) {
+        fac += `<path d="${rt.d}" fill="${ghost ? 'none' : (rt.back ? 'url(#pda-root-back)' : 'url(#pda-root)')}" stroke="${ghost ? wCol : TOOTH_INK.rootLine}" stroke-width="1" ${ghost ? dash + ' opacity=".55"' : ''} stroke-linejoin="round" ${NSS}/>`;
+      });
     }
-    if (wType === 'pfm' || wType === 'fgc') { ov += '<rect x="4.5" y="4.5" width="47" height="47" rx="3" fill="none" stroke="' + wCol + '" stroke-width="2.6" pointer-events="none"/>';
-      if (wType === 'fgc') { for (let y = 12; y < 52; y += 10) { ov += '<line x1="5" y1="' + y + '" x2="51" y2="' + (y+6) + '" stroke="' + wCol + '" stroke-width="1.3" opacity="0.7" pointer-events="none"/>'; } } }
-    if (wType === 'impacted') ov += '<ellipse cx="28" cy="45" rx="26" ry="41" fill="none" stroke="' + wCol + '" stroke-width="2.2" stroke-dasharray="3 2" pointer-events="none"/>';
-    if (wType === 'drift_m' || wType === 'drift_d') { const right = (wType === 'drift_d') !== swapMD;
-      ov += right ? '<path d="M20 28 L44 28 M37 22 L44 28 L37 34" stroke="' + wCol + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'
-                  : '<path d="M36 28 L12 28 M19 22 L12 28 L19 34" stroke="' + wCol + '" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round" pointer-events="none"/>'; }
-    if (frac) ov += '<path d="M31 8 L23 30 L29 30 L21 52 L37 26 L30 26 Z" fill="' + statusColor(frac.status) + '" stroke="#fff" stroke-width="0.6" stroke-linejoin="round" pointer-events="none"/>';
+    let crownAttrs;
+    if (ghost) crownAttrs = `fill="none" stroke="${wCol}" stroke-width="1.2" ${dash} opacity=".6" data-mark="ghost"`;
+    else if (crowned) crownAttrs = `fill="${wCol}" fill-opacity=".82" stroke="${wCol}" stroke-width="2" data-mark="crown"`;
+    else if (wType === 'implant') crownAttrs = `fill="${TOOTH_INK.enamel}" stroke="${wCol}" stroke-width="1.6"`;
+    else crownAttrs = `fill="url(#pda-enamel)" stroke="${TOOTH_INK.enamelLine}" stroke-width="1.2"`;
+    fac += `<path d="${f.crown}" class="tooth-shape" ${crownAttrs} stroke-linejoin="round" ${NSS}/>`;
+    if (wType === 'fgc') { // gold crown: diagonal hatch clipped to the crown
+      fac += `<clipPath id="crn-${num}"><path d="${f.crown}"/></clipPath><g clip-path="url(#crn-${num})" pointer-events="none">`;
+      for (let y = -Hc - w; y < w; y += 6) fac += `<line x1="${n1(-w)}" y1="${n1(y)}" x2="${n1(w)}" y2="${n1(y + w * 0.9)}" stroke="#fff" stroke-width="1" opacity=".7"/>`;
+      fac += '</g>';
+    }
+    if (!ghost && !crowned) f.details.forEach(function (d) { fac += `<path d="${d}" fill="none" stroke="#9aa8b8" stroke-width="0.9" stroke-linecap="round" opacity=".8" ${NSS} pointer-events="none"/>`; });
+    if (!ghost && wType !== 'implant') fac += `<path d="${f.cej}" fill="none" stroke="${TOOTH_INK.gum}" stroke-width="2.4" stroke-linecap="round" ${NSS} pointer-events="none"/>`;
+    if (wType === 'rct') f.canals.forEach(function (c) { fac += `<line x1="${c[0]}" y1="${c[1]}" x2="${c[2]}" y2="${c[3]}" stroke="${wCol}" stroke-width="2.4" stroke-linecap="round" data-mark="rct" pointer-events="none"/>`; });
+    if (absc) f.apices.forEach(function (a) { fac += `<circle cx="${a[0]}" cy="${a[1]}" r="4.2" fill="${statusColor(absc.status)}" stroke="#fff" stroke-width="0.9" data-mark="abscess" pointer-events="none"/>`; });
+    if (wType === 'missing' || wType === 'extract') {
+      const x1 = -w * 0.42, x2 = w * 0.42, yTop = wType === 'extract' ? -(Hc + Hr * 0.35) : -Hc * 0.92, yBot = -Hc * 0.08;
+      fac += `<path d="M${n1(x1)} ${n1(yTop)} L${n1(x2)} ${n1(yBot)} M${n1(x2)} ${n1(yTop)} L${n1(x1)} ${n1(yBot)}" stroke="${wCol}" stroke-width="2.6" stroke-linecap="round" fill="none" data-mark="x" ${NSS} pointer-events="none"/>`;
+    }
+    if (wType === 'impacted') fac += `<ellipse cx="0" cy="${n1(-Ht / 2)}" rx="${n1(w * 0.64)}" ry="${n1(Ht * 0.56)}" fill="none" stroke="${wCol}" stroke-width="2" ${dash} data-mark="impacted" ${NSS} pointer-events="none"/>`;
+    if (wType === 'drift_m' || wType === 'drift_d') { // arrow along the arch: mesial = local −x (the mirror keeps it honest per quadrant)
+      const dir = wType === 'drift_m' ? -1 : 1, ax = w * 0.38, ay = -Hc * 0.5, hd = w * 0.16;
+      fac += `<path d="M${n1(-dir * ax)} ${n1(ay)} L${n1(dir * ax)} ${n1(ay)} M${n1(dir * (ax - hd))} ${n1(ay - hd)} L${n1(dir * ax)} ${n1(ay)} L${n1(dir * (ax - hd))} ${n1(ay + hd)}" stroke="${wCol}" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" data-mark="drift" pointer-events="none"/>`;
+    }
+    if (frac) { // lightning-bolt fracture line across the crown
+      const b = [[0.06,-0.92],[-0.1,-0.5],[0.02,-0.5],[-0.14,-0.08],[0.16,-0.58],[0.02,-0.58]].map(function (p) { return n1(p[0] * w * 0.9) + ' ' + n1(p[1] * Hc); });
+      fac += `<path d="M${b.join(' L')} Z" fill="${statusColor(frac.status)}" stroke="#fff" stroke-width="0.6" stroke-linejoin="round" data-mark="fracture" pointer-events="none"/>`;
+    }
 
-    const ty = isUpper ? 64 : 33;
+    // ── Chewing-surface view: the surface picker (straight row, never rotated, so text stays upright) ──
+    const o = TS.occlusal(num, T.pw, T.ph, { flip: !T.upper, mesialRight: swapMD });
+    const pid = 'pk-' + num;
+    let pk = `<clipPath id="${pid}"><path d="${o.outline}"/></clipPath>`;
+    if (ghost) pk += `<path d="${o.outline}" fill="none" stroke="${wCol}" stroke-width="1.2" ${dash} opacity=".6" ${NSS} pointer-events="none"/>`;
+    else if (hideSurf) pk += `<path d="${o.outline}" class="tooth-shape" fill="${wCol}" fill-opacity=".85" stroke="${wCol}" stroke-width="1.4" ${NSS} pointer-events="none"/>`;
+    else {
+      pk += `<g clip-path="url(#${pid})">`;
+      ['B', 'L', 'M', 'D', center].forEach(function (k) {
+        const pm = parseMarker(m[k] || '');
+        let style = 'fill:' + TOOTH_INK.enamel + ';stroke:' + TOOTH_INK.zoneLine + ';stroke-width:0.8';
+        if (SURF_TYPES.includes(pm.type)) {
+          // Existing findings draw in blue, needed/proposed in red (see STATUS_COLORS); watch = yellow.
+          const c = pm.type === 'watch' ? '#facc15' : statusColor(pm.status);
+          style = pm.type === 'composite'
+            ? 'fill:' + c + ';fill-opacity:.2;stroke:' + c + ';stroke-width:2.2'
+            : 'fill:' + c + ';fill-opacity:.85;stroke:' + TOOTH_INK.zoneLine + ';stroke-width:0.8';
+        } else if (pm.type === 'sealant') style = 'fill:#ecfccb;stroke:' + TOOTH_INK.zoneLine + ';stroke-width:0.8';
+        pk += `<path d="${o.zones[k]}" class="surface${pm.type ? ' s-' + pm.type : ''}" style="${style}" ${NSS} data-surface="${k}"><title>#${num} ${SURF_NAMES[k]} (${k})</title></path>`;
+      });
+      o.details.forEach(function (d) { pk += `<path d="${d}" fill="none" stroke="#b7c2cf" stroke-width="1" stroke-linecap="round" ${NSS} pointer-events="none"/>`; });
+      pk += `</g><path d="${o.outline}" class="tooth-shape" fill="none" stroke="${TOOTH_INK.enamelLine}" stroke-width="1.2" ${NSS} pointer-events="none"/>`;
+    }
+    if (wType === 'fgc') { pk += `<g clip-path="url(#${pid})" pointer-events="none">`; for (let y = -T.ph; y < T.ph; y += 6) pk += `<line x1="${n1(-T.pw)}" y1="${n1(y)}" x2="${n1(T.pw)}" y2="${n1(y + T.pw * 0.9)}" stroke="#fff" stroke-width="1" opacity=".7"/>`; pk += '</g>'; }
+    if (wType === 'missing' || wType === 'extract') { const hx = T.pw * 0.34, hy = T.ph * 0.34; pk += `<path d="M${n1(-hx)} ${n1(-hy)} L${n1(hx)} ${n1(hy)} M${n1(hx)} ${n1(-hy)} L${n1(-hx)} ${n1(hy)}" stroke="${wCol}" stroke-width="2.6" stroke-linecap="round" fill="none" data-mark="x" pointer-events="none"/>`; }
+    const label = wType === 'ssc' ? 'SSC' : wType === 'pfm' ? 'PFM' : wType === 'fgc' ? 'FGC' : '';
     let txt = '';
-    if (wType === 'ssc') txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="' + wCol + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">SSC</text>';
-    if (seal) txt += '<text x="28" y="' + ty + '" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="15" font-weight="800" fill="' + statusColor(seal.status) + '" stroke="#fff" stroke-width="0.6" paint-order="stroke" pointer-events="none">S</text>';
+    if (label) txt += `<text x="0" y="3.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="800" fill="#fff" stroke="${wCol}" stroke-width="2" paint-order="stroke" pointer-events="none">${label}</text>`;
+    if (seal) txt += `<text x="0" y="4.5" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="800" fill="${statusColor(seal.status)}" stroke="#fff" stroke-width="2.5" paint-order="stroke" pointer-events="none">S</text>`;
 
-    // Roots point OUTWARD from the chart's horizontal centerline (the midline
-    // between the arches): maxillary roots UP / crown DOWN toward the midline;
-    // mandibular roots DOWN / crown UP toward the midline. The base drawing has
-    // crown-up (box y3-53) / root-down (y52-87), so we FLIP the MAXILLARY arch
-    // (crown to the bottom = toward midline, root to the top = buccal/outward)
-    // and leave the MANDIBULAR arch un-flipped (root stays at the bottom =
-    // buccal/outward, crown at the top = toward midline). The `ty` text offset
-    // above tracks the crown box: maxillary crown now sits at the bottom (ty=64),
-    // mandibular crown at the top (ty=33).
-    const flip = isUpper ? 'transform="translate(0,88) scale(1,-1)"' : '';
-    return '' +
-      '<div class="tooth flex flex-col items-center" data-tooth="' + num + '" title="#' + num + ' — ' + toothLabel(num) + '">' +
-        '<svg viewBox="0 0 56 88" width="100%" style="max-width:50px;height:auto;display:block" oncontextmenu="return false">' +
-          '<defs><linearGradient id="' + rootGrad + '" x1="0" y1="53" x2="0" y2="86" gradientUnits="userSpaceOnUse">' +
-            '<stop offset="0" stop-color="#fbe2d2"/><stop offset="1" stop-color="#f1bd9e"/></linearGradient></defs>' +
-          '<g ' + flip + '>' + rootPeg + rctLines + abscDot + box + fills + grid + hitZones + ov + '</g>' + txt +
-        '</svg>' +
-      '</div>';
+    const picked = (state.ui.bridgeStart === num || state.ui.diastemaStart === num);
+    const numSvg = (picked ? `<circle cx="${T.x}" cy="${n1(T.ny - 3.5)}" r="9" fill="none" stroke="#0d9488" stroke-width="1.5"/>` : '') +
+      `<text x="${T.x}" y="${T.ny}" text-anchor="middle" font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="10.5" fill="#64748b" pointer-events="none">${num}</text>`;
+    const plain = toothLabel(num, true);
+    const wLabel = wType ? (MARKERS.find(function (x) { return x.id === wType; }) || { label: wType }).label.toLowerCase() : '';
+    const aria = `Tooth ${num} — ${plain}${wLabel ? ', ' + wLabel : ''}`;
+    return `<g class="tooth" data-tooth="${num}"${wType ? ` data-whole="${wType}"` : ''} role="button" tabindex="0" aria-label="${escapeHtml(aria)}">` +
+      `<title>#${num} — ${toothLabel(num)} (${plain})</title>` +
+      `<g class="tooth-facial"${hideSurf ? '' : ' data-facial="B"'} transform="${TS.transformOf(T)}">${fac}</g>` +
+      `<g class="tooth-occ" data-occ="1" transform="translate(${T.x} ${T.py})">${pk}${txt}</g>` +
+      numSvg +
+    '</g>';
+  }
+
+  function renderOdontogram(chart) {
+    const L = chartLayout();
+    if (!L) return '<div class="text-[12px] text-rose-700 p-3">The tooth chart art (assets/tooth-shapes.js) did not load. Reload the page.</div>';
+    const W = L.W, H = L.H, cx = L.cx, yMid = L.yMid;
+    const lab = 'font-family="Inter, system-ui, sans-serif" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#64748b" text-anchor="middle" pointer-events="none"';
+    const edge = 'font-family="Inter, system-ui, sans-serif" font-size="9.5" font-weight="700" letter-spacing="1" fill="#475569" text-anchor="middle" pointer-events="none"';
+    return `
+      <svg id="odontogram" viewBox="0 0 ${W} ${H}" width="100%" style="display:block;height:auto;max-width:${W}px;margin:0 auto" role="group" aria-label="Tooth chart. You are facing the patient, so their right is on your left." oncontextmenu="return false">
+        <defs>
+          <!-- Enamel is whiter toward the biting edge and warmer at the cervix; roots darken toward the apex.
+               Gradients use each shape's own bounding box, so they follow the tooth through the arch rotation/flip. -->
+          <linearGradient id="pda-enamel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1ebdf"/><stop offset=".45" stop-color="#fbfaf6"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+          <linearGradient id="pda-root" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6c9a6"/><stop offset="1" stop-color="#f4e5d2"/></linearGradient>
+          <linearGradient id="pda-root-back" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d6b590"/><stop offset="1" stop-color="#e8cfb2"/></linearGradient>
+        </defs>
+        <line x1="${cx}" y1="8" x2="${cx}" y2="${H - 8}" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="5 4" data-midline="1" pointer-events="none"/>
+        <text x="${cx}" y="${n1(yMid + 3.5)}" ${lab} font-size="8" fill="#94a3b8" stroke="#fff" stroke-width="4" paint-order="stroke">MIDLINE</text>
+        <text x="${cx / 2}" y="20" ${lab}>UPPER RIGHT</text>
+        <text x="${cx * 1.5}" y="20" ${lab}>UPPER LEFT</text>
+        <text x="${cx / 2}" y="${H - 12}" ${lab}>LOWER RIGHT</text>
+        <text x="${cx * 1.5}" y="${H - 12}" ${lab}>LOWER LEFT</text>
+        <text x="52" y="${n1(yMid - 2)}" ${edge}><tspan x="52">PATIENT'S </tspan><tspan x="52" dy="12">RIGHT</tspan></text>
+        <text x="${W - 52}" y="${n1(yMid - 2)}" ${edge}><tspan x="${W - 52}">PATIENT'S </tspan><tspan x="${W - 52}" dy="12">LEFT</tspan></text>
+        <g class="arch arch-upper">${renderArch(chart, true, L)}</g>
+        <g class="arch arch-lower">${renderArch(chart, false, L)}</g>
+      </svg>`;
   }
 
   function renderChart(p) {
@@ -2472,39 +2441,19 @@
             </div>`).join('')}
         </div>
 
-        <!-- Odontogram (anatomical view) -->
-        <div class="bg-white rounded border border-slate-200 p-4 overflow-x-auto">
-          <div class="min-w-[880px]">
-            <!-- Maxillary header: arch title flanked by patient L/R indicators -->
-            <div class="flex items-center justify-between mb-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
-              <span>Patient's left</span>
-              <span class="text-slate-700 font-bold">Maxillary (upper)</span>
-              <span>Patient's right</span>
-            </div>
-            <!-- Quadrant labels above the maxillary teeth (5 + 6 + 5 columns) -->
-            <div class="grid gap-1 mb-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
-              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
-              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
-            </div>
-            ${renderArch(chart, true,  PERM_TEETH.slice(0, 16))}
-            <div class="my-3 border-t-2 border-dashed border-slate-200 relative">
-              <span class="absolute -top-2 left-1/2 -translate-x-1/2 bg-white px-2 text-[10px] uppercase tracking-wider text-slate-400 font-semibold">midline</span>
-            </div>
-            ${renderArch(chart, false, PERM_TEETH.slice(16).reverse())}
-            <!-- Quadrant labels below the mandibular teeth — reversed display
-                 (32-28 on the left, 27-22 in middle, 21-17 on the right) -->
-            <div class="grid gap-1 mt-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
-              <div class="col-span-6 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Anterior</div>
-              <div class="col-span-5 text-center text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Posterior</div>
-            </div>
-            <!-- Mandibular footer -->
-            <div class="flex items-center justify-between mt-1 text-[10px] uppercase tracking-widest font-semibold text-slate-500">
-              <span>Patient's left</span>
-              <span class="text-slate-700 font-bold">Mandibular (lower)</span>
-              <span>Patient's right</span>
-            </div>
+        <!-- Odontogram: anatomical view — two arches, drawn facing the patient -->
+        <div class="bg-white rounded border border-slate-200 p-2 sm:p-4">
+          ${renderOdontogram(chart)}
+          <div class="mt-2 text-[11px] text-slate-700 text-center font-medium">You are facing the patient, so their right is on your left.</div>
+          <div class="mt-2 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[11px] text-slate-500">
+            <span class="inline-flex items-center gap-1.5">
+              <svg width="14" height="18" viewBox="0 0 14 18" aria-hidden="true"><path d="M4 7.5 L5 1.5 L7 4 L9 1.5 L10 7.5 Z" fill="#f1dfc9" stroke="#b48c6a"/><path d="M2.5 8 Q7 6.5 11.5 8 L11 15 Q7 18 3 15 Z" fill="#fbfaf6" stroke="#5b6b7c"/></svg>
+              <span><strong class="text-slate-700">Facial view</strong> — crown and roots as seen from the front (roots point away from the bite)</span>
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="5" fill="#fbfaf6" stroke="#5b6b7c"/><path d="M1 1 L5 5 M15 1 L11 5 M1 15 L5 11 M15 15 L11 11" stroke="#94a3b8"/><rect x="5" y="5" width="6" height="6" fill="none" stroke="#94a3b8"/></svg>
+              <span><strong class="text-slate-700">Chewing-surface view</strong> — click a zone to mark it: M · O (I on front teeth) · D · B/F · L</span>
+            </span>
           </div>
         </div>
 
@@ -2530,63 +2479,31 @@
     `;
   }
 
-  function renderArch(chart, isUpper, teethRange) {
-    // Diastemas in this arch — two parallel vertical lines BETWEEN two
-    // adjacent teeth, overlaid on the tooth row so the lines visually sit
-    // in the gap between the teeth.
-    const diastemas = ((chart.diastemas) || []).filter(d => (d.a <= 16) === isUpper);
-    const diastemasOverlay = diastemas.length ? `
-      <div class="absolute inset-0 grid gap-1 pointer-events-none" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-        ${diastemas.map(d => {
-          const ca = isUpper ? d.a : (33 - d.a);
-          const cb = isUpper ? d.b : (33 - d.b);
-          const cMin = Math.min(ca, cb);
-          const cMax = Math.max(ca, cb);
-          if (cMax - cMin !== 1) return '';
-          const color = statusColor(d.status || 'existing');
-          return `<div style="grid-column: ${cMin} / ${cMax + 1};">
-            <svg viewBox="0 0 100 106" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true">
-              <line x1="46" y1="2" x2="46" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
-              <line x1="54" y1="2" x2="54" y2="104" stroke="${color}" stroke-width="2.2" stroke-linecap="round"/>
-            </svg>
-          </div>`;
-        }).join('')}
-      </div>` : '';
-
-    // Bridges in this arch only. The bracket sits over the number row.
-    const bridges = ((chart.bridges) || []).filter(b => (b.start <= 16) === isUpper);
-    const bridgesRow = bridges.length ? `
-      <div class="relative mt-1" style="height: 14px;">
-        <div class="grid gap-1 absolute inset-0" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-          ${bridges.map(b => {
-            // Display-column index for each tooth. Maxillary renders 1→16
-            // left-to-right (col = num); mandibular renders 32→17 left-to-
-            // right (col = 33 - num). Bracket spans from the smaller display
-            // column to the larger.
-            const ca = isUpper ? b.start : (33 - b.start);
-            const cb = isUpper ? b.end   : (33 - b.end);
-            const cMin = Math.min(ca, cb);
-            const cMax = Math.max(ca, cb);
-            const col = `${cMin} / ${cMax + 1}`;
-            const color = statusColor(b.status || 'existing');
-            return `<div style="grid-column: ${col}; height: 14px;">
-              <svg viewBox="0 0 100 14" preserveAspectRatio="none" width="100%" height="100%" aria-hidden="true">
-                <path d="M 2 13 L 2 3 L 98 3 L 98 13" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>` : '';
-    return `
-      <div class="relative grid grid-cols-16 gap-1" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-        ${teethRange.map(n => renderTooth(n, chart[`T-${n}`] || {}, isUpper)).join('')}
-        ${diastemasOverlay}
-      </div>
-      ${bridgesRow}
-      <div class="grid grid-cols-16 gap-1 mt-0.5" style="grid-template-columns: repeat(16, minmax(0, 1fr));">
-        ${teethRange.map(n => `<div class="text-center text-[10px] mono text-slate-500 ${(state.ui.bridgeStart === n || state.ui.diastemaStart === n) ? 'ring-2 ring-teal-600 rounded' : ''}">${n}</div>`).join('')}
-      </div>
-    `;
+  function renderArch(chart, isUpper, L) {
+    // One arch = its 16 teeth (facial view on the arc + chewing-surface
+    // picker + number) plus the chart-level bridges / diastemas.
+    const teeth = isUpper ? L.upper : L.lower;
+    const byNum = {};
+    teeth.forEach(function (t) { byNum[t.num] = t; });
+    let s = teeth.map(function (T) { return renderTooth(T.num, chart[`T-${T.num}`] || {}, T, L); }).join('');
+    // Bridge — bracket spanning start→end along the number row (legs point at the teeth).
+    ((chart.bridges) || []).filter(b => (b.start <= 16) === isUpper).forEach(function (b) {
+      const A = byNum[b.start], B = byNum[b.end];
+      if (!A || !B) return;
+      const x1 = Math.min(A.x, B.x) - 8, x2 = Math.max(A.x, B.x) + 8;
+      const y = isUpper ? A.ny + 8 : A.ny - 14, leg = isUpper ? -5 : 5;
+      const color = statusColor(b.status || 'existing');
+      s += `<path d="M${n1(x1)} ${n1(y + leg)} L${n1(x1)} ${n1(y)} L${n1(x2)} ${n1(y)} L${n1(x2)} ${n1(y + leg)}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-mark="bridge" pointer-events="none"/>`;
+    });
+    // Diastema — two parallel lines in the gap BETWEEN two adjacent teeth.
+    ((chart.diastemas) || []).filter(d => (d.a <= 16) === isUpper).forEach(function (d) {
+      const A = byNum[d.a], B = byNum[d.b];
+      if (!A || !B || Math.abs(d.a - d.b) !== 1) return;
+      const x = (A.x + B.x) / 2, h = Math.max(A.ph, B.ph) / 2 + 3, y = A.py;
+      const color = statusColor(d.status || 'existing');
+      s += `<path d="M${n1(x - 2.5)} ${n1(y - h)} V${n1(y + h)} M${n1(x + 2.5)} ${n1(y - h)} V${n1(y + h)}" stroke="${color}" stroke-width="2" stroke-linecap="round" fill="none" data-mark="diastema" pointer-events="none"/>`;
+    });
+    return s;
   }
 
   function renderChartFindings(chart, includeWhole) {
@@ -5015,18 +4932,28 @@
       if (a === 'submit-rx')          return submitRx(t);
     };
 
-    // Tooth surface paint (delegated to root)
+    // The delegated listeners below live on the persistent #app root, so bind
+    // them ONCE. bindEvents() runs after every render; re-adding them each time
+    // stacked up duplicate handlers (one tooth click → N re-renders, growing
+    // with every render) which made the chart sluggish after a few marks.
+    if (root._ppDelegatesBound) return;
+    root._ppDelegatesBound = true;
+
+    // Tooth surface paint (delegated to root). A click on a chewing-surface
+    // zone carries data-surface; a click on the facial-view drawing carries
+    // data-facial="B" (the facial view IS the buccal/facial surface).
     root.addEventListener('click', (ev) => {
-      const surf = ev.target.closest?.('[data-surface]');
+      const surf = ev.target.closest?.('[data-surface],[data-facial]');
       if (!surf) return;
       const toothEl = surf.closest('[data-tooth]');
       if (!toothEl) return;
       const tooth = toothEl.dataset.tooth;
+      const surfName = surf.dataset.surface || surf.dataset.facial;
       const marker = state.ui.chartMarker;
       const def = MARKERS.find(m => m.id === marker);
       ev.stopPropagation();
       state.ui.toothContext = null;
-      if (!marker) { clearSurface(tooth, surf.dataset.surface); rerender(); return; }
+      if (!marker) { clearSurface(tooth, surfName); rerender(); return; }
       // Bridge: click two teeth in order — first selects the start, second
       // commits the bracket. Toast hints the user during the in-between step.
       if (def?.bridge) {
@@ -5055,7 +4982,7 @@
       if (def?.whole) {
         markWholeTooth(tooth, marker);
       } else {
-        markSurface(tooth, surf.dataset.surface, marker);
+        markSurface(tooth, surfName, marker);
       }
       rerender();
     });
@@ -5138,6 +5065,19 @@
       const y = Math.min(r.bottom + 4, window.innerHeight - 200);
       state.ui.toothContext = { tooth: toothEl.dataset.tooth, x, y };
       rerender();
+    });
+    // Keyboard: Enter / Space on a focused tooth opens the same menu as right-click
+    root.addEventListener('keydown', (ev) => {
+      if (ev.key !== 'Enter' && ev.key !== ' ') return;
+      const toothEl = ev.target.closest?.('[data-tooth][role="button"]');
+      if (!toothEl) return;
+      ev.preventDefault(); ev.stopPropagation();
+      const r = toothEl.getBoundingClientRect();
+      const x = Math.min(r.left + r.width / 2, window.innerWidth - 220);
+      const y = Math.min(r.bottom + 4, window.innerHeight - 200);
+      state.ui.toothContext = { tooth: toothEl.dataset.tooth, x, y };
+      rerender();
+      setTimeout(() => document.querySelector('[data-action="tooth-plan"]')?.focus(), 0);
     });
 
     // Demographics autosave on blur
