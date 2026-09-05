@@ -20,6 +20,8 @@
     .text-slate-500 { color: #475569; }
     .text-slate-400 { color: #64748b; }
     .gradient-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.5; pointer-events: none; }
+    /* The decorative orbs hang past the right edge; keep them from widening the page on phones. */
+    html, body { overflow-x: hidden; }
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
