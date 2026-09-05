@@ -11,7 +11,18 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}</style>
+  <!-- Skills Lab competency ids / names / categories (window.SL_DATA) — labels the Skills section of the drawer. -->
+  <script src="/assets/skills-lab/data.js"></script>
+  <style>
+    body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}.display{font-family:Fraunces,serif}.mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}
+    /* Printable competency record: while body.print-record is set, only #competency-record prints. */
+    #competency-record{font-family:Inter,sans-serif;color:#0f172a}
+    @media print{
+      @page{margin:16mm}
+      body.print-record>*:not(#competency-record){display:none !important}
+      body.print-record #competency-record{display:block !important;position:static;width:auto}
+    }
+  </style>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <link rel="stylesheet" href="/assets/pda-polish.css" />
@@ -40,7 +51,7 @@
   <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
     <div class="text-5xl mb-3">🔐</div>
     <h1 class="display text-2xl font-bold">Teacher access only</h1>
-    <p class="text-slate-600 mt-2">Sign in with the PDA admin account.</p>
+    <p class="text-slate-600 mt-2">Sign in with an admin or instructor account.</p>
     <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
   </div>
 
@@ -48,21 +59,21 @@
 
   <div id="view" class="hidden">
     <div class="flex flex-wrap items-end justify-between gap-3 mb-6">
-      <div>
+      <div class="min-w-0">
         <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Teacher gradebook</p>
         <h1 class="display text-3xl font-bold mt-1">How is every student doing?</h1>
-        <p class="text-sm text-slate-600 mt-1">Who's logged in, who's practicing, who's behind, and exactly which modules they still need.</p>
+        <p class="text-sm text-slate-600 mt-1">Who's logging in, taking lessons and quizzes, asking questions, practicing in the trainers — and which hands-on skills are verified. Tap a name for the full picture.</p>
       </div>
-      <button id="export" class="bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Export gradebook CSV</button>
+      <button id="export" class="min-h-[40px] bg-teal-700 hover:bg-teal-800 text-white px-3 py-2 rounded-full text-sm font-semibold">⬇ Export gradebook CSV</button>
     </div>
 
     <!-- Summary tiles (clickable filters) -->
     <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-6" id="summary"></div>
 
     <!-- Controls -->
-    <div class="flex flex-wrap items-center gap-2 mb-4">
-      <input id="search" placeholder="Search name / email" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
-      <select id="status-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+    <div class="flex flex-wrap items-center gap-2 mb-3">
+      <input id="search" placeholder="Search name / email" aria-label="Search students" class="min-h-[40px] bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]" />
+      <select id="status-filter" aria-label="Status filter" class="min-h-[40px] bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
         <option value="">All students</option>
         <option value="active">🟢 Active (≤2 days)</option>
         <option value="slipping">🟡 Slipping (3–7 days)</option>
@@ -70,14 +81,19 @@
         <option value="nopractice">🔴 No practice yet</option>
         <option value="never">⚫ Never logged in</option>
       </select>
-      <select id="sort" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
+      <select id="sort" aria-label="Sort" class="min-h-[40px] bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
         <option value="recent">Sort: most recently active</option>
         <option value="behind">Sort: most behind first</option>
         <option value="progress">Sort: least progress first</option>
+        <option value="lessons">Sort: least lessons first</option>
+        <option value="locked">Sort: most locked quizzes first</option>
         <option value="grade">Sort: lowest grade first</option>
         <option value="name">Sort: name (A–Z)</option>
       </select>
     </div>
+
+    <!-- Quick filter chips (one active at a time; tap again to clear) -->
+    <div id="quick-filters" class="flex flex-wrap gap-2 mb-4" aria-label="Quick filters"></div>
 
     <!-- Legend -->
     <div class="text-xs text-slate-500 mb-3 flex flex-wrap gap-x-4 gap-y-1">
@@ -94,24 +110,38 @@
   </div>
 </main>
 
-<!-- SMS modal -->
-<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-50 grid place-items-center p-4">
+<!-- SMS modal (sits above the drawer) -->
+<div id="sms-modal" class="hidden fixed inset-0 bg-slate-900/60 z-[70] grid place-items-center p-4">
   <div class="bg-white rounded-2xl max-w-md w-full p-6">
     <div class="flex items-start justify-between mb-3">
       <div>
         <div class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Send SMS via Quo</div>
         <h3 id="sms-target" class="display text-lg font-bold">—</h3>
       </div>
-      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none">×</button>
+      <button id="sms-close" class="text-slate-400 hover:text-slate-700 text-2xl leading-none w-10 h-10 grid place-items-center rounded-lg" aria-label="Close">×</button>
     </div>
     <div id="sms-templates" class="flex flex-wrap gap-1.5 mb-2"></div>
     <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
     <div class="flex justify-between items-center mt-3">
       <span id="sms-status" class="text-xs text-slate-500"></span>
-      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
+      <button id="sms-send" class="min-h-[40px] bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
     </div>
   </div>
 </div>
+
+<!-- Student activity drawer (tap a name in the roster) -->
+<div id="student-drawer-backdrop" class="hidden fixed inset-0 bg-slate-900/50 z-[55]"></div>
+<aside id="student-drawer" role="dialog" aria-label="Student activity" aria-hidden="true" inert class="fixed inset-y-0 right-0 w-full max-w-2xl bg-white shadow-2xl z-[60] flex flex-col translate-x-full transition-transform duration-200">
+  <div class="flex items-start justify-between gap-3 p-4 sm:p-5 border-b border-slate-200 shrink-0">
+    <div id="student-drawer-head" class="flex-1 min-w-0"></div>
+    <button id="student-drawer-close" type="button" aria-label="Close" class="shrink-0 w-10 h-10 grid place-items-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 text-xl leading-none">✕</button>
+  </div>
+  <div id="student-drawer-status" role="status" aria-live="polite" class="hidden"></div>
+  <div id="student-drawer-body" class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-6"></div>
+</aside>
+
+<!-- Print-only "Program competency record" (filled right before window.print) -->
+<section id="competency-record" class="hidden" aria-hidden="true"></section>
 
 <script>
 (async () => {
@@ -133,13 +163,20 @@
   document.getElementById('loading').classList.remove('hidden');
 
   const MODULES = ['Patient check-in','Medical history','Tooth chart','Perio','Imaging','Treatment plan','Insurance/claims','Ledger','Communication','Schedule','Documentation','Analytics'];
+  const PROGRAM_LABEL = { foundation: 'In-person', career_track: 'Online', preview: 'Preview', in_person: 'In-person', online: 'Online' };
+  const programLabel = (p) => PROGRAM_LABEL[p] || (p ? String(p) : '');
+  const num = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+  const arr = (v) => Array.isArray(v) ? v : [];
+  // Skills Lab catalogue (id, cat, name). Falls back to the student's own keys if the script failed to load.
+  const COMPS = (window.SL_DATA && Array.isArray(window.SL_DATA.COMPETENCIES)) ? window.SL_DATA.COMPETENCIES : [];
+  const SL_TOTAL = COMPS.length;
 
   let rows = [];
   const { data, error } = await sb.rpc('admin_student_progress');
   document.getElementById('loading').classList.add('hidden');
   if (error) {
     document.getElementById('view').classList.remove('hidden');
-    document.getElementById('list').innerHTML = `<div class="p-8 text-center text-rose-600">Couldn't load progress: ${esc(error.message)}</div>`;
+    document.getElementById('list').innerHTML = `<div class="p-8 text-center text-rose-600 break-words">Couldn't load progress: ${esc(error.message)}</div>`;
     return;
   }
   rows = (data || []).map(enrich);
@@ -158,6 +195,22 @@
     if (d < 30) return d + 'd ago';
     return new Date(iso).toLocaleDateString();
   }
+  const relOr = (iso, fallback) => iso ? relTime(iso) : fallback;
+  // "Aug 29" (adds the year when it isn't this year). Date-only strings are parsed as local days.
+  function toDate(v) {
+    if (!v) return null;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v));
+    const d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(v);
+    return isNaN(d) ? null : d;
+  }
+  function fmtDay(v) {
+    const d = toDate(v); if (!d) return '';
+    const opts = { month: 'short', day: 'numeric' };
+    if (d.getFullYear() !== new Date().getFullYear()) opts.year = 'numeric';
+    return d.toLocaleDateString('en-US', opts);
+  }
+  function fmtDayYear(v) { const d = toDate(v); return d ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function fmtWhen(v) { const d = toDate(v); return d ? d.toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : ''; }
 
   // Compute a status bucket + module progress per student
   function enrich(r) {
@@ -170,7 +223,9 @@
     else if (dActive <= 2) status = 'active';
     else if (dActive <= 7) status = 'slipping';
     else status = 'behind';
-    return { ...r, modulesDone, dLogin, dActive, status };
+    const lessonsDone = num(r.lessons_done), lessonsTotal = num(r.lessons_total);
+    const lessonsPct = lessonsTotal ? Math.min(100, Math.round((lessonsDone / lessonsTotal) * 100)) : 0;
+    return { ...r, modulesDone, dLogin, dActive, status, lessonsDone, lessonsTotal, lessonsPct };
   }
 
   const STATUS_META = {
@@ -192,7 +247,7 @@
       ['never', '⚫ Never logged in', c.never, 'text-slate-600'],
     ];
     document.getElementById('summary').innerHTML = tiles.map(([f, label, n, color]) => `
-      <button data-filter="${f}" class="text-left bg-white rounded-xl border border-slate-200 hover:border-teal-500 transition p-4">
+      <button type="button" data-filter="${f}" class="text-left bg-white rounded-xl border border-slate-200 hover:border-teal-500 transition p-4 min-w-0">
         <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">${label}</div>
         <div class="text-2xl font-bold mono mt-1 ${color}">${n}</div>
       </button>`).join('');
@@ -207,6 +262,34 @@
     });
   }
 
+  // ── Quick filter chips — the questions a teacher asks first.
+  const QUICK_FILTERS = [
+    ['locked',    '🔒 Locked quiz'],
+    ['question',  '🙋 Open question'],
+    ['never',     '⚫ Never logged in'],
+    ['nolessons', '📚 Not started lessons'],
+  ];
+  let quickFilter = '';
+  function quickMatch(r, k) {
+    if (k === 'locked') return num(r.quizzes_locked) > 0;
+    if (k === 'question') return num(r.questions_open) > 0;
+    if (k === 'never') return r.last_sign_in_at == null;
+    if (k === 'nolessons') return num(r.lessons_done) === 0;
+    return true;
+  }
+  function paintQuickFilters() {
+    const row = document.getElementById('quick-filters');
+    row.innerHTML = QUICK_FILTERS.map(([k, label]) => {
+      const n = rows.filter(r => quickMatch(r, k)).length;
+      return quickFilter === k
+        ? `<button type="button" data-qf="${k}" aria-pressed="true" class="min-h-[40px] px-3 rounded-full text-sm font-semibold border bg-slate-900 text-white border-slate-900">${label} · ${n} ✕</button>`
+        : `<button type="button" data-qf="${k}" aria-pressed="false" class="min-h-[40px] px-3 rounded-full text-sm font-semibold border bg-white text-slate-700 border-slate-300 hover:border-teal-600">${label} · ${n}</button>`;
+    }).join('');
+    row.querySelectorAll('[data-qf]').forEach(b => {
+      b.onclick = () => { quickFilter = (quickFilter === b.dataset.qf) ? '' : b.dataset.qf; paintQuickFilters(); render(); };
+    });
+  }
+
   function render() {
     const q = (document.getElementById('search').value || '').toLowerCase().trim();
     const sf = document.getElementById('status-filter').value;
@@ -217,6 +300,7 @@
         if (sf === 'behind' && !(r.status === 'behind')) return false;
         if (sf !== 'behind' && r.status !== sf) return false;
       }
+      if (quickFilter && !quickMatch(r, quickFilter)) return false;
       if (q) {
         const hay = `${r.first_name||''} ${r.last_name||''} ${r.email||''}`.toLowerCase();
         if (!hay.includes(q)) return false;
@@ -224,10 +308,11 @@
       return true;
     });
 
-    const order = { active:0, slipping:1, behind:2, nopractice:2, never:3 };
     list.sort((a, b) => {
       if (sort === 'name') return (`${a.first_name} ${a.last_name}`).localeCompare(`${b.first_name} ${b.last_name}`);
       if (sort === 'progress') return a.modulesDone - b.modulesDone;
+      if (sort === 'lessons') return (a.lessonsDone - b.lessonsDone) || (a.lessonsPct - b.lessonsPct);
+      if (sort === 'locked') return (num(b.quizzes_locked) - num(a.quizzes_locked)) || (num(b.alerts_open) - num(a.alerts_open));
       if (sort === 'grade') return (a.best_exam_pct ?? -1) - (b.best_exam_pct ?? -1);
       if (sort === 'behind') {
         // most behind first: never (no login) → longest since active → ...
@@ -252,6 +337,14 @@
       const gradeColor = r.best_exam_pct == null ? 'text-slate-400' : r.best_exam_pct >= 75 ? 'text-emerald-700' : r.best_exam_pct >= 50 ? 'text-amber-700' : 'text-rose-700';
       const pct = Math.round((r.modulesDone / MODULES.length) * 100);
       const missing = MODULES.filter(m => !(r.module_flags && r.module_flags[m]));
+      const trainerBar = pct >= 75 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-rose-400';
+      const lessonsBar = r.lessonsPct >= 75 ? 'bg-emerald-500' : r.lessonsPct >= 40 ? 'bg-amber-500' : 'bg-teal-600';
+      const lessonsTxt = r.lessonsTotal ? `${r.lessonsDone} / ${r.lessonsTotal}` : (r.lessonsDone ? String(r.lessonsDone) : '—');
+      const locked = num(r.quizzes_locked), passed = num(r.quizzes_passed);
+      const qAvg = r.quiz_avg_pct == null ? '—' : Math.round(num(r.quiz_avg_pct)) + '%';
+      const qOpen = num(r.questions_open), qTotal = num(r.questions_total);
+      const skDone = num(r.skills_completed), skVer = num(r.skills_verified);
+      const prog = programLabel(r.program);
       return `
         <div class="p-4 sm:p-5">
           <div class="flex items-start gap-4 flex-wrap">
@@ -260,27 +353,53 @@
             </div>
             <div class="flex-1 min-w-[220px]">
               <div class="flex items-center gap-2 flex-wrap">
-                <span class="font-semibold">${esc(name)}</span>
+                <button type="button" data-student-detail="${esc(r.id)}" title="Open full activity" class="font-semibold text-teal-800 hover:underline text-left min-h-[40px] -my-2 py-2 rounded">${esc(name)}</button>
                 <span class="text-xs px-2 py-0.5 rounded-full ${sm.chip}">${sm.dot} ${sm.label}</span>
-                ${r.program ? `<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(r.program)}</span>` : ''}
+                ${prog ? `<span class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">${esc(prog)}</span>` : ''}
                 ${r.cohort ? `<span class="text-xs text-slate-500">${esc(r.cohort)}</span>` : ''}
               </div>
               <div class="text-xs text-slate-500 mt-1 flex flex-wrap gap-x-4 gap-y-0.5">
-                <span>Last login: <strong class="text-slate-700">${relTime(r.last_sign_in_at)}</strong></span>
-                <span>Last practiced: <strong class="text-slate-700">${relTime(r.last_active_at)}</strong></span>
-                <span><strong class="text-slate-700">${r.total_actions}</strong> actions · <strong class="text-slate-700">${r.active_days}</strong> active day(s)</span>
+                <span>Last sign-in: <strong class="text-slate-700">${esc(relTime(r.last_sign_in_at))}</strong></span>
+                <span>Last lesson: <strong class="text-slate-700">${esc(relOr(r.last_lesson_at, 'none yet'))}</strong></span>
+                <span>Last practiced: <strong class="text-slate-700">${esc(relTime(r.last_active_at))}</strong></span>
+                <span><strong class="text-slate-700">${num(r.total_actions)}</strong> actions · <strong class="text-slate-700">${num(r.active_days)}</strong> active day(s)</span>
               </div>
-              <!-- progress bar -->
-              <div class="mt-2 max-w-md">
+              <!-- lessons / quizzes / questions / skills -->
+              <div class="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-2xl">
+                <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0">
+                  <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Lessons</div>
+                  <div class="text-sm font-bold mono text-slate-800">${esc(lessonsTxt)}</div>
+                  <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden mt-1"><div class="h-full rounded-full ${lessonsBar}" style="width:${r.lessonsPct}%"></div></div>
+                  <div class="text-[10px] text-slate-500 mt-1 truncate">Last lesson ${esc(relOr(r.last_lesson_at, 'none yet'))}</div>
+                </div>
+                <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0">
+                  <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Quizzes</div>
+                  <div class="text-sm font-bold text-slate-800">${passed} passed</div>
+                  ${locked ? `<div class="text-xs font-semibold text-rose-700">🔒 ${locked} locked · needs reopen</div>` : '<div class="text-xs text-slate-500">0 locked</div>'}
+                  <div class="text-[10px] text-slate-500 mt-1 truncate">Avg ${esc(qAvg)}${r.last_quiz_at ? ' · last ' + esc(relTime(r.last_quiz_at)) : ''}</div>
+                </div>
+                <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0">
+                  <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Questions</div>
+                  ${qOpen ? `<div class="text-sm font-bold text-amber-700">🙋 ${qOpen} open</div>` : '<div class="text-sm font-bold text-slate-800">0 open</div>'}
+                  <div class="text-[10px] text-slate-500 mt-1">${qTotal} asked in total</div>
+                </div>
+                <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0">
+                  <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Skills Lab</div>
+                  <div class="text-sm font-bold text-slate-800">${skDone} done · ${skVer} verified</div>
+                  <div class="text-[10px] text-slate-500 mt-1">${SL_TOTAL ? 'of ' + SL_TOTAL + ' competencies' : 'hands-on competencies'}</div>
+                </div>
+              </div>
+              <!-- trainer progress bar -->
+              <div class="mt-3 max-w-md">
                 <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold mb-0.5">
                   <span>Trainer modules</span><span>${r.modulesDone}/${MODULES.length}</span>
                 </div>
                 <div class="h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div class="h-full ${pct>=75?'bg-emerald-500':pct>=40?'bg-amber-500':'bg-rose-400'} rounded-full" style="width:${pct}%"></div>
+                  <div class="h-full ${trainerBar} rounded-full" style="width:${pct}%"></div>
                 </div>
               </div>
-              <button data-toggle="${r.id}" class="text-xs text-teal-700 font-semibold mt-2 hover:underline">▸ Where they need to catch up</button>
-              <div data-detail="${r.id}" class="hidden mt-2 flex flex-wrap gap-1.5">
+              <button type="button" data-toggle="${esc(r.id)}" class="text-xs text-teal-700 font-semibold mt-2 min-h-[40px] hover:underline">▸ Where they need to catch up</button>
+              <div data-detail="${esc(r.id)}" class="hidden mt-2 flex flex-wrap gap-1.5">
                 ${MODULES.map(m => {
                   const done = r.module_flags && r.module_flags[m];
                   return `<span class="text-[11px] px-2 py-0.5 rounded-full ${done?'bg-emerald-50 text-emerald-700 border border-emerald-200':'bg-slate-50 text-slate-400 border border-slate-200'}">${done?'✓':'○'} ${m}</span>`;
@@ -291,12 +410,12 @@
             <div class="text-center shrink-0">
               <div class="text-2xl font-bold display ${gradeColor}">${grade}</div>
               <div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Best exam</div>
-              ${r.exam_attempts ? `<div class="text-[10px] text-slate-400 mt-0.5">${r.exam_attempts} attempt(s)</div>` : '<div class="text-[10px] text-slate-400 mt-0.5">no exam yet</div>'}
+              ${r.exam_attempts ? `<div class="text-[10px] text-slate-400 mt-0.5">${num(r.exam_attempts)} attempt(s)</div>` : '<div class="text-[10px] text-slate-400 mt-0.5">no exam yet</div>'}
             </div>
             <div class="flex flex-col gap-1 shrink-0">
-              ${phone ? `<button data-sms data-phone="${phone}" data-name="${esc(name)}" data-id="${r.id}" class="bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-3 py-1.5 rounded-full">💬 Text</button>` : ''}
-              ${phone ? `<a href="tel:${phone}" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">📞 Call</a>` : ''}
-              ${r.email ? `<a href="mailto:${esc(r.email)}?subject=Checking%20in%20on%20your%20PDA%20coursework" class="bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">✉️ Email</a>` : ''}
+              ${phone ? `<button type="button" data-sms data-phone="${esc(phone)}" data-name="${esc(name)}" data-id="${esc(r.id)}" class="min-h-[40px] bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold px-3 py-1.5 rounded-full">💬 Text</button>` : ''}
+              ${phone ? `<a href="tel:${esc(phone)}" class="min-h-[40px] inline-flex items-center justify-center bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">📞 Call</a>` : ''}
+              ${r.email ? `<a href="mailto:${esc(r.email)}?subject=Checking%20in%20on%20your%20PDA%20coursework" class="min-h-[40px] inline-flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold px-3 py-1.5 rounded-lg text-center">✉️ Email</a>` : ''}
             </div>
           </div>
         </div>`;
@@ -304,7 +423,7 @@
 
     document.querySelectorAll('[data-toggle]').forEach(btn => {
       btn.onclick = () => {
-        const d = document.querySelector(`[data-detail="${btn.dataset.toggle}"]`);
+        const d = document.querySelector(`[data-detail="${CSS.escape(btn.dataset.toggle)}"]`);
         const open = !d.classList.contains('hidden');
         d.classList.toggle('hidden');
         btn.innerHTML = (open ? '▸' : '▾') + ' Where they need to catch up';
@@ -317,16 +436,21 @@
 
   // ── CSV export
   document.getElementById('export').onclick = () => {
-    const head = ['First','Last','Email','Phone','Program','Cohort','Status','Last login','Last practiced','Total actions','Active days','Modules done','Best exam %','Exam attempts','Missing modules'];
+    const head = ['First','Last','Email','Phone','Program','Cohort','Status','Last sign-in','Last practiced','Total actions','Active days','Modules done','Best exam %','Exam attempts','Missing modules',
+      'Lessons done','Lessons total','Last lesson','Quizzes passed','Quizzes locked','Quiz avg %','Last quiz','Open questions','Total questions','Skills completed','Skills verified','Open alerts'];
     const lines = [head];
+    const iso = (v) => v ? new Date(v).toISOString() : 'never';
     rows.forEach(r => {
       const missing = MODULES.filter(m => !(r.module_flags && r.module_flags[m])).join('; ');
-      lines.push([r.first_name||'', r.last_name||'', r.email||'', r.phone||'', r.program||'', r.cohort||'',
+      lines.push([r.first_name||'', r.last_name||'', r.email||'', r.phone||'', programLabel(r.program), r.cohort||'',
         STATUS_META[r.status].label,
-        r.last_sign_in_at ? new Date(r.last_sign_in_at).toISOString() : 'never',
-        r.last_active_at ? new Date(r.last_active_at).toISOString() : 'never',
-        r.total_actions, r.active_days, `${r.modulesDone}/${MODULES.length}`,
-        r.best_exam_pct == null ? '' : r.best_exam_pct, r.exam_attempts, missing]);
+        iso(r.last_sign_in_at),
+        iso(r.last_active_at),
+        num(r.total_actions), num(r.active_days), `${r.modulesDone}/${MODULES.length}`,
+        r.best_exam_pct == null ? '' : r.best_exam_pct, num(r.exam_attempts), missing,
+        r.lessonsDone, r.lessonsTotal, iso(r.last_lesson_at),
+        num(r.quizzes_passed), num(r.quizzes_locked), r.quiz_avg_pct == null ? '' : Math.round(num(r.quiz_avg_pct)), iso(r.last_quiz_at),
+        num(r.questions_open), num(r.questions_total), num(r.skills_completed), num(r.skills_verified), num(r.alerts_open)]);
     });
     const csv = lines.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
     const a = document.createElement('a');
@@ -352,7 +476,7 @@
     ['🎉 Great job', n => `Hi ${n||'there'}, you're doing great in the trainers — keep it up! Proud of your progress. 🦷`],
   ];
   function renderTemplates() {
-    document.getElementById('sms-templates').innerHTML = TEMPLATES.map((t,i)=>`<button data-tpl="${i}" class="text-xs bg-slate-100 hover:bg-teal-100 text-slate-700 px-2 py-1 rounded-full">${t[0]}</button>`).join('');
+    document.getElementById('sms-templates').innerHTML = TEMPLATES.map((t,i)=>`<button type="button" data-tpl="${i}" class="text-xs bg-slate-100 hover:bg-teal-100 text-slate-700 px-2 py-1 rounded-full min-h-[32px]">${t[0]}</button>`).join('');
     document.querySelectorAll('[data-tpl]').forEach(b => { b.onclick = () => { bodyEl.value = TEMPLATES[+b.dataset.tpl][1]((smsName||'').split(' ')[0]); bodyEl.focus(); }; });
   }
   function openSms(phone, name, id) {
@@ -371,7 +495,578 @@
     if (!(resp?.error || resp?.data?.error)) setTimeout(() => modal.classList.add('hidden'), 700);
   };
 
+  // ══════════ STUDENT ACTIVITY DRAWER — tap a name to see everything ══════════
+  const drawer         = document.getElementById('student-drawer');
+  const drawerBackdrop = document.getElementById('student-drawer-backdrop');
+  const drawerHead     = document.getElementById('student-drawer-head');
+  const drawerBody     = document.getElementById('student-drawer-body');
+  const drawerStatus   = document.getElementById('student-drawer-status');
+  let drawerStudentId = null;   // student currently shown (null = closed)
+  let drawerData = null;        // last admin_student_activity() payload
+  let drawerReq = 0;            // ignore stale responses after quick re-opens
+  let flashTimer = null;
+
+  const rosterRow = (id) => rows.find(r => r.id === id) || null;
+  const CHIP = {
+    emerald: 'bg-emerald-100 text-emerald-700', rose: 'bg-rose-100 text-rose-700', amber: 'bg-amber-100 text-amber-700',
+    slate: 'bg-slate-100 text-slate-600', teal: 'bg-teal-100 text-teal-800', cyan: 'bg-cyan-100 text-cyan-800',
+  };
+  // `text` must already be escaped by the caller when it comes from the database.
+  const chip = (text, tone) => `<span class="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${CHIP[tone] || CHIP.slate}">${text}</span>`;
+  const emptyBox = (text) => `<div class="text-sm text-slate-500 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">${text}</div>`;
+  const listBox = (items) => `<ul class="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">${items.join('')}</ul>`;
+  function section(key, title, inner, extra) {
+    return `<section data-section="${key}" class="min-w-0">
+      <div class="flex items-center justify-between gap-2 flex-wrap mb-2">
+        <h3 class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">${title}</h3>
+        ${extra ? `<span class="text-xs text-slate-500">${extra}</span>` : ''}
+      </div>${inner}</section>`;
+  }
+  const pctTxt = (v) => v == null ? '—' : Math.round(num(v)) + '%';
+
+  function showDrawer() {
+    drawerBackdrop.classList.remove('hidden');
+    drawer.removeAttribute('inert');
+    drawer.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+      drawer.classList.remove('translate-x-full');
+      const close = document.getElementById('student-drawer-close');
+      if (close) close.focus({ preventScroll: true });   // keyboard / screen-reader users land inside the dialog
+    });
+  }
+  function closeDrawer() {
+    const id = drawerStudentId;
+    drawerStudentId = null; drawerData = null; drawerReq++;
+    drawer.classList.add('translate-x-full');
+    drawer.setAttribute('aria-hidden', 'true');
+    drawer.setAttribute('inert', '');
+    drawerBackdrop.classList.add('hidden');
+    hideFlash();
+    // Hand focus back to the name that opened the drawer — the visible one, if it's still on the page.
+    if (id) {
+      const back = Array.from(document.querySelectorAll(`#list [data-student-detail="${CSS.escape(id)}"]`)).find(b => b.offsetParent !== null);
+      if (back) back.focus({ preventScroll: true });
+    }
+  }
+  drawerBackdrop.onclick = closeDrawer;
+  document.getElementById('student-drawer-close').onclick = closeDrawer;
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    // Top-most layer first: the SMS composer sits above the drawer.
+    if (!modal.classList.contains('hidden')) { modal.classList.add('hidden'); return; }
+    if (drawerStudentId) closeDrawer();
+  });
+  // One delegated listener: the name button in every roster row opens the drawer.
+  document.getElementById('list').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-student-detail]'); if (!btn) return;
+    e.stopPropagation();
+    openDrawer(btn.dataset.studentDetail);
+  });
+
+  function openDrawer(id) {
+    drawerStudentId = id;
+    drawerData = null;
+    paintHead(rosterRow(id), null);
+    showDrawer();
+    loadDrawer(id);
+  }
+  // Fetch (or re-fetch after a write) and repaint. Never re-animates or moves focus.
+  async function loadDrawer(id) {
+    const seq = ++drawerReq;
+    paintBody('loading');
+    let res;
+    try { res = await sb.rpc('admin_student_activity', { p_student: id }); }
+    catch (e) { res = { error: { message: e && e.message ? e.message : 'network error' } }; }
+    if (seq !== drawerReq || drawerStudentId !== id) return;
+    if (res.error) { paintBody('error', res.error.message || 'unknown error'); return; }
+    drawerData = (res.data && typeof res.data === 'object') ? res.data : {};
+    paintHead(rosterRow(id), drawerData);
+    paintBody('ready');
+  }
+
+  function flash(msg, tone) {
+    clearTimeout(flashTimer);
+    drawerStatus.textContent = msg;
+    drawerStatus.className = 'shrink-0 mx-4 sm:mx-5 mt-3 rounded-lg px-3 py-2 text-sm break-words ' +
+      (tone === 'error' ? 'bg-rose-50 border border-rose-200 text-rose-800' : 'bg-emerald-50 border border-emerald-200 text-emerald-800');
+    if (tone !== 'error') flashTimer = setTimeout(hideFlash, 4000);
+  }
+  function hideFlash() { clearTimeout(flashTimer); drawerStatus.textContent = ''; drawerStatus.className = 'hidden'; }
+
+  function studentName(p, r) {
+    const first = (p && p.first_name) || (r && r.first_name) || '';
+    const last = (p && p.last_name) || (r && r.last_name) || '';
+    const email = (p && p.email) || (r && r.email) || '';
+    return `${first} ${last}`.trim() || email.split('@')[0] || '(no name)';
+  }
+
+  function paintHead(r, d) {
+    if (!r && !d) { drawerHead.innerHTML = '<h2 class="display text-xl font-bold">Student</h2>'; return; }
+    const p = (d && d.profile) || {};
+    const name = studentName(p, r);
+    const email = p.email || (r && r.email) || '';
+    const phone = p.phone || (r && r.phone) || '';
+    const tel = String(phone).replace(/[^\d+]/g, '');
+    const prog = programLabel(p.program || (r && r.program));
+    const enr = d && d.enrollment ? d.enrollment : null;
+    const cohort = (enr && enr.cohort) || p.cohort || (r && r.cohort) || '';
+    const startIso = (enr && enr.start_date) || p.enrolled_at || (r && r.enrolled_at) || null;
+    const startD = toDate(startIso);
+    const startTxt = startD ? ((startD.getTime() > Date.now() ? 'starts ' : 'started ') + fmtDayYear(startD)) : '';
+    const lastSignIn = d ? d.last_sign_in_at : (r ? r.last_sign_in_at : null);
+    const never = lastSignIn == null;
+    drawerHead.innerHTML = `
+      <div class="flex items-center gap-2 flex-wrap min-w-0">
+        <h2 class="display text-xl font-bold leading-tight min-w-0 truncate max-w-full">${esc(name)}</h2>
+        ${never ? chip('⚫ Never logged in', 'slate') : ''}
+        ${prog ? chip(esc(prog), 'teal') : ''}
+        ${p.portal_status && p.portal_status !== 'active' ? chip(esc(p.portal_status), 'amber') : ''}
+      </div>
+      <div class="text-xs text-slate-500 mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 min-w-0">
+        ${cohort ? `<span class="truncate max-w-full">${esc(cohort)}${startTxt ? ' · ' + esc(startTxt) : ''}</span>` : (startTxt ? `<span>Enrolled — ${esc(startTxt)}</span>` : '')}
+        <span>Last sign-in: <strong class="text-slate-700">${esc(relTime(lastSignIn))}</strong>${lastSignIn ? ` <span class="text-slate-400">(${esc(fmtWhen(lastSignIn))})</span>` : ''}</span>
+        ${email ? `<span class="truncate max-w-full">${esc(email)}</span>` : ''}
+      </div>
+      <div class="flex flex-wrap gap-2 mt-3">
+        ${tel ? `<a href="tel:${esc(tel)}" class="min-h-[40px] inline-flex items-center px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold">📞 Call</a>` : ''}
+        ${tel ? `<button type="button" data-drawer-text data-phone="${esc(tel)}" data-name="${esc(name)}" class="min-h-[40px] px-3 rounded-lg bg-cyan-700 hover:bg-cyan-800 text-white text-xs font-semibold">💬 Text</button>` : ''}
+        ${email ? `<a href="mailto:${esc(email)}?subject=Checking%20in%20on%20your%20PDA%20coursework" class="min-h-[40px] inline-flex items-center px-3 rounded-lg bg-slate-700 hover:bg-slate-800 text-white text-xs font-semibold">✉️ Email</a>` : ''}
+        <button type="button" data-print-record ${d ? '' : 'disabled'} class="min-h-[40px] px-3 rounded-lg bg-white border border-slate-300 hover:border-teal-600 text-slate-700 text-xs font-semibold disabled:opacity-50">🖨 Competency record</button>
+      </div>`;
+  }
+  drawerHead.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if (!btn) return;
+    if (btn.hasAttribute('data-print-record')) { printRecord(); return; }
+    if (btn.hasAttribute('data-drawer-text')) openSms(btn.dataset.phone, btn.dataset.name, drawerStudentId);
+  });
+
+  // ── Sections (each returns [innerHtml, headerExtra]) ──
+  function secLessons(d) {
+    const total = num(d.lessons_total);
+    const L = d.lessons || {};
+    const done = num(L.done);
+    const pct = total ? Math.min(100, Math.round((done / total) * 100)) : 0;
+    const bar = pct >= 75 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-teal-600';
+    const recent = arr(L.recent).slice(0, 10);
+    const inner = `
+      <div class="flex items-center justify-between text-xs text-slate-600 mb-1 gap-2">
+        <span><strong class="text-slate-800">${done}</strong> of ${total || '—'} lessons complete</span><span class="mono">${pct}%</span>
+      </div>
+      <div class="h-2 bg-slate-100 rounded-full overflow-hidden"><div class="h-full rounded-full ${bar}" style="width:${pct}%"></div></div>
+      <div class="text-[11px] text-slate-500 mt-1">Last lesson ${esc(relOr(L.last_completed_at, 'none yet'))}${L.last_completed_at ? ' · ' + esc(fmtWhen(L.last_completed_at)) : ''}</div>
+      <div class="mt-3">${recent.length ? listBox(recent.map(l => `
+        <li class="flex items-center justify-between gap-2 px-3 py-2 text-sm min-w-0">
+          <span class="min-w-0 truncate">Module ${esc(l.module)} · Lesson ${esc(l.lesson)}</span>
+          <span class="text-xs text-slate-500 whitespace-nowrap">${esc(fmtDay(l.completed_at))}${l.quiz_score != null ? ' · quiz ' + esc(pctTxt(l.quiz_score)) : ''}</span>
+        </li>`)) : emptyBox('No lessons completed yet.')}</div>`;
+    return [inner, recent.length ? 'last ' + recent.length + ' completed' : ''];
+  }
+
+  function secQuizzes(d) {
+    const quizzes = arr(d.quizzes);
+    const attempts = arr(d.quiz_attempts).slice(0, 10);
+    const passed = quizzes.filter(q => q.state === 'passed').length;
+    const locked = quizzes.filter(q => q.state === 'locked').length;
+    const openAlerts = arr(d.alerts).filter(a => !a.resolved && a.lesson_id);
+    const list = quizzes.length ? listBox(quizzes.map(q => {
+      const isLocked = q.state === 'locked';
+      const st = q.state === 'passed' ? chip('✓ Passed', 'emerald') : isLocked ? chip('🔒 Locked', 'rose') : chip(esc(q.state || 'open'), 'slate');
+      const title = q.title || ('Lesson ' + q.module + '.' + q.lesson);
+      const hasAlert = openAlerts.some(a => a.lesson_id === q.lesson_id);
+      return `
+        <li class="px-3 py-2.5 min-w-0 ${isLocked ? 'bg-rose-50/40' : ''}">
+          <div class="flex items-start justify-between gap-2 flex-wrap">
+            <div class="min-w-0 flex-1">
+              <div class="text-sm font-semibold text-slate-800 break-words">${esc(title)}</div>
+              <div class="text-xs text-slate-500 mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5">
+                <span>Module ${esc(q.module)} · Lesson ${esc(q.lesson)}</span>
+                <span>Best <strong class="text-slate-700">${esc(pctTxt(q.best))}</strong></span>
+                <span>${num(q.attempts)} attempt(s)</span>
+                <span>Last ${esc(relOr(q.last_attempt_at, 'never'))}</span>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+              ${st}
+              ${isLocked ? `<button type="button" data-reopen="${esc(q.lesson_id)}" class="min-h-[40px] px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold">Reopen quiz</button>` : ''}
+            </div>
+          </div>
+          ${isLocked ? `<div class="text-[11px] text-rose-700 mt-1">Locked after a failed attempt — reopen once you've debriefed with the student.${hasAlert ? ' Reopening also clears the alert.' : ''}</div>` : ''}
+        </li>`;
+    })) : emptyBox('No quizzes taken yet.');
+    const attemptsHtml = attempts.length ? `
+      <div class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold mt-4 mb-1">Recent attempts</div>
+      ${listBox(attempts.map(a => `
+        <li class="flex items-center justify-between gap-2 px-3 py-2 text-xs min-w-0">
+          <span class="min-w-0 truncate text-slate-700">${esc(fmtWhen(a.created_at))} · M${esc(a.module)}.L${esc(a.lesson)} · attempt ${esc(num(a.attempt) || 1)}</span>
+          <span class="shrink-0 flex items-center gap-2"><strong class="text-slate-800">${esc(pctTxt(a.score))}</strong>${a.passed ? chip('Passed', 'emerald') : chip('Failed', 'rose')}</span>
+        </li>`))}` : '';
+    return [list + attemptsHtml, quizzes.length ? `${passed} passed · <span class="${locked ? 'text-rose-700 font-semibold' : ''}">${locked} locked</span>` : ''];
+  }
+
+  function secExams(d) {
+    const exams = arr(d.exams);
+    if (!exams.length) return [emptyBox('No practice exams yet.'), ''];
+    const best = Math.max(...exams.map(e => num(e.score)));
+    const inner = listBox(exams.slice(0, 15).map(e => {
+      const isBest = num(e.score) === best;
+      return `
+        <li class="flex items-center justify-between gap-2 px-3 py-2 text-sm min-w-0">
+          <span class="min-w-0 truncate text-slate-700">${esc(fmtWhen(e.created_at))}${e.mode ? ' · ' + esc(e.mode) : ''}</span>
+          <span class="shrink-0 text-xs text-slate-500"><span class="${isBest ? 'font-bold text-slate-900 text-sm' : 'text-slate-700'}">${esc(pctTxt(e.score))}</span> · ${esc(num(e.correct))}/${esc(num(e.total))}</span>
+        </li>`;
+    }));
+    return [inner, `best <strong class="text-slate-800">${best}%</strong> · ${exams.length} attempt(s)`];
+  }
+
+  function secQuestions(d) {
+    const qs = arr(d.questions);
+    if (!qs.length) return [emptyBox('No questions asked yet.'), ''];
+    const open = qs.filter(q => !q.answer).length;
+    const inner = listBox(qs.map(q => `
+      <li class="px-3 py-2.5 min-w-0 ${q.answer ? '' : 'bg-amber-50/40'}">
+        <div class="flex items-center gap-2 flex-wrap text-xs text-slate-500">
+          <span>${esc(fmtWhen(q.created_at))}</span>
+          ${q.topic ? chip(esc(q.topic), 'slate') : ''}
+          ${q.answer ? chip('Answered', 'teal') : chip('Waiting', 'amber')}
+        </div>
+        <div class="text-sm text-slate-800 mt-1 break-words">${esc(q.question)}</div>
+        ${q.answer ? `
+          <div class="mt-2 text-sm text-slate-700 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 break-words">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-teal-700">Answer</div>
+            <div class="mt-0.5">${esc(q.answer)}</div>
+            ${q.answered_at ? `<div class="text-[11px] text-slate-500 mt-1">${esc(fmtWhen(q.answered_at))}</div>` : ''}
+          </div>` : `
+          <div class="mt-2">
+            <label class="sr-only" for="ans-${esc(q.id)}">Answer</label>
+            <textarea id="ans-${esc(q.id)}" data-answer-text="${esc(q.id)}" rows="2" maxlength="4000" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-teal-600" placeholder="Type your answer — the student sees it on their dashboard…"></textarea>
+            <button type="button" data-answer-save="${esc(q.id)}" class="mt-1.5 min-h-[40px] px-4 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold">Save answer</button>
+          </div>`}
+      </li>`));
+    return [inner, `<span class="${open ? 'text-amber-700 font-semibold' : ''}">${open} open</span> · ${qs.length} total`];
+  }
+
+  function secTrainer(d) {
+    const t = d.trainer || {};
+    const recent = arr(t.recent).slice(0, 15);
+    const stats = `
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Actions</div><div class="text-sm font-bold mono text-slate-800">${num(t.total_actions)}</div></div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Active days</div><div class="text-sm font-bold mono text-slate-800">${num(t.active_days)}</div></div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">First active</div><div class="text-sm font-semibold text-slate-800 truncate">${esc(t.first_active_at ? fmtDay(t.first_active_at) : '—')}</div></div>
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 min-w-0"><div class="text-[10px] uppercase tracking-widest text-slate-500 font-semibold">Last active</div><div class="text-sm font-semibold text-slate-800 truncate">${esc(relOr(t.last_active_at, 'never'))}</div></div>
+      </div>`;
+    const list = recent.length ? `<div class="mt-3">${listBox(recent.map(a => `
+      <li class="flex items-center justify-between gap-2 px-3 py-2 text-xs min-w-0">
+        <span class="min-w-0 truncate text-slate-700">${a.app ? `<span class="font-semibold text-slate-800">${esc(a.app)}</span> · ` : ''}${esc(a.action || '')}</span>
+        <span class="shrink-0 text-slate-500 whitespace-nowrap">${esc(relTime(a.created_at))}</span>
+      </li>`))}</div>` : `<div class="mt-3">${emptyBox('No trainer practice logged yet.')}</div>`;
+    return [stats + list, recent.length ? 'last ' + recent.length + ' actions' : ''];
+  }
+
+  function skillState(c) {
+    const s = c && c.status;
+    if (s === 'completed' || s === 'verified') return 'completed';
+    if (s === 'practicing') return 'practicing';
+    return 'not_started';
+  }
+  // Catalogue to render: SL_DATA when loaded, otherwise whatever ids the student's record contains.
+  function skillCatalogue(comp, ver) {
+    if (COMPS.length) return COMPS;
+    const ids = Array.from(new Set([...Object.keys(comp || {}), ...Object.keys(ver || {})]));
+    return ids.map(id => ({ id, cat: 'Skills', name: id }));
+  }
+  // SL_DATA rows carry {id, cat, name}; tolerate {category, title} too so a data.js change can't blank the section.
+  const skillCat = (c) => c.cat || c.category || 'Skills';
+  const skillName = (c) => c.name || c.title || c.id;
+  function skillGroups(cat) {
+    const groups = [];
+    cat.forEach(c => {
+      const k = skillCat(c);
+      let g = groups.find(x => x.cat === k);
+      if (!g) { g = { cat: k, items: [] }; groups.push(g); }
+      g.items.push(c);
+    });
+    return groups;
+  }
+  function secSkills(d) {
+    const S = d.skills || null;
+    const comp = (S && S.competencies && typeof S.competencies === 'object') ? S.competencies : {};
+    const ver = (S && S.verified && typeof S.verified === 'object') ? S.verified : {};
+    const cat = skillCatalogue(comp, ver);
+    if (!cat.length) return [emptyBox('No Skills Lab record yet.'), ''];
+    const completed = cat.filter(c => skillState(comp[c.id]) === 'completed').length;
+    const practicing = cat.filter(c => skillState(comp[c.id]) === 'practicing').length;
+    const verified = cat.filter(c => !!ver[c.id]).length;
+    const summary = `
+      <div class="flex flex-wrap gap-2 text-xs mb-3">
+        ${chip(`${completed} of ${cat.length} completed`, completed ? 'emerald' : 'slate')}
+        ${chip(`${practicing} practicing`, practicing ? 'amber' : 'slate')}
+        ${chip(`${verified} instructor-verified`, verified ? 'teal' : 'slate')}
+        ${S && S.updated_at ? `<span class="text-slate-500 self-center">updated ${esc(relTime(S.updated_at))}</span>` : ''}
+      </div>
+      ${!S ? '<div class="text-xs text-slate-500 mb-3">This student hasn’t opened the Skills Lab yet — you can still sign off skills you’ve observed in class.</div>' : ''}`;
+    const groups = skillGroups(cat).map(g => `
+      <div class="mt-3">
+        <div class="text-[11px] font-bold text-slate-700 mb-1">${esc(g.cat)}</div>
+        ${listBox(g.items.map(c => {
+          const st = skillState(comp[c.id]);
+          const v = ver[c.id];
+          const stChip = st === 'completed' ? chip('Completed', 'emerald') : st === 'practicing' ? chip('Practicing', 'amber') : chip('Not started', 'slate');
+          const vChip = v ? chip(`Verified ✓ by ${esc(v.by_name || 'staff')}${v.at ? ' · ' + esc(fmtDay(v.at)) : ''}`, 'teal') : '';
+          const note = v && v.note ? `<div class="text-[11px] text-slate-500 mt-0.5 break-words">Note: ${esc(v.note)}</div>` : '';
+          const stDate = comp[c.id] && comp[c.id].date ? `<span class="text-[11px] text-slate-400">${esc(fmtDay(comp[c.id].date))}</span>` : '';
+          const btn = v
+            ? `<button type="button" data-verify="${esc(c.id)}" data-verified="1" class="min-h-[40px] px-3 rounded-lg bg-white border border-slate-300 hover:border-rose-500 text-slate-700 text-xs font-semibold">Undo</button>`
+            : `<button type="button" data-verify="${esc(c.id)}" data-verified="0" class="min-h-[40px] px-3 rounded-lg bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold">Verify</button>`;
+          return `
+            <li class="px-3 py-2 min-w-0">
+              <div class="flex items-start justify-between gap-2 flex-wrap">
+                <div class="min-w-0 flex-1">
+                  <div class="text-sm text-slate-800 break-words">${esc(skillName(c))}</div>
+                  <div class="flex flex-wrap items-center gap-1.5 mt-1">${stChip}${stDate}${vChip}</div>
+                  ${note}
+                </div>
+                <div class="shrink-0">${btn}</div>
+              </div>
+            </li>`;
+        }))}
+      </div>`).join('');
+    return [summary + groups, `${completed} done · ${verified} verified`];
+  }
+
+  function secFeedback(d) {
+    const fb = arr(d.feedback);
+    if (!fb.length) return [emptyBox('No feedback submitted yet.'), ''];
+    const inner = listBox(fb.slice(0, 15).map(f => {
+      const rating = Math.max(0, Math.min(5, Math.round(num(f.rating))));
+      return `
+        <li class="px-3 py-2 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap text-xs text-slate-500">
+            <span class="text-amber-500 tracking-tight" aria-label="${rating} of 5">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</span>
+            ${f.kind ? chip(esc(f.kind), 'slate') : ''}
+            <span>${esc(fmtWhen(f.created_at))}</span>
+            ${f.page ? `<span class="truncate max-w-full">${esc(f.page)}</span>` : ''}
+          </div>
+          ${f.comment ? `<div class="text-sm text-slate-800 mt-1 break-words">${esc(f.comment)}</div>` : ''}
+        </li>`;
+    }));
+    return [inner, fb.length + ' item(s)'];
+  }
+
+  function secReports(d) {
+    const rs = arr(d.lesson_reports);
+    if (!rs.length) return [emptyBox('No lesson problems reported.'), ''];
+    const inner = listBox(rs.slice(0, 15).map(r => `
+      <li class="px-3 py-2 min-w-0">
+        <div class="flex items-center gap-2 flex-wrap text-xs text-slate-500">
+          <span class="font-semibold text-slate-800 truncate max-w-full">${esc(r.lesson_title || 'Lesson')}</span>
+          ${r.kind ? chip(esc(r.kind), 'slate') : ''}
+          ${r.status ? chip(esc(r.status), r.status === 'new' ? 'amber' : 'slate') : ''}
+          <span>${esc(fmtWhen(r.created_at))}</span>
+        </div>
+        ${r.message ? `<div class="text-sm text-slate-800 mt-1 break-words">${esc(r.message)}</div>` : ''}
+      </li>`));
+    return [inner, rs.length + ' report(s)'];
+  }
+
+  function secAlerts(d) {
+    const all = arr(d.alerts);
+    const open = all.filter(a => !a.resolved);
+    const resolved = all.length - open.length;
+    if (!open.length) return [emptyBox(resolved ? `No open alerts. ${resolved} resolved.` : 'No alerts.'), ''];
+    const inner = listBox(open.map(a => `
+      <li class="px-3 py-2.5 min-w-0 bg-amber-50/40">
+        <div class="flex items-start justify-between gap-2 flex-wrap">
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 flex-wrap text-xs text-slate-500">
+              ${a.kind ? chip(esc(a.kind), 'amber') : ''}
+              <span>${esc(fmtWhen(a.created_at))}</span>
+            </div>
+            <div class="text-sm font-semibold text-slate-800 mt-1 break-words">${esc(a.title || 'Alert')}</div>
+            ${a.detail ? `<div class="text-sm text-slate-700 mt-0.5 break-words">${esc(a.detail)}</div>` : ''}
+          </div>
+          <button type="button" data-resolve="${esc(a.id)}" class="shrink-0 min-h-[40px] px-3 rounded-lg bg-white border border-slate-300 hover:border-teal-600 text-slate-700 text-xs font-semibold">Resolve</button>
+        </div>
+      </li>`));
+    return [inner, `<span class="text-amber-700 font-semibold">${open.length} open</span>${resolved ? ' · ' + resolved + ' resolved' : ''}`];
+  }
+
+  const SECTIONS = [
+    ['lessons',   'Lessons',          secLessons],
+    ['quizzes',   'Quizzes',          secQuizzes],
+    ['exams',     'Practice exams',   secExams],
+    ['questions', 'Questions',        secQuestions],
+    ['trainer',   'Trainer practice', secTrainer],
+    ['skills',    'Skills Lab',       secSkills],
+    ['feedback',  'Feedback',         secFeedback],
+    ['reports',   'Lesson problems',  secReports],
+    ['alerts',    'Alerts',           secAlerts],
+  ];
+  function paintBody(state, msg) {
+    if (state === 'loading') {
+      drawerBody.innerHTML = SECTIONS.map(([k, t]) => section(k, t, '<div class="text-sm text-slate-400 animate-pulse" data-loading>Loading…</div>')).join('');
+      drawerBody.scrollTop = 0;
+      return;
+    }
+    if (state === 'error') {
+      drawerBody.innerHTML = `
+        <div data-drawer-error class="rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3 flex items-center justify-between gap-3 flex-wrap">
+          <span class="min-w-0 break-words">Couldn't load this student's activity: ${esc(msg)}</span>
+          <button type="button" data-retry class="shrink-0 min-h-[40px] px-3 rounded-lg bg-white border border-rose-300 text-rose-800 text-xs font-semibold">Retry</button>
+        </div>` + SECTIONS.map(([k, t]) => section(k, t, '<div class="text-sm text-slate-400">Not loaded.</div>')).join('');
+      return;
+    }
+    const d = drawerData || {};
+    drawerBody.innerHTML = SECTIONS.map(([k, t, fn]) => {
+      let out;
+      try { out = fn(d); } catch (e) { out = ['<div class="text-sm text-rose-700">Couldn’t render this section.</div>', '']; }
+      return section(k, t, out[0], out[1]);
+    }).join('');
+    drawerBody.scrollTop = 0;
+  }
+
+  // ── Writes (admins AND instructors — RLS allows both) ──
+  function setBusy(btn, label) { btn.disabled = true; btn.dataset.label = btn.textContent; btn.textContent = label; }
+  function unBusy(btn) { btn.disabled = false; if (btn.dataset.label) btn.textContent = btn.dataset.label; }
+  // Keep the roster row honest after a write without re-pulling the whole gradebook.
+  function patchRow(id, fn) {
+    const i = rows.findIndex(r => r.id === id);
+    if (i < 0) return;
+    const r = { ...rows[i] }; fn(r); rows[i] = enrich(r);
+    renderSummary(); paintQuickFilters(); render();
+  }
+
+  async function reopenQuiz(lessonId, btn) {
+    const sid = drawerStudentId; if (!sid) return;
+    setBusy(btn, 'Reopening…');
+    const { error } = await sb.from('quiz_status')
+      .update({ state: 'open', reopened_by: session.user.id, reopened_at: new Date().toISOString() })
+      .eq('student_id', sid).eq('lesson_id', lessonId);
+    if (error) { unBusy(btn); flash('Couldn’t reopen the quiz: ' + error.message, 'error'); return; }
+    // The failed-quiz alert for this lesson is done once the quiz is reopened.
+    const matching = arr(drawerData && drawerData.alerts).filter(a => !a.resolved && a.lesson_id === lessonId);
+    let cleared = 0;
+    for (const a of matching) {
+      const res = await sb.from('admin_alerts').update({ resolved: true }).eq('id', a.id);
+      if (!res.error) cleared++;
+    }
+    patchRow(sid, r => { r.quizzes_locked = Math.max(0, num(r.quizzes_locked) - 1); r.alerts_open = Math.max(0, num(r.alerts_open) - cleared); });
+    flash('Quiz reopened — the student can retake it now.' + (cleared ? ' Alert cleared.' : ''));
+    loadDrawer(sid);
+  }
+
+  async function saveAnswer(qid, btn) {
+    const sid = drawerStudentId; if (!sid) return;
+    const ta = drawerBody.querySelector(`[data-answer-text="${CSS.escape(qid)}"]`);
+    const answer = ta ? ta.value.trim() : '';
+    if (!answer) { flash('Type an answer first.', 'error'); if (ta) ta.focus(); return; }
+    setBusy(btn, 'Saving…');
+    const { error } = await sb.from('student_questions')
+      .update({ answer, answered_by: session.user.id, answered_at: new Date().toISOString() })
+      .eq('id', qid);
+    if (error) { unBusy(btn); flash('Couldn’t save the answer: ' + error.message, 'error'); return; }
+    patchRow(sid, r => { r.questions_open = Math.max(0, num(r.questions_open) - 1); });
+    flash('Answer saved — it shows on the student’s dashboard now.');
+    loadDrawer(sid);
+  }
+
+  async function toggleVerify(skillId, currentlyVerified, btn) {
+    const sid = drawerStudentId; if (!sid) return;
+    let note = null;
+    if (currentlyVerified) {
+      if (!window.confirm('Remove your sign-off on this skill?')) return;
+    } else {
+      const n = window.prompt('Optional note for this sign-off (leave blank for none):', '');
+      if (n === null) return;           // cancelled
+      note = n.trim() ? n.trim().slice(0, 500) : null;
+    }
+    setBusy(btn, currentlyVerified ? 'Removing…' : 'Verifying…');
+    let res;
+    try { res = await sb.rpc('verify_skill', { p_student: sid, p_skill: skillId, p_verified: !currentlyVerified, p_note: note }); }
+    catch (e) { res = { error: { message: e && e.message ? e.message : 'network error' } }; }
+    if (res.error) { unBusy(btn); flash('Couldn’t update the sign-off: ' + res.error.message, 'error'); return; }
+    patchRow(sid, r => { r.skills_verified = Math.max(0, num(r.skills_verified) + (currentlyVerified ? -1 : 1)); });
+    flash(currentlyVerified ? 'Sign-off removed.' : 'Skill verified.');
+    loadDrawer(sid);
+  }
+
+  async function resolveAlert(alertId, btn) {
+    const sid = drawerStudentId; if (!sid) return;
+    setBusy(btn, 'Resolving…');
+    const { error } = await sb.from('admin_alerts').update({ resolved: true }).eq('id', alertId);
+    if (error) { unBusy(btn); flash('Couldn’t resolve the alert: ' + error.message, 'error'); return; }
+    patchRow(sid, r => { r.alerts_open = Math.max(0, num(r.alerts_open) - 1); });
+    flash('Alert resolved.');
+    loadDrawer(sid);
+  }
+
+  drawerBody.addEventListener('click', (e) => {
+    const btn = e.target.closest('button'); if (!btn || btn.disabled) return;
+    if (btn.hasAttribute('data-retry')) { if (drawerStudentId) loadDrawer(drawerStudentId); return; }
+    if (btn.dataset.reopen) { reopenQuiz(btn.dataset.reopen, btn); return; }
+    if (btn.dataset.answerSave) { saveAnswer(btn.dataset.answerSave, btn); return; }
+    if (btn.dataset.verify) { toggleVerify(btn.dataset.verify, btn.dataset.verified === '1', btn); return; }
+    if (btn.dataset.resolve) { resolveAlert(btn.dataset.resolve, btn); }
+  });
+
+  // ── Printable "Program competency record" — completed + instructor-verified skills only.
+  function buildRecord() {
+    const d = drawerData; if (!d) return false;
+    const r = rosterRow(drawerStudentId);
+    const p = d.profile || {};
+    const name = studentName(p, r);
+    const prog = programLabel(p.program || (r && r.program));
+    const enr = d.enrollment || null;
+    const cohort = (enr && enr.cohort) || p.cohort || (r && r.cohort) || '';
+    const S = d.skills || {};
+    const comp = (S.competencies && typeof S.competencies === 'object') ? S.competencies : {};
+    const ver = (S.verified && typeof S.verified === 'object') ? S.verified : {};
+    const cat = skillCatalogue(comp, ver);
+    const completed = cat.filter(c => skillState(comp[c.id]) === 'completed').length;
+    const verified = cat.filter(c => !!ver[c.id]).length;
+    const listed = cat.filter(c => skillState(comp[c.id]) === 'completed' || !!ver[c.id]);
+    const groups = skillGroups(listed);
+    const cell = 'padding:5px 8px;border-bottom:1px solid #e2e8f0;vertical-align:top';
+    document.getElementById('competency-record').innerHTML = `
+      <h1 style="font-size:22px;font-weight:700;margin:0 0 2px">Program competency record</h1>
+      <div style="font-size:13px;color:#475569">Premier Dental Academy of Longview</div>
+      <div style="margin:14px 0 18px;font-size:14px;line-height:1.6">
+        <div><strong>Student:</strong> ${esc(name)}</div>
+        ${prog ? `<div><strong>Program:</strong> ${esc(prog)}</div>` : ''}
+        ${cohort ? `<div><strong>Cohort:</strong> ${esc(cohort)}</div>` : ''}
+        <div><strong>Printed:</strong> ${esc(fmtDayYear(new Date()))}</div>
+        <div><strong>Summary:</strong> ${completed} of ${cat.length} competencies completed · ${verified} instructor-verified</div>
+      </div>
+      ${listed.length ? groups.map(g => `
+        <h2 style="font-size:14px;font-weight:700;margin:14px 0 4px">${esc(g.cat)}</h2>
+        <table style="width:100%;border-collapse:collapse;font-size:13px">
+          <thead><tr>
+            <th style="${cell};text-align:left;color:#64748b;font-weight:600">Competency</th>
+            <th style="${cell};text-align:left;color:#64748b;font-weight:600;width:22%">Student status</th>
+            <th style="${cell};text-align:left;color:#64748b;font-weight:600;width:36%">Instructor sign-off</th>
+          </tr></thead>
+          <tbody>${g.items.map(c => {
+            const v = ver[c.id];
+            const st = skillState(comp[c.id]);
+            const stTxt = (st === 'completed' ? 'Completed' : st === 'practicing' ? 'Practicing' : 'Not started') + (comp[c.id] && comp[c.id].date ? ' · ' + esc(fmtDayYear(comp[c.id].date)) : '');
+            const vTxt = v ? `Verified by ${esc(v.by_name || 'staff')}${v.at ? ' · ' + esc(fmtDayYear(v.at)) : ''}${v.note ? '<br><span style="color:#64748b">' + esc(v.note) + '</span>' : ''}` : '<span style="color:#94a3b8">Not yet verified</span>';
+            return `<tr><td style="${cell}">${esc(skillName(c))}</td><td style="${cell}">${stTxt}</td><td style="${cell}">${vTxt}</td></tr>`;
+          }).join('')}</tbody>
+        </table>`).join('')
+      : '<p style="font-size:13px;color:#475569">No completed or instructor-verified competencies on record yet.</p>'}
+      <p style="font-size:11px;color:#64748b;margin-top:18px">Generated from the student’s Skills Lab record and instructor sign-offs in the PDA admin gradebook.</p>`;
+    return true;
+  }
+  function printRecord() {
+    if (!buildRecord()) return;
+    const done = () => { document.body.classList.remove('print-record'); window.removeEventListener('afterprint', done); };
+    window.addEventListener('afterprint', done);
+    document.body.classList.add('print-record');
+    setTimeout(() => { try { window.print(); } catch (e) {} setTimeout(done, 1500); }, 30);
+  }
+
   renderSummary();
+  paintQuickFilters();
   render();
 })();
 </script>

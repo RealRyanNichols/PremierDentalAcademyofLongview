@@ -222,9 +222,11 @@
   const { data: { session } } = await sb.auth.getSession();
   if (!session) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
-  let profile = (await sb.from('profiles').select('is_admin, first_name, email').eq('id', session.user.id).maybeSingle()).data;
-  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin, first_name, email').eq('id', session.user.id).maybeSingle()).data; }
+  let profile = (await sb.from('profiles').select('is_admin, is_instructor, first_name, email').eq('id', session.user.id).maybeSingle()).data;
+  if (!profile) { try { await sb.auth.refreshSession(); } catch (e) {} profile = (await sb.from('profiles').select('is_admin, is_instructor, first_name, email').eq('id', session.user.id).maybeSingle()).data; }
   const isAdmin = profile?.is_admin === true || session?.user?.app_metadata?.is_admin === true;
+  // Instructor-only accounts skip the hub (its queries are admin-only) and land on the gradebook.
+  if (!isAdmin && profile?.is_instructor === true) { location.replace('/admin/progress'); return; }
   if (!isAdmin) { document.getElementById('auth-wall').classList.remove('hidden'); return; }
 
   document.getElementById('admin-name').textContent = profile?.first_name || 'Amanda';

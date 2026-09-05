@@ -35,6 +35,10 @@
     ['/admin/brain',       '🧠', 'Free tool sign-ups',    'Marketing'],
   ];
   var GROUPS = ['Daily', 'People', 'Teaching', 'Marketing'];
+  // Pages that admit an instructor-only account (profiles.is_instructor without is_admin).
+  // Every other admin page — and its queue-count badge query — is admin-only.
+  var INSTRUCTOR_PATHS = ['/admin/progress', '/admin/questions', '/admin/students'];
+  var INSTRUCTOR_HOME = '/admin/progress';
 
   // Public Supabase project URL + publishable key (same values every admin page
   // already ships in client code). Only used for the queue-count badges.
@@ -50,7 +54,7 @@
   }
 
   function groupHeading(name, extra) {
-    return '<span class="' + extra + ' text-[10px] uppercase tracking-wide font-bold text-slate-500 select-none">' + name + '</span>';
+    return '<span data-pda-group-heading="' + name + '" class="' + extra + ' text-[10px] uppercase tracking-wide font-bold text-slate-500 select-none">' + name + '</span>';
   }
 
   function badgeSpan(path) {
@@ -79,7 +83,7 @@
       return groupHeading(g, 'shrink-0 pl-2 pr-1') +
         LINKS.filter(function (l) { return l[3] === g; }).map(function (l) {
           var active = here === l[0];
-          return '<a href="' + l[0] + '" class="shrink-0 whitespace-nowrap inline-flex items-center text-sm font-semibold px-2.5 py-1.5 rounded-lg ' +
+          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="shrink-0 whitespace-nowrap inline-flex items-center text-sm font-semibold px-2.5 py-1.5 rounded-lg ' +
             (active ? 'bg-teal-600 text-white' : 'text-slate-300 hover:text-white hover:bg-white/10') + '">' +
             l[1] + ' ' + l[2] + badgeSpan(l[0]) + '</a>';
         }).join('');
@@ -90,7 +94,7 @@
       return groupHeading(g, 'col-span-2 pt-2 px-2') +
         LINKS.filter(function (l) { return l[3] === g; }).map(function (l) {
           var active = here === l[0];
-          return '<a href="' + l[0] + '" class="min-h-[44px] min-w-0 flex items-center gap-1.5 px-3 rounded-lg text-sm font-semibold ' +
+          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="min-h-[44px] min-w-0 flex items-center gap-1.5 px-3 rounded-lg text-sm font-semibold ' +
             (active ? 'bg-teal-600 text-white' : 'text-slate-200 hover:text-white hover:bg-white/10') + '">' +
             '<span class="shrink-0">' + l[1] + '</span><span class="truncate">' + l[2] + '</span>' + badgeSpan(l[0]) + '</a>';
         }).join('');
@@ -98,7 +102,7 @@
 
     nav.innerHTML =
       '<div class="max-w-7xl mx-auto px-3 sm:px-6 min-h-14 flex flex-wrap items-center gap-3 py-2">' +
-        '<a href="/admin" class="flex items-center gap-2 font-bold shrink-0">' +
+        '<a href="/admin" data-pda-brand class="flex items-center gap-2 font-bold shrink-0">' +
           '<span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>' +
           '<span class="hidden sm:inline">PDA Admin</span>' +
         '</a>' +
@@ -179,6 +183,40 @@
     });
   }
 
+  // Instructor-only account: keep just the pages that admit instructors (desktop row
+  // AND mobile panel), drop any group heading left with no links, and send the brand
+  // link to the gradebook instead of the admin-only hub. Admins never reach this.
+  function applyInstructorNav() {
+    if (!navEl) return;
+    var links = navEl.querySelectorAll('a[data-pda-link]');
+    Array.prototype.forEach.call(links, function (a) {
+      if (INSTRUCTOR_PATHS.indexOf(a.getAttribute('data-pda-link')) === -1 && a.parentNode) a.parentNode.removeChild(a);
+    });
+    var heads = navEl.querySelectorAll('[data-pda-group-heading]');
+    Array.prototype.forEach.call(heads, function (h) {
+      var g = h.getAttribute('data-pda-group-heading');
+      var left = h.parentNode ? h.parentNode.querySelectorAll('a[data-pda-group="' + g + '"]').length : 0;
+      if (!left && h.parentNode) h.parentNode.removeChild(h);
+    });
+    var brand = navEl.querySelector('a[data-pda-brand]');
+    if (brand) brand.setAttribute('href', INSTRUCTOR_HOME);
+  }
+
+  // Who is signed in: { admin, instructor } from the own profile row (+ the JWT admin
+  // claim). Resolves null when unknown so the caller keeps the default (admin) menu —
+  // every page still enforces its own gate.
+  function readRole(sb) {
+    return sb.auth.getSession().then(function (res) {
+      var s = res && res.data ? res.data.session : null;
+      if (!s || !s.user) return null;
+      var claim = !!(s.user.app_metadata && s.user.app_metadata.is_admin === true);
+      return sb.from('profiles').select('is_admin,is_instructor').eq('id', s.user.id).maybeSingle().then(function (q) {
+        var p = (q && q.data) || {};
+        return { admin: claim || p.is_admin === true, instructor: p.is_instructor === true };
+      });
+    }).catch(function () { return null; });
+  }
+
   // Live queue counts. RLS scopes every count to the signed-in admin; a failed
   // or blocked count simply leaves that badge hidden and never breaks the nav.
   function paintBadges() {
@@ -194,19 +232,27 @@
         ['/admin/reports',   function () { return sb.from('lesson_reports').select('id', { count: 'exact', head: true }).eq('status', 'new'); }],
         ['/admin/leads',     function () { return sb.from('leads').select('id', { count: 'exact', head: true }).is('last_contact_at', null); }],
       ];
-      Promise.allSettled(QUEUES.map(function (q) {
-        try { return Promise.resolve(q[1]()); } catch (e) { return Promise.reject(e); }
-      })).then(function (results) {
-        var total = 0;
-        results.forEach(function (r, i) {
-          if (r.status !== 'fulfilled' || !r.value || r.value.error) return;
-          var n = Number(r.value.count) || 0;
-          if (n < 0) n = 0;
-          total += n;
-          try { setBadge(QUEUES[i][0], n); } catch (e) { /* never break the nav */ }
+      readRole(sb).then(function (role) {
+        var queues = QUEUES;
+        if (role && role.instructor && !role.admin) {
+          try { applyInstructorNav(); } catch (e) { /* never break the nav */ }
+          // Hidden links' tables are admin-only (would 401) — only count what's still in the menu.
+          queues = QUEUES.filter(function (q) { return INSTRUCTOR_PATHS.indexOf(q[0]) !== -1; });
+        }
+        return Promise.allSettled(queues.map(function (q) {
+          try { return Promise.resolve(q[1]()); } catch (e) { return Promise.reject(e); }
+        })).then(function (results) {
+          var total = 0;
+          results.forEach(function (r, i) {
+            if (r.status !== 'fulfilled' || !r.value || r.value.error) return;
+            var n = Number(r.value.count) || 0;
+            if (n < 0) n = 0;
+            total += n;
+            try { setBadge(queues[i][0], n); } catch (e) { /* never break the nav */ }
+          });
+          badgeTotal = total;
+          syncMenuDot();
         });
-        badgeTotal = total;
-        syncMenuDot();
       }).catch(function () { /* never break the nav */ });
     } catch (e) { /* never break the nav */ }
   }
