@@ -181,7 +181,7 @@
 
 <!-- Lead profile drawer (tap a name in the list) -->
 <div id="lead-drawer-backdrop" class="hidden fixed inset-0 bg-slate-900/50 z-[55]"></div>
-<aside id="lead-drawer" role="dialog" aria-label="Lead profile" aria-hidden="true" class="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-2xl z-[60] flex flex-col translate-x-full transition-transform duration-200">
+<aside id="lead-drawer" role="dialog" aria-label="Lead profile" aria-hidden="true" inert class="fixed inset-y-0 right-0 w-full max-w-lg bg-white shadow-2xl z-[60] flex flex-col translate-x-full transition-transform duration-200">
   <div class="flex items-start justify-between gap-3 p-4 sm:p-5 border-b border-slate-200 shrink-0">
     <div id="lead-drawer-head" class="flex-1 min-w-0"></div>
     <button id="lead-drawer-close" type="button" aria-label="Close" class="shrink-0 w-10 h-10 grid place-items-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 text-xl leading-none">✕</button>
@@ -299,10 +299,13 @@
     allLeads = leadsRes.data || [];
     allSubs  = subsRes.data || [];
     allComms = commsRes.data || [];
+    historyFetched.clear();   // the loaded window changed — fetch full history again on the next open
     rebuildTouchCounts();
     buildSourceFilter();
     render();
     renderMessages();
+    // ↻ Refresh with the drawer open: repaint it from the fresh rows so nothing stale lingers.
+    if (drawerLeadId) paintLeadDrawer(drawerLeadId);
   }
 
   function buildSourceFilter() {
@@ -366,7 +369,7 @@
   }
   function wantBadge(l) {
     const w = wantLabel(l);
-    return `<span class="text-[10px] font-semibold border px-1.5 py-0.5 rounded-full whitespace-nowrap ${w.tone === 'program' ? 'bg-teal-50 text-teal-800 border-teal-200' : w.tone === 'tool' ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-slate-50 text-slate-400 border-slate-200'}">${esc(w.text)}</span>`;
+    return `<span class="text-[10px] font-semibold border px-1.5 py-0.5 rounded-full whitespace-nowrap ${w.tone === 'program' ? 'bg-teal-50 text-teal-800 border-teal-200' : w.tone === 'tool' ? 'bg-slate-100 text-slate-600 border-slate-200' : 'bg-slate-50 text-slate-600 border-slate-200'}">${esc(w.text)}</span>`;
   }
   // Plain-words age for meta lines ("6 days ago"). timeAgo() stays for the short chips.
   function agoWords(iso) {
@@ -468,9 +471,10 @@
       <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 mb-3" data-sc-card="${l.id}">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold shrink-0">${initials}</div>
-          <div class="min-w-0">
-            <div class="font-bold text-lg leading-tight">${esc(name)}</div>
+          <div class="min-w-0 flex-1">
+            <button type="button" data-lead-detail="${l.id}" class="text-left font-bold text-lg leading-tight text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(name)}</button>
             <div class="text-sm text-slate-600 mt-0.5">${esc(why)}</div>
+            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">${wantBadge(l)}${touchSpans(l)}</div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mt-3">
@@ -526,6 +530,7 @@
     rebuildTouchCounts();
     if (drawerLeadId === id) { const l = allLeads.find(x => x.id === id); if (l) renderLeadHistory(l); }
     render({ keepSimple: !!document.querySelector('#simple-list [data-outcome-row]') });
+    if (currentTab === 'messages') renderMessages();   // the new row belongs in its thread right away
   }
 
   // "I handled this" outcomes — one tap each, optional one-line note. Writes channel 'note'.
@@ -534,11 +539,11 @@
     return `<div data-outcome-row class="mt-2">
       <div class="text-xs text-slate-500 font-semibold mb-1.5">What happened? One tap — optional.</div>
       <div class="flex flex-wrap gap-1.5">
-        ${OUTCOMES.map(o => `<button type="button" data-outcome="${esc(o)}" class="min-h-[40px] px-3 rounded-full border border-slate-300 bg-white hover:border-teal-600 hover:bg-teal-50 text-sm font-semibold text-slate-700">${esc(o)}</button>`).join('')}
+        ${OUTCOMES.map(o => `<button type="button" data-outcome="${esc(o)}" class="min-h-[40px] px-3 rounded-full border border-slate-300 bg-white hover:border-teal-600 hover:bg-teal-50 text-sm font-semibold text-slate-700 disabled:opacity-50 disabled:cursor-wait">${esc(o)}</button>`).join('')}
       </div>
       <div class="flex gap-2 mt-2">
-        <input data-outcome-note placeholder="Optional one-line note" class="flex-1 min-w-0 min-h-[40px] text-sm px-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none" />
-        <button type="button" data-outcome-save class="min-h-[40px] px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shrink-0">Save</button>
+        <input data-outcome-note aria-label="Optional note" placeholder="Optional one-line note" class="flex-1 min-w-0 min-h-[40px] text-sm px-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none" />
+        <button type="button" data-outcome-save class="min-h-[40px] px-3 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold shrink-0 disabled:opacity-50 disabled:cursor-wait">Save</button>
         ${withSkip ? '<button type="button" data-outcome-skip class="min-h-[40px] px-2 rounded-lg text-sm font-semibold text-slate-500 hover:text-slate-800 shrink-0">Skip</button>' : ''}
       </div>
       <div data-outcome-status class="text-[11px] text-slate-400 mt-1 min-h-[1rem]"></div>
@@ -547,10 +552,16 @@
   function wireOutcomeRow(root, lead, onDone) {
     const note = root.querySelector('[data-outcome-note]');
     const status = root.querySelector('[data-outcome-status]');
+    const buttons = () => root.querySelectorAll('[data-outcome], [data-outcome-save]');
+    let busy = false;   // one write at a time — a double tap must not log two rows
     const go = async (outcome) => {
+      if (busy) return;
+      busy = true;
+      buttons().forEach(b => { b.disabled = true; });
       const n = (note?.value || '').trim();
       if (status) status.textContent = 'Saving…';
-      await logContact(lead, { channel: 'note', body: outcome + (n ? ' — ' + n : '') });
+      try { await logContact(lead, { channel: 'note', body: outcome + (n ? ' — ' + n : '') }); }
+      finally { busy = false; buttons().forEach(b => { b.disabled = false; }); }
       if (note) note.value = '';
       if (status) { status.textContent = '✓ Logged'; setTimeout(() => { status.textContent = ''; }, 1500); }
       if (onDone) onDone();
@@ -569,7 +580,7 @@
     const lead = allLeads.find(x => x.id === id);
     const card = document.querySelector(`#simple-list [data-sc-card="${CSS.escape(id)}"]`);
     if (!lead || !card) { renderSimple(); return; }
-    card.innerHTML = `<div class="font-bold text-lg leading-tight">${esc(leadName(lead))}</div>
+    card.innerHTML = `<button type="button" data-lead-detail="${lead.id}" class="text-left font-bold text-lg leading-tight text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(leadName(lead))}</button>
       <div class="text-sm text-emerald-700 font-semibold mt-0.5">${headline}</div>` + outcomeRowHtml(true);
     wireOutcomeRow(card, lead, renderSimple);
   }
@@ -901,7 +912,9 @@
 
   // ── Messages: group communications into per-contact threads ──
   function threadKey(c) {
-    return (c.contact_phone || '').replace(/[^\d+]/g, '') || (c.contact_email || '').toLowerCase() || c.contact_name || 'unknown';
+    // Same last-10-digits key as commsForLead, so an admin-logged "(903) 555-0100" row joins
+    // the Quo "+19035550100" thread instead of starting a second one for the same person.
+    return phoneDigits(c.contact_phone) || (c.contact_phone || '').replace(/[^\d+]/g, '') || (c.contact_email || '').toLowerCase() || c.contact_name || 'unknown';
   }
   function buildThreads() {
     const map = new Map();
@@ -1185,8 +1198,10 @@
       .sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
   }
 
-  // leadId → { calls, texts, emails, other, last } from the loaded communications.
-  // Rows that were never linked are matched by phone / email, same as the drawer.
+  // leadId → { calls, texts, emails, other, last, lastOut } from the loaded communications.
+  // `last` is the newest row either way (drawer summary); `lastOut` is the newest OUTBOUND
+  // row — the one that answers "has anyone reached out to them?". Rows that were never
+  // linked are matched by phone / email, same as the drawer.
   function rebuildTouchCounts() {
     touchCounts = new Map();
     const byPhone = new Map(), byEmail = new Map();
@@ -1202,31 +1217,40 @@
       const ch = (c.channel || '').toLowerCase();
       ids.forEach(id => {
         let t = touchCounts.get(id);
-        if (!t) { t = { calls: 0, texts: 0, emails: 0, other: 0, last: null }; touchCounts.set(id, t); }
+        if (!t) { t = { calls: 0, texts: 0, emails: 0, other: 0, last: null, lastOut: null }; touchCounts.set(id, t); }
         if (ch === 'call') t.calls++; else if (ch === 'sms') t.texts++; else if (ch === 'email') t.emails++; else t.other++;
         if (!t.last || new Date(c.occurred_at) > new Date(t.last)) t.last = c.occurred_at;
+        // A missing direction is an admin-logged touch, so it counts as outbound.
+        if (c.direction !== 'inbound' && (!t.lastOut || new Date(c.occurred_at) > new Date(t.lastOut))) t.lastOut = c.occurred_at;
       });
     });
   }
-  // Most recent touch from either the logged history or the hand-stamped last_contact_at.
+  // Most recent OUTBOUND touch — the logged history or the hand-stamped last_contact_at.
+  // Someone calling in does not count as us contacting them, so the list meta line and the
+  // "Never contacted" / "No contact in 7+ days" chips all run on this.
   function lastTouchIso(l) {
     const tc = touchCounts.get(l.id);
-    const a = tc ? tc.last : null, b = l.last_contact_at || null;
+    const a = tc ? tc.lastOut : null, b = l.last_contact_at || null;
     if (!a) return b;
     if (!b) return a;
     return new Date(a) > new Date(b) ? a : b;
   }
-  // One compact line under the name: what they want · where from · last contact · touches.
-  function metaLine(l) {
+  // "Last contact …" / "Never contacted" + "N calls · N texts" — shared by the list meta
+  // line and the simple-view card. Drop these spans into any flex-wrap row.
+  function touchSpans(l) {
     const tc = touchCounts.get(l.id);
     const last = lastTouchIso(l);
-    const story = sourceStory(l);
     const touches = tc ? [tc.calls ? plural(tc.calls, 'call') : '', tc.texts ? plural(tc.texts, 'text') : '', tc.emails ? plural(tc.emails, 'email') : ''].filter(Boolean).join(' · ') : '';
+    return (last ? `<span class="whitespace-nowrap">Last contact ${esc(agoWords(last))}</span>` : '<span class="text-amber-700 font-semibold whitespace-nowrap">Never contacted</span>')
+      + (touches ? `<span class="whitespace-nowrap">${esc(touches)}</span>` : '');
+  }
+  // One compact line under the name: what they want · where from · last contact · touches.
+  function metaLine(l) {
+    const story = sourceStory(l);
     return `<div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">
       ${wantBadge(l)}
       <span class="truncate max-w-full">${esc(story.charAt(0).toUpperCase() + story.slice(1))}</span>
-      ${last ? `<span class="whitespace-nowrap">Last contact ${esc(agoWords(last))}</span>` : '<span class="text-amber-700 font-semibold whitespace-nowrap">Never contacted</span>'}
-      ${touches ? `<span class="whitespace-nowrap">${esc(touches)}</span>` : ''}
+      ${touchSpans(l)}
     </div>`;
   }
   // Quick-filter chips above the list — one active at a time, counts shown so she can
@@ -1260,36 +1284,57 @@
 
   function showLeadDrawer() {
     leadBackdrop.classList.remove('hidden');
+    leadDrawer.removeAttribute('inert');
     leadDrawer.setAttribute('aria-hidden', 'false');
-    requestAnimationFrame(() => leadDrawer.classList.remove('translate-x-full'));
+    requestAnimationFrame(() => {
+      leadDrawer.classList.remove('translate-x-full');
+      const close = document.getElementById('lead-drawer-close');
+      if (close) close.focus({ preventScroll: true });   // keyboard / screen-reader users land inside the dialog
+    });
   }
   function closeLeadDrawer() {
+    const id = drawerLeadId;
     drawerLeadId = null;
     leadDrawer.classList.add('translate-x-full');
     leadDrawer.setAttribute('aria-hidden', 'true');
+    leadDrawer.setAttribute('inert', '');
     leadBackdrop.classList.add('hidden');
+    // Hand focus back to the name that opened the drawer — the visible one, if it's still on the page.
+    if (id) {
+      const back = Array.from(document.querySelectorAll(`#leads-view [data-lead-detail="${CSS.escape(id)}"]`)).find(b => b.offsetParent !== null);
+      if (back) back.focus({ preventScroll: true });
+    }
   }
   leadBackdrop.onclick = closeLeadDrawer;
   document.getElementById('lead-drawer-close').onclick = closeLeadDrawer;
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && drawerLeadId && modal.classList.contains('hidden')) closeLeadDrawer();
+    if (e.key !== 'Escape') return;
+    // Top-most layer first: the SMS composer sits above the drawer.
+    if (!modal.classList.contains('hidden')) { modal.classList.add('hidden'); return; }
+    if (drawerLeadId) closeLeadDrawer();
   });
-  // One delegated listener: the name button in either list density opens the drawer.
-  document.getElementById('leads-list').addEventListener('click', (e) => {
+  // One delegated listener on the common ancestor: the name button in the simple view,
+  // the calm list and the full list all open the drawer.
+  document.getElementById('leads-view').addEventListener('click', (e) => {
     const btn = e.target.closest('[data-lead-detail]'); if (!btn) return;
     e.stopPropagation();
     openLeadDrawer(btn.dataset.leadDetail);
   });
 
   function openLeadDrawer(id) {
-    const l = allLeads.find(x => x.id === id);
     drawerLeadId = id;
+    paintLeadDrawer(id);
+    showLeadDrawer();
+  }
+  // Fill (or refill) the drawer for a lead. Also called by ↻ Refresh while the drawer is
+  // open, so it must not move focus or re-animate — that's openLeadDrawer's job.
+  function paintLeadDrawer(id) {
+    const l = allLeads.find(x => x.id === id);
     const head = document.getElementById('lead-drawer-head');
     const body = document.getElementById('lead-drawer-body');
     if (!l) {
       head.innerHTML = '<h2 class="display text-xl font-bold">Lead not found</h2>';
       body.innerHTML = '<div class="rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3">This lead isn’t in the loaded list any more. Tap ↻ Refresh and try again.</div>';
-      showLeadDrawer();
       return;
     }
     renderLeadDrawerHead(l);
@@ -1306,7 +1351,6 @@
     // Notes — the same debounced save as the list card.
     const ta = body.querySelector('[data-drawer-notes]');
     if (ta) wireNotes(ta, l.id, body.querySelector('[data-drawer-notes-status]'));
-    showLeadDrawer();
     renderLeadHistory(l);
     renderLeadTasks(l);
   }
@@ -1337,10 +1381,14 @@
     const phone = (l.phone || '').replace(/[^\d+]/g, '');
     const story = sourceStory(l);
     const u = asObj(l.utm) || {};
+    // A nested utm value shows as its JSON, never "[object Object]".
+    const utmVal = (v) => v != null && typeof v === 'object' ? JSON.stringify(v) : v;
     const utmRows = [['Source', u.utm_source ?? u.source], ['Medium', u.utm_medium ?? u.medium], ['Campaign', u.utm_campaign ?? u.campaign], ['Content', u.utm_content ?? u.content], ['Term', u.utm_term ?? u.term]]
+      .map(r => [r[0], utmVal(r[1])])
       .filter(r => r[1] != null && String(r[1]).trim() !== '');
     const lp = String(l.landing_page || '').trim();
-    const lpIsUrl = /^(https?:\/\/|\/)/i.test(lp);
+    // Link only http(s) and site-relative paths — a protocol-relative "//host" is off-site.
+    const lpIsUrl = /^(https?:\/\/|\/(?!\/))/i.test(lp);
     const wantRows = [
       ['Path', l.path_preference], ['Pay intent', l.pay_intent], ['Pay when', l.pay_when],
       ['Start', l.ready_timeline ? readinessLabel(l.ready_timeline) : ''], ['Interest', cleanInterest(l)],
@@ -1373,7 +1421,7 @@
         </div>`)}
       ${drawerSection('Contact history', '<div id="lead-history"><div class="text-sm text-slate-500 py-2">Loading contact history…</div></div><div id="lead-log" class="mt-3 pt-3 border-t border-slate-100"></div>')}
       ${drawerSection('Notes', `
-        <textarea data-drawer-notes rows="3" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
+        <textarea data-drawer-notes aria-label="Private notes" rows="3" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
         <span data-drawer-notes-status class="text-[11px] text-slate-400"></span>`)}
       ${drawerSection('Open tasks', '<div id="lead-tasks"><div class="text-sm text-slate-500">Loading…</div></div>')}`;
   }
@@ -1403,21 +1451,40 @@
     </div>`;
   }
 
+  // Summary line + timeline for a set of rows (newest first). "last contact" here is either
+  // direction — the drawer answers "when did we last talk?", not "when did we reach out?".
+  function historyHtml(rows) {
+    const n = { calls: 0, texts: 0, emails: 0, other: 0 };
+    rows.forEach(c => { const ch = (c.channel || '').toLowerCase(); if (ch === 'call') n.calls++; else if (ch === 'sms') n.texts++; else if (ch === 'email') n.emails++; else n.other++; });
+    const parts = [];
+    if (n.calls) parts.push(plural(n.calls, 'call'));
+    if (n.texts) parts.push(plural(n.texts, 'text'));
+    if (n.emails) parts.push(plural(n.emails, 'email'));
+    if (n.other) parts.push(n.other + ' other');
+    parts.push('last contact ' + agoWords(rows[0].occurred_at));
+    return `
+      <div class="text-sm font-semibold text-slate-800 mb-1">${esc(parts.join(' · '))}</div>
+      <div>${rows.map(historyItem).join('')}</div>`;
+  }
+
   // The centrepiece: every call, text and email with this person. Re-run after any write.
   async function renderLeadHistory(l) {
     const box = document.getElementById('lead-history');
     if (!box || drawerLeadId !== l.id) return;
     const rows = commsForLead(l);
-    // Nothing in the 2,000-row window? Fetch this lead's rows once, on demand.
-    if (!rows.length && !historyFetched.has(l.id)) {
-      box.innerHTML = '<div class="text-sm text-slate-500 py-2">Loading contact history…</div>';
+    // The page only loads a 2,000-row window, so the first open fetches this lead's full
+    // history once. Whatever is already in the window shows straight away while it runs.
+    if (!historyFetched.has(l.id)) {
+      box.innerHTML = (rows.length ? historyHtml(rows) : '')
+        + `<div class="text-sm text-slate-500 py-2">${rows.length ? 'Checking for older history…' : 'Loading contact history…'}</div>`;
       let res;
       try { res = await sb.from('communications').select('*').eq('related_lead_id', l.id).order('occurred_at', { ascending: false }); }
       catch (e) { res = { error: e }; }
       if (drawerLeadId !== l.id) return;
       if (res.error) {
-        box.innerHTML = `<div class="rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3">
-          <div>Couldn't load contact history — ${esc(res.error.message || String(res.error))}. Try again.</div>
+        // Keep what we have; never fall through to "Never contacted." on a failed fetch.
+        box.innerHTML = (rows.length ? historyHtml(rows) : '') + `<div class="rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3 mt-2">
+          <div>Couldn't load ${rows.length ? 'older' : 'contact'} history — ${esc(res.error.message || String(res.error))}. Try again.</div>
           <button type="button" data-history-retry class="mt-2 min-h-[40px] px-3 rounded-lg bg-white border border-rose-300 text-rose-800 font-semibold text-sm">Try again</button>
         </div>`;
         box.querySelector('[data-history-retry]').onclick = () => renderLeadHistory(l);
@@ -1435,17 +1502,7 @@
         : '<div class="text-sm text-amber-700 font-semibold py-2">Never contacted.</div>';
       return;
     }
-    const n = { calls: 0, texts: 0, emails: 0, other: 0 };
-    rows.forEach(c => { const ch = (c.channel || '').toLowerCase(); if (ch === 'call') n.calls++; else if (ch === 'sms') n.texts++; else if (ch === 'email') n.emails++; else n.other++; });
-    const parts = [];
-    if (n.calls) parts.push(plural(n.calls, 'call'));
-    if (n.texts) parts.push(plural(n.texts, 'text'));
-    if (n.emails) parts.push(plural(n.emails, 'email'));
-    if (n.other) parts.push(n.other + ' other');
-    parts.push('last contact ' + agoWords(rows[0].occurred_at));
-    box.innerHTML = `
-      <div class="text-sm font-semibold text-slate-800 mb-1">${esc(parts.join(' · '))}</div>
-      <div>${rows.map(historyItem).join('')}</div>`;
+    box.innerHTML = historyHtml(rows);
   }
 
   async function renderLeadTasks(l) {
