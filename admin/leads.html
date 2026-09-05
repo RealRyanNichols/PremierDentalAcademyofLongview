@@ -1202,6 +1202,10 @@
   // `last` is the newest row either way (drawer summary); `lastOut` is the newest OUTBOUND
   // row — the one that answers "has anyone reached out to them?". Rows that were never
   // linked are matched by phone / email, same as the drawer.
+  // Automated senders (drip texts, auto-replies, receipts) are not "us contacting them".
+  // They show in the timeline tagged "auto" but never count as a human touch.
+  const AUTO_SOURCES = new Set(['sms-drip', 'quo-auto-pending-send', 'quo-auto-sent', 'quo-ai-night', 'resend', 'buy-product', 'kajabi-webhook', 'square_webhook', 'tuition_calculator', 'enroll-paperwork']);
+  function isAutoComm(c) { return AUTO_SOURCES.has(String(c.source || '').toLowerCase()); }
   function rebuildTouchCounts() {
     touchCounts = new Map();
     const byPhone = new Map(), byEmail = new Map();
@@ -1215,9 +1219,11 @@
       const p = phoneDigits(c.contact_phone); if (p) (byPhone.get(p) || []).forEach(id => ids.add(id));
       const e = (c.contact_email || '').toLowerCase().trim(); if (e) (byEmail.get(e) || []).forEach(id => ids.add(id));
       const ch = (c.channel || '').toLowerCase();
+      const auto = isAutoComm(c);
       ids.forEach(id => {
         let t = touchCounts.get(id);
-        if (!t) { t = { calls: 0, texts: 0, emails: 0, other: 0, last: null, lastOut: null }; touchCounts.set(id, t); }
+        if (!t) { t = { calls: 0, texts: 0, emails: 0, other: 0, auto: 0, last: null, lastOut: null }; touchCounts.set(id, t); }
+        if (auto) { t.auto++; return; }
         if (ch === 'call') t.calls++; else if (ch === 'sms') t.texts++; else if (ch === 'email') t.emails++; else t.other++;
         if (!t.last || new Date(c.occurred_at) > new Date(t.last)) t.last = c.occurred_at;
         // A missing direction is an admin-logged touch, so it counts as outbound.
@@ -1240,7 +1246,7 @@
   function touchSpans(l) {
     const tc = touchCounts.get(l.id);
     const last = lastTouchIso(l);
-    const touches = tc ? [tc.calls ? plural(tc.calls, 'call') : '', tc.texts ? plural(tc.texts, 'text') : '', tc.emails ? plural(tc.emails, 'email') : ''].filter(Boolean).join(' · ') : '';
+    const touches = tc ? [tc.calls ? plural(tc.calls, 'call') : '', tc.texts ? plural(tc.texts, 'text') : '', tc.emails ? plural(tc.emails, 'email') : '', tc.auto ? tc.auto + ' auto' : ''].filter(Boolean).join(' · ') : '';
     return (last ? `<span class="whitespace-nowrap">Last contact ${esc(agoWords(last))}</span>` : '<span class="text-amber-700 font-semibold whitespace-nowrap">Never contacted</span>')
       + (touches ? `<span class="whitespace-nowrap">${esc(touches)}</span>` : '');
   }
@@ -1440,6 +1446,7 @@
         <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
           ${dir ? `<span class="font-semibold ${c.direction === 'inbound' ? 'text-sky-700' : 'text-teal-700'}">${dir}</span>` : ''}
           <span>${esc(ch || 'contact')}</span>
+          ${isAutoComm(c) ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-slate-100 text-slate-500 border border-slate-200 rounded px-1" title="Sent automatically — not a human touch">auto</span>' : ''}
           <span>${esc(fmtWhen(c.occurred_at))}</span>
           ${dur ? `<span class="mono">${esc(dur)}</span>` : ''}
           ${String(c.id || '').startsWith('local-') ? '<span class="text-rose-600 font-semibold">not saved</span>' : ''}
@@ -1454,14 +1461,16 @@
   // Summary line + timeline for a set of rows (newest first). "last contact" here is either
   // direction — the drawer answers "when did we last talk?", not "when did we reach out?".
   function historyHtml(rows) {
-    const n = { calls: 0, texts: 0, emails: 0, other: 0 };
-    rows.forEach(c => { const ch = (c.channel || '').toLowerCase(); if (ch === 'call') n.calls++; else if (ch === 'sms') n.texts++; else if (ch === 'email') n.emails++; else n.other++; });
+    const n = { calls: 0, texts: 0, emails: 0, other: 0, auto: 0 };
+    rows.forEach(c => { if (isAutoComm(c)) { n.auto++; return; } const ch = (c.channel || '').toLowerCase(); if (ch === 'call') n.calls++; else if (ch === 'sms') n.texts++; else if (ch === 'email') n.emails++; else n.other++; });
     const parts = [];
     if (n.calls) parts.push(plural(n.calls, 'call'));
     if (n.texts) parts.push(plural(n.texts, 'text'));
     if (n.emails) parts.push(plural(n.emails, 'email'));
     if (n.other) parts.push(n.other + ' other');
-    parts.push('last contact ' + agoWords(rows[0].occurred_at));
+    if (n.auto) parts.push(n.auto + ' automated');
+    const lastHuman = rows.find(c => !isAutoComm(c));
+    parts.push(lastHuman ? 'last contact ' + agoWords(lastHuman.occurred_at) : 'no human contact yet');
     return `
       <div class="text-sm font-semibold text-slate-800 mb-1">${esc(parts.join(' · '))}</div>
       <div>${rows.map(historyItem).join('')}</div>`;

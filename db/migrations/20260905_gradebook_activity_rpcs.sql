@@ -1,0 +1,14 @@
+-- Applied 2026-09-05 (Amanda-approved go-live).
+-- 1. admin_student_progress(): same columns as before plus lesson / quiz / question / skills / alert
+--    aggregates (lessons_done, lessons_total, last_lesson_at, quizzes_passed, quizzes_locked,
+--    quiz_avg_pct, last_quiz_at, questions_open, questions_total, skills_completed, skills_verified,
+--    alerts_open). Admins AND instructors may call it (unchanged).
+-- 2. admin_student_activity(p_student): one student's full activity bundle as jsonb — profile,
+--    last sign-in, enrollment/cohort, lessons (done/total/recent), quizzes (per-lesson status),
+--    quiz attempts, practice exams, questions, trainer log, skills lab (incl. instructor sign-off),
+--    feedback, lesson reports, quiz alerts. Admin or instructor only.
+-- The full function bodies are the ones recorded in the Supabase migration history under the
+-- same name (gradebook_activity_rpcs). Both are SECURITY DEFINER with search_path = public and
+-- EXECUTE granted to authenticated only.
+-- Rollback: restore admin_student_progress() from migration 2026-07 (gradebook) and
+--           drop function public.admin_student_activity(uuid);
