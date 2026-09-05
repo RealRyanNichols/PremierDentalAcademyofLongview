@@ -65,7 +65,9 @@
 
     <!-- ══ SIMPLE VIEW (default) — the phone-first "who needs me" screen ══ -->
     <div id="simple-wrap">
-      <div id="simple-hello" class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl p-5 mb-4"></div>
+      <div id="simple-hello" class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl p-5 mb-4"><p class="text-teal-100 text-sm">Loading your people…</p></div>
+      <!-- Missed calls to return — derived from Quo no-answer calls; hidden when there are none -->
+      <div id="missed-calls" class="hidden"></div>
       <div id="simple-list"></div>
       <div id="simple-empty" class="hidden bg-white rounded-2xl border border-slate-200 p-8 text-center">
         <div class="text-5xl">🎉</div>
@@ -91,15 +93,15 @@
       <div id="story-card" class="bg-white rounded-2xl border border-slate-200 p-5 mb-5"></div>
 
       <!-- Pipeline board -->
-      <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5" id="pipeline-board"></div>
+      <div class="grid grid-cols-3 sm:grid-cols-7 gap-2 mb-5" id="pipeline-board"></div>
 
       <!-- 🔥 Needs callback now -->
       <div id="hot-strip" class="hidden bg-gradient-to-br from-rose-50 to-amber-50 border border-rose-200 rounded-2xl p-4 mb-5">
-        <div class="flex items-center gap-2 mb-3">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 mb-3 min-w-0">
           <span class="text-xl">🔥</span>
           <h2 class="display text-lg font-bold text-rose-900">Call these first</h2>
           <span id="hot-count" class="text-xs bg-rose-600 text-white font-bold px-2 py-0.5 rounded-full">0</span>
-          <span class="text-xs text-rose-700/80">new, picked a plan, or never contacted — speed wins these</span>
+          <span class="text-xs text-rose-700/80 basis-full sm:basis-auto min-w-0">new, picked a plan, or never contacted — speed wins these</span>
         </div>
         <div id="hot-list" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-2"></div>
       </div>
@@ -114,6 +116,7 @@
           <option value="tour_booked">Tour booked</option>
           <option value="paying">Paying</option>
           <option value="contacted">Contacted</option>
+          <option value="enrolled">Enrolled</option>
           <option value="lost">Lost</option>
         </select>
         <select id="source-filter" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-sm">
@@ -172,9 +175,10 @@
     </div>
     <div id="sms-templates" class="flex flex-wrap gap-1.5 mb-2"></div>
     <textarea id="sms-body" rows="4" placeholder="Your message — sent from the PDA Quo number." class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:border-teal-600 focus:outline-none text-sm"></textarea>
-    <div class="flex justify-between items-center mt-3">
-      <span id="sms-status" class="text-xs text-slate-500"></span>
-      <button id="sms-send" class="bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm">Send →</button>
+    <div id="sms-error" role="alert" class="hidden mt-2 rounded-lg border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3 break-words"></div>
+    <div class="flex justify-between items-center gap-2 mt-3">
+      <span id="sms-status" class="text-xs text-slate-500 min-w-0"></span>
+      <button id="sms-send" class="shrink-0 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-5 py-2 rounded-full text-sm disabled:opacity-50 disabled:cursor-wait">Send →</button>
     </div>
   </div>
 </div>
@@ -218,17 +222,23 @@
   document.getElementById('signout').onclick = () => { location.href = '/logout?then=home'; };
 
   // ── Stage config (matches the real pipeline_stage values in the DB)
-  const STAGES = ['new','interested','tour_booked','paying','contacted','lost'];
+  // 'enrolled' is a real value in the DB (legacy status 'converted') — it must be recognised
+  // or those students render as "New" and land in the call queue.
+  const STAGES = ['new','interested','tour_booked','paying','contacted','enrolled','lost'];
   const STAGE_META = {
     new:         { label: 'New',         dot: 'bg-rose-500',    chip: 'bg-rose-100 text-rose-700' },
     interested:  { label: 'Interested',  dot: 'bg-amber-500',   chip: 'bg-amber-100 text-amber-700' },
     tour_booked: { label: 'Tour booked', dot: 'bg-violet-500',  chip: 'bg-violet-100 text-violet-700' },
     paying:      { label: 'Paying',      dot: 'bg-emerald-500', chip: 'bg-emerald-100 text-emerald-700' },
     contacted:   { label: 'Contacted',   dot: 'bg-sky-500',     chip: 'bg-sky-100 text-sky-700' },
+    enrolled:    { label: 'Enrolled',    dot: 'bg-teal-600',    chip: 'bg-teal-100 text-teal-800' },
     lost:        { label: 'Lost',        dot: 'bg-slate-400',   chip: 'bg-slate-200 text-slate-600' },
   };
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  const stageOf = (l) => (l.pipeline_stage && STAGE_META[l.pipeline_stage]) ? l.pipeline_stage : (l.status === 'enrolled' ? 'paying' : l.status === 'contacted' ? 'contacted' : 'new');
+  const stageOf = (l) => (l.pipeline_stage && STAGE_META[l.pipeline_stage]) ? l.pipeline_stage
+    : (l.status === 'enrolled' || l.status === 'converted') ? 'enrolled'
+    : l.status === 'closed' ? 'lost'
+    : l.status === 'contacted' ? 'contacted' : 'new';
 
   // ── Lead grade (Amanda's call: hot / qualified / not qualified). The Sona/Quo
   //    webhook may seed this from a call summary, but she owns the final grade.
@@ -262,6 +272,10 @@
   let allSubs = [];
   let allComms = [];
   let touchCounts = new Map(); // leadId → { calls, texts, emails, other, last } — rebuilt once per load
+  let missedGroups = [];       // open missed-call groups (newest first) — rebuilt with touchCounts
+  let missedByLead = new Map();// leadId → its open missed-call group (also set on duplicates by phone)
+  let dupMap = new Map();      // leadId → Set of other lead ids sharing its phone or email
+  let loadError = '';          // last leads load failure, shown inline instead of an empty queue
   let quickFilter = '';        // one active quick-filter chip ('' = none)
   let expandedThreads = new Set();
   let currentTab = 'leads';
@@ -277,10 +291,10 @@
   // A lead is "hot" (call first) if money's in motion or it's fresh & untouched.
   function isHot(l) {
     const stage = stageOf(l);
-    if (stage === 'lost') return false;
+    if (stage === 'lost' || stage === 'enrolled') return false;
     if (stage === 'paying') return true;                      // mid-payment, don't let them stall
     if (l.pay_intent) return true;                            // picked a plan on the calculator
-    const uncontacted = !l.last_contact_at;
+    const uncontacted = !lastTouchIso(l);                     // no human touch logged or stamped
     if ((l.source || '').toLowerCase().includes('night-class') && uncontacted) return true;
     const ageH = (Date.now() - new Date(l.created_at).getTime()) / 3600000;
     if (ageH <= 48 && uncontacted) return true;               // brand new, never called
@@ -293,7 +307,9 @@
       sb.from('subscribers').select('*').order('created_at', { ascending: false }),
       sb.from('communications').select('*').order('occurred_at', { ascending: false }).limit(2000),
     ]);
-    if (leadsRes.error) alert('Failed to load leads: ' + leadsRes.error.message);
+    // A failed leads load is shown inline (simple view + list) — an empty queue must never read as "all caught up".
+    loadError = leadsRes.error ? ('Couldn’t load leads: ' + (leadsRes.error.message || 'unknown error')) : '';
+    if (leadsRes.error) console.warn('Leads load failed:', leadsRes.error.message);
     if (subsRes.error)  console.warn('Subscribers load failed:', subsRes.error.message);
     if (commsRes.error) console.warn('Messages load failed:', commsRes.error.message);
     allLeads = leadsRes.data || [];
@@ -390,61 +406,116 @@
   function nextStep(l) {
     const stage = stageOf(l);
     if (stage === 'lost') return { text: 'Nothing to do — marked lost.', tone: 'text-slate-400' };
+    if (stage === 'enrolled') return { text: 'Enrolled — nothing to chase here.', tone: 'text-teal-700' };
+    if (missedByLead.has(l.id)) return { text: 'They called and nobody answered — call them back.', tone: 'text-amber-700' };
     if (stage === 'paying') return { text: 'Mid-payment — a friendly check-in keeps it moving.', tone: 'text-emerald-700' };
     if (l.pay_intent) return { text: 'They picked a payment plan — call while it’s warm.', tone: 'text-emerald-700' };
-    if (!l.last_contact_at) return { text: l.phone ? 'No one has reached out yet — a quick text is a great first touch.' : 'No one has reached out yet — send a short email.', tone: 'text-rose-600' };
+    const last = lastTouchIso(l);
+    if (!last) return { text: l.phone ? 'No one has reached out yet — a quick text is a great first touch.' : 'No one has reached out yet — send a short email.', tone: 'text-rose-600' };
     if (stage === 'tour_booked') return { text: 'Tour booked — confirm the day before.', tone: 'text-violet-700' };
-    return { text: `You reached out ${timeAgo(l.last_contact_at)} — waiting on their reply.`, tone: 'text-slate-500' };
+    return { text: `You reached out ${timeAgo(last)} — waiting on their reply.`, tone: 'text-slate-500' };
   }
 
   // ══════════ SIMPLE VIEW — the phone-first "who needs me now" screen ══════════
-  // Only shows people who need an action, biggest-first, with giant Call/Text/Done
-  // buttons. Everything else lives behind "full inbox". Reuses the same data + DB writes.
-
-  // Who belongs in the action queue = people genuinely waiting on Amanda right
-  // now. Tapping Call or "I handled this" stamps last_contact_at, which drops
-  // them off the list — so the queue always empties as she works. Higher score
-  // = show sooner.
-  function actionScore(l) {
-    if (stageOf(l) === 'lost') return 0;
-    const daysSinceTouch = l.last_contact_at ? (Date.now() - new Date(l.last_contact_at).getTime()) / 864e5 : Infinity;
-    // Money in motion but gone quiet for 2+ days — nudge to follow up.
-    if ((stageOf(l) === 'paying' || l.pay_intent) && daysSinceTouch >= 2) return 5;
-    // Never reached out at all — the core of the queue (fresh = a touch higher).
-    if (!l.last_contact_at) {
-      const ageH = (Date.now() - new Date(l.created_at).getTime()) / 3600000;
-      return ageH <= 48 ? 4 : 3;
-    }
-    return 0; // already talked to them recently — not waiting on you
+  // Only shows people who need an action, in the order to work them, with giant
+  // Call/Text/Done buttons. Everything else lives behind "full inbox". Reuses the same
+  // data + DB writes.
+  //
+  // Who to call today, top to bottom:
+  //   ☎️ missed calls to return — their own card above the queue (they already tried us)
+  //   never — no human has reached out yet, newest first (speed wins these)
+  //   hot   — mid-payment / picked a plan / graded hot / ready now, and quiet for 2+ days
+  //   quiet — we reached out 7+ days ago and the loop never closed, most recent first
+  // Each lead lands in ONE bucket; someone in the missed-call card is not repeated below.
+  // Enrolled and lost never appear. Capped at 15 — the full inbox has everyone. Tapping
+  // Call or "I handled this" logs a touch, which moves them out, so the queue always
+  // empties as she works.
+  const SIMPLE_CAP = 15;
+  const QUEUE_BUCKETS = [
+    ['never', 'Never contacted', 'No one has reached out yet — speed wins these'],
+    ['hot',   'Hot · picked a plan · ready', 'Money in motion — follow up while it’s warm'],
+    ['quiet', 'Gone quiet 7+ days', 'Still open, but nobody has followed up in a week'],
+  ];
+  // Enrolled students and lost leads are never "waiting on you" (stageOf folds the legacy
+  // converted / closed statuses into these stages).
+  function isClosedLead(l) { const s = stageOf(l); return s === 'lost' || s === 'enrolled'; }
+  function moneyInMotion(l) { return stageOf(l) === 'paying' || !!l.pay_intent || l.lead_grade === 'hot' || l.ready_timeline === 'ready_now'; }
+  function queueBucket(l) {
+    if (isClosedLead(l) || missedByLead.has(l.id)) return '';
+    const last = lastTouchIso(l);
+    if (!last) return 'never';
+    const days = (Date.now() - new Date(last).getTime()) / 864e5;
+    if (isNaN(days)) return '';
+    if (moneyInMotion(l) && days >= 2) return 'hot';
+    if (days >= 7) return 'quiet';
+    return '';   // talked to them recently — not waiting on you
+  }
+  function buildQueue() {
+    const buckets = { never: [], hot: [], quiet: [] };
+    allLeads.forEach(l => { const b = queueBucket(l); if (b) buckets[b].push(l); });
+    const created = (l) => new Date(l.created_at).getTime() || 0;
+    const touched = (l) => new Date(lastTouchIso(l)).getTime() || 0;
+    buckets.never.sort((a, b) => created(b) - created(a));                           // newest first
+    buckets.hot.sort((a, b) => touched(a) - touched(b) || created(b) - created(a));   // quiet the longest first
+    buckets.quiet.sort((a, b) => touched(b) - touched(a));                           // most recently touched first — easiest to revive
+    return buckets;
   }
 
   function renderSimple() {
-    const queue = allLeads
-      .map(l => ({ l, s: actionScore(l) }))
-      .filter(x => x.s > 0)
-      .sort((a, b) => b.s - a.s || new Date(a.l.created_at) - new Date(b.l.created_at)) // urgent first, then longest-waiting
-      .map(x => x.l);
+    const emptyEl = document.getElementById('simple-empty');
+    const listEl = document.getElementById('simple-list');
+    const hello = document.getElementById('simple-hello');
+    if (loadError) {
+      hello.innerHTML = '<p class="text-teal-100 text-sm">Something went wrong</p><p class="text-xl font-bold mt-1 leading-snug">Couldn’t load your people.</p>';
+      listEl.innerHTML = `<div class="rounded-2xl border border-rose-200 bg-rose-50 text-rose-800 text-sm p-4 break-words">${esc(loadError)} — tap ↻ Refresh to try again.</div>`;
+      emptyEl.classList.add('hidden');
+      renderMissedCalls();
+      return;
+    }
+    const buckets = buildQueue();
+    const total = QUEUE_BUCKETS.reduce((n, [k]) => n + buckets[k].length, 0);
+    const missedN = missedGroups.length;
 
     const needsReply = buildThreads().filter(t => t.needsReply).length;
     const hour = new Date().getHours();
     const hi = (hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening')
       + (profile?.first_name ? ', ' + esc(profile.first_name) : '');
-    const line = queue.length
-      ? `<strong>${queue.length} ${queue.length === 1 ? 'person is' : 'people are'}</strong> waiting to hear from you.`
-      : `You're all caught up. 💛`;
-    document.getElementById('simple-hello').innerHTML =
+    const bits = [];
+    if (missedN) bits.push(`<strong>${missedN} missed ${missedN === 1 ? 'call' : 'calls'}</strong> to return`);
+    if (total) bits.push(`<strong>${total} ${total === 1 ? 'person is' : 'people are'}</strong> waiting to hear from you`);
+    const line = bits.length ? bits.join(' · ') + '.' : `You're all caught up. 💛`;
+    hello.innerHTML =
       `<p class="text-teal-100 text-sm">${hi} 👋</p>` +
       `<p class="text-xl font-bold mt-1 leading-snug">${line}</p>` +
       (needsReply ? `<a href="#" id="simple-msgs" class="inline-block mt-3 bg-white/15 hover:bg-white/25 rounded-full px-3 py-1.5 text-sm font-semibold">💬 ${needsReply} text${needsReply === 1 ? '' : 's'} waiting on a reply →</a>` : '');
 
-    const emptyEl = document.getElementById('simple-empty');
-    const listEl = document.getElementById('simple-list');
-    emptyEl.classList.toggle('hidden', queue.length > 0);
-    listEl.innerHTML = queue.map(simpleCard).join('');
+    renderMissedCalls();
+
+    // Fill the cap in bucket order, with a small count heading per bucket.
+    let room = SIMPLE_CAP;
+    const html = [];
+    QUEUE_BUCKETS.forEach(([k, label, hint]) => {
+      const rows = buckets[k];
+      if (!rows.length) return;
+      const shown = rows.slice(0, Math.max(0, room));
+      room -= shown.length;
+      html.push(`<div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 mt-4 mb-2 first:mt-0 min-w-0" data-sc-bucket="${k}" data-sc-bucket-count="${rows.length}">
+        <h2 class="text-[11px] uppercase tracking-widest text-slate-500 font-semibold">${label} · ${rows.length}</h2>
+        <span class="text-xs text-slate-400 min-w-0">${hint}</span>
+      </div>`);
+      html.push(shown.map(simpleCard).join(''));
+    });
+    const more = Math.max(0, total - SIMPLE_CAP);
+    if (more) html.push(`<button type="button" data-sc-more class="w-full mt-1 min-h-[44px] bg-amber-50 border border-amber-200 hover:border-amber-400 text-amber-900 font-semibold py-3 rounded-xl text-sm">${more} more ${more === 1 ? 'person is' : 'people are'} waiting — see everyone &amp; full inbox →</button>`);
+
+    emptyEl.classList.toggle('hidden', total > 0 || missedN > 0);
+    listEl.innerHTML = html.join('');
 
     // Wire the big buttons.
     const msgsLink = document.getElementById('simple-msgs');
     if (msgsLink) msgsLink.onclick = (e) => { e.preventDefault(); goFull(); document.getElementById('tab-messages').click(); };
+    const moreBtn = listEl.querySelector('[data-sc-more]');
+    if (moreBtn) moreBtn.onclick = goFull;
     listEl.querySelectorAll('[data-sc-call]').forEach(a => a.addEventListener('click', () => {
       const id = a.dataset.scCall;
       stampContacted(id);
@@ -461,32 +532,129 @@
 
   function simpleCard(l) {
     const phone = (l.phone || '').replace(/[^\d+]/g, '');
-    const name = `${l.first_name || ''} ${l.last_name || ''}`.trim() || l.email || 'New lead';
-    const isMoney = stageOf(l) === 'paying' || l.pay_intent;
-    const why = isMoney ? '💰 Ready to pay — follow up while it\'s warm'
-      : !l.last_contact_at ? sourceStory(l).charAt(0).toUpperCase() + sourceStory(l).slice(1) + ' · ' + timeAgo(l.created_at)
-      : storyLine(l);
-    const initials = esc((l.first_name?.[0] || name[0] || '?').toUpperCase()) + esc((l.last_name?.[0] || '').toUpperCase());
+    const name = leadName(l);
+    const hint = leadNameHint(l);
+    const last = lastTouchIso(l);
+    const why = moneyInMotion(l) ? '💰 Ready to pay — follow up while it\'s warm'
+      : !last ? sourceStory(l).charAt(0).toUpperCase() + sourceStory(l).slice(1) + ' · ' + timeAgo(l.created_at)
+      : `⏳ You reached out ${agoWords(last)} — still open, worth a nudge`;
+    const initials = esc((l.first_name?.[0] || l.email?.[0] || '?').toUpperCase()) + esc((l.last_name?.[0] || '').toUpperCase());
     return `
       <div class="bg-white rounded-2xl border-2 border-slate-200 shadow-sm p-4 mb-3" data-sc-card="${l.id}">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold shrink-0">${initials}</div>
           <div class="min-w-0 flex-1">
-            <button type="button" data-lead-detail="${l.id}" class="text-left font-bold text-lg leading-tight text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(name)}</button>
+            <button type="button" data-lead-detail="${l.id}" class="text-left font-bold text-lg leading-tight text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(name)}${hint ? ` <span class="text-sm font-normal text-slate-500 mono">· ${esc(hint)}</span>` : ''}</button>
             <div class="text-sm text-slate-600 mt-0.5">${esc(why)}</div>
-            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">${wantBadge(l)}${touchSpans(l)}</div>
+            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">${wantBadge(l)}${dupChip(l)}${touchSpans(l)}</div>
           </div>
         </div>
         <div class="grid grid-cols-2 gap-2 mt-3">
           ${phone
-            ? `<a href="tel:${phone}" data-sc-call="${l.id}" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-center text-base">📞 Call</a>
-               <button data-sc-text="${l.id}" data-phone="${phone}" data-name="${esc(name)}" class="bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-900 text-white font-bold py-3.5 rounded-xl text-base">💬 Text</button>`
+            ? `<a href="tel:${esc(phone)}" data-sc-call="${l.id}" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-center text-base">📞 Call</a>
+               <button data-sc-text="${l.id}" data-phone="${esc(phone)}" data-name="${esc(name)}" class="bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-900 text-white font-bold py-3.5 rounded-xl text-base">💬 Text</button>`
             : (l.email
-              ? `<a href="mailto:${esc(l.email)}?subject=Premier%20Dental%20Academy%20—%20following%20up" class="col-span-2 bg-slate-700 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl text-center text-base">✉️ Email ${esc(l.email)}</a>`
+              ? `<a href="mailto:${esc(l.email)}?subject=Premier%20Dental%20Academy%20—%20following%20up" class="col-span-2 min-w-0 break-all bg-slate-700 hover:bg-slate-800 text-white font-bold py-3.5 px-3 rounded-xl text-center text-base">✉️ Email ${esc(l.email)}</a>`
               : `<div class="col-span-2 text-center text-sm text-slate-400 py-3">No phone or email on file</div>`)}
         </div>
         <button data-sc-done="${l.id}" class="w-full mt-2 text-slate-500 hover:text-teal-700 font-semibold text-sm py-2">✓ I handled this</button>
       </div>`;
+  }
+
+  // ── Missed calls card — sits above the queue. Rows are keyed by GROUP, not lead, so a
+  //    number with no record yet still gets a row (Call back · Text · Add as lead).
+  function renderMissedCalls() {
+    const box = document.getElementById('missed-calls');
+    if (!box) return;
+    if (!missedGroups.length) { box.innerHTML = ''; box.classList.add('hidden'); return; }
+    box.classList.remove('hidden');
+    box.innerHTML = `
+      <div class="bg-white rounded-2xl border-2 border-amber-300 shadow-sm mb-4 overflow-hidden" data-missed-card>
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-4 pb-3 bg-amber-50 border-b border-amber-100 min-w-0">
+          <h2 class="display text-lg font-bold text-amber-900">📞 Missed calls to return</h2>
+          <span data-missed-count class="text-xs bg-amber-600 text-white font-bold px-2 py-0.5 rounded-full">${missedGroups.length}</span>
+          <span class="text-xs text-amber-800/80 basis-full min-w-0">They rang and nobody picked up — a row stays until someone calls or texts them back (last 30 days).</span>
+        </div>
+        <div class="divide-y divide-slate-100">${missedGroups.map(missedRow).join('')}</div>
+      </div>`;
+    box.querySelectorAll('[data-mc-call]').forEach(a => a.addEventListener('click', () => {
+      const g = missedGroups.find(x => x.key === a.dataset.mcCall); if (!g) return;
+      if (g.lead) stampContacted(g.lead.id);
+      logContact(missedTarget(g), { channel: 'call', body: 'Called back from admin (missed call)' });
+      setTimeout(() => showMissedOutcome(g.key, '📞 Callback logged'), 0);   // let the tel: link fire first
+    }));
+    box.querySelectorAll('[data-mc-text]').forEach(b => b.onclick = () => {
+      const g = missedGroups.find(x => x.key === b.dataset.mcText); if (!g) return;
+      openSms(g.tel, g.lead ? leadName(g.lead) : (g.name || fmtPhone(g.phone)), g.lead ? g.lead.id : null);
+    });
+    box.querySelectorAll('[data-mc-add]').forEach(b => b.onclick = () => addMissedAsLead(b.dataset.mcAdd, b));
+  }
+  // What logContact writes against: the lead when we have one, else the bare number.
+  function missedTarget(g) { return g.lead || { phone: g.phone, first_name: g.name || null }; }
+
+  function missedRow(g) {
+    const l = g.lead;
+    const name = l ? leadName(l) : (g.name || 'Unknown number');
+    const nameHtml = l
+      ? `<button type="button" data-lead-detail="${l.id}" class="text-left font-bold text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(name)}</button>`
+      : `<span class="font-bold text-slate-800 min-w-0 truncate max-w-full">${esc(name)}</span>`;
+    const tries = g.count === 1 ? 'Called once' : `Tried ${g.count}×`;
+    return `
+      <div class="p-4" data-missed-row="${esc(g.key)}">
+        <div class="flex items-start gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-full bg-amber-100 grid place-items-center text-lg shrink-0" aria-hidden="true">☎️</div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-center gap-2 flex-wrap min-w-0">
+              ${nameHtml}
+              ${l ? dupChip(l) : '<span class="text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded-full">Not a lead yet</span>'}
+            </div>
+            <div class="text-sm text-slate-700 mono break-all">${esc(fmtPhone(g.phone) || 'No number on the call')}</div>
+            <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 min-w-0">
+              <span class="text-amber-800 font-semibold">Missed ${esc(timeAgo(g.last))}</span>
+              <span>${esc(fmtWhenShort(g.last))}</span>
+              <span data-mc-tries>${esc(tries)}</span>
+            </div>
+            ${g.summary ? `<div class="text-sm text-slate-700 truncate mt-1" title="${esc(g.summary)}">“${esc(g.summary)}”</div>` : ''}
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2 mt-3">
+          ${g.tel
+            ? `<a href="tel:${esc(g.tel)}" data-mc-call="${esc(g.key)}" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3 rounded-xl text-center text-base">📞 Call back</a>
+               <button type="button" data-mc-text="${esc(g.key)}" class="bg-cyan-700 hover:bg-cyan-800 active:bg-cyan-900 text-white font-bold py-3 rounded-xl text-base">💬 Text</button>`
+            : '<div class="col-span-2 text-center text-sm text-slate-400 py-2">No number on the call record</div>'}
+          ${!l && g.tel ? `<button type="button" data-mc-add="${esc(g.key)}" class="col-span-2 min-h-[44px] bg-white border border-slate-300 hover:border-teal-600 text-slate-700 font-semibold rounded-xl text-sm disabled:opacity-50 disabled:cursor-wait">＋ Add as lead</button>` : ''}
+        </div>
+        <div data-mc-status class="text-[11px] text-slate-500 mt-1 min-h-[1rem]" aria-live="polite"></div>
+      </div>`;
+  }
+  // After Call back: swap the row for the one-tap outcome chips. Done/Skip re-renders the
+  // queue, and the logged callback is a human touch, so the row drops out.
+  function showMissedOutcome(key, headline) {
+    const g = missedGroups.find(x => x.key === key);
+    const row = document.querySelector(`#missed-calls [data-missed-row="${CSS.escape(key)}"]`);
+    if (!g || !row) { renderSimple(); return; }
+    const title = g.lead
+      ? `<button type="button" data-lead-detail="${g.lead.id}" class="text-left font-bold text-lg leading-tight text-teal-700 hover:underline min-w-0 truncate max-w-full">${esc(leadName(g.lead))}</button>`
+      : `<div class="font-bold text-lg leading-tight text-slate-800 min-w-0 truncate">${esc(g.name || fmtPhone(g.phone) || 'Unknown number')}</div>`;
+    row.innerHTML = title + `<div class="text-sm text-emerald-700 font-semibold mt-0.5">${headline}</div>` + outcomeRowHtml(true);
+    wireOutcomeRow(row, missedTarget(g), renderSimple);
+  }
+  // "Add as lead" for a number with no record — a minimal row the webhook would have made.
+  async function addMissedAsLead(key, btn) {
+    const g = missedGroups.find(x => x.key === key); if (!g) return;
+    const status = btn.closest('[data-missed-row]')?.querySelector('[data-mc-status]');
+    btn.disabled = true;
+    if (status) { status.className = 'text-[11px] text-slate-500 mt-1 min-h-[1rem]'; status.textContent = 'Adding…'; }
+    const lead = { phone: g.phone || g.tel, first_name: g.name || null, source: 'quo_call', pipeline_stage: 'new', status: 'new' };
+    let res;
+    try { res = await sb.from('leads').insert(lead).select().single(); } catch (e) { res = { error: e }; }
+    if (res.error) {
+      btn.disabled = false;
+      if (status) { status.className = 'text-xs text-rose-700 font-semibold mt-1 min-h-[1rem] break-words'; status.textContent = 'Couldn’t add — ' + (res.error.message || String(res.error)) + '. Try again.'; }
+      return;
+    }
+    if (status) status.textContent = '✓ Added — refreshing…';
+    await load();   // the number now belongs to a lead: the row re-keys to it and the list gets the new person
   }
 
   // Stamp last_contact_at (and bump a brand-new lead to "contacted"). Used by
@@ -502,13 +670,15 @@
 
   // One shared writer for contact history. Every admin-initiated call, text and
   // handled-marking lands in public.communications, linked to the lead. Never blocks the UI.
-  async function logContact(lead, { channel, direction = 'outbound', body = '', durationSeconds = null }) {
-    if (!lead || !lead.id) return;
+  // `target` is a lead row, or — for a missed call from a number with no record yet — a bare
+  // { phone, first_name } so the callback is still logged against the number.
+  async function logContact(target, { channel, direction = 'outbound', body = '', durationSeconds = null }) {
+    if (!target || (!target.id && !target.phone)) return;
     const row = {
-      related_lead_id: lead.id,
-      contact_phone: lead.phone || null,
-      contact_email: lead.email || null,
-      contact_name: `${lead.first_name || ''} ${lead.last_name || ''}`.trim() || null,
+      related_lead_id: target.id || null,
+      contact_phone: target.phone || null,
+      contact_email: target.email || null,
+      contact_name: `${target.first_name || ''} ${target.last_name || ''}`.trim() || null,
       channel, direction, body,
       duration_seconds: durationSeconds,
       source: 'admin_manual',
@@ -520,16 +690,25 @@
       if (error) throw error;
       saved = data;
     } catch (e) { console.warn('logContact failed', e); }   // never block the UI
+    // The DB trigger stamps leads.last_contact_at from this row server-side — mirror it on the
+    // loaded lead so nothing says "Never contacted" right after a logged touch. (If a ↻ Refresh
+    // swapped the array mid-flight, stamp the live row, not the stale reference.)
+    if (saved && target.id && direction !== 'inbound') {
+      const live = allLeads.find(x => x.id === target.id) || target;
+      const stamp = saved.occurred_at || row.occurred_at;
+      if (!live.last_contact_at || new Date(stamp) > new Date(live.last_contact_at)) live.last_contact_at = stamp;
+    }
     // Show it in the timeline either way — a local stub is flagged "not saved".
     allComms.unshift(saved || Object.assign({ id: 'local-' + Date.now(), created_at: row.occurred_at, metadata: {} }, row));
-    afterContactLogged(lead.id);
+    afterContactLogged(target.id || null);
   }
   // After any contact write: refresh the drawer's timeline in place and the list rows.
-  // A simple-view card that is mid-outcome (chips showing) is left alone until she finishes.
+  // A simple-view card or missed-call row that is mid-outcome (chips showing) is left alone
+  // until she finishes.
   function afterContactLogged(id) {
     rebuildTouchCounts();
-    if (drawerLeadId === id) { const l = allLeads.find(x => x.id === id); if (l) renderLeadHistory(l); }
-    render({ keepSimple: !!document.querySelector('#simple-list [data-outcome-row]') });
+    if (id && drawerLeadId === id) { const l = allLeads.find(x => x.id === id); if (l) renderLeadHistory(l); }
+    render({ keepSimple: !!document.querySelector('#simple-wrap [data-outcome-row]') });
     if (currentTab === 'messages') renderMessages();   // the new row belongs in its thread right away
   }
 
@@ -691,12 +870,12 @@
       hotStrip.classList.remove('hidden');
       document.getElementById('hot-count').textContent = hot.length;
       document.getElementById('hot-list').innerHTML = hot.slice(0, 12).map(l => {
-        const name = (`${l.first_name||''} ${l.last_name||''}`.trim() || l.email || 'New lead');
+        const name = leadName(l), hint = leadNameHint(l);
         const why = stageOf(l) === 'paying' ? 'Mid-payment' : l.pay_intent ? 'Picked a plan' : (l.source||'').includes('night-class') ? 'Night class' : 'Just came in';
         return `<div class="bg-white rounded-xl border border-rose-200 hot-ring p-3">
           <div class="flex items-center justify-between gap-2">
             <div class="min-w-0">
-              <div class="font-semibold text-sm truncate">${esc(name)}</div>
+              <div class="font-semibold text-sm truncate">${esc(name)}${hint ? ` <span class="text-xs font-normal text-slate-500 mono">· ${esc(hint)}</span>` : ''}</div>
               <div class="text-[11px] text-rose-700 font-semibold">${why} · ${timeAgo(l.created_at)}</div>
             </div>
           </div>
@@ -724,7 +903,9 @@
     });
 
     const list = document.getElementById('leads-list');
-    document.getElementById('empty').classList.toggle('hidden', leads.length > 0);
+    const emptyBox = document.getElementById('empty');
+    emptyBox.textContent = loadError ? loadError + ' — tap ↻ Refresh to try again.' : 'No leads match these filters.';
+    emptyBox.classList.toggle('hidden', leads.length > 0);
     list.innerHTML = leads.map(l => density === 'calm' ? calmEntry(l) : fullCard(l)).join('');
 
     wireRowHandlers();
@@ -740,18 +921,21 @@
     const stage = stageOf(l);
     const m = STAGE_META[stage];
     const hot = isHot(l);
+    const missed = missedByLead.has(l.id);
     const step = nextStep(l);
-    const name = `${l.first_name||''} ${l.last_name||''}`.trim() || '(no name)';
+    const name = leadName(l), hint = leadNameHint(l);
     const row = `
-      <div class="p-3.5 sm:px-5 flex items-center gap-3 cursor-pointer hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : ''}" data-expand="${l.id}">
+      <div class="p-3.5 sm:px-5 flex items-center gap-3 cursor-pointer hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : missed ? 'border-l-4 border-l-amber-400' : ''}" data-expand="${l.id}">
         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-xs shrink-0">
-          ${esc((l.first_name?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
+          ${esc((l.first_name?.[0] || l.email?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
         </div>
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <button type="button" data-lead-detail="${l.id}" class="text-left font-semibold text-sm text-teal-700 hover:underline py-2.5 -my-2.5 min-w-0 truncate max-w-full">${esc(name)}</button>
+            <button type="button" data-lead-detail="${l.id}" class="text-left font-semibold text-sm text-teal-700 hover:underline py-2.5 -my-2.5 min-w-0 truncate max-w-full">${esc(name)}${hint ? ` <span class="text-xs font-normal text-slate-500 mono">· ${esc(hint)}</span>` : ''}</button>
             ${hot ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">🔥</span>' : ''}
+            ${missed ? MISSED_BADGE : ''}
             <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${m.chip}">${m.label}</span>
+            ${dupChip(l)}
             ${l.ready_timeline ? `<span class="text-[10px] font-semibold bg-violet-100 text-violet-700 px-1.5 py-0.5 rounded-full">📅 ${esc(readinessLabel(l.ready_timeline))}</span>` : ''}
           </div>
           ${metaLine(l)}
@@ -767,17 +951,20 @@
   function fullCard(l) {
       const stage = stageOf(l);
       const hot = isHot(l);
-      const name = `${l.first_name||''} ${l.last_name||''}`.trim() || '(no name)';
+      const missed = missedByLead.has(l.id);
+      const name = leadName(l), hint = leadNameHint(l);
       return `
-        <div class="p-4 sm:p-5 hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : ''}">
+        <div class="p-4 sm:p-5 hover:bg-slate-50 ${hot ? 'border-l-4 border-l-rose-500' : missed ? 'border-l-4 border-l-amber-400' : ''}">
           <div class="flex items-start gap-4">
             <div class="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-bold text-sm shrink-0">
-              ${esc((l.first_name?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
+              ${esc((l.first_name?.[0] || l.email?.[0] || '?').toUpperCase())}${esc((l.last_name?.[0] || '').toUpperCase())}
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-baseline gap-2 flex-wrap">
-                <button type="button" data-lead-detail="${l.id}" class="text-left font-semibold text-teal-700 hover:underline py-2 -my-2 min-w-0 truncate max-w-full">${esc(name)}</button>
+                <button type="button" data-lead-detail="${l.id}" class="text-left font-semibold text-teal-700 hover:underline py-2 -my-2 min-w-0 truncate max-w-full">${esc(name)}${hint ? ` <span class="text-xs font-normal text-slate-500 mono">· ${esc(hint)}</span>` : ''}</button>
                 ${hot ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">🔥 HOT</span>' : ''}
+                ${missed ? MISSED_BADGE : ''}
+                ${dupChip(l)}
                 ${l.lead_grade && GRADE_META[l.lead_grade] ? `<span class="text-[10px] font-bold border px-1.5 py-0.5 rounded-full ${GRADE_META[l.lead_grade].chip}">${GRADE_META[l.lead_grade].label}</span>` : ''}
                 ${l.ready_timeline ? `<span class="text-[10px] font-semibold bg-violet-100 text-violet-700 border border-violet-200 px-1.5 py-0.5 rounded-full">📅 ${esc(readinessLabel(l.ready_timeline))}</span>` : ''}
                 <span class="text-xs mono text-slate-500">${timeAgo(l.created_at)}</span>
@@ -871,7 +1058,7 @@
   // Shared by the list card and the lead drawer.
   async function onStageChange(e) {
     const id = e.target.dataset.stage, stage = e.target.value;
-    const legacy = stage === 'paying' ? 'enrolled' : stage === 'lost' ? 'closed' : stage === 'new' ? 'new' : 'contacted';
+    const legacy = stage === 'paying' ? 'enrolled' : stage === 'enrolled' ? 'converted' : stage === 'lost' ? 'closed' : stage === 'new' ? 'new' : 'contacted';
     await sb.from('leads').update({ pipeline_stage: stage, status: legacy }).eq('id', id);
     const t = allLeads.find(x => x.id === id);
     if (t) { t.pipeline_stage = stage; t.status = legacy; }
@@ -900,13 +1087,13 @@
     subsList.innerHTML = allSubs.map(s => `
       <div class="p-4 flex items-center justify-between hover:bg-slate-50">
         <div class="flex items-center gap-3 min-w-0">
-          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${esc((s.email[0] || '?').toUpperCase())}</div>
+          <div class="w-8 h-8 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 text-white grid place-items-center font-bold text-xs shrink-0">${esc(((s.email || '')[0] || '?').toUpperCase())}</div>
           <div class="min-w-0">
-            <a href="mailto:${esc(s.email)}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${esc(s.email)}</a>
-            <div class="text-xs text-slate-500">${new Date(s.created_at).toLocaleDateString()} · ${esc(s.source || 'site')}</div>
+            ${s.email ? `<a href="mailto:${esc(s.email)}" class="text-sm font-medium text-slate-900 hover:text-teal-700 truncate block">${esc(s.email)}</a>` : '<span class="text-sm text-slate-400 block">No email</span>'}
+            <div class="text-xs text-slate-500">${s.created_at ? new Date(s.created_at).toLocaleDateString() : ''} · ${esc(s.source || 'site')}</div>
           </div>
         </div>
-        <span class="text-xs px-2 py-0.5 rounded-full ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${esc(s.status)}</span>
+        <span class="text-xs px-2 py-0.5 rounded-full shrink-0 ${s.status === 'subscribed' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">${esc(s.status || '—')}</span>
       </div>`).join('');
   }
 
@@ -1116,7 +1303,7 @@
     ['👋 Intro', (n) => `Hi ${n||'there'}, this is Amanda at Premier Dental Academy of Longview. Thanks for reaching out! What questions can I answer about becoming a dental assistant?`],
     ['📅 Tour', (n) => `Hi ${n||'there'}! Would you like to come tour the Longview campus this week? I can show you the labs and chairs. What day works?`],
     ['💸 Plans', (n) => `Hi ${n||'there'}, just a heads up — we have payment plans starting at $500 down so you can start now and pay as you go. Want me to send the details?`],
-    ['🌙 Tonight', (n) => `Hi ${n||'there'}! We still have a seat or two in tonight's class. Want me to hold one for you? Just reply YES.`],
+    ['🗓️ Next class', (n) => `Hi ${n||'there'}! Our next in-person class is coming up and a few seats are still open. Want me to hold one for you? Just reply YES and I'll send the start date.`],
   ];
   function renderTemplates() {
     document.getElementById('sms-templates').innerHTML = SMS_TEMPLATES.map((t, i) =>
@@ -1126,38 +1313,57 @@
     });
   }
 
+  const smsErrEl  = document.getElementById('sms-error');
+  const smsSendBtn = document.getElementById('sms-send');
   function openSms(phone, name, leadId) {
-    smsTo = phone; smsLeadId = leadId; smsName = name || '';
-    targetEl.textContent = `${name} · ${phone}`;
+    smsTo = phone; smsLeadId = leadId || null; smsName = name || '';
+    targetEl.textContent = `${name || 'No name'} · ${phone || 'no number'}`;
     bodyEl.value = '';
     statusEl.textContent = '';
+    smsErrEl.textContent = ''; smsErrEl.classList.add('hidden');
+    smsSendBtn.disabled = false;
     renderTemplates();
     modal.classList.remove('hidden');
     setTimeout(() => bodyEl.focus(), 50);
   }
 
-  document.getElementById('sms-send').onclick = async () => {
+  smsSendBtn.onclick = async () => {
     const body = bodyEl.value.trim();
-    if (!body || !smsTo) return;
+    if (!body || !smsTo || smsSendBtn.disabled) return;   // one send at a time — a double tap must not text twice
+    smsErrEl.textContent = ''; smsErrEl.classList.add('hidden');
     statusEl.textContent = 'Sending…';
-    const resp = await sb.functions.invoke('quo-send-sms', { body: { to: smsTo, body, related_lead_id: smsLeadId } });
+    smsSendBtn.disabled = true;
+    let resp;
+    try { resp = await sb.functions.invoke('quo-send-sms', { body: { to: smsTo, body, related_lead_id: smsLeadId } }); }
+    catch (e) { resp = { error: e }; }
+    smsSendBtn.disabled = false;
     if (resp?.error || resp?.data?.error) {
-      statusEl.textContent = '✗ ' + (resp?.data?.error || resp?.error?.message || 'failed');
-    } else {
-      statusEl.textContent = '✓ Sent';
-      if (smsLeadId) {
-        const t = allLeads.find(x => x.id === smsLeadId);
-        const nowIso = new Date().toISOString();
-        const patch = { last_contact_at: nowIso };
-        // first touch bumps a brand-new lead into "contacted"
-        if (t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
-        await sb.from('leads').update(patch).eq('id', smsLeadId);
-        if (t) Object.assign(t, patch);
-        logContact(t, { channel: 'sms', body });
-        render();
-      }
-      setTimeout(() => modal.classList.add('hidden'), 700);
+      // The text never left: say so right here, keep her draft, and log NOTHING — a failed
+      // send must never show up as a touch.
+      const why = resp?.data?.error || resp?.error?.message || (resp?.error ? String(resp.error) : '') || 'unknown error';
+      statusEl.textContent = '✗ Not sent';
+      smsErrEl.textContent = `Couldn’t send — ${why}. Check the number and try again.`;
+      smsErrEl.classList.remove('hidden');
+      return;
     }
+    statusEl.textContent = '✓ Sent';
+    if (smsLeadId) {
+      const t = allLeads.find(x => x.id === smsLeadId);
+      const nowIso = new Date().toISOString();
+      const patch = { last_contact_at: nowIso };
+      // first touch bumps a brand-new lead into "contacted"
+      if (t && stageOf(t) === 'new') { patch.pipeline_stage = 'contacted'; patch.status = 'contacted'; }
+      try { await sb.from('leads').update(patch).eq('id', smsLeadId); } catch (e) {}
+      if (t) Object.assign(t, patch);
+      logContact(t, { channel: 'sms', body });
+      render();
+    } else {
+      // No lead record (a missed call from an unknown number): show the text in the timeline
+      // now so the callback row clears; the next refresh reconciles with what Quo logged.
+      allComms.unshift({ id: 'tmp-' + Date.now(), occurred_at: new Date().toISOString(), contact_phone: smsTo, contact_name: smsName || null, channel: 'sms', direction: 'outbound', source: 'admin_manual', body, metadata: {} });
+      rebuildTouchCounts(); render();
+    }
+    setTimeout(() => modal.classList.add('hidden'), 700);
   };
 
   // ══════════ LEAD PROFILE DRAWER — tap a name to see the whole person ══════════
@@ -1166,10 +1372,18 @@
   let drawerLeadId = null;          // lead currently shown in the drawer (null = closed)
   const historyFetched = new Set(); // leads whose full history was fetched on demand
 
-  const leadName = (l) => `${l.first_name || ''} ${l.last_name || ''}`.trim() || l.email || '(no name)';
+  // Every row tolerates a missing name/phone/email: the title is the name, else the email,
+  // else "No name" — and when the name is blank the phone rides alongside so the row still
+  // identifies someone.
+  const fullName = (l) => `${l.first_name || ''} ${l.last_name || ''}`.trim();
+  const leadName = (l) => fullName(l) || l.email || 'No name';
+  const leadNameHint = (l) => (!fullName(l) && l.phone) ? fmtPhone(l.phone) : '';
+  const MISSED_BADGE = '<span class="text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded-full whitespace-nowrap" title="They called and nobody answered — call back">☎️ Missed call</span>';
   // Digits-only phone key for matching a communications row to a lead — last 10 digits,
   // so "+1 (903) 555-0100" and "9035550100" agree. threadKey() keeps its own key.
   function phoneDigits(p) { const d = String(p || '').replace(/\D/g, ''); return d.length > 10 ? d.slice(-10) : d; }
+  // Display form of any stored phone: (xxx) xxx-xxxx for a US number, else as stored.
+  function fmtPhone(p) { const d = phoneDigits(p); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : String(p || '').trim(); }
   // jsonb columns usually arrive as objects, but guard against a JSON string too.
   function asObj(v) {
     if (!v) return null;
@@ -1179,6 +1393,9 @@
   }
   const chicagoFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
   function fmtWhen(iso) { try { const d = new Date(iso); return isNaN(d) ? '' : chicagoFmt.format(d); } catch (e) { return ''; } }
+  // Shorter Chicago-time stamp for the missed-call rows: "Thu, Sep 4, 1:15 PM".
+  const chicagoShortFmt = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  function fmtWhenShort(iso) { try { const d = new Date(iso); return isNaN(d) ? '' : chicagoShortFmt.format(d); } catch (e) { return ''; } }
   function fmtDay(v) {
     if (!v) return '';
     const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v));
@@ -1230,6 +1447,9 @@
         if (c.direction !== 'inbound' && (!t.lastOut || new Date(c.occurred_at) > new Date(t.lastOut))) t.lastOut = c.occurred_at;
       });
     });
+    // Both derive from the same loaded rows, so they are always rebuilt together.
+    rebuildDuplicates();
+    rebuildMissedCalls();
   }
   // Most recent OUTBOUND touch — the logged history or the hand-stamped last_contact_at.
   // Someone calling in does not count as us contacting them, so the list meta line and the
@@ -1250,6 +1470,89 @@
     return (last ? `<span class="whitespace-nowrap">Last contact ${esc(agoWords(last))}</span>` : '<span class="text-amber-700 font-semibold whitespace-nowrap">Never contacted</span>')
       + (touches ? `<span class="whitespace-nowrap">${esc(touches)}</span>` : '');
   }
+
+  // ══════════ MISSED CALLS — inbound Quo calls nobody answered, still waiting on a callback ══════════
+  // A missed call = an inbound Quo call whose metadata says no-answer (or missed: true), in the
+  // last 30 days. Grouped by lead (linked id, else the same phone), else by the bare number. A
+  // group stays OPEN until a HUMAN reaches out after the ring — the same rule as touchCounts
+  // .lastOut, so a drip text never closes one.
+  const MISSED_WINDOW_MS = 30 * 864e5;
+  function isMissedCall(c) {
+    if (c.direction !== 'inbound' || (c.channel || '').toLowerCase() !== 'call') return false;
+    if (String(c.source || '').toLowerCase() !== 'quo') return false;
+    const m = asObj(c.metadata) || {};
+    const status = String(m.status || '').toLowerCase();
+    return m.missed === true || status === 'no-answer' || status === 'no_answer' || status.includes('miss');
+  }
+  function isHumanOut(c) { return c.direction !== 'inbound' && !isAutoComm(c); }
+  function rebuildMissedCalls() {
+    missedGroups = []; missedByLead = new Map();
+    const since = Date.now() - MISSED_WINDOW_MS;
+    const byId = new Map(allLeads.map(l => [l.id, l]));
+    const byPhone = new Map();
+    allLeads.forEach(l => { const p = phoneDigits(l.phone); if (p) { if (!byPhone.has(p)) byPhone.set(p, []); byPhone.get(p).push(l); } });
+    // Newest human outbound touch per phone — what closes a missed call from a number with no record.
+    const outByPhone = new Map();
+    allComms.forEach(c => {
+      if (!isHumanOut(c)) return;
+      const p = phoneDigits(c.contact_phone), t = new Date(c.occurred_at).getTime();
+      if (p && t) outByPhone.set(p, Math.max(outByPhone.get(p) || 0, t));
+    });
+    const groups = new Map();
+    allComms.forEach(c => {
+      if (!isMissedCall(c)) return;
+      const t = new Date(c.occurred_at).getTime();
+      if (!t || t < since) return;
+      const p = phoneDigits(c.contact_phone);
+      const lead = (c.related_lead_id && byId.get(c.related_lead_id)) || (p && (byPhone.get(p) || [])[0]) || null;
+      const key = lead ? 'lead:' + lead.id : p ? 'phone:' + p : 'call:' + c.id;
+      // Has anyone reached out since the ring? Via the lead (id / phone / email, incl. the
+      // stamped last_contact_at) or via this number.
+      const closedAt = Math.max(outByPhone.get(p) || 0, lead ? (new Date(lastTouchIso(lead) || 0).getTime() || 0) : 0);
+      let g = groups.get(key);
+      if (!g) { g = { key, lead, phone: c.contact_phone || (lead && lead.phone) || '', name: '', calls: [], open: [] }; groups.set(key, g); }
+      if (!g.name && c.contact_name) g.name = String(c.contact_name).trim();
+      if (!g.phone && c.contact_phone) g.phone = c.contact_phone;
+      g.calls.push(c);
+      if (closedAt <= t) g.open.push(c);
+    });
+    groups.forEach(g => {
+      if (!g.open.length) return;
+      g.open.sort((a, b) => new Date(b.occurred_at) - new Date(a.occurred_at));
+      g.count = g.open.length;          // how many times they've tried since anyone last reached out
+      g.last = g.open[0].occurred_at;
+      g.tel = String(g.phone || '').replace(/[^\d+]/g, '');
+      const withSummary = g.open.find(c => { const m = asObj(c.metadata) || {}; return typeof m.summary === 'string' && m.summary.trim(); });
+      g.summary = withSummary ? String(asObj(withSummary.metadata).summary).replace(/\s+/g, ' ').trim().slice(0, 200) : '';
+      missedGroups.push(g);
+      // Badge every record for this person — the linked lead and any duplicate on the same number.
+      const ids = new Set();
+      if (g.lead) ids.add(g.lead.id);
+      const p = phoneDigits(g.phone); if (p) (byPhone.get(p) || []).forEach(l => ids.add(l.id));
+      ids.forEach(id => missedByLead.set(id, g));
+    });
+    missedGroups.sort((a, b) => new Date(b.last) - new Date(a.last));
+  }
+
+  // ══════════ DUPLICATES — lead rows that share a phone or an email ══════════
+  // Nothing is merged or deleted: the list and drawer just say so, and the drawer lets her hop
+  // between the records. Contact history already matches by phone/email, so it is shared.
+  function rebuildDuplicates() {
+    dupMap = new Map();
+    const byPhone = new Map(), byEmail = new Map();
+    allLeads.forEach(l => {
+      const p = phoneDigits(l.phone); if (p.length >= 7) { if (!byPhone.has(p)) byPhone.set(p, []); byPhone.get(p).push(l.id); }
+      const e = (l.email || '').toLowerCase().trim(); if (e) { if (!byEmail.has(e)) byEmail.set(e, []); byEmail.get(e).push(l.id); }
+    });
+    const link = (ids) => { if (ids.length < 2) return; ids.forEach(id => { let s = dupMap.get(id); if (!s) { s = new Set(); dupMap.set(id, s); } ids.forEach(o => { if (o !== id) s.add(o); }); }); };
+    byPhone.forEach(link); byEmail.forEach(link);
+  }
+  function dupsOf(l) { const s = dupMap.get(l.id); return s ? [...s].map(id => allLeads.find(x => x.id === id)).filter(Boolean) : []; }
+  function dupChip(l) {
+    const n = dupMap.get(l.id)?.size || 0;
+    return n ? `<span class="text-[10px] font-semibold bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded-full whitespace-nowrap" title="Another record shares this phone or email — open the profile to see it">Possible duplicate · ${n} more</span>` : '';
+  }
+
   // One compact line under the name: what they want · where from · last contact · touches.
   function metaLine(l) {
     const story = sourceStory(l);
@@ -1261,9 +1564,10 @@
   }
   // Quick-filter chips above the list — one active at a time, counts shown so she can
   // see the size of each bucket without tapping.
-  const QUICK_FILTERS = [['never', 'Never contacted'], ['stale', 'No contact in 7+ days'], ['hot', '🔥 Hot'], ['program', 'Program leads only'], ['tool', 'Free tool only']];
+  const QUICK_FILTERS = [['never', 'Never contacted'], ['missed', '☎️ Missed call'], ['stale', 'No contact in 7+ days'], ['hot', '🔥 Hot'], ['program', 'Program leads only'], ['tool', 'Free tool only']];
   function quickMatch(l, k) {
     if (k === 'never') return !lastTouchIso(l);
+    if (k === 'missed') return missedByLead.has(l.id);
     if (k === 'stale') { const t = lastTouchIso(l); return !!t && Date.now() - new Date(t).getTime() >= 7 * 864e5; }
     if (k === 'hot') return isHot(l);
     if (k === 'program') return wantLabel(l).tone !== 'tool';
@@ -1326,6 +1630,12 @@
     e.stopPropagation();
     openLeadDrawer(btn.dataset.leadDetail);
   });
+  // The drawer sits outside #leads-view: its "Other records for this person" buttons hop to that lead.
+  leadDrawer.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-lead-detail]'); if (!btn) return;
+    e.stopPropagation();
+    openLeadDrawer(btn.dataset.leadDetail);
+  });
 
   function openLeadDrawer(id) {
     drawerLeadId = id;
@@ -1370,8 +1680,11 @@
     head.innerHTML = `
       <div class="flex items-center gap-2 flex-wrap min-w-0">
         <h2 class="display text-xl font-bold leading-tight min-w-0 truncate max-w-full">${esc(leadName(l))}</h2>
+        ${leadNameHint(l) ? `<span class="text-sm text-slate-500 mono">${esc(leadNameHint(l))}</span>` : ''}
         ${isHot(l) ? '<span class="text-[10px] font-bold bg-rose-600 text-white px-1.5 py-0.5 rounded-full">🔥 HOT</span>' : ''}
+        ${missedByLead.has(l.id) ? MISSED_BADGE : ''}
         ${l.lead_grade && GRADE_META[l.lead_grade] ? `<span class="text-[10px] font-bold border px-1.5 py-0.5 rounded-full ${GRADE_META[l.lead_grade].chip}">${GRADE_META[l.lead_grade].label}</span>` : ''}
+        ${dupChip(l)}
       </div>
       <div class="flex items-center gap-2 flex-wrap mt-2 text-xs text-slate-500">
         <select data-stage="${l.id}" class="stage-sel min-h-[40px] bg-white border border-slate-300 rounded-lg px-2 text-xs font-semibold text-slate-800" aria-label="Pipeline stage">
@@ -1415,6 +1728,7 @@
           <div class="mono break-all">${l.phone ? esc(l.phone) : '<span class="text-slate-400">No phone on file</span>'}</div>
           <div class="break-all">${l.email ? esc(l.email) : '<span class="text-slate-400">No email on file</span>'}</div>
         </div>`)}
+      ${dupSection(l)}
       ${drawerSection('What they want', `
         <div class="mb-2">${wantBadge(l)}</div>
         <div class="space-y-1">${wantRows.map(r => kv(r[0], esc(r[1]))).join('') || '<div class="text-sm text-slate-400">Nothing stated yet.</div>'}</div>
@@ -1432,6 +1746,20 @@
       ${drawerSection('Open tasks', '<div id="lead-tasks"><div class="text-sm text-slate-500">Loading…</div></div>')}`;
   }
 
+  // Other lead rows that share this person's phone or email — hop between them; nothing is merged.
+  function dupSection(l) {
+    const others = dupsOf(l);
+    if (!others.length) return '';
+    return drawerSection('Other records for this person', `
+      <div class="space-y-1.5">${others.map(d => { const m = STAGE_META[stageOf(d)]; return `
+        <button type="button" data-lead-detail="${d.id}" class="w-full text-left flex flex-wrap items-center gap-x-2 gap-y-0.5 min-h-[44px] px-3 py-2 rounded-lg border border-slate-200 hover:border-teal-600 hover:bg-teal-50 min-w-0">
+          <span class="font-semibold text-sm text-teal-700 min-w-0 truncate max-w-full">${esc(leadName(d))}${leadNameHint(d) ? ` <span class="text-xs font-normal text-slate-500 mono">· ${esc(leadNameHint(d))}</span>` : ''}</span>
+          <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${m.chip}">${m.label}</span>
+          <span class="text-xs text-slate-500 min-w-0 truncate max-w-full">${esc(d.source || 'site')} · added ${esc(agoWords(d.created_at) || fmtDay(d.created_at) || '—')}</span>
+        </button>`; }).join('')}</div>
+      <p class="text-xs text-slate-500 mt-2">Contact history is shared by phone/email automatically — every call and text to this number shows on each record.</p>`);
+  }
+
   function historyItem(c) {
     const ch = (c.channel || '').toLowerCase();
     const icon = ch === 'call' ? '📞' : ch === 'sms' ? '💬' : ch === 'email' ? '✉️' : ch === 'note' ? '📝' : ch === 'system' ? '⚙️' : '•';
@@ -1446,6 +1774,7 @@
         <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
           ${dir ? `<span class="font-semibold ${c.direction === 'inbound' ? 'text-sky-700' : 'text-teal-700'}">${dir}</span>` : ''}
           <span>${esc(ch || 'contact')}</span>
+          ${isMissedCall(c) ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-amber-100 text-amber-800 border border-amber-200 rounded px-1" title="They called and nobody answered">missed</span>' : ''}
           ${isAutoComm(c) ? '<span class="text-[10px] font-semibold uppercase tracking-wide bg-slate-100 text-slate-500 border border-slate-200 rounded px-1" title="Sent automatically — not a human touch">auto</span>' : ''}
           <span>${esc(fmtWhen(c.occurred_at))}</span>
           ${dur ? `<span class="mono">${esc(dur)}</span>` : ''}
