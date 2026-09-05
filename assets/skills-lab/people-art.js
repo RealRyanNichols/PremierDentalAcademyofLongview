@@ -578,7 +578,7 @@
   var CAST = {
     /* --- staff --- */
     dentist: {
-      label: 'Dr. Williams, dentist', bg: BGS[1], sk: SKIN.deep,
+      label: 'Dr. Patel, dentist', bg: BGS[1], sk: SKIN.deep,
       hair: 'crop', hairC: '#181310', hairOpts: { grayTemples: true },
       browC: '#181310', browW: 1.9, iris: '#3a2417',
       mouth: 'smile', age: 'mid', facial: 'stubble', beardC: '#181310',

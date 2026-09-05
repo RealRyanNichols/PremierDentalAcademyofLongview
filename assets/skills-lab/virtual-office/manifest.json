@@ -17,7 +17,7 @@
     { "file": "patient-08.png", "size": "800x800", "for": "Gloria Sims" }
   ],
   "staff": [
-    { "file": "staff-dentist.png", "size": "800x800", "for": "Dr. Williams" },
+    { "file": "staff-dentist.png", "size": "800x800", "for": "Dr. Patel" },
     { "file": "staff-assistant.png", "size": "800x800", "for": "Assistant (you)" },
     { "file": "staff-hygienist.png", "size": "800x800", "for": "Hygienist" },
     { "file": "staff-frontdesk.png", "size": "800x800", "for": "Front desk" }

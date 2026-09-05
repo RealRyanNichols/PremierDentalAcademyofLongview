@@ -14,11 +14,15 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/skills-lab/access.js"></script>
 <script>
+/* Skills Lab shared Tailwind config — keep identical on every /skills-lab page. */
+window.tailwind = window.tailwind || {};
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
-}}}
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b',600:'#d97706'} }
+}}};
 </script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
@@ -37,10 +41,10 @@ tailwind.config = { theme: { extend: {
 
 <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
-    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Reference</p>
+  <div class="rounded-2xl bg-navy-900 text-white p-6 sm:p-8 shadow-xl" style="background:#0a1226">
+    <p class="text-teal-300 text-sm font-semibold tracking-wide uppercase">Skills Lab · Reference</p>
     <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Dental Charting Abbreviations</h1>
-    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">The shorthand you'll read and write on charts, routing slips and the schedule every day. Learn what each one means here, then drill them until they're automatic in the flashcards.</p>
+    <p class="text-slate-300 mt-2 max-w-2xl text-sm sm:text-base">The shorthand you'll read and write on charts, routing slips and the schedule every day. Learn what each one means here, then drill them until they're automatic in the flashcards.</p>
     <div class="mt-4 flex flex-wrap gap-2">
       <a href="/tools/flashcards" class="inline-block rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 text-sm transition">Drill these in flashcards →</a>
       <a href="/skills-lab/quizzes" class="inline-block rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2 text-sm transition">Test yourself in the Quiz Hub →</a>
@@ -49,19 +53,19 @@ tailwind.config = { theme: { extend: {
 
   <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-600">
     <span class="font-semibold text-navy-900">Jump to:</span>
-    <a href="#surfaces" class="text-teal-700 hover:text-teal-800 font-semibold">Surfaces</a>
-    <a href="#quadrants" class="text-teal-700 hover:text-teal-800 font-semibold">Quadrants</a>
-    <a href="#materials" class="text-teal-700 hover:text-teal-800 font-semibold">Materials</a>
-    <a href="#procedures" class="text-teal-700 hover:text-teal-800 font-semibold">Procedures</a>
-    <a href="#conditions" class="text-teal-700 hover:text-teal-800 font-semibold">Conditions</a>
-    <a href="#radiographs" class="text-teal-700 hover:text-teal-800 font-semibold">X-rays</a>
-    <a href="#scheduling" class="text-teal-700 hover:text-teal-800 font-semibold">Scheduling</a>
-    <a href="#other" class="text-teal-700 hover:text-teal-800 font-semibold">Sedation &amp; classes</a>
+    <a href="#surfaces" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Surfaces</a>
+    <a href="#quadrants" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Quadrants</a>
+    <a href="#materials" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Materials</a>
+    <a href="#procedures" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Procedures</a>
+    <a href="#conditions" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Conditions</a>
+    <a href="#radiographs" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">X-rays</a>
+    <a href="#scheduling" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Scheduling</a>
+    <a href="#other" class="text-teal-700 hover:text-teal-800 font-semibold inline-flex items-center min-h-[44px]">Sedation &amp; classes</a>
   </div>
 
   <div id="groups" class="mt-6 space-y-8"></div>
 
-  <a href="/tools/flashcards" class="mt-8 block bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 text-center hover:-translate-y-0.5 transition shadow">
+  <a href="/tools/flashcards" class="mt-8 block bg-teal-700 text-white rounded-2xl p-6 text-center hover:-translate-y-0.5 transition shadow" style="background:#0f766e">
     <div class="text-2xl">🃏</div>
     <div class="display text-xl font-bold mt-1">Ready to memorize them? Open the Charting Abbreviations flashcard deck →</div>
     <div class="text-teal-100 text-sm mt-1">Front = the abbreviation, back = what it means. Mark each one mastered as it sticks.</div>
@@ -78,8 +82,9 @@ tailwind.config = { theme: { extend: {
 (function () {
   'use strict';
   var U = window.SL_UI, esc = U.escapeHTML;
-  document.getElementById('sl-header').innerHTML = U.headerHTML('');
+  document.getElementById('sl-header').innerHTML = U.headerHTML('abbreviations');
   document.getElementById('sl-footer').innerHTML = U.footerHTML();
+  if (!U.ok) { document.getElementById('groups').innerHTML = U.errorCardHTML('The Skills Lab data file did not load.'); return; }
 
   // Grouped reference data. note = a short clarifying line shown under the meaning.
   var GROUPS = [
@@ -193,6 +198,12 @@ tailwind.config = { theme: { extend: {
   }).join('');
 
   document.getElementById('groups').innerHTML = html;
+
+  // Public reference page: no gate. Access only picks the footer / header CTA.
+  U.resolveAccess().then(function (access) {
+    document.getElementById('sl-header').innerHTML = U.headerHTML('abbreviations', access);
+    document.getElementById('sl-footer').innerHTML = U.footerHTML(access);
+  });
 })();
 </script>
 </body>

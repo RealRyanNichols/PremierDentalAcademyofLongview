@@ -18,7 +18,7 @@
 
   /* ---- Staff (the people who speak to you in the room) ---- */
   var STAFF = {
-    dentist:   { id:'dentist',   name:'Dr. Williams', role:'Dentist',          photo:IMG+'staff-dentist.png',   emoji:'🧑‍⚕️' },
+    dentist:   { id:'dentist',   name:'Dr. Patel', role:'Dentist',          photo:IMG+'staff-dentist.png',   emoji:'🧑‍⚕️' },
     assistant: { id:'assistant', name:'You',           role:'Dental Assistant', photo:IMG+'staff-assistant.png', emoji:'🦷' },
     hygienist: { id:'hygienist', name:'Renee',         role:'Hygienist',        photo:IMG+'staff-hygienist.png', emoji:'🪥' },
     frontdesk: { id:'frontdesk', name:'Carla',         role:'Front Desk',       photo:IMG+'staff-frontdesk.png', emoji:'💁' },
@@ -100,7 +100,7 @@
     ins('rubber-stoppers','Rubber stoppers','Silicone stops set on files to mark the working length','🛑'),
     ins('irrigation-syringe','Irrigation syringe','Syringe (often with sodium hypochlorite) to disinfect & flush the canal','💉'),
     ins('paper-points','Paper points','Absorbent paper cones used to dry the canal before filling','🔻'),
-    ins('gutta-percha','Gutta-percha','Rubbery cones used to obturate (fill & seal) the cleaned canal','🟧'),
+    ins('gutta-percha','Gutta-percha','Rubbery cones used to obturate (fill and close off) the cleaned canal','🟧'),
     ins('root-canal-sealer','Root canal sealer','Cement that seals gutta-percha to the canal walls','🧴'),
     ins('endo-plugger','Endo plugger','Condenses/compacts gutta-percha into the canal','🔨'),
     ins('glick','Glick #1','Double-ended endo instrument for placing & shaping temporaries and gutta-percha','🔧'),
@@ -153,7 +153,7 @@
   ];
 
   /* ====================================================================
-     SCENARIOS — Dr. Williams (and the patient) walk you through a visit.
+     SCENARIOS — Dr. Patel (and the patient) walk you through a visit.
      step.speaker: 'dentist' | 'patient' | 'assistant' | 'narrator'
      step.type:    'choose' (single) | 'multi' | 'order' | 'identify'
      ==================================================================== */
@@ -208,12 +208,12 @@
           answer:[0,1,2], explanation:'A crown prep cuts the tooth (diamond bur), exposes the margin (cord) and captures it (impression/scan). Spore strips and prophy cups belong elsewhere.' },
         { speaker:'narrator', category:'Crown Prep', type:'choose',
           prompt:'You seat Maria and take her vitals before treatment. Her blood pressure reads 178/104. You:',
-          options:['Flag it to Dr. Williams before proceeding — that\'s high enough to reconsider elective treatment today','Ignore it and start the prep','Write it down but say nothing','Keep re-taking it until it reads lower'],
+          options:['Flag it to Dr. Patel before proceeding — that\'s high enough to reconsider elective treatment today','Ignore it and start the prep','Write it down but say nothing','Keep re-taking it until it reads lower'],
           answer:0, explanation:'Taking and recording blood pressure is part of seating every patient. A hypertensive reading like 178/104 should be flagged to the dentist before elective treatment — stress and anesthetic can push it higher.' },
         { speaker:'patient', category:'Crown Prep', type:'choose',
           prompt:'"Is this going to hurt? I really hate needles."',
           hint:'Maria looks tense. Your best response:',
-          options:['"Dr. Williams will get the area completely numb first, and I\'ll be right here with you the whole time."','"Probably, but it\'s quick."','"Don\'t worry about it."','Ignore her and prep the tray.'],
+          options:['"Dr. Patel will get the area completely numb first, and I\'ll be right here with you the whole time."','"Probably, but it\'s quick."','"Don\'t worry about it."','Ignore her and prep the tray.'],
           answer:0, explanation:'Acknowledge the fear, explain what happens, and reassure. Calm, honest communication lowers anxiety and builds trust.' },
         { speaker:'dentist', category:'Crown Prep', type:'choose',
           prompt:'"I\'m ready for the anesthetic." During the injection, your role is to:',
@@ -397,7 +397,7 @@
         { speaker:'patient', category:'Emergency', type:'choose',
           prompt:'"Am I going to lose the tooth? How much will this cost?"',
           hint:'He\'s anxious. Your best response:',
-          options:['"Dr. Williams will walk you through the options and the estimate before anything is done."','"Probably, and it\'s expensive."','"I can\'t talk about that."','Guess at a price yourself.'],
+          options:['"Dr. Patel will walk you through the options and the estimate before anything is done."','"Probably, and it\'s expensive."','"I can\'t talk about that."','Guess at a price yourself.'],
           answer:0, explanation:'Reassure and defer treatment-plan and cost specifics to the dentist/front desk. Never guess fees or prognosis — set the handoff and keep him calm.' },
         { speaker:'dentist', category:'Emergency', type:'multi',
           prompt:'"Before he leaves today, what does he need?" Select all that apply.',
@@ -653,7 +653,7 @@
         { speaker:'patient', category:'Day Shift', type:'choose',
           prompt:'"I really hate the numbing shot."',
           hint:'She\'s nervous. You:',
-          options:['Acknowledge it, explain Dr. Williams will get it fully numb, and stay with her','Tell her it\'ll hurt a little','Tell her not to be a baby','Say nothing and keep prepping'],
+          options:['Acknowledge it, explain Dr. Patel will get it fully numb, and stay with her','Tell her it\'ll hurt a little','Tell her not to be a baby','Say nothing and keep prepping'],
           answer:0, explanation:'Empathy + a clear explanation + your presence lowers anxiety. That\'s real chairside care.' },
         { speaker:'dentist', category:'Day Shift', type:'instrument',
           prompt:'"She\'s numb and I\'m starting the prep — water spray\'s going everywhere. Which suction tip do you grab?"',
@@ -724,7 +724,7 @@
         { speaker:'patient', category:'Day Shift', type:'choose',
           prompt:'"Am I going to lose the tooth? How much will this cost?"',
           hint:'He\'s anxious. Your best response:',
-          options:['"Dr. Williams will walk you through the options and the estimate before anything is done."','"Probably, and it\'s expensive."','"I can\'t talk about that."','Guess a price for him'],
+          options:['"Dr. Patel will walk you through the options and the estimate before anything is done."','"Probably, and it\'s expensive."','"I can\'t talk about that."','Guess a price for him'],
           answer:0, explanation:'Reassure and hand treatment-plan and cost questions to the dentist/front desk. Never guess fees or prognosis.' },
         { speaker:'dentist', category:'Day Shift', type:'multi',
           prompt:'"Before Tyler leaves today, what does he need?" Select all that apply.',

@@ -1,10 +1,19 @@
 /* ============================================================================
    SKILLS LAB · TRAY BUILDER  (window.SL_TRAY)
    ----------------------------------------------------------------------------
-   Drag (or tap) instruments from the supply drawer onto a stainless-steel
-   procedure tray, then grade it: correct / missing / doesn't-belong. Reads
+   TAP an instrument in the supply drawer to lay it on a stainless-steel
+   procedure tray (drag works too on a desktop), tap a placed instrument to
+   take it back off, then grade it: correct / missing / doesn't-belong. Reads
    trays + instruments from window.SL_VO_DATA. Building a tray correctly
    credits the matching competency toward the First Day Ready Score.
+
+   Touch first: tap is the primary interaction everywhere, every target is at
+   least 44px tall, and the remove badge on a placed instrument is always
+   visible (HTML5 drag never fires on phones).
+
+   Each "Check my tray" saves ONE tray attempt per sitting (re-checks update
+   the same attempt), so the dashboard sees the tray work without a row per
+   click: { id, kind:'tray', trayId, score, correct, total, missed, extra }.
 
    Visual layer: a photoreal counter + steel tray + paper liner drawn in CSS,
    with full-length instrument renderings from window.SL_ART when available
@@ -16,10 +25,11 @@
   var U = window.SL_UI, S = window.SL_STORE, esc = U.escapeHTML;
   var DONE_KEY = 'vo_trays_done';
 
-  // tray id -> competencies to credit when built correctly
+  // tray id -> competencies to credit when built correctly. The endo tray is
+  // built around dental-dam isolation, so it credits the isolation skill.
   var TRAY_COMP = {
     exam: ['tray_exam'], restorative: ['tray_amalgam'], crown: ['tray_amalgam', 'proc_crown'],
-    extraction: ['proc_extraction'], endo: []
+    extraction: ['proc_extraction'], endo: ['four_isolation']
   };
 
   function injectStyles() {
@@ -47,15 +57,16 @@
       '.tb-supplies{position:relative;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:flex-start;gap:2px 8px;margin-top:12px;padding:12px 4px 0;border-top:1.5px dashed rgba(13,148,136,.35)}',
       '.tb-supplies:first-child{border-top:0;margin-top:0;padding-top:2px}',
       '.tb-zone-tag{position:absolute;top:-8px;left:10px;font-size:8.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#0f766e;background:#cdeee7;padding:1px 7px;border-radius:999px;border:1px solid rgba(13,148,136,.25)}',
-      '.tb-item{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;border:0;background:transparent;padding:3px 1px 2px;cursor:pointer;width:74px;-webkit-tap-highlight-color:transparent}',
+      '.tb-item{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:4px;border:0;background:transparent;padding:14px 1px 2px;cursor:pointer;width:74px;min-height:44px;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
       '.tb-item .art{position:relative;z-index:1;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 6px 5px rgba(15,23,42,.32))}',
       '.tb-long .art{height:168px}.tb-long .art svg{height:100%;width:auto}',
       '.tb-flat .art{width:58px;height:58px}.tb-flat .art svg{width:100%;height:100%}',
       '.tb-item .chip{position:relative;z-index:1;font-size:9px;font-weight:700;color:#134e4a;background:rgba(255,255,255,.8);border:1px solid rgba(13,148,136,.28);border-radius:6px;padding:2px 4px;line-height:1.15;max-width:76px;text-align:center;box-shadow:0 1px 2px rgba(15,66,60,.15)}',
       '.tb-item .chip .t{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
-      '.tb-item .rm{position:absolute;top:-4px;right:2px;z-index:2;width:18px;height:18px;border-radius:9999px;background:#ef4444;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid #fff;opacity:0;transition:opacity .12s;box-shadow:0 2px 4px rgba(15,23,42,.3)}',
-      '.tb-item.tb-long .rm{top:auto;bottom:30px;right:-2px;z-index:4}',
-      '.tb-item:hover .rm{opacity:1}@media (hover:none){.tb-item .rm{display:none}}',
+      /* always-visible "take it off" badge (phones have no hover) */
+      '.tb-item .rm{position:absolute;top:0;right:0;z-index:4;width:24px;height:24px;border-radius:9999px;background:#0f766e;color:#fff;font-size:15px;line-height:1;font-weight:800;display:grid;place-items:center;border:2px solid #fff;box-shadow:0 2px 4px rgba(15,23,42,.3)}',
+      '.tb-item:hover .rm,.tb-item:focus-visible .rm{background:#b91c1c}',
+      '.tb-item:focus-visible{outline:2px solid #0f766e;outline-offset:2px;border-radius:10px}',
       '.tb-tray.locked .tb-item{cursor:default}.tb-tray.locked .tb-item .rm{display:none}',
 
       /* grading: green glow under correct pieces, amber tag on strays */
@@ -78,7 +89,8 @@
       '.tb-cab-label{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#475569}',
       '.tb-cab-hint{margin-left:auto;font-size:10.5px;color:#64748b;font-weight:600}',
       '.tb-bins{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:8px}',
-      '.tb-bin{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 5px 8px;border-radius:10px;border:1px solid rgba(148,163,184,.45);background:linear-gradient(180deg,#f8fafb,#e8edf1 80%,#dfe5ea);box-shadow:inset 0 2px 6px rgba(15,23,42,.15),inset 0 -1px 0 rgba(255,255,255,.85),0 1px 0 rgba(255,255,255,.6);cursor:grab;text-align:center;transition:box-shadow .12s,transform .12s;-webkit-tap-highlight-color:transparent}',
+      '.tb-bin{position:relative;display:flex;flex-direction:column;align-items:center;gap:5px;padding:9px 5px 8px;min-height:44px;border-radius:10px;border:1px solid rgba(148,163,184,.45);background:linear-gradient(180deg,#f8fafb,#e8edf1 80%,#dfe5ea);box-shadow:inset 0 2px 6px rgba(15,23,42,.15),inset 0 -1px 0 rgba(255,255,255,.85),0 1px 0 rgba(255,255,255,.6);cursor:pointer;text-align:center;transition:box-shadow .12s,transform .12s;-webkit-tap-highlight-color:transparent;touch-action:manipulation}',
+      '.tb-bin:focus-visible{outline:2px solid #0f766e;outline-offset:2px}',
       '.tb-bin:hover{box-shadow:inset 0 2px 6px rgba(15,23,42,.12),0 0 0 2px rgba(13,148,136,.55),0 3px 8px rgba(13,148,136,.2);transform:translateY(-1px)}',
       '.tb-bin:active{cursor:grabbing}',
       '.tb-bin .nm{font-size:10px;font-weight:600;color:#334155;line-height:1.15;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}',
@@ -87,7 +99,7 @@
       '.tb-bin .ontray{position:absolute;top:4px;right:5px;font-size:8px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:#0f766e;background:#ccfbf1;border:1px solid #5eead4;border-radius:999px;padding:1px 5px}',
 
       /* small screens: shorter instruments, tighter bins */
-      '@media (max-width:480px){.tb-item{width:58px}.tb-long .art{height:116px}.tb-flat .art{width:48px;height:48px}.tb-item .chip{font-size:8.5px;max-width:64px}.tb-item.extra::after{font-size:8px;max-width:58px;padding:2px 5px}.tb-item.tb-long.extra::after{bottom:30px}.tb-item.tb-long .rm{bottom:26px}.tb-liner{min-height:170px;padding:12px 8px 10px}.tb-bins{grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px}.tb-empty{min-height:140px}}'
+      '@media (max-width:480px){.tb-item{width:62px}.tb-long .art{height:116px}.tb-flat .art{width:48px;height:48px}.tb-item .chip{font-size:8.5px;max-width:64px}.tb-item.extra::after{font-size:8px;max-width:58px;padding:2px 5px}.tb-item.tb-long.extra::after{bottom:30px}.tb-liner{min-height:170px;padding:12px 8px 10px}.tb-bins{grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}.tb-empty{min-height:140px}}'
     ].join('');
     document.head.appendChild(c);
   }
@@ -119,6 +131,11 @@
   function run(opts) {
     injectStyles();
     var D = window.SL_VO_DATA, tray = opts.tray, mount = opts.mount;
+    if (!mount) return;
+    if (!D || !tray || !Array.isArray(D.INSTRUMENTS) || !Array.isArray(tray.requiredInstrumentIds)) {
+      mount.innerHTML = U.errorCardHTML('The instrument list for this tray did not load.');
+      return;
+    }
     var INSTR = D.INSTRUMENTS;
     var SHELF = INSTR.slice();
     for (var _i = SHELF.length - 1; _i > 0; _i--) { var _j = Math.floor(Math.random() * (_i + 1)); var _t = SHELF[_i]; SHELF[_i] = SHELF[_j]; SHELF[_j] = _t; }
@@ -127,14 +144,15 @@
     var placed = [];
     var locked = false;   // only true after a perfect tray
     var marks = null;     // id -> 'ok' | 'extra' after a check
+    var attemptId = null; // one saved attempt per sitting (re-checks update it)
 
     mount.innerHTML =
-      '<div class="sl-fade">' +
+      '<div class="sl-fade" data-tb-builder="' + esc(tray.id) + '">' +
       '<div class="flex items-center justify-between gap-3">' +
-      (opts.onExit ? '<button id="tbExit" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-full px-3 py-1.5">&larr; ' + esc(opts.exitLabel || 'All trays') + '</button>' : '<span></span>') +
-      '<div class="text-xs text-slate-500">' + required.length + ' instruments needed</div></div>' +
+      (opts.onExit ? '<button type="button" id="tbExit" class="inline-flex items-center gap-1 text-sm font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-full px-3 py-2 min-h-[44px]">&larr; ' + esc(opts.exitLabel || 'All trays') + '</button>' : '<span></span>') +
+      '<div class="text-xs text-slate-500"><span data-tb-count>0</span> of ' + required.length + ' instruments placed</div></div>' +
       '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-2">Build the ' + esc(tray.procedure) + ' tray</h2>' +
-      '<p class="text-slate-500 text-sm">Tap an instrument in the drawer to lay it on the tray (or drag it over). Tap a placed one to take it back off. Set the tray, then check it.</p>' +
+      '<p class="text-slate-500 text-sm">Tap an instrument in the drawer to lay it on the tray. Tap a placed instrument (or its &times; badge) to take it back off. Set the tray, then check it.</p>' +
       '<div class="mt-4">' +
       '  <div class="tb-counter">' +
       '    <div id="tbZone" class="tb-tray" aria-label="Your instrument tray">' +
@@ -142,13 +160,13 @@
       '    </div>' +
       '  </div>' +
       '  <div class="mt-3 flex flex-wrap gap-2">' +
-      '    <button id="tbCheck" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition disabled:opacity-40" disabled>Check my tray</button>' +
-      '    <button id="tbClear" class="rounded-xl bg-white border border-slate-200 text-navy-900 font-semibold px-4 py-2.5 text-sm hover:border-slate-300 transition">Clear</button>' +
+      '    <button type="button" id="tbCheck" class="rounded-xl bg-teal-700 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-800 transition disabled:opacity-40 min-h-[44px]" disabled>Check my tray</button>' +
+      '    <button type="button" id="tbClear" class="rounded-xl bg-white border border-slate-200 text-navy-900 font-semibold px-4 py-2.5 text-sm hover:border-slate-300 transition min-h-[44px]">Clear</button>' +
       '  </div>' +
-      '  <div id="tbFb" class="mt-3 hidden rounded-xl p-4 text-sm"></div>' +
+      '  <div id="tbFb" class="mt-3 hidden rounded-xl p-4 text-sm" aria-live="polite"></div>' +
       '  <div id="tbDone" class="mt-3 hidden"></div>' +
       '  <div class="tb-cabinet mt-5">' +
-      '    <div class="tb-cab-rail"><span class="tb-handle"></span><span class="tb-cab-label">Supply drawer</span><span class="tb-cab-hint hidden sm:inline">Tap or drag onto the tray</span></div>' +
+      '    <div class="tb-cab-rail"><span class="tb-handle"></span><span class="tb-cab-label">Supply drawer</span><span class="tb-cab-hint">Tap to add to the tray</span></div>' +
       '    <div id="tbPalette" class="tb-bins"></div>' +
       '  </div>' +
       '</div></div>';
@@ -171,13 +189,16 @@
 
     function placedEl(item) {
       var b = document.createElement('button');
+      b.type = 'button';
       b.dataset.id = item.id;
+      b.setAttribute('data-tb-placed', item.id);
       var art = A() && A().has(item.id) ? A().svg(item.id) : null;
       var kind = art ? A().kindOf(item.id) : 'fb';
       b.className = 'tb-item ' + (kind === 'long' ? 'tb-long' : kind === 'flat' ? 'tb-flat' : 'tb-card');
       b.innerHTML = '<span class="rm" aria-hidden="true">&times;</span>' +
         (art ? '<span class="art">' + art + '</span>' : thumb(item)) +
         '<span class="chip"><span class="t">' + esc(item.name) + '</span></span>';
+      b.setAttribute('aria-label', 'Take ' + item.name + ' off the tray');
       b.title = 'Tap to take ' + item.name + ' off the tray';
       b.addEventListener('click', function () { remove(item.id); });
       return b;
@@ -185,13 +206,18 @@
 
     function binEl(item, used) {
       var b = document.createElement('button');
+      b.type = 'button';
       b.className = 'tb-bin' + (used ? ' used' : '');
       b.dataset.id = item.id;
+      b.setAttribute('data-tb-bin', item.id);
       b.draggable = !used;
+      b.setAttribute('aria-label', used ? item.name + ' (already on the tray)' : 'Add ' + item.name + ' to the tray');
       b.innerHTML = (used ? '<span class="ontray">On tray</span>' : '') + thumb(item) + '<span class="nm">' + esc(item.name) + '</span>';
       if (!used) {
         b.addEventListener('click', function () { add(item.id); });
-        b.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', item.id); });
+        b.addEventListener('dragstart', function (e) { try { e.dataTransfer.setData('text/plain', item.id); } catch (err) {} });
+      } else {
+        b.addEventListener('click', function () { remove(item.id); });
       }
       return b;
     }
@@ -238,6 +264,8 @@
       palette.innerHTML = '';
       SHELF.forEach(function (it) { palette.appendChild(binEl(it, placed.indexOf(it.id) >= 0)); });
       checkBtn.disabled = placed.length === 0;
+      var cnt = mount.querySelector('[data-tb-count]');
+      if (cnt) cnt.textContent = required.filter(function (id) { return placed.indexOf(id) >= 0; }).length;
       applyMarks();
     }
 
@@ -253,11 +281,21 @@
       var fb = mount.querySelector('#tbFb');
       fb.classList.remove('hidden');
 
+      // Save (or update) this sitting's tray attempt so the dashboard sees it.
+      try {
+        if (!attemptId) attemptId = S.newId();
+        var score = Math.round(100 * correct.length / Math.max(1, required.length + extra.length));
+        var byCategory = {}; byCategory['Tray Setup'] = { correct: correct.length, total: required.length + extra.length };
+        S.upsertAttempt({ id: attemptId, kind: 'tray', trayId: tray.id, date: U.todayISO(),
+          category: 'Tray Setup — ' + tray.procedure, score: score, correct: correct.length, total: required.length,
+          byCategory: byCategory, missed: missing.slice(), extra: extra.slice(), credited: pass });
+      } catch (e) { /* never block grading */ }
+
       if (pass) {
         locked = true;
         fb.className = 'mt-3 rounded-xl p-4 text-sm border bg-emerald-50 border-emerald-200 text-emerald-900';
         fb.innerHTML = '<div class="font-bold">✓ Perfect tray!</div>You set up the ' + esc(tray.procedure) + ' tray exactly right.';
-        (TRAY_COMP[tray.id] || []).forEach(function (cid) { S.setCompetency(cid, 'completed', { note: 'Built the ' + tray.procedure + ' tray in the Skills Lab' }); });
+        (TRAY_COMP[tray.id] || []).forEach(function (cid) { S.upgradeCompetency(cid, 'completed', { note: 'Built the ' + tray.procedure + ' tray in the Skills Lab' }); });
         markDone(tray.id);
         // Lock the perfect tray in sequence-of-use order, like a real setup.
         placed = required.slice();
@@ -270,9 +308,9 @@
         fb.className = 'mt-3 rounded-xl p-4 text-sm border bg-amber-50 border-amber-200 text-amber-900';
         var parts = ['<div class="font-bold mb-1">Almost — adjust the tray.</div>'];
         parts.push('<div>' + correct.length + ' of ' + required.length + ' required instruments placed.</div>');
-        if (missing.length) parts.push('<div class="mt-1"><span class="font-semibold">Missing:</span> ' + missing.map(function (id) { return esc(byId[id].name); }).join(', ') + '</div>');
-        if (extra.length) parts.push('<div class="mt-1"><span class="font-semibold">Doesn\'t belong on this tray:</span> ' + extra.map(function (id) { return esc(byId[id].name); }).join(', ') + '</div>');
-        parts.push('<div class="mt-2 text-amber-700">Fix it and check again.</div>');
+        if (missing.length) parts.push('<div class="mt-1"><span class="font-semibold">Missing:</span> ' + missing.map(function (id) { return esc(byId[id] ? byId[id].name : id); }).join(', ') + '</div>');
+        if (extra.length) parts.push('<div class="mt-1"><span class="font-semibold">Doesn\'t belong on this tray:</span> ' + extra.map(function (id) { return esc(byId[id] ? byId[id].name : id); }).join(', ') + '</div>');
+        parts.push('<div class="mt-2 text-amber-700">Fix it and check again — the tray credits your passport only when it is exactly right.</div>');
         fb.innerHTML = parts.join('');
         applyMarks();
       }

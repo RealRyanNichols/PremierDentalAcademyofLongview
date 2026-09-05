@@ -222,7 +222,7 @@
     s += RR(622, 196, 96, 122, 3, '#8a6d3b');
     s += RR(630, 204, 80, 106, 2, '#f8f6ef');
     s += LN('M640 236h60M640 252h60M640 268h44', '#b9b3a2', 4, 'stroke-linecap="round"');
-    s += CR(670, 292, 9, '#c9a94e'); /* seal */
+    s += CR(670, 292, 9, '#c9a94e'); /* gasket */
     s += LN('M666 300l-5 12M674 300l5 12', '#b23a48', 3);
     /* wall clock */
     s += CR(688, 152, 25, '#fbfaf6', 'stroke="#c6c0b0" stroke-width="4"');
@@ -714,7 +714,7 @@
   }
 
   function dentistArt(hasPatient) {
-    /* matches the people-art Dr. Williams bust: deep skin, near-black hair, gray temples */
+    /* matches the people-art Dr. Patel bust: deep skin, near-black hair, gray temples */
     var sk = SKIN.deep, skin = 'url(#voSk_deep)';
     var scrub = '#155e75', scrubD = shade(scrub, 0.72), scrubL = shade(scrub, 1.3);
     var s = '';
@@ -964,7 +964,7 @@
     s += RR(X + 822, 402, 100, 18, 8, '#d3dbdf');
     s += RR(X + 826, 424, 92, 10, 3, '#f6fafb');
     s += RR(X + 826, 438, 92, 10, 3, '#f6fafb');
-    s += TXT(X + 812, 496, 'WRAP &amp; SEAL', 13, '#475569', 'font-weight="700"');
+    s += TXT(X + 812, 496, 'WRAP &amp; POUCH', 13, '#475569', 'font-weight="700"');
 
     /* ---- CLEAN side: autoclave with round door + pouch rack ---- */
     s += RR(X + 980, 306, 300, 166, 20, 'url(#voAuto)', 'stroke="#a9b3ba" stroke-width="3"');

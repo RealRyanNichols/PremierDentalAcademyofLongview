@@ -12,54 +12,99 @@
 (function () {
   'use strict';
 
-  /* ---- COMPETENCIES — 40 skills across 19 categories ---- */
+  /* ---- COMPETENCIES — 40 skills across 19 categories ----
+     rubric:        three plain-language "what good looks like" criteria the
+                    student can check themselves against (and an instructor
+                    can use as a sign-off checklist).
+     instructorOnly: no Skills Lab activity can credit this skill — it is
+                    demonstrated in class and marked by an instructor, so it is
+                    left OUT of the automatic progress denominators. */
   var COMPETENCIES = [
-    { id:'prof_appearance', cat:'Professionalism', name:'Maintain clinical attire, hygiene & professional demeanor' },
-    { id:'prof_communication', cat:'Professionalism', name:'Use respectful, HIPAA-aware communication with the team' },
-    { id:'ic_handhygiene', cat:'Infection Control', name:'Perform hand hygiene at the correct moments' },
-    { id:'ic_ppe', cat:'Infection Control', name:'Don and doff PPE in the correct order' },
-    { id:'ic_surface', cat:'Infection Control', name:'Apply surface barriers & disinfect operatory between patients' },
-    { id:'ster_clean', cat:'Sterilization', name:'Clean, package & label instruments for the autoclave' },
-    { id:'ster_monitor', cat:'Sterilization', name:'Run and log a biological (spore) monitoring test' },
-    { id:'room_turnover', cat:'Room Setup', name:'Turn over and stock an operatory for the next patient' },
-    { id:'room_lines', cat:'Room Setup', name:'Flush waterlines & ready handpieces/suction' },
-    { id:'seat_seat', cat:'Seating Patients', name:'Greet, seat & dismiss a patient comfortably' },
-    { id:'seat_bib', cat:'Seating Patients', name:'Position patient, place bib & adjust the chair/light' },
-    { id:'mh_review', cat:'Medical History', name:'Review & update a patient medical history' },
-    { id:'mh_alert', cat:'Medical History', name:'Flag allergies, premed needs & medical alerts to the provider' },
-    { id:'bp_manual', cat:'Blood Pressure', name:'Take a manual blood pressure & pulse' },
-    { id:'bp_interpret', cat:'Blood Pressure', name:'Record vitals & recognize values needing provider review' },
-    { id:'chart_existing', cat:'Charting', name:'Chart existing restorations by tooth & surface' },
-    { id:'chart_perio', cat:'Charting', name:'Record a periodontal probing chart accurately' },
-    { id:'chart_numbering', cat:'Charting', name:'Apply Universal tooth numbering (1–32) correctly' },
-    { id:'sched_book', cat:'Scheduling', name:'Book appointments by procedure length & provider column' },
-    { id:'sched_recall', cat:'Scheduling', name:'Manage recall/recare & fill openings from a call list' },
-    { id:'xray_pa', cat:'X-Ray Positioning', name:'Position sensor/film for a periapical using paralleling' },
-    { id:'xray_bw', cat:'X-Ray Positioning', name:'Take a bitewing series with proper horizontal angulation' },
-    { id:'xerr_conecut', cat:'X-Ray Error Recognition', name:'Identify a cone-cut error & its cause' },
-    { id:'xerr_elong', cat:'X-Ray Error Recognition', name:'Distinguish elongation vs. foreshortening' },
-    { id:'xerr_overlap', cat:'X-Ray Error Recognition', name:'Recognize overlap & correct horizontal angulation' },
-    { id:'tray_amalgam', cat:'Tray Setup', name:'Set up a restorative (composite/amalgam) tray' },
-    { id:'tray_exam', cat:'Tray Setup', name:'Set up a basic exam tray (mirror, explorer, cotton pliers)' },
-    { id:'four_transfer', cat:'Four-Handed Assisting', name:'Perform instrument transfers in the transfer zone' },
-    { id:'four_isolation', cat:'Four-Handed Assisting', name:'Maintain isolation, retraction & evacuation chairside' },
-    { id:'imp_alginate', cat:'Impressions', name:'Mix & take an alginate impression' },
-    { id:'imp_pour', cat:'Impressions', name:'Pour & trim a diagnostic study model' },
-    { id:'mat_cement', cat:'Dental Materials', name:'Mix dental cement to the correct consistency' },
-    { id:'mat_etch', cat:'Dental Materials', name:'Apply etch, bond & light-cure composite per protocol' },
-    { id:'comm_phone', cat:'Patient Communication', name:'Answer the phone & schedule with professional phone skills' },
-    { id:'comm_postop', cat:'Patient Communication', name:'Deliver clear post-operative instructions' },
-    { id:'proc_crown', cat:'Procedure Breakdowns', name:'Assist a crown prep from setup to temporary' },
-    { id:'proc_extraction', cat:'Procedure Breakdowns', name:'Assist a simple extraction & manage the field' },
-    { id:'soft_chart', cat:'Office Software Basics', name:'Navigate practice software to open a patient chart' },
-    { id:'emer_kit', cat:'Emergency Readiness', name:'Locate emergency kit, O2 & AED; know your role' },
-    { id:'emer_syncope', cat:'Emergency Readiness', name:'Respond to syncope (fainting) correctly' }
+    { id:'prof_appearance', cat:'Professionalism', name:'Maintain clinical attire, hygiene & professional demeanor', instructorOnly:true,
+      rubric:['Arrives in clean scrubs and closed-toe shoes with hair secured and nails short', 'Keeps personal items and phone away from the clinical area', 'Speaks and carries themselves calmly with patients and the team all shift'] },
+    { id:'prof_communication', cat:'Professionalism', name:'Use respectful, HIPAA-aware communication with the team', instructorOnly:true,
+      rubric:['Passes patient information only to people who need it and only in private', 'Uses names, not chart details, when speaking where others can hear', 'Confirms instructions back to the provider instead of guessing'] },
+    { id:'ic_handhygiene', cat:'Infection Control', name:'Perform hand hygiene at the correct moments', instructorOnly:true,
+      rubric:['Washes or sanitizes before gloving, after removing gloves and after touching anything unclean', 'Covers all surfaces of both hands and wrists for the full time', 'Never re-gloves or touches a chart, phone or drawer with contaminated hands'] },
+    { id:'ic_ppe', cat:'Infection Control', name:'Don and doff PPE in the correct order',
+      rubric:['Puts on gown, then mask, then eye protection, then gloves', 'Removes gloves first and keeps the contaminated outside away from skin', 'Performs hand hygiene immediately after the last item comes off'] },
+    { id:'ic_surface', cat:'Infection Control', name:'Apply surface barriers & disinfect operatory between patients',
+      rubric:['Covers every touch surface (light handles, chair buttons, tubing, keyboard) with a fresh barrier', 'Wipes uncovered surfaces with the office disinfectant and lets it sit for the labelled contact time', 'Changes barriers and disinfects between every patient, not just at the end of the day'] },
+    { id:'ster_clean', cat:'Sterilization', name:'Clean, package & label instruments for the autoclave',
+      rubric:['Moves instruments one direction only, from the dirty side to the clean side', 'Runs the ultrasonic or washer before packaging so no debris is trapped inside the pouch', 'Seals each pouch with an indicator and labels it with the date and load'] },
+    { id:'ster_monitor', cat:'Sterilization', name:'Run and log a biological (spore) monitoring test',
+      rubric:['Places the spore test inside a normal load where the office protocol says to', 'Records the date, sterilizer and result in the log every time', 'Knows what to do and who to tell if a test comes back positive'] },
+    { id:'room_turnover', cat:'Room Setup', name:'Turn over and stock an operatory for the next patient',
+      rubric:['Clears and disinfects the room, then re-barriers it before the next patient is seated', 'Restocks gloves, gauze, cotton rolls and suction tips without being asked', 'Has the correct tray and chart open before the provider walks in'] },
+    { id:'room_lines', cat:'Room Setup', name:'Flush waterlines & ready handpieces/suction',
+      rubric:['Flushes each waterline at the start of the day and between patients per office protocol', 'Attaches sterilized handpieces and tests that they run before the patient is seated', 'Checks that HVE and saliva ejector pull before the procedure starts'] },
+    { id:'seat_seat', cat:'Seating Patients', name:'Greet, seat & dismiss a patient comfortably',
+      rubric:['Greets the patient by name, introduces yourself and walks them to the room', 'Confirms the reason for the visit before seating them', 'Walks them out with clear next steps rather than leaving them at the chair'] },
+    { id:'seat_bib', cat:'Seating Patients', name:'Position patient, place bib & adjust the chair/light',
+      rubric:['Reclines the chair smoothly and warns the patient before it moves', 'Places the bib and offers safety glasses before anything else', 'Aims the light at the mouth, never the eyes, and keeps it out of the way'] },
+    { id:'mh_review', cat:'Medical History', name:'Review & update a patient medical history',
+      rubric:['Asks about changes to health, medications and allergies at every visit', 'Reads the form instead of assuming a returning patient is unchanged', 'Has the patient sign or initial the update before treatment starts'] },
+    { id:'mh_alert', cat:'Medical History', name:'Flag allergies, premed needs & medical alerts to the provider',
+      rubric:['Spots allergies, blood thinners and premedication needs before the provider sits down', 'Tells the provider directly rather than assuming they read the chart', 'Makes sure the alert is visible on the chart and the tray matches it (for example latex-free)'] },
+    { id:'bp_manual', cat:'Blood Pressure', name:'Take a manual blood pressure & pulse', instructorOnly:true,
+      rubric:['Seats the patient with feet flat and the arm supported at heart level', 'Uses the correct cuff size and places it on bare skin above the elbow', 'Reads systolic and diastolic within a few points of the instructor on a re-check'] },
+    { id:'bp_interpret', cat:'Blood Pressure', name:'Record vitals & recognize values needing provider review',
+      rubric:['Writes the reading, the arm used and the time in the chart every time', 'Knows the office threshold that means the provider must be told before treatment', 'Re-takes a high reading after the patient rests instead of ignoring it'] },
+    { id:'chart_existing', cat:'Charting', name:'Chart existing restorations by tooth & surface', instructorOnly:true,
+      rubric:['Charts the exact tooth number and surfaces the provider calls out', 'Uses the office colour and symbol conventions for existing versus planned work', 'Reads the entry back when unsure instead of guessing'] },
+    { id:'chart_perio', cat:'Charting', name:'Record a periodontal probing chart accurately',
+      rubric:['Records six readings per tooth in the order the provider calls them', 'Marks bleeding, recession and mobility where the office chart expects them', 'Keeps pace with the provider without asking for repeats on every tooth'] },
+    { id:'chart_numbering', cat:'Charting', name:'Apply Universal tooth numbering (1–32) correctly',
+      rubric:['Locates any tooth 1 to 32 in the mouth without counting from the front', 'Knows where the quadrants change (1, 8, 9, 16, 17, 24, 25, 32)', 'Uses letters A to T correctly for primary teeth'] },
+    { id:'sched_book', cat:'Scheduling', name:'Book appointments by procedure length & provider column', instructorOnly:true,
+      rubric:['Books the right number of time units for the procedure in the correct column', 'Notes the procedure, tooth and any lab or premed needs in the appointment', 'Confirms the date and time back to the patient before they leave'] },
+    { id:'sched_recall', cat:'Scheduling', name:'Manage recall/recare & fill openings from a call list', instructorOnly:true,
+      rubric:['Schedules the next hygiene visit before the patient walks out', 'Works the short-call list when an opening appears the same day', 'Leaves a clear note on who was contacted and what they said'] },
+    { id:'xray_pa', cat:'X-Ray Positioning', name:'Position sensor/film for a periapical using paralleling', instructorOnly:true,
+      rubric:['Places the sensor parallel to the long axis of the tooth with the holder', 'Aims the tube through the ring so the whole root and apex are captured', 'Has the patient hold still and steps behind the barrier before exposing'] },
+    { id:'xray_bw', cat:'X-Ray Positioning', name:'Take a bitewing series with proper horizontal angulation',
+      rubric:['Centers the sensor on the contacts of the premolars and molars', 'Directs the beam straight through the contacts so they open, not overlap', 'Has the patient bite gently on the tab and checks that the sensor did not shift'] },
+    { id:'xerr_conecut', cat:'X-Ray Error Recognition', name:'Identify a cone-cut error & its cause',
+      rubric:['Recognizes the clear, unexposed curve at the edge of the image', 'Explains that the tube was not centered over the sensor', 'Re-centers the ring and retakes only when the missing area matters'] },
+    { id:'xerr_elong', cat:'X-Ray Error Recognition', name:'Distinguish elongation vs. foreshortening', instructorOnly:true,
+      rubric:['Names an image with teeth that look too long as elongation', 'Names an image with teeth that look too short as foreshortening', 'Corrects each one by adjusting the vertical angle in the right direction'] },
+    { id:'xerr_overlap', cat:'X-Ray Error Recognition', name:'Recognize overlap & correct horizontal angulation',
+      rubric:['Spots contacts that are stacked on each other instead of open', 'Explains that the beam was angled across the contacts', 'Adjusts the horizontal angle and retakes so decay between teeth can be read'] },
+    { id:'tray_amalgam', cat:'Tray Setup', name:'Set up a restorative (composite/amalgam) tray',
+      rubric:['Lays out the basic setup plus anesthetic, matrix, wedge and the restorative material', 'Adds etch, bond and a curing light for composite, or a carrier and condenser for amalgam', 'Arranges everything in the order it will be used, left to right'] },
+    { id:'tray_exam', cat:'Tray Setup', name:'Set up a basic exam tray (mirror, explorer, cotton pliers)',
+      rubric:['Places a mirror, explorer and cotton pliers on a clean barrier or tray', 'Adds gauze, air-water tip and suction tips before the patient is seated', 'Keeps the tray tidy so the provider can pick up without looking'] },
+    { id:'four_transfer', cat:'Four-Handed Assisting', name:'Perform instrument transfers in the transfer zone',
+      rubric:['Passes below the patient\'s chin, never over the face', 'Delivers the working end pointed toward the tooth and ready to use', 'Takes the used instrument with the little finger while placing the next one in the same motion'] },
+    { id:'four_isolation', cat:'Four-Handed Assisting', name:'Maintain isolation, retraction & evacuation chairside',
+      rubric:['Keeps the HVE tip close to the tooth without blocking the provider\'s view', 'Retracts the cheek or tongue gently and keeps the field dry', 'Places and adjusts cotton rolls or the dental dam without being asked'] },
+    { id:'imp_alginate', cat:'Impressions', name:'Mix & take an alginate impression',
+      rubric:['Measures powder and water as directed and mixes to a smooth, creamy consistency', 'Loads the correct tray size and seats it back to front without gagging the patient', 'Holds still for the full set and removes with a quick snap'] },
+    { id:'imp_pour', cat:'Impressions', name:'Pour & trim a diagnostic study model',
+      rubric:['Rinses and disinfects the impression, then pours within the material\'s working time', 'Vibrates the stone in from one end so no bubbles are trapped in the teeth', 'Trims a clean base with even borders that sits flat'] },
+    { id:'mat_cement', cat:'Dental Materials', name:'Mix dental cement to the correct consistency', instructorOnly:true,
+      rubric:['Dispenses the exact ratio the manufacturer directs', 'Mixes on the correct pad or slab within the stated time', 'Recognizes luting versus base consistency and delivers it before it begins to set'] },
+    { id:'mat_etch', cat:'Dental Materials', name:'Apply etch, bond & light-cure composite per protocol',
+      rubric:['Etches only the prepared surface for the directed time, then rinses and dries to a frosty look', 'Applies bond thinly and cures for the full time with the light tip close to the tooth', 'Places composite in layers and cures each one before adding the next'] },
+    { id:'comm_phone', cat:'Patient Communication', name:'Answer the phone & schedule with professional phone skills',
+      rubric:['Answers with the practice name, your name and an offer to help', 'Listens for pain, swelling or bleeding and triages before offering a date', 'Repeats the appointment details back and ends the call warmly'] },
+    { id:'comm_postop', cat:'Patient Communication', name:'Deliver clear post-operative instructions',
+      rubric:['Explains what to expect today and what would be a reason to call', 'Uses plain words and checks understanding by asking the patient to repeat the key points', 'Hands over the written instructions and the office phone number'] },
+    { id:'proc_crown', cat:'Procedure Breakdowns', name:'Assist a crown prep from setup to temporary',
+      rubric:['Sets a complete crown tray including cord, impression material and temporary material', 'Anticipates the sequence: anesthetic, prep, cord, impression, temporary', 'Has the shade taken and the temporary cemented and checked before dismissal'] },
+    { id:'proc_extraction', cat:'Procedure Breakdowns', name:'Assist a simple extraction & manage the field',
+      rubric:['Sets out gauze, surgical suction, elevators, forceps and sutures before the provider sits', 'Keeps the field clear with surgical suction while retracting gently', 'Places the gauze, gives post-op instructions and watches for bleeding before dismissal'] },
+    { id:'soft_chart', cat:'Office Software Basics', name:'Navigate practice software to open a patient chart', instructorOnly:true,
+      rubric:['Finds a patient by name or date of birth without help', 'Opens the tooth chart, the notes and the schedule from the patient record', 'Closes the chart when leaving the computer so no one else can see it'] },
+    { id:'emer_kit', cat:'Emergency Readiness', name:'Locate emergency kit, O2 & AED; know your role',
+      rubric:['Can walk to the emergency kit, oxygen and AED without searching', 'Knows who calls for help, who stays with the patient and who gets the kit', 'Checks that the kit and oxygen are stocked and in date on schedule'] },
+    { id:'emer_syncope', cat:'Emergency Readiness', name:'Respond to syncope (fainting) correctly',
+      rubric:['Recognizes the early signs: pale, sweaty, dizzy or nauseated', 'Lays the patient flat with legs raised and loosens tight clothing', 'Alerts the provider, monitors breathing and pulse, and stays with the patient until they recover'] }
   ];
 
   /* ---- QUIZ BANK ----
-     Question types: mc (single), multi (select-all), tf, scenario, image, missing.
-     "image" questions show a placeholder visual until a licensed clinical photo
-     replaces it (placeholder:true). Each item: prompt, options[], answer,
+     Question types: mc (single), multi (select-all), tf, scenario, missing.
+     All questions are text-only. Each item: prompt, options[], answer,
      explanation, category, reviewLesson, difficulty.
      difficulty is one of QUIZ_DIFFICULTIES: 'beginner' | 'intermediate' |
      'advanced' | 'expert'. */
@@ -107,11 +152,11 @@
       options:['Periodontal probe','Explorer','Spoon excavator','Cotton pliers'],
       answer:1, explanation:'The explorer has a fine, sharp tip used to detect decay, calculus and check restoration margins tactilely.',
       reviewLesson:'Basic Examination Instruments' },
-    { id:'q5', category:'Instruments', type:'image', difficulty:'intermediate',
-      prompt:'[instrument photo] A double-ended instrument with a flat, paddle-like blade used to carry and place amalgam/composite into a prep is a:',
+    { id:'q5', category:'Instruments', type:'mc', difficulty:'intermediate',
+      prompt:'The dentist asks for the instrument that carries a small amount of composite to the prep and shapes it before curing — a double-ended instrument with flat, paddle-shaped ends. You hand over the:',
       options:['Condenser (plugger)','Carver','Composite placement instrument','Hatchet'],
       answer:2, explanation:'A placement instrument carries restorative material to the prep; the condenser then packs it and the carver shapes anatomy.',
-      reviewLesson:'Restorative Instruments — Placement vs. Condensing', placeholder:true },
+      reviewLesson:'Restorative Instruments — Placement vs. Condensing' },
     { id:'q6', category:'Instruments', type:'mc', difficulty:'beginner',
       prompt:'A periodontal probe is primarily used to:',
       options:['Remove calculus','Measure sulcus/pocket depth','Place sealants','Polish enamel'],
@@ -132,11 +177,11 @@
       options:['Burnisher','Explorer','Spoon excavator','Chisel'],
       answer:0, explanation:'A burnisher smooths/adapts margins and adds shine. The carver shapes anatomy; the excavator removes soft decay.',
       reviewLesson:'Carving & Finishing Instruments' },
-    { id:'q34', category:'Instruments', type:'image', difficulty:'intermediate',
-      prompt:'[instrument photo] A spoon-shaped instrument used to remove soft, decayed dentin from a preparation is a:',
+    { id:'q34', category:'Instruments', type:'mc', difficulty:'intermediate',
+      prompt:'After the bur has opened the cavity, the dentist wants to scoop out the remaining soft, decayed dentin by hand. The instrument with a small, rounded, sharp-edged bowl on each end is the:',
       options:['Spoon excavator','Condenser','Cotton pliers','Periodontal probe'],
       answer:0, explanation:'The spoon excavator has a rounded, sharp spoon used to scoop out soft caries before a restoration is placed.',
-      reviewLesson:'Hand Cutting Instruments', placeholder:true },
+      reviewLesson:'Hand Cutting Instruments' },
 
     // ---- X-Ray Errors ----
     { id:'q8', category:'X-Ray Errors', type:'mc', difficulty:'intermediate',
@@ -164,11 +209,11 @@
       options:['Foreshortening (too much vertical angulation)','Elongation','Cone cut','Double exposure'],
       answer:0, explanation:'Foreshortening = excessive vertical angulation makes images too short. Remember: too much angle = too short.',
       reviewLesson:'Foreshortening vs. Elongation' },
-    { id:'q36', category:'X-Ray Errors', type:'image', difficulty:'advanced',
-      prompt:'[radiograph] A film shows a thin, branching radiolucent "tree-like" line. The most likely cause is:',
+    { id:'q36', category:'X-Ray Errors', type:'mc', difficulty:'advanced',
+      prompt:'You open a processed film on a dry winter morning and see thin, black, branching lines across the image that look like lightning or tree roots. The teeth themselves are sharp. The most likely cause is:',
       options:['Static electricity artifact','Cone cut','Patient movement','Overexposure'],
       answer:0, explanation:'Branching/tree-like black lines are a static electricity artifact (common in dry conditions when opening film). Movement causes overall blur.',
-      reviewLesson:'Film Handling Artifacts', placeholder:true },
+      reviewLesson:'Film Handling Artifacts' },
     { id:'q37', category:'X-Ray Errors', type:'mc', difficulty:'beginner',
       prompt:'A radiograph with no image at all (blank/clear) most likely means:',
       options:['The film/sensor was never exposed (machine not triggered or sensor not active)','Overexposure','Patient moved','Wrong angulation'],
@@ -604,29 +649,57 @@
       reviewLesson:'Periodontal Charting Abbreviations' }
   ];
 
-  /* ---- BADGES ---- (icons are HTML entities; tests receive computed metrics) */
+  /* ---- BADGES ---- (icons are HTML entities; tests receive computed metrics:
+     attempts (scored practice attempts), quizAvg, skillsDone, total (skills an
+     activity can credit), fdr) */
   var BADGES = [
-    { id:'first_quiz',  icon:'&#127919;', name:'First Quiz',        test:function(d){ return d.attempts.length >= 1; } },
-    { id:'five_quiz',   icon:'&#9889;',   name:'5 Quizzes',         test:function(d){ return d.attempts.length >= 5; } },
-    { id:'avg80',       icon:'&#127942;', name:'80%+ Quiz Avg',     test:function(d){ return d.attempts.length >= 1 && d.quizAvg >= 80; } },
+    { id:'first_quiz',  icon:'&#127919;', name:'First Practice',    test:function(d){ return d.attempts.length >= 1; } },
+    { id:'five_quiz',   icon:'&#9889;',   name:'5 Attempts',        test:function(d){ return d.attempts.length >= 5; } },
+    { id:'avg80',       icon:'&#127942;', name:'80%+ Average',      test:function(d){ return d.attempts.length >= 1 && d.quizAvg >= 80; } },
     { id:'ten_skills',  icon:'&#9989;',   name:'10 Skills',         test:function(d){ return d.skillsDone >= 10; } },
-    { id:'tf_skills',   icon:'&#128170;', name:'25 Skills',         test:function(d){ return d.skillsDone >= 25; } },
-    { id:'passport',    icon:'&#128221;', name:'Passport Complete', test:function(d){ return d.skillsDone >= 40; } },
+    { id:'tf_skills',   icon:'&#128170;', name:'20 Skills',         test:function(d){ return d.skillsDone >= 20; } },
+    { id:'passport',    icon:'&#128221;', name:'Passport Complete', test:function(d){ return d.total > 0 && d.skillsDone >= d.total; } },
     { id:'fdr',         icon:'&#11088;',  name:'First Day Ready',   test:function(d){ return d.fdr >= 85; } }
   ];
+
+  /* ---- WHERE TO GO NEXT ----
+     Quiz category → the hands-on activity that trains the same thing. Used by
+     the hub's "Where to go next" strip and the quiz results page. Every
+     scenario / tray id here exists in data/virtual-office.js. */
+  var NEXT_MAP = {
+    'Dental Terminology':           { tray:'exam',        page:'/skills-lab/abbreviations', pageLabel:'Charting abbreviations' },
+    'Instruments':                  { scenario:'four-handed-transfer', tray:'exam', page:'/skills-lab/instruments', pageLabel:'Instrument library' },
+    'X-Ray Errors':                 { scenario:'bitewing-series' },
+    'Charting':                     { scenario:'perio-charting' },
+    'Scheduling':                   { scenario:'emergency' },
+    'Patient Communication':        { scenario:'new-patient-intake' },
+    'Infection Control':            { scenario:'sterilization' },
+    'Procedure Workflow':           { scenario:'four-handed-transfer', tray:'restorative' },
+    'Restorative/Composite':        { scenario:'composite', tray:'restorative' },
+    'Crown & Bridge':               { scenario:'crown-prep', tray:'crown' },
+    'Root Canal (Endo)':            { tray:'endo' },
+    'Extractions/Oral Surgery':     { scenario:'extraction', tray:'extraction' },
+    'Dental Charting Abbreviations':{ page:'/skills-lab/abbreviations', pageLabel:'Charting abbreviations' }
+  };
 
   var PASSPORT_CATEGORIES = COMPETENCIES.map(function (c) { return c.cat; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
   var QUIZ_CATEGORIES = QUIZ_BANK.map(function (q) { return q.category; }).filter(function (v, i, a) { return a.indexOf(v) === i; });
   // Difficulty levels (ordered easiest → hardest). Every question carries a `difficulty`.
   var QUIZ_DIFFICULTIES = ['beginner', 'intermediate', 'advanced', 'expert'];
+  var AUTO_COMPETENCIES = COMPETENCIES.filter(function (c) { return !c.instructorOnly; });
+  var COMPETENCY_BY_ID = {}; COMPETENCIES.forEach(function (c) { COMPETENCY_BY_ID[c.id] = c; });
 
   window.SL_DATA = {
     COMPETENCIES: COMPETENCIES,
+    COMPETENCY_BY_ID: COMPETENCY_BY_ID,
+    AUTO_COMPETENCIES: AUTO_COMPETENCIES,
     QUIZ_BANK: QUIZ_BANK,
     BADGES: BADGES,
+    NEXT_MAP: NEXT_MAP,
     PASSPORT_CATEGORIES: PASSPORT_CATEGORIES,
     QUIZ_CATEGORIES: QUIZ_CATEGORIES,
     QUIZ_DIFFICULTIES: QUIZ_DIFFICULTIES,
-    TOTAL_SKILLS: COMPETENCIES.length
+    TOTAL_SKILLS: COMPETENCIES.length,          // all 40 (incl. instructor-marked)
+    TOTAL_AUTO: AUTO_COMPETENCIES.length         // the ones a Skills Lab activity can credit
   };
 })();

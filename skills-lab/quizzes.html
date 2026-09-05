@@ -17,16 +17,17 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/skills-lab/access.js"></script>
 <script>
+/* Skills Lab shared Tailwind config — keep identical on every /skills-lab page. */
+window.tailwind = window.tailwind || {};
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
-}}}
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b',600:'#d97706'} }
+}}};
 </script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
   .display{font-family:'Fraunces',serif}
-  .gradient-text{background:linear-gradient(90deg,#0d9488,#0891b2);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .fade-in{animation:fadeIn .28s ease both}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 <script src="/assets/pda-analytics.js" defer></script>
@@ -39,70 +40,73 @@ tailwind.config = { theme: { extend: {
 
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-  <!-- Hero -->
-  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
-    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Practice Quiz Hub</p>
-    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Drill it until it's automatic.</h1>
-    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Realistic dental-assisting questions across every category an office cares about. Unlimited retakes. Every attempt feeds your <span class="font-semibold text-white">First Day Ready Score</span>.</p>
+  <div class="rounded-2xl bg-navy-900 text-white p-6 sm:p-8 shadow-xl" style="background:#0a1226">
+    <p class="text-teal-300 text-sm font-semibold tracking-wide uppercase">Practice Quiz Hub</p>
+    <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Drill it until it&#39;s automatic.</h1>
+    <p class="text-slate-300 mt-2 max-w-2xl text-sm sm:text-base">Realistic dental-assisting questions across every category an office cares about. Unlimited retakes, and a &ldquo;practice the ones you missed&rdquo; run after every set. Every attempt feeds your <span class="font-semibold text-white">First Day Ready Score</span>.</p>
   </div>
 
-  <!-- Live stats strip -->
-  <div class="grid grid-cols-3 gap-3 sm:gap-4 mt-6">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
-      <div id="stBank" class="display text-3xl font-bold text-navy-900">0</div>
-      <div class="text-[11px] text-slate-500 mt-0.5">questions in the bank</div>
-    </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
-      <div id="stTaken" class="display text-3xl font-bold text-teal-700">0</div>
-      <div class="text-[11px] text-slate-500 mt-0.5">quizzes you've taken</div>
-    </div>
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
-      <div id="stAvg" class="display text-3xl font-bold gradient-text">—</div>
-      <div class="text-[11px] text-slate-500 mt-0.5">your quiz average</div>
-    </div>
-  </div>
+  <div id="sl-boot" class="mt-6"></div>
 
-  <!-- Picker -->
-  <div id="picker" class="mt-6">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-      <label for="cat" class="block text-sm font-semibold text-navy-900 mb-2">Choose a category</label>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
-        <div class="flex items-center gap-2">
-          <label for="diff" class="text-sm text-slate-500">Level</label>
-          <select id="diff" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white"></select>
-        </div>
-        <div class="flex items-center gap-2">
-          <label for="len" class="text-sm text-slate-500">Questions</label>
-          <select id="len" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white">
-            <option value="5">5</option><option value="8" selected>8</option><option value="10">10</option><option value="0">All</option>
-          </select>
-        </div>
-        <button id="start" class="rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-700 transition shadow-sm">Start practice</button>
+  <div id="sl-app" class="hidden">
+    <div id="sl-preview" class="mt-5"></div>
+
+    <div class="grid grid-cols-3 gap-3 sm:gap-4 mt-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+        <div id="stBank" class="display text-3xl font-bold text-navy-900">0</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">questions in the bank</div>
       </div>
-      <div id="chips" class="mt-4 flex flex-wrap gap-2"></div>
-      <div id="diffChips" class="mt-3 flex flex-wrap gap-2"></div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+        <div id="stTaken" class="display text-3xl font-bold text-teal-700">0</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">quizzes you&#39;ve taken</div>
+      </div>
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 text-center">
+        <div id="stAvg" class="display text-3xl font-bold text-teal-800">—</div>
+        <div class="text-[11px] text-slate-500 mt-0.5">your quiz average</div>
+      </div>
     </div>
 
-    <!-- Mode cards (drive engagement) -->
-    <div class="grid sm:grid-cols-3 gap-3 mt-4">
-      <button data-quick="__mixed__" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
-        <div class="text-2xl">&#127919;</div><div class="font-bold text-navy-900 mt-1">Mixed practice</div>
-        <div class="text-xs text-slate-500 mt-0.5">A random spread across every category — like a real exam.</div>
-      </button>
-      <button data-quick="X-Ray Errors" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
-        <div class="text-2xl">&#129463;</div><div class="font-bold text-navy-900 mt-1">X-Ray error drill</div>
-        <div class="text-xs text-slate-500 mt-0.5">Cone cut, elongation, foreshortening, overlap — spot them fast.</div>
-      </button>
-      <button data-quick="Patient Communication" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition">
-        <div class="text-2xl">&#128172;</div><div class="font-bold text-navy-900 mt-1">"What would you do?"</div>
-        <div class="text-xs text-slate-500 mt-0.5">Real chairside patient scenarios. Sound like a pro on day one.</div>
-      </button>
+    <div id="picker" class="mt-6">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+        <label for="cat" class="block text-sm font-semibold text-navy-900 mb-2">Choose a category</label>
+        <div class="flex flex-col sm:flex-row gap-3">
+          <select id="cat" class="flex-1 rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white min-h-[44px]"></select>
+          <div class="flex items-center gap-2">
+            <label for="diff" class="text-sm text-slate-500">Level</label>
+            <select id="diff" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white min-h-[44px]"></select>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="len" class="text-sm text-slate-500">Questions</label>
+            <select id="len" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm bg-white min-h-[44px]">
+              <option value="5">5</option><option value="8" selected>8</option><option value="10">10</option><option value="0">All</option>
+            </select>
+          </div>
+          <button type="button" id="start" class="rounded-xl bg-teal-700 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-800 transition shadow-sm min-h-[44px]">Start practice</button>
+        </div>
+        <div id="chips" class="mt-4 flex flex-wrap gap-2"></div>
+        <div id="diffChips" class="mt-3 flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-3 mt-4">
+        <button type="button" data-quick="__mixed__" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition min-h-[44px]">
+          <div class="text-2xl">&#127919;</div><div class="font-bold text-navy-900 mt-1">Mixed practice</div>
+          <div class="text-xs text-slate-500 mt-0.5">A random spread across every category — like a real exam.</div>
+        </button>
+        <button type="button" data-quick="X-Ray Errors" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition min-h-[44px]">
+          <div class="text-2xl">&#129463;</div><div class="font-bold text-navy-900 mt-1">X-Ray error drill</div>
+          <div class="text-xs text-slate-500 mt-0.5">Cone cut, elongation, foreshortening, overlap — spot them fast.</div>
+        </button>
+        <button type="button" data-quick="Patient Communication" class="text-left bg-white rounded-2xl shadow-sm border border-slate-100 p-4 hover:border-teal-300 hover:shadow transition min-h-[44px]">
+          <div class="text-2xl">&#128172;</div><div class="font-bold text-navy-900 mt-1">&ldquo;What would you do?&rdquo;</div>
+          <div class="text-xs text-slate-500 mt-0.5">Real chairside patient scenarios. Sound like a pro on day one.</div>
+        </button>
+      </div>
+
+      <div id="recentQuizzes" class="mt-6"></div>
     </div>
+
+    <div id="quiz" class="mt-6 hidden"></div>
   </div>
-
-  <!-- Engine mounts here -->
-  <div id="quiz" class="mt-6 hidden"></div>
 </main>
 
 <div id="sl-footer"></div>
@@ -115,26 +119,42 @@ tailwind.config = { theme: { extend: {
 <script>
 (function () {
   'use strict';
-  var D = window.SL_DATA, U = window.SL_UI;
-  var PREVIEW = true, PREVIEW_LIMIT = 5;   // non-payers get a short sample until access resolves
+  var D = window.SL_DATA, U = window.SL_UI, esc = U.escapeHTML;
+  var boot = document.getElementById('sl-boot');
+  var app = document.getElementById('sl-app');
   document.getElementById('sl-header').innerHTML = U.headerHTML('quizzes');
-  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+  if (!U.ok || !window.SL_QUIZ || !Array.isArray(D.QUIZ_BANK)) {
+    boot.innerHTML = U.errorCardHTML('The question bank did not load.');
+    document.getElementById('sl-footer').innerHTML = U.footerHTML();
+    return;
+  }
+  boot.innerHTML = U.loadingHTML('Loading the question bank…');
 
+  var PREVIEW = true, PREVIEW_LIMIT = 5;   // non-students get a short sample
   var picker = document.getElementById('picker');
   var quiz = document.getElementById('quiz');
   var catSel = document.getElementById('cat');
   var diffSel = document.getElementById('diff');
   var ALL_DIFF = '__all__';
-  function diffLabel(d) { return d.charAt(0).toUpperCase() + d.slice(1); }   // 'beginner' -> 'Beginner'
+  function diffLabel(d) { return d.charAt(0).toUpperCase() + d.slice(1); }
 
   function refreshStats() {
     var m = U.computeMetrics();
+    var quizzes = m.scored.filter(function (a) { return U.kindLabel(a) === 'Quiz'; });
+    var avg = quizzes.length ? Math.round(quizzes.reduce(function (s, a) { return s + (a.score || 0); }, 0) / quizzes.length) : 0;
     document.getElementById('stBank').textContent = D.QUIZ_BANK.length;
-    document.getElementById('stTaken').textContent = m.attempts.length;
-    document.getElementById('stAvg').textContent = m.attempts.length ? (m.quizAvg + '%') : '—';
+    document.getElementById('stTaken').textContent = quizzes.length;
+    document.getElementById('stAvg').textContent = quizzes.length ? (avg + '%') : '—';
+    var recent = m.attempts.filter(function (a) { return U.kindLabel(a) === 'Quiz'; }).slice(-5).reverse();
+    document.getElementById('recentQuizzes').innerHTML = recent.length
+      ? '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4"><div class="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Your recent quizzes</div><ul class="divide-y divide-slate-100">' +
+        recent.map(function (a) {
+          return '<li class="flex items-center justify-between py-2 gap-3"><div class="min-w-0"><div class="text-sm font-medium text-navy-900 truncate">' + esc(a.category) + (a.remediation ? ' <span class="text-[11px] text-slate-400">practice run</span>' : '') + '</div><div class="text-[11px] text-slate-400">' + esc(U.fmtDate(a.date)) + ' &middot; ' + a.correct + '/' + a.total + '</div></div>' +
+            '<span class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold ' + (a.score >= 80 ? 'bg-teal-100 text-teal-800' : 'bg-amber-100 text-amber-800') + '">' + a.score + '%</span></li>';
+        }).join('') + '</ul></div>'
+      : U.emptyHTML('No quizzes yet. Pick a category above — every set is saved and you can retake it as often as you like.');
   }
 
-  // Category dropdown + chips
   var optMixed = document.createElement('option');
   optMixed.value = '__mixed__'; optMixed.textContent = 'Mixed practice (random)';
   catSel.appendChild(optMixed);
@@ -144,12 +164,11 @@ tailwind.config = { theme: { extend: {
     catSel.appendChild(o);
   });
   document.getElementById('chips').innerHTML =
-    '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-navy-900 text-white hover:opacity-90 transition" data-cat="__mixed__">Mixed practice</button>' +
+    '<button type="button" class="chip text-xs font-semibold px-3 py-2 min-h-[36px] rounded-full bg-navy-900 text-white hover:opacity-90 transition" style="background:#0a1226" data-cat="__mixed__">Mixed practice</button>' +
     D.QUIZ_CATEGORIES.map(function (cat) {
-      return '<button class="chip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-cat="' + U.escapeHTML(cat) + '">' + U.escapeHTML(cat) + '</button>';
+      return '<button type="button" class="chip text-xs font-semibold px-3 py-2 min-h-[36px] rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-cat="' + esc(cat) + '">' + esc(cat) + '</button>';
     }).join('');
 
-  // Difficulty dropdown (All levels + each level, with live counts) + chips
   var optAll = document.createElement('option');
   optAll.value = ALL_DIFF; optAll.textContent = 'All levels';
   diffSel.appendChild(optAll);
@@ -159,26 +178,10 @@ tailwind.config = { theme: { extend: {
     diffSel.appendChild(o);
   });
   document.getElementById('diffChips').innerHTML =
-    '<button class="diffChip text-xs font-semibold px-3 py-1.5 rounded-full bg-teal-600 text-white hover:opacity-90 transition" data-diff="' + ALL_DIFF + '">All levels</button>' +
+    '<button type="button" class="diffChip text-xs font-semibold px-3 py-2 min-h-[36px] rounded-full bg-teal-700 text-white hover:opacity-90 transition" data-diff="' + ALL_DIFF + '">All levels</button>' +
     (D.QUIZ_DIFFICULTIES || []).map(function (d) {
-      return '<button class="diffChip text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-diff="' + U.escapeHTML(d) + '">' + U.escapeHTML(diffLabel(d)) + '</button>';
+      return '<button type="button" class="diffChip text-xs font-semibold px-3 py-2 min-h-[36px] rounded-full bg-slate-100 text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition" data-diff="' + esc(d) + '">' + esc(diffLabel(d)) + '</button>';
     }).join('');
-
-  function applyPreviewUI() {
-    var el = document.getElementById('quizPreviewStrip');
-    if (!PREVIEW) { if (el) el.remove(); return; }
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'quizPreviewStrip';
-      el.className = 'mb-4 flex flex-wrap items-center gap-3 rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4';
-      if (picker && picker.parentNode) picker.parentNode.insertBefore(el, picker);
-    }
-    el.innerHTML =
-      '<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">Preview</span>' +
-      '<span class="text-sm text-amber-900 flex-1 min-w-[220px]">You\'re trying a free ' + PREVIEW_LIMIT + '-question sample. Enroll to unlock all ' + D.QUIZ_BANK.length + ' questions and every category.</span>' +
-      '<a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full">Enroll to unlock &rarr;</a>' +
-      '<a href="/login" class="text-sm font-semibold text-amber-800 hover:text-amber-900 underline">Sign in</a>';
-  }
 
   function backToPicker() {
     quiz.classList.add('hidden'); quiz.innerHTML = '';
@@ -191,16 +194,16 @@ tailwind.config = { theme: { extend: {
     var cat = catValue || catSel.value;
     var diff = diffValue || diffSel.value || ALL_DIFF;
     var len = parseInt(document.getElementById('len').value, 10);
-    if (PREVIEW) len = PREVIEW_LIMIT;   // non-payers: short sample only
+    if (PREVIEW) len = PREVIEW_LIMIT;   // non-students: short sample only
     var pool = (cat === '__mixed__') ? D.QUIZ_BANK.slice() : D.QUIZ_BANK.filter(function (q) { return q.category === cat; });
     if (diff !== ALL_DIFF) {
       var byDiff = pool.filter(function (q) { return q.difficulty === diff; });
-      if (byDiff.length) pool = byDiff;   // only narrow when the level has questions, so a combo never goes empty
+      if (byDiff.length) pool = byDiff;
     }
     pool = U.shuffle(pool);
     if (len > 0) pool = pool.slice(0, len);
     picker.classList.add('hidden');
-    quiz.classList.remove('hidden'); quiz.classList.add('fade-in');
+    quiz.classList.remove('hidden'); quiz.classList.add('sl-fade');
     var label = (cat === '__mixed__' ? 'Mixed practice' : cat) + (diff !== ALL_DIFF ? ' · ' + diffLabel(diff) : '');
     window.SL_QUIZ.run({
       mount: quiz,
@@ -209,14 +212,13 @@ tailwind.config = { theme: { extend: {
       onFinish: function () { refreshStats(); },
       onRetake: backToPicker
     });
-    window.scrollTo({ top: quiz.offsetTop - 80, behavior: 'smooth' });
+    window.scrollTo({ top: Math.max(0, quiz.offsetTop - 80), behavior: 'smooth' });
   }
 
   document.getElementById('start').addEventListener('click', function () { startQuiz(); });
   Array.prototype.slice.call(document.querySelectorAll('.chip')).forEach(function (c) {
     c.addEventListener('click', function () { catSel.value = c.dataset.cat; startQuiz(c.dataset.cat); });
   });
-  // Difficulty chips just sync the dropdown; they don't auto-start (let the student pick a category too).
   Array.prototype.slice.call(document.querySelectorAll('.diffChip')).forEach(function (c) {
     c.addEventListener('click', function () { diffSel.value = c.dataset.diff; });
   });
@@ -224,18 +226,24 @@ tailwind.config = { theme: { extend: {
     b.addEventListener('click', function () { catSel.value = b.dataset.quick; startQuiz(b.dataset.quick); });
   });
 
-  // Resolve paid status, then apply the preview limit + handle deep links.
   var params = new URLSearchParams(location.search);
   var qp = params.get('cat');
   var dp = params.get('diff');
   if (dp && (D.QUIZ_DIFFICULTIES || []).indexOf(dp) !== -1) diffSel.value = dp;
-  refreshStats();
-  applyPreviewUI();
-  (window.PDA_ACCESS ? window.PDA_ACCESS.get() : Promise.resolve('preview')).then(function (access) {
+
+  U.resolveAccess().then(function (access) {
     PREVIEW = (access !== 'student');
-    applyPreviewUI();
+    document.getElementById('sl-header').innerHTML = U.headerHTML('quizzes', access);
+    document.getElementById('sl-footer').innerHTML = U.footerHTML(access);
+    document.getElementById('sl-preview').innerHTML = PREVIEW
+      ? U.previewStripHTML('Free sample: a ' + PREVIEW_LIMIT + '-question set from any category. Enroll to unlock full-length sets across all ' + D.QUIZ_BANK.length + ' questions and save your scores to your account.')
+      : '';
+    boot.innerHTML = '';
+    app.classList.remove('hidden');
+    refreshStats();
     if (qp && (qp === '__mixed__' || D.QUIZ_CATEGORIES.indexOf(qp) !== -1)) { catSel.value = qp; startQuiz(qp, diffSel.value); }
   });
+  window.addEventListener('sl-sync:hydrated', function () { if (quiz.classList.contains('hidden')) refreshStats(); });
 })();
 </script>
 </body>

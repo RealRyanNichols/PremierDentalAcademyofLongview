@@ -2,9 +2,9 @@
    SKILLS LAB · SCENARIO PLAYER  (window.SL_SCENARIO)
    ----------------------------------------------------------------------------
    The single, reusable engine that walks a student through a dialogue-driven
-   scenario (Dr. Williams / the patient ask questions; the student answers).
-   Used by BOTH /skills-lab/procedures and the 3D Virtual Office, reading the
-   same content from window.SL_VO_DATA.
+   scenario (Dr. Patel / the patient ask questions; the student answers).
+   Used by /skills-lab/procedures, /skills-lab/day-shift and the Virtual
+   Office, reading the same content from window.SL_VO_DATA.
 
    Step types: 'choose' (single), 'multi' (select-all), 'order' (sequence),
                'identify' (pick the right one), 'instrument' (pick the right
@@ -12,13 +12,27 @@
                SL_VO_DATA.INSTRUMENTS; answer is an index or index array).
 
    *** Options are SHUFFLED on every render *** so the correct answer is never
-   always in the same position. Completing a scenario credits its competencies
-   and saves an attempt — feeding the dashboard's First Day Ready Score.
+   always in the same position.
+
+   Credit rule: a scenario credits its competencies ONLY at PASS (80%) or
+   better. Below that the skills are marked "practicing" and the student is
+   told to run it again. Every step is timed; the results show an
+   "anticipation" score (right on the first try AND inside the step's target
+   time) and the missed steps, with a "Practice these again" run that replays
+   only those steps (saved as a remediation attempt — no credit, not averaged).
+
+   Saved attempt: { id, kind:'scenario', scenarioId, date, category, score,
+                    correct, total, byCategory, missed:[stepIndex],
+                    anticipation, avgSec, steps:[{i,correct,sec}], credited,
+                    remediation? }
    ============================================================================ */
 (function () {
   'use strict';
   var U = window.SL_UI, S = window.SL_STORE, esc = U.escapeHTML;
   var DONE_KEY = 'vo_scenarios_done';
+  var PASS = 80;
+  // target seconds per step type for the anticipation score
+  var TARGET_SEC = { choose: 25, multi: 40, order: 45, identify: 20, instrument: 20 };
 
   // ---- one-time styles (both pages load Tailwind for the rest) ----
   function injectStyles() {
@@ -216,9 +230,39 @@
     return '<span class="art">' + fb + '</span>';
   }
 
-  function doneMap() { return S.get(DONE_KEY, {}); }
+  function doneMap() { var d = S.get(DONE_KEY, {}); return d && typeof d === 'object' ? d : {}; }
   function isDone(id) { return !!doneMap()[id]; }
   function markDone(id) { var d = doneMap(); d[id] = new Date().toISOString(); S.set(DONE_KEY, d); }
+  // Best scored (non-remediation) run of a scenario, or null if never run.
+  function bestScore(id) {
+    var best = null;
+    S.getAttempts().forEach(function (a) {
+      if (!a || a.scenarioId !== id || a.remediation || typeof a.score !== 'number') return;
+      if (best === null || a.score > best) best = a.score;
+    });
+    return best;
+  }
+  function speedFactor(type, sec) {
+    var t = TARGET_SEC[type] || 30;
+    if (sec <= t) return 1;
+    if (sec <= 2 * t) return 0.6;
+    return 0.3;
+  }
+  // Human-readable correct answer for a step (used in the missed-steps review).
+  function correctAnswerText(step) {
+    var D2 = window.SL_VO_DATA;
+    function label(oi) {
+      var o = step.options[oi];
+      if (step.type === 'instrument' || step.type === 'identify') {
+        var it = D2 && D2.INSTRUMENT_BY_ID && D2.INSTRUMENT_BY_ID[o];
+        return it ? it.name : String(o);
+      }
+      return String(o);
+    }
+    var ans = Array.isArray(step.answer) ? step.answer : [step.answer];
+    if (step.type === 'order') return ans.map(function (oi, k) { return (k + 1) + '. ' + label(oi); }).join('  ');
+    return ans.map(label).join(', ');
+  }
 
   /* ---- build a shuffled view of a step's options (correct ≠ always first) ---- */
   function prepareView(step) {
@@ -252,8 +296,16 @@
     ensureArtModules();
     var D = window.SL_VO_DATA;
     var mount = opts.mount, scenario = opts.scenario;
+    var remediation = !!opts.remediation;
+    if (!mount) return;
+    if (!D || !scenario || !Array.isArray(scenario.steps) || !scenario.steps.length) {
+      mount.innerHTML = U.errorCardHTML('This scenario has no steps to play.');
+      return;
+    }
     var total = scenario.steps.length;
     var idx = 0, correctCount = 0, byCat = {};
+    var stepLog = [];                                    // { i, correct, sec, type, category }
+    var stepStart = Date.now();
 
     function render() {
       var step = scenario.steps[idx];
@@ -261,6 +313,7 @@
       var view = prepareView(step);
       var answered = false;
       var sel = [];                                      // view indices (choose/identify/multi)
+      stepStart = Date.now();
       if (typeof opts.onStep === 'function') opts.onStep({ step: step, speaker: speaker, idx: idx, total: total });
 
       var isInstrument = step.type === 'instrument';
@@ -277,8 +330,8 @@
       mount.innerHTML =
         '<div class="sl-fade">' +
         '<div class="flex items-center justify-between gap-3">' +
-        (opts.onExit ? '<button id="slExit" class="text-sm text-slate-500 hover:text-slate-700 font-semibold">&larr; ' + esc(opts.exitLabel || 'Back') + '</button>' : '<span></span>') +
-        '<div class="text-xs text-slate-500">Step ' + (idx + 1) + ' of ' + total + '</div></div>' +
+        (opts.onExit ? '<button type="button" id="slExit" class="text-sm text-slate-500 hover:text-slate-700 font-semibold min-h-[44px]">&larr; ' + esc(opts.exitLabel || 'Back') + '</button>' : '<span></span>') +
+        '<div class="text-xs text-slate-500 flex items-center gap-2">' + (remediation ? '<span data-sl-remediation class="text-[10px] font-bold uppercase tracking-wide text-teal-800 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded-full">Practice run &middot; missed steps</span>' : '') + '<span>Step ' + (idx + 1) + ' of ' + total + '</span></div></div>' +
         '<div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden mt-2"><div class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all" style="width:' + pct + '%"></div></div>' +
         '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 sm:p-6 mt-4">' +
         speakerBlockHTML(step, speaker, hintHTML) +
@@ -436,11 +489,13 @@
         var cat = step.category || scenario.title;
         byCat[cat] = byCat[cat] || { correct: 0, total: 0 };
         byCat[cat].total++; if (correct) byCat[cat].correct++;
+        var sec = Math.max(0, Math.round((Date.now() - stepStart) / 100) / 10);
+        stepLog.push({ i: idx, correct: !!correct, sec: sec, type: step.type, category: cat });
 
         var fb = mount.querySelector('#slFb');
         fb.classList.remove('hidden');
         fb.className = 'mt-4 rounded-xl p-4 text-sm border ' + (correct ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-amber-50 border-amber-200 text-amber-900');
-        fb.innerHTML = '<div class="font-bold mb-1">' + (correct ? '✓ Exactly right' : 'Here’s the right answer') + '</div>' + esc(step.explanation);
+        fb.innerHTML = '<div class="font-bold mb-1 flex items-center justify-between gap-3"><span>' + (correct ? '✓ Exactly right' : 'Here’s the right answer') + '</span><span class="text-[11px] font-semibold opacity-70">⏱ ' + esc(U.fmtSec(sec)) + '</span></div>' + esc(step.explanation);
 
         checkBtn.classList.add('hidden');
         var nextBtn = mount.querySelector('#slNext');
@@ -456,22 +511,62 @@
     function finish() {
       artRepaint = null;
       var score = Math.round(correctCount / total * 100);
-      (scenario.competencies || []).forEach(function (cid) {
-        S.setCompetency(cid, 'completed', { note: 'Practiced in Virtual Office: ' + scenario.title });
-      });
-      S.saveAttempt({
-        date: U.todayISO(), category: 'Virtual Office — ' + scenario.title,
-        score: score, correct: correctCount, total: total, byCategory: byCat
-      });
-      markDone(scenario.id);
+      var passed = score >= PASS;
+      var credited = passed && !remediation && (scenario.competencies || []).length > 0;
+      var missed = stepLog.filter(function (l) { return !l.correct; }).map(function (l) { return l.i; });
+      var totalSec = stepLog.reduce(function (s, l) { return s + l.sec; }, 0);
+      var avgSec = stepLog.length ? Math.round(totalSec / stepLog.length * 10) / 10 : 0;
+      var anticipation = Math.round(100 * stepLog.reduce(function (s, l) { return s + (l.correct ? speedFactor(l.type, l.sec) : 0); }, 0) / total);
+      var fastRight = stepLog.filter(function (l) { return l.correct && l.sec <= (TARGET_SEC[l.type] || 30); }).length;
 
-      var recap = scenario.steps.map(function (s) {
-        return '<li class="flex gap-2 items-start"><span class="text-emerald-600 mt-0.5">✓</span><span>' + esc(s.prompt) + '</span></li>';
+      // Credit rule: skills are completed only at PASS or better. A lower score
+      // still counts as practice (never demotes a completed skill).
+      if (!remediation) {
+        (scenario.competencies || []).forEach(function (cid) {
+          if (credited) S.upgradeCompetency(cid, 'completed', { note: 'Scored ' + score + '% on ' + scenario.title + ' in the Skills Lab' });
+          else S.upgradeCompetency(cid, 'practicing', { note: 'Practiced in ' + scenario.title + ' (' + score + '%)' });
+        });
+      }
+      var attempt = {
+        id: S.newId(), kind: 'scenario', scenarioId: scenario.id,
+        date: U.todayISO(), category: 'Virtual Office — ' + scenario.title,
+        score: score, correct: correctCount, total: total, byCategory: byCat,
+        missed: missed, anticipation: anticipation, avgSec: avgSec, credited: credited,
+        steps: stepLog.map(function (l) { return { i: l.i, correct: l.correct, sec: l.sec }; })
+      };
+      if (remediation) attempt.remediation = true;
+      S.saveAttempt(attempt);
+      if (credited) markDone(scenario.id);
+
+      var recap = scenario.steps.map(function (s, i) {
+        var ok = missed.indexOf(i) < 0;
+        return '<li class="flex gap-2 items-start"><span class="' + (ok ? 'text-emerald-600' : 'text-rose-500') + ' mt-0.5">' + (ok ? '✓' : '✕') + '</span><span>' + esc(s.prompt) + '</span></li>';
       }).join('');
       var skillNames = (scenario.competencies || []).map(function (cid) {
         var c = (window.SL_DATA.COMPETENCIES || []).find(function (x) { return x.id === cid; });
         return c ? c.name : cid;
       });
+      var missedSteps = missed.map(function (i) { return scenario.steps[i]; });
+      var missedHTML = missedSteps.map(function (s, k) {
+        return '<li class="rounded-xl border border-rose-100 bg-rose-50/40 p-3">' +
+          '<div class="text-sm font-semibold text-navy-900">' + esc(s.prompt) + '</div>' +
+          '<div class="text-xs text-slate-600 mt-1"><span class="text-slate-500">Right answer:</span> <span class="text-teal-700 font-medium">' + esc(correctAnswerText(s)) + '</span></div>' +
+          '<div class="text-xs text-slate-600 mt-1">' + esc(s.explanation || '') + '</div></li>';
+      }).join('');
+      var creditHTML;
+      if (remediation) {
+        creditHTML = '<div class="text-xs font-bold uppercase tracking-wide text-slate-500">Practice run</div>' +
+          '<p class="text-sm text-navy-900 mt-2">You replayed ' + total + ' missed step' + (total === 1 ? '' : 's') + ' and got ' + correctCount + ' right. Practice runs are saved to your history but do not change your score or credit skills — run the full procedure again to earn credit.</p>';
+      } else if (credited) {
+        creditHTML = '<div class="text-xs font-bold uppercase tracking-wide text-emerald-700">Skills credited to your passport</div><ul class="mt-2 space-y-1.5 text-sm text-navy-900">' +
+          skillNames.map(function (n) { return '<li class="flex gap-2 items-start"><span class="text-emerald-600 mt-0.5">+</span><span>' + esc(n) + '</span></li>'; }).join('') +
+          '</ul><p class="text-[11px] text-slate-400 mt-3">These count toward your First Day Ready Score.</p>';
+      } else {
+        creditHTML = '<div class="text-xs font-bold uppercase tracking-wide text-amber-700">Try again to earn credit</div>' +
+          '<p class="text-sm text-navy-900 mt-2">You need <strong>' + PASS + '% or better</strong> to credit these skills. This run scored ' + score + '%, so they are marked <em>practicing</em> for now:</p>' +
+          '<ul class="mt-2 space-y-1.5 text-sm text-slate-700">' +
+          skillNames.map(function (n) { return '<li class="flex gap-2 items-start"><span class="text-amber-500 mt-0.5">&bull;</span><span>' + esc(n) + '</span></li>'; }).join('') + '</ul>';
+      }
       // Hero: the patient you just cared for (illustrated bust), else a drawn
       // check medallion — keeps the finish screen in the illustrated language.
       var heroHTML;
@@ -483,32 +578,55 @@
         heroHTML = '<div style="width:66px;height:66px;border-radius:9999px;background:#fff;margin:0 auto;display:grid;place-items:center;box-shadow:0 6px 18px rgba(15,23,42,.28)">' +
           '<svg viewBox="0 0 48 48" width="34" height="34" aria-hidden="true" focusable="false"><path d="M10 25l10 10 18-21" fill="none" stroke="#0d9488" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>';
       }
+      var heroCls = passed ? 'bg-teal-700' : 'bg-navy-900';
+      var heroStyle = passed ? 'background:#0f766e' : 'background:#0a1226';
       mount.innerHTML =
-        '<div class="sl-fade">' +
-        '<div class="rounded-2xl bg-gradient-to-br from-teal-700 to-cyan-700 text-white p-6 sm:p-8 shadow-xl text-center">' +
+        '<div class="sl-fade" data-sl-results data-score="' + score + '" data-credited="' + (credited ? '1' : '0') + '">' +
+        '<div class="rounded-2xl ' + heroCls + ' text-white p-6 sm:p-8 shadow-xl text-center" style="' + heroStyle + '">' +
         heroHTML +
-        '<h2 class="display text-2xl sm:text-3xl font-bold mt-2">Visit complete!</h2>' +
-        '<p class="text-teal-100 mt-1">You scored <strong>' + score + '%</strong> on ' + esc(scenario.title.toLowerCase()) + '.</p>' +
+        '<h2 class="display text-2xl sm:text-3xl font-bold mt-2">' + (remediation ? 'Practice run complete' : (passed ? 'Visit complete!' : 'Visit finished — not quite there yet')) + '</h2>' +
+        '<p class="text-teal-100 mt-1">You scored <strong data-sl-score>' + score + '%</strong> on ' + esc(scenario.title.toLowerCase()) + '.</p>' +
+        '<div class="mt-4 grid grid-cols-3 gap-2 max-w-md mx-auto text-left">' +
+        '<div class="rounded-xl bg-white/10 p-3"><div class="text-[10px] uppercase tracking-wide text-teal-100">Anticipation</div><div class="display text-2xl font-bold" data-sl-anticipation>' + anticipation + '</div><div class="text-[10px] text-teal-100">right &amp; quick</div></div>' +
+        '<div class="rounded-xl bg-white/10 p-3"><div class="text-[10px] uppercase tracking-wide text-teal-100">First try</div><div class="display text-2xl font-bold">' + correctCount + '<span class="text-sm font-semibold">/' + total + '</span></div><div class="text-[10px] text-teal-100">' + fastRight + ' inside target time</div></div>' +
+        '<div class="rounded-xl bg-white/10 p-3"><div class="text-[10px] uppercase tracking-wide text-teal-100">Per step</div><div class="display text-2xl font-bold">' + esc(U.fmtSec(avgSec)) + '</div><div class="text-[10px] text-teal-100">' + esc(U.fmtSec(totalSec)) + ' total</div></div>' +
+        '</div>' +
+        '<p class="text-[11px] text-teal-100 mt-3 max-w-md mx-auto">Anticipation rewards steps you got right on the first try and inside the target time for that kind of step — the habit dentists notice most.</p>' +
         '</div>' +
         '<div class="grid sm:grid-cols-2 gap-4 mt-5">' +
         '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><div class="text-xs font-bold uppercase tracking-wide text-teal-700">What you handled</div><ul class="mt-2 space-y-1.5 text-sm text-navy-900">' + recap + '</ul></div>' +
-        '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5"><div class="text-xs font-bold uppercase tracking-wide text-emerald-700">Skills credited to your passport</div><ul class="mt-2 space-y-1.5 text-sm text-navy-900">' +
-        skillNames.map(function (n) { return '<li class="flex gap-2 items-start"><span class="text-emerald-600 mt-0.5">+</span><span>' + esc(n) + '</span></li>'; }).join('') +
-        '</ul><p class="text-[11px] text-slate-400 mt-3">These count toward your First Day Ready Score.</p></div></div>' +
+        '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5" data-sl-credit>' + creditHTML + '</div></div>' +
+        (missedSteps.length ? '<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mt-4" data-sl-missed><div class="flex flex-wrap items-center justify-between gap-3"><div class="text-xs font-bold uppercase tracking-wide text-rose-600">Steps you missed (' + missedSteps.length + ')</div>' +
+          '<button type="button" id="slRemediate" class="rounded-xl bg-teal-700 text-white font-semibold px-4 py-2 text-sm hover:bg-teal-800 transition min-h-[44px]">Practice these again</button></div>' +
+          '<ul class="mt-3 space-y-2">' + missedHTML + '</ul></div>' : '') +
         '<div id="slFinishCtas" class="mt-6 flex flex-wrap items-center gap-3"></div></div>';
 
       var ctas = mount.querySelector('#slFinishCtas');
       var again = document.createElement('button');
-      again.className = 'rounded-xl bg-white border border-slate-200 text-navy-900 font-semibold px-5 py-2.5 text-sm hover:border-teal-300 transition';
-      again.textContent = 'Run it again';
-      again.addEventListener('click', function () { idx = 0; correctCount = 0; byCat = {}; render(); });
+      again.type = 'button';
+      again.className = 'rounded-xl bg-white border border-slate-200 text-navy-900 font-semibold px-5 py-2.5 text-sm hover:border-teal-300 transition min-h-[44px]';
+      again.textContent = remediation ? 'Run the full procedure' : (passed ? 'Run it again' : 'Run it again for credit');
+      again.addEventListener('click', function () {
+        if (remediation && typeof opts.onRunFull === 'function') { opts.onRunFull(); return; }
+        idx = 0; correctCount = 0; byCat = {}; stepLog = []; render();
+        window.scrollTo({ top: Math.max(0, mount.offsetTop - 80), behavior: 'smooth' });
+      });
       ctas.appendChild(again);
 
-      if (typeof opts.onFinish === 'function') opts.onFinish({ scenarioId: scenario.id, score: score, ctas: ctas });
+      var rem = mount.querySelector('#slRemediate');
+      if (rem) rem.addEventListener('click', function () {
+        var sub = { id: scenario.id, icon: scenario.icon, title: scenario.title, level: scenario.level, room: scenario.room,
+          patientId: scenario.patientId, blurb: scenario.blurb, competencies: [], steps: missedSteps.slice() };
+        run({ mount: mount, scenario: sub, remediation: true, onStep: opts.onStep, onExit: opts.onExit, exitLabel: opts.exitLabel,
+          onFinish: opts.onFinish, onRunFull: function () { run(opts); } });
+        window.scrollTo({ top: Math.max(0, mount.offsetTop - 80), behavior: 'smooth' });
+      });
+
+      if (typeof opts.onFinish === 'function') opts.onFinish({ scenarioId: scenario.id, score: score, credited: credited, remediation: remediation, anticipation: anticipation, ctas: ctas });
     }
 
     render();
   }
 
-  window.SL_SCENARIO = { run: run, doneMap: doneMap, isDone: isDone, avatarHTML: avatarHTML, thumbHTML: thumbHTML, portraitHTML: portraitHTML };
+  window.SL_SCENARIO = { run: run, doneMap: doneMap, isDone: isDone, bestScore: bestScore, PASS: PASS, avatarHTML: avatarHTML, thumbHTML: thumbHTML, portraitHTML: portraitHTML };
 })();

@@ -21,10 +21,12 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/skills-lab/access.js"></script>
 <script>
+/* Skills Lab shared Tailwind config — keep identical on every /skills-lab page. */
+window.tailwind = window.tailwind || {};
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
-}}}
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b',600:'#d97706'} }
+}}};
 </script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
@@ -57,10 +59,10 @@ tailwind.config = { theme: { extend: {
   .legend-chip .num{display:grid;place-items:center;width:20px;height:20px;border-radius:9999px;background:#0d9488;color:#fff;font-size:11px;font-weight:800}
   .legend-chip.done .num{background:#16a34a}
   .legend-chip.done{border-color:#bbf7d0;background:#f0fdf4}
-  .legend-chip.locked .num{background:#f59e0b}
+  .legend-chip.locked .num{background:#64748b}
   .legend-chip.locked::after{content:'🔒';font-size:.72rem;line-height:1}
-  .hot.locked{background:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.55)}
-  .hot.locked::after{border-color:#fde68a}
+  .hot.locked{background:#64748b;box-shadow:0 4px 14px rgba(100,116,139,.55)}
+  .hot.locked::after{border-color:#cbd5e1}
   .hot.hot--hover{transform:translate(-50%,-50%) scale(1.22)}
   @media (max-width:640px){
     .hot{width:26px;height:26px;font-size:11px;border-width:2px}
@@ -89,22 +91,22 @@ tailwind.config = { theme: { extend: {
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
   <!-- Hero -->
-  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
-    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">At the chair · Virtual Dental Office</p>
+  <div class="rounded-2xl bg-navy-900 text-white p-6 sm:p-8 shadow-xl" style="background:#0a1226">
+    <p class="text-teal-300 text-sm font-semibold tracking-wide uppercase">At the chair · Virtual Dental Office</p>
     <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Step into the operatory.</h1>
-    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">A patient is in the chair and the room is set — just like your first day. <strong class="text-white">Tap any glowing marker</strong> to learn every station, then take a <strong class="text-white">guided visit with Dr. Williams</strong> and assist chairside, or set up your tray.</p>
+    <p class="text-slate-300 mt-2 max-w-2xl text-sm sm:text-base">A patient is in the chair and the room is set — just like your first day. <strong class="text-white">Tap any glowing marker</strong> to learn every station, then take a <strong class="text-white">guided visit with Dr. Patel</strong> and assist chairside, or set up your tray.</p>
   </div>
 
   <!-- Preview gate strip (filled by JS when the visitor is not a signed-in student) -->
   <div id="voPreviewStrip"></div>
 
-  <!-- Guided visit with Dr. Williams -->
-  <div class="bg-gradient-to-br from-teal-700 to-cyan-700 text-white rounded-2xl shadow p-5 sm:p-6 mt-6">
+  <!-- Guided visit with Dr. Patel -->
+  <div class="bg-teal-700 text-white rounded-2xl shadow p-5 sm:p-6 mt-6" style="background:#0f766e">
     <div class="flex items-start gap-4 flex-wrap">
       <div class="text-4xl shrink-0">🩺</div>
       <div class="flex-1 min-w-[14rem]">
         <h2 class="display text-xl sm:text-2xl font-bold">Take a guided visit</h2>
-        <p class="text-teal-50 text-sm mt-1 max-w-xl">Dr. Williams walks you through a real appointment right here in the operatory — and the patient talks to you. Answer each question to move the visit forward and credit the skills to your passport.</p>
+        <p class="text-teal-50 text-sm mt-1 max-w-xl">Dr. Patel walks you through a real appointment right here in the operatory — and the patient talks to you. Answer each question to move the visit forward and credit the skills to your passport.</p>
       </div>
       <button id="startVisit" class="rounded-xl bg-white text-teal-800 font-bold px-5 py-2.5 text-sm hover:bg-teal-50 transition shrink-0">Choose a visit →</button>
     </div>
@@ -172,6 +174,11 @@ tailwind.config = { theme: { extend: {
   var U = window.SL_UI, S = window.SL_STORE, esc = U.escapeHTML;
   document.getElementById('sl-header').innerHTML = U.headerHTML('office');
   document.getElementById('sl-footer').innerHTML = U.footerHTML();
+  if (!U.ok) {
+    document.getElementById('stationPanel').classList.remove('hidden');
+    document.getElementById('stationPanel').innerHTML = U.errorCardHTML('The Skills Lab data file did not load.');
+    return;
+  }
 
   // ===== Access gate: signed-in = student (full) · everyone else = preview =====
   // Same proven session check the chairside/practice tools use: ANY signed-in
@@ -180,32 +187,18 @@ tailwind.config = { theme: { extend: {
   var SUPA_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
   var FREE = { dentist: true, patient: true };   // stations anyone can open in preview
   var ACCESS = 'preview';                         // 'preview' | 'student'
+  var RESOLVED = false;                           // don't paint the preview strip until access is known
   function isStudent() { return ACCESS === 'student'; }
   function isLocked(id) { return ACCESS !== 'student' && !FREE[id]; }
 
   function renderPreviewStrip() {
     var el = document.getElementById('voPreviewStrip');
     if (!el) return;
-    if (ACCESS === 'student') { el.innerHTML = ''; return; }
-    el.innerHTML =
-      '<div class="mt-4 flex flex-wrap items-center gap-3 rounded-xl bg-amber-50 border border-amber-200 p-3 sm:p-4">' +
-      '<span class="bg-amber-400 text-slate-900 text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded">Preview</span>' +
-      '<span class="text-sm text-amber-900 flex-1 min-w-[220px]">You\'re exploring a free preview — look around the operatory and open 2 stations. <strong>Enroll or sign in</strong> to unlock all 9 stations, the guided visits with Dr. Williams, and the tray challenge.</span>' +
-      '<a href="/enroll" class="bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-full">Enroll to unlock &rarr;</a>' +
-      '<a href="/login" class="text-sm font-semibold text-amber-800 hover:text-amber-900 underline">Sign in</a>' +
-      '</div>';
+    if (!RESOLVED || ACCESS === 'student') { el.innerHTML = ''; return; }
+    el.innerHTML = '<div class="mt-4">' + U.previewStripHTML('Free preview: look around the operatory and open 2 stations. Enroll to unlock all 9 stations, the guided visits with Dr. Patel, and the tray challenge.') + '</div>';
   }
 
-  function enrollCardHTML(title, body) {
-    return '<div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-5 sm:p-6 text-center">' +
-      '<div class="text-4xl">&#128274;</div>' +
-      '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-1">' + esc(title) + '</h2>' +
-      '<p class="text-slate-600 mt-1 text-sm max-w-md mx-auto">' + esc(body) + '</p>' +
-      '<div class="mt-4 flex flex-wrap items-center justify-center gap-3">' +
-      '<a href="/enroll" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 text-sm">Enroll to unlock &rarr;</a>' +
-      '<a href="/login" class="rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90">I\'m a student &mdash; sign in</a>' +
-      '</div></div>';
-  }
+  function enrollCardHTML(title, body) { return U.enrollCardHTML(title, body); }
 
   function openLocked(id) {
     var s = STATIONS[id] || {};
@@ -228,8 +221,11 @@ tailwind.config = { theme: { extend: {
   function voBoot() {
     applyAccess();
     // Paid (enrolled student / admin) = full; everyone else = preview.
-    (window.PDA_ACCESS ? window.PDA_ACCESS.get() : Promise.resolve('preview')).then(function (access) {
+    U.resolveAccess().then(function (access) {
       ACCESS = access;
+      RESOLVED = true;
+      document.getElementById('sl-header').innerHTML = U.headerHTML('office', access);
+      document.getElementById('sl-footer').innerHTML = U.footerHTML(access);
       applyAccess();
     });
   }
@@ -397,7 +393,7 @@ tailwind.config = { theme: { extend: {
 })();
 </script>
 
-<!-- Guided-visit controller: Dr. Williams + patient run a scenario in-scene -->
+<!-- Guided-visit controller: Dr. Patel + patient run a scenario in-scene -->
 <script>
 (function () {
   'use strict';
@@ -444,15 +440,8 @@ tailwind.config = { theme: { extend: {
     pickerWrap.classList.add('hidden');
     startBtn.textContent = 'Choose a visit →';
     mount.classList.remove('hidden');
-    mount.innerHTML =
-      '<div class="bg-white rounded-2xl shadow-sm border border-amber-200 p-6 text-center">' +
-      '<div class="text-4xl">🔒</div>' +
-      '<h2 class="display text-xl sm:text-2xl font-bold text-navy-900 mt-1">Guided visits are for enrolled students</h2>' +
-      '<p class="text-slate-600 mt-1 text-sm max-w-md mx-auto">Dr. Williams’ guided appointments unlock when you enroll. Explore the operatory free, then enroll to take the full visit and credit the skills to your passport.</p>' +
-      '<div class="mt-4 flex flex-wrap items-center justify-center gap-3">' +
-      '<a href="/enroll" class="rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-semibold px-5 py-2.5 text-sm">Enroll to unlock →</a>' +
-      '<a href="/login" class="rounded-xl bg-navy-900 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90">Sign in</a>' +
-      '</div></div>';
+    mount.innerHTML = U.enrollCardHTML('Guided visits are for enrolled students',
+      'Dr. Patel\'s guided appointments unlock when you enroll. Explore the operatory free, then enroll to take the full visit and credit the skills to your passport.');
     mount.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 

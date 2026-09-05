@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Procedure Simulations — Skills Lab | Premier Dental Academy</title>
-<meta name="description" content="Walk a real dental appointment from start to finish. Morning operatory setup, crown prep, composite filling, simple extraction, sterilization and an emergency visit — Dr. Williams asks, you make the next right call at every step.">
+<meta name="description" content="Walk a real dental appointment from start to finish. Morning operatory setup, crown prep, composite filling, simple extraction, sterilization and an emergency visit — Dr. Patel asks, you make the next right call at every step.">
 <meta name="robots" content="index,follow">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png">
@@ -14,15 +14,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/skills-lab/access.js"></script>
 <script>
+/* Skills Lab shared Tailwind config — keep identical on every /skills-lab page. */
+window.tailwind = window.tailwind || {};
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
-}}}
+  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b',600:'#d97706'} }
+}}};
 </script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
   .display{font-family:'Fraunces',serif}
+  .sl-fade{animation:slFade .25s ease both}@keyframes slFade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 </style>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 <script src="/assets/pda-analytics.js" defer></script>
@@ -35,26 +40,32 @@ tailwind.config = { theme: { extend: {
 
 <main class="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
-  <div class="rounded-2xl bg-gradient-to-br from-navy-900 to-teal-800 text-white p-6 sm:p-8 shadow-xl">
-    <p class="text-teal-200 text-sm font-semibold tracking-wide uppercase">Skills Lab · Procedure Simulations</p>
+  <div class="rounded-2xl bg-navy-900 text-white p-6 sm:p-8 shadow-xl" style="background:#0a1226">
+    <p class="text-teal-300 text-sm font-semibold tracking-wide uppercase">Skills Lab · Procedure Simulations</p>
     <h1 class="display text-2xl sm:text-4xl font-bold mt-1">Run a real appointment, start to finish.</h1>
-    <p class="text-slate-200 mt-2 max-w-2xl text-sm sm:text-base">Dr. Williams walks you through each visit and the patient talks to you, too. Make the next right call at every step — answers are shuffled every time. Finish one and the skills you practiced count toward your <strong class="text-white">First Day Ready Score</strong>.</p>
+    <p class="text-slate-300 mt-2 max-w-2xl text-sm sm:text-base">Dr. Patel walks you through each visit and the patient talks to you, too. Make the next right call at every step — answers are shuffled every time and every step is timed. Score <strong class="text-white">80% or better</strong> and the skills you practiced are credited to your passport.</p>
   </div>
 
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6">
-    <div class="flex items-center justify-between mb-2">
-      <div class="font-semibold text-navy-900 text-sm">Procedures completed</div>
-      <div class="text-sm text-slate-500"><span id="procDone">0</span> of <span id="procTotal">0</span></div>
+  <div id="sl-boot" class="mt-6"></div>
+
+  <div id="sl-app" class="hidden">
+    <div id="sl-preview" class="mt-5"></div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 mt-6">
+      <div class="flex items-center justify-between mb-2">
+        <div class="font-semibold text-navy-900 text-sm">Procedures passed</div>
+        <div class="text-sm text-slate-500"><span id="procDone">0</span> of <span id="procTotal">0</span></div>
+      </div>
+      <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="procBar" class="h-full bg-teal-700 transition-all" style="width:0%"></div></div>
     </div>
-    <div class="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden"><div id="procBar" class="h-full bg-gradient-to-r from-teal-500 to-cyan-500 transition-all" style="width:0%"></div></div>
-  </div>
 
-  <div id="picker">
-    <h2 class="display text-xl font-bold text-navy-900 mt-8 mb-3">Choose a procedure</h2>
-    <div id="cards" class="grid sm:grid-cols-2 gap-4"></div>
-  </div>
+    <div id="picker">
+      <h2 class="display text-xl font-bold text-navy-900 mt-8 mb-3">Choose a procedure</h2>
+      <div id="cards" class="grid sm:grid-cols-2 gap-4"></div>
+    </div>
 
-  <div id="runner" class="hidden"></div>
+    <div id="runner" class="hidden mt-6"></div>
+  </div>
 </main>
 
 <div id="sl-footer"></div>
@@ -72,10 +83,20 @@ tailwind.config = { theme: { extend: {
 (function () {
   'use strict';
   var U = window.SL_UI, esc = U.escapeHTML, VO = window.SL_VO_DATA, SC = window.SL_SCENARIO;
+  var boot = document.getElementById('sl-boot');
+  var app = document.getElementById('sl-app');
   document.getElementById('sl-header').innerHTML = U.headerHTML('procedures');
-  document.getElementById('sl-footer').innerHTML = U.footerHTML();
+  if (!U.ok || !VO || !SC || !Array.isArray(VO.SCENARIOS)) {
+    boot.innerHTML = U.errorCardHTML('The procedure library did not load.');
+    document.getElementById('sl-footer').innerHTML = U.footerHTML();
+    return;
+  }
+  boot.innerHTML = U.loadingHTML('Loading procedures…');
 
   var SCENARIOS = VO.SCENARIOS;
+  var ACCESS = 'preview';
+  var SAMPLE = SCENARIOS.length ? [SCENARIOS[0].id] : [];   // what a preview visitor can run
+  function isLocked(id) { return ACCESS !== 'student' && SAMPLE.indexOf(id) < 0; }
   document.getElementById('procTotal').textContent = SCENARIOS.length;
 
   var picker = document.getElementById('picker');
@@ -85,29 +106,33 @@ tailwind.config = { theme: { extend: {
   function paintProgress() {
     var n = SCENARIOS.filter(function (s) { return SC.isDone(s.id); }).length;
     document.getElementById('procDone').textContent = n;
-    document.getElementById('procBar').style.width = (n / SCENARIOS.length * 100) + '%';
+    document.getElementById('procBar').style.width = (n / Math.max(1, SCENARIOS.length) * 100) + '%';
   }
 
   function renderCards() {
     cards.innerHTML = SCENARIOS.map(function (p) {
       var done = SC.isDone(p.id);
+      var best = SC.bestScore(p.id);
+      var locked = isLocked(p.id);
       var pat = p.patientId && VO.PATIENT_BY_ID[p.patientId];
       var who = pat ? pat.name : 'Office task';
       var face = window.SL_PEOPLE
         ? '<div class="shrink-0 w-12 h-12 rounded-full overflow-hidden shadow-sm">' + SL_PEOPLE.bust(pat || 'narrator') + '</div>'
         : '<div class="text-3xl shrink-0">' + p.icon + '</div>';
-      return '<button data-proc="' + p.id + '" class="text-left bg-white rounded-2xl shadow-sm border ' +
-        (done ? 'border-emerald-200' : 'border-slate-100') + ' p-5 hover:border-teal-300 hover:shadow transition">' +
+      var status = done ? '<span class="text-[11px] font-bold text-teal-800 bg-teal-100 px-2 py-0.5 rounded-full">&#10003; Passed' + (best != null ? ' &middot; best ' + best + '%' : '') + '</span>'
+        : (best != null ? '<span class="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Attempted &middot; best ' + best + '%</span>' : '');
+      return '<button type="button" data-proc="' + esc(p.id) + '" data-locked="' + (locked ? '1' : '0') + '" class="text-left bg-white rounded-2xl shadow-sm border ' +
+        (done ? 'border-teal-200' : 'border-slate-100') + ' p-5 hover:border-teal-300 hover:shadow transition min-h-[44px]' + (locked ? ' opacity-80' : '') + '">' +
         '<div class="flex items-start gap-3">' + face + '<div class="min-w-0">' +
-        '<div class="flex items-center gap-2 flex-wrap"><h3 class="display text-lg font-bold text-navy-900">' + esc(p.title) + '</h3>' +
-        (done ? '<span class="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">✓ Completed</span>' : '') + '</div>' +
+        '<div class="flex items-center gap-2 flex-wrap"><h3 class="display text-lg font-bold text-navy-900">' + esc(p.title) + '</h3>' + status +
+        (locked ? '<span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">&#128274; Enroll to unlock</span>' : '') + '</div>' +
         '<p class="text-sm text-slate-600 mt-1">' + esc(p.blurb) + '</p>' +
         '<div class="mt-2 flex items-center gap-2 text-[11px] text-slate-500 flex-wrap">' +
         '<span class="bg-slate-100 px-2 py-0.5 rounded-full font-semibold">' + esc(p.level) + '</span>' +
         '<span class="bg-slate-100 px-2 py-0.5 rounded-full font-semibold">' + p.steps.length + ' steps</span>' +
         '<span class="bg-slate-100 px-2 py-0.5 rounded-full font-semibold">' + esc(p.room) + '</span>' +
-        '<span class="bg-slate-100 px-2 py-0.5 rounded-full font-semibold">👤 ' + esc(who) + '</span></div>' +
-        '<div class="mt-3 text-teal-700 font-semibold text-sm">' + (done ? 'Run it again →' : 'Start procedure →') + '</div>' +
+        '<span class="bg-slate-100 px-2 py-0.5 rounded-full font-semibold">&#128100; ' + esc(who) + '</span></div>' +
+        '<div class="mt-3 text-teal-700 font-semibold text-sm">' + (locked ? 'Preview locked' : (done ? 'Run it again &rarr;' : (best != null ? 'Run it again for credit &rarr;' : 'Start procedure &rarr;'))) + '</div>' +
         '</div></div></button>';
     }).join('');
     cards.querySelectorAll('[data-proc]').forEach(function (b) {
@@ -122,9 +147,20 @@ tailwind.config = { theme: { extend: {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function showLocked(scenario) {
+    picker.classList.add('hidden');
+    runner.classList.remove('hidden');
+    runner.innerHTML = U.enrollCardHTML(esc(scenario.title) + ' is for enrolled students',
+      'You are in preview mode. The first procedure is free to try; enrolled students get all ' + SCENARIOS.length + ' procedures and their progress saved to their account.') +
+      '<div class="mt-4"><button type="button" id="lockBack" class="text-sm text-slate-500 hover:text-slate-700 font-semibold min-h-[44px]">&larr; All procedures</button></div>';
+    document.getElementById('lockBack').addEventListener('click', backToPicker);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
   function startProcedure(id) {
     var scenario = VO.SCENARIO_BY_ID[id];
     if (!scenario) return;
+    if (isLocked(id)) return showLocked(scenario);
     picker.classList.add('hidden');
     runner.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -132,21 +168,23 @@ tailwind.config = { theme: { extend: {
       mount: runner, scenario: scenario,
       onExit: backToPicker, exitLabel: 'All procedures',
       onFinish: function (res) {
-        var others = SCENARIOS.filter(function (p) { return p.id !== id && !SC.isDone(p.id); });
-        if (others.length) {
+        var others = SCENARIOS.filter(function (p) { return p.id !== id && !SC.isDone(p.id) && !isLocked(p.id); });
+        if (others.length && res.credited) {
           var nb = document.createElement('button');
-          nb.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition';
+          nb.type = 'button';
+          nb.className = 'rounded-xl bg-teal-700 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-800 transition min-h-[44px]';
           nb.textContent = 'Next: ' + others[0].title + ' ' + others[0].icon;
           nb.addEventListener('click', function () { startProcedure(others[0].id); });
           res.ctas.insertBefore(nb, res.ctas.firstChild);
-        } else {
+        } else if (!others.length && ACCESS === 'student') {
           var a = document.createElement('a');
-          a.href = '/skills-lab'; a.className = 'rounded-xl bg-teal-600 text-white font-semibold px-5 py-2.5 text-sm hover:opacity-90 transition inline-block';
+          a.href = '/skills-lab'; a.className = 'rounded-xl bg-teal-700 text-white font-semibold px-5 py-2.5 text-sm hover:bg-teal-800 transition inline-flex items-center min-h-[44px]';
           a.textContent = 'See your First Day Ready Score →';
           res.ctas.insertBefore(a, res.ctas.firstChild);
         }
         var back = document.createElement('button');
-        back.className = 'text-sm text-slate-500 hover:text-slate-700 font-semibold';
+        back.type = 'button';
+        back.className = 'text-sm text-slate-500 hover:text-slate-700 font-semibold min-h-[44px]';
         back.textContent = 'All procedures';
         back.addEventListener('click', backToPicker);
         res.ctas.appendChild(back);
@@ -155,10 +193,20 @@ tailwind.config = { theme: { extend: {
     });
   }
 
-  renderCards();
-  paintProgress();
-  var qp = new URLSearchParams(location.search).get('proc');
-  if (qp && VO.SCENARIO_BY_ID[qp]) startProcedure(qp);
+  U.resolveAccess().then(function (access) {
+    ACCESS = access;
+    document.getElementById('sl-header').innerHTML = U.headerHTML('procedures', access);
+    document.getElementById('sl-footer').innerHTML = U.footerHTML(access);
+    document.getElementById('sl-preview').innerHTML = access === 'student' ? '' :
+      U.previewStripHTML('Free sample: run <strong>' + esc(SCENARIOS[0] ? SCENARIOS[0].title : 'the first procedure') + '</strong>. Enroll to unlock all ' + SCENARIOS.length + ' procedures and save your progress to your account.');
+    boot.innerHTML = '';
+    app.classList.remove('hidden');
+    renderCards();
+    paintProgress();
+    var qp = new URLSearchParams(location.search).get('proc');
+    if (qp && VO.SCENARIO_BY_ID[qp]) startProcedure(qp);
+  });
+  window.addEventListener('sl-sync:hydrated', function () { if (!runner.classList.contains('hidden')) return; renderCards(); paintProgress(); });
 })();
 </script>
 </body>
