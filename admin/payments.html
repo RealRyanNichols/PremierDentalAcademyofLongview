@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Payments — PDA Admin</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta name="robots" content="noindex,nofollow" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/site-facts.js"></script>
+  <style>
+    body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}
+    .display{font-family:Fraunces,serif}
+    .mono{font-family:'SFMono-Regular',Menlo,Consolas,monospace}
+    .num{font-variant-numeric:tabular-nums}
+    table{border-collapse:separate;border-spacing:0}
+    th{position:sticky;top:0;background:#f8fafc;z-index:1}
+    .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+    .skeleton{background:linear-gradient(90deg,#e2e8f0 25%,#f1f5f9 50%,#e2e8f0 75%);background-size:200% 100%;animation:sh 1.4s infinite}
+    @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    @media (prefers-reduced-motion: reduce){.skeleton{animation:none}}
+  </style>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <link rel="stylesheet" href="/assets/pda-polish.css" />
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col pda-tinted">
+
+<nav class="bg-slate-900 text-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+    <a href="/admin" class="flex items-center gap-2 font-bold"><span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span><span>PDA Admin</span></a>
+    <div class="flex items-center gap-4 text-sm"><span id="user-label" class="text-slate-400 hidden sm:inline"></span><button id="signout" class="text-slate-300 hover:text-white">Sign out</button></div>
+  </div>
+</nav>
+
+<main class="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6">
+
+  <!-- unauthorized -->
+  <div id="auth-wall" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 max-w-md mx-auto text-center hidden">
+    <div class="text-5xl mb-3">🔐</div>
+    <h1 class="display text-2xl font-bold">Admin access only</h1>
+    <p class="text-slate-600 mt-2">Payment records are visible to the owner account only.</p>
+    <a href="/login" class="inline-block mt-5 bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full">Sign in →</a>
+  </div>
+
+  <!-- loading -->
+  <div id="loading" class="space-y-4">
+    <div class="skeleton h-8 w-64 rounded"></div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4"><div class="skeleton h-24 rounded-2xl"></div><div class="skeleton h-24 rounded-2xl"></div><div class="skeleton h-24 rounded-2xl"></div><div class="skeleton h-24 rounded-2xl"></div></div>
+    <div class="skeleton h-64 rounded-2xl"></div>
+    <p class="text-sm text-slate-500">Loading payments from the database and Square…</p>
+  </div>
+
+  <!-- error -->
+  <div id="load-error" hidden class="rounded-2xl border border-rose-200 bg-rose-50 text-rose-800 p-5 text-sm">
+    <div class="font-bold">Could not load payments.</div>
+    <div id="load-error-msg" class="mt-1 break-words"></div>
+    <button id="retry" class="mt-3 bg-rose-700 hover:bg-rose-800 text-white font-semibold px-4 py-2 rounded-full text-sm">Try again</button>
+  </div>
+
+  <div id="view" hidden>
+    <div class="mb-5 flex flex-wrap items-end justify-between gap-3">
+      <div>
+        <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Money</p>
+        <h1 class="display text-3xl font-bold">Payments</h1>
+        <p class="text-slate-600 text-sm mt-1">Every payment we know about, checked against what Square actually collected. Square is the source of truth for money.</p>
+      </div>
+      <div class="flex items-center gap-2 text-sm">
+        <label class="text-slate-600">Square window</label>
+        <select id="days" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white"><option value="60">60 days</option><option value="120" selected>120 days</option><option value="240">240 days</option><option value="400">400 days</option></select>
+        <button id="reload" class="bg-white border border-slate-300 hover:border-teal-600 font-semibold px-3 py-1.5 rounded-full">Refresh</button>
+      </div>
+    </div>
+
+    <div id="square-note" hidden class="mb-5 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 text-sm p-4"></div>
+
+    <!-- summary tiles -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Collected in Square</div><div id="t-square" class="display text-3xl font-bold mt-1 num">—</div><div id="t-square-sub" class="text-xs text-slate-500 mt-1">completed payments in the window</div></div>
+      <div class="bg-white border border-slate-200 rounded-2xl p-5"><div class="text-xs uppercase tracking-wide text-slate-500 font-semibold">Recorded in our database</div><div id="t-db" class="display text-3xl font-bold mt-1 num">—</div><div id="t-db-sub" class="text-xs text-slate-500 mt-1">rows in purchases (all time)</div></div>
+      <div class="bg-white border border-rose-200 rounded-2xl p-5"><div class="text-xs uppercase tracking-wide text-rose-700 font-semibold">In Square, not in our records</div><div id="t-gap" class="display text-3xl font-bold mt-1 num text-rose-700">—</div><div id="t-gap-sub" class="text-xs text-slate-500 mt-1">real payments our totals are missing</div></div>
+      <div class="bg-white border border-amber-200 rounded-2xl p-5"><div class="text-xs uppercase tracking-wide text-amber-800 font-semibold">Down paid, no balance schedule</div><div id="t-unsched" class="display text-3xl font-bold mt-1 num text-amber-800">—</div><div id="t-unsched-sub" class="text-xs text-slate-500 mt-1">students with nothing scheduled in Square</div></div>
+    </div>
+
+    <!-- needs attention -->
+    <section class="mb-8">
+      <h2 class="display text-2xl font-bold mb-3">Needs attention</h2>
+      <div class="grid lg:grid-cols-3 gap-4">
+        <div class="bg-white border border-amber-200 rounded-2xl p-5">
+          <h3 class="font-bold text-amber-900">No balance schedule in Square</h3>
+          <p class="text-xs text-slate-500 mt-1">Paid a down payment on the in-person program, but Square has no invoices or subscription set up to collect the rest. Set up their plan in Square (or confirm they paid another way).</p>
+          <div id="unsched" class="mt-3 space-y-2 text-sm"></div>
+        </div>
+        <div class="bg-white border border-rose-200 rounded-2xl p-5">
+          <h3 class="font-bold text-rose-800">In Square but not in our records</h3>
+          <p class="text-xs text-slate-500 mt-1">Completed in Square, missing from the purchases table. Our dashboards under-count until these are added.</p>
+          <div id="gap" class="mt-3 space-y-2 text-sm"></div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-2xl p-5">
+          <h3 class="font-bold text-slate-800">Failed charges <span class="text-xs font-normal text-slate-500">(private, reach out kindly)</span></h3>
+          <p class="text-xs text-slate-500 mt-1">A card declined. Usually a limit, an expired card, or a bank block. A quick, friendly text fixes most of these.</p>
+          <div id="failed" class="mt-3 space-y-2 text-sm"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- all payments -->
+    <section>
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 class="display text-2xl font-bold">All payments</h2>
+        <div class="flex flex-wrap gap-2 items-center text-sm">
+          <input id="q" type="search" placeholder="Search name, email, class…" class="border border-slate-300 rounded-lg px-3 py-1.5 w-56 bg-white" />
+          <select id="f-status" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white"><option value="">All statuses</option><option value="COMPLETED">Completed</option><option value="FAILED">Failed</option><option value="other">Other</option></select>
+          <select id="f-kind" class="border border-slate-300 rounded-lg px-2 py-1.5 bg-white"><option value="">All products</option><option value="in-person">In-person program</option><option value="online">Online program</option><option value="other">Other products</option></select>
+        </div>
+      </div>
+      <div id="empty" hidden class="bg-white rounded-2xl border border-slate-200 p-8 text-center text-slate-500">No payments yet.</div>
+      <div class="bg-white rounded-2xl border border-slate-200 tbl-wrap">
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-xs uppercase tracking-wide text-slate-500">
+            <th class="px-4 py-3">Date</th><th class="px-4 py-3">Student</th><th class="px-4 py-3">Product</th><th class="px-4 py-3 text-right">Amount</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Class</th><th class="px-4 py-3">Square</th><th class="px-4 py-3">In our records</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p id="count" class="text-xs text-slate-500 mt-2"></p>
+    </section>
+  </div>
+</main>
+
+<script>(async () => {
+  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const money = (c) => '$' + ((Number(c) || 0) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'America/Chicago' }) : '—';
+  const F = window.PDA_FACTS || {};
+  const PLAN_TOTAL = ((F.pricing || {}).inPerson || {}).planTotalCents || 350000;
+  const PIF_TOTAL = ((F.pricing || {}).inPerson || {}).totalCents || 300000;
+
+  // ---- admin gate (same pattern as every /admin page; RLS on purchases is the real wall)
+  const { data: { session } } = await sb.auth.getSession();
+  const showWall = () => { $('loading').hidden = true; $('auth-wall').classList.remove('hidden'); };
+  if (!session) { showWall(); return; }
+  let me = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data;
+  if (!me) { try { await sb.auth.refreshSession(); } catch (e) {} me = (await sb.from('profiles').select('is_admin').eq('id', session.user.id).maybeSingle()).data; }
+  if (!(me?.is_admin === true || session?.user?.app_metadata?.is_admin === true)) { showWall(); return; }
+  $('user-label').textContent = session.user.email || '';
+  $('signout').onclick = () => location.href = '/logout?then=home';
+
+  let DB = null, SQ = null, ROWS = [];
+
+  async function load() {
+    $('loading').hidden = false; $('view').hidden = true; $('load-error').hidden = true;
+    try {
+      const [pur, prof, enr, coh] = await Promise.all([
+        sb.from('purchases').select('id, student_id, product_key, product_label, amount_cents, payment_type, square_payment_id, square_subscription_id, external_payment_id, status, source, contact_email, created_at').order('created_at', { ascending: false }),
+        sb.from('profiles').select('id, first_name, last_name, email, program').neq('is_admin', true),
+        sb.from('enrollments').select('id, student_id, cohort_id, status, delivery, student_name'),
+        sb.from('cohorts').select('id, name, start_date, delivery_mode'),
+      ]);
+      const err = pur.error || prof.error || enr.error || coh.error;
+      if (err) throw new Error(err.message);
+      DB = { purchases: pur.data || [], profiles: prof.data || [], enrollments: enr.data || [], cohorts: coh.data || [] };
+    } catch (e) {
+      $('loading').hidden = true; $('load-error').hidden = false; $('load-error-msg').textContent = e.message || String(e);
+      return;
+    }
+    // Square feed (read-only serverless endpoint). A failure here degrades to DB-only.
+    SQ = null; let sqNote = '';
+    try {
+      const { data: { session: s2 } } = await sb.auth.getSession();
+      const r = await fetch('/api/admin-payments?days=' + encodeURIComponent($('days').value), { headers: { Authorization: 'Bearer ' + (s2?.access_token || '') } });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.configured) SQ = j;
+      else if (r.ok && j.configured === false) sqNote = 'Square reconciliation is off: ' + (j.note || 'the Square token is not configured on the server') + '. Showing database records only.';
+      else sqNote = 'Square reconciliation unavailable (' + (j.error || ('HTTP ' + r.status)) + (j.detail ? ': ' + j.detail : '') + '). Showing database records only.';
+    } catch (e) { sqNote = 'Square reconciliation unavailable (' + (e.message || 'network error') + '). Showing database records only.'; }
+    $('square-note').hidden = !sqNote; $('square-note').textContent = sqNote;
+    render();
+    $('loading').hidden = true; $('view').hidden = false;
+  }
+
+  function render() {
+    const profById = {}; DB.profiles.forEach(p => profById[p.id] = p);
+    const profByEmail = {}; DB.profiles.forEach(p => { if (p.email) profByEmail[p.email.toLowerCase()] = p; });
+    const cohById = {}; DB.cohorts.forEach(c => cohById[c.id] = c);
+    const enrByStudent = {}; DB.enrollments.forEach(e => { if (e.student_id && !enrByStudent[e.student_id]) enrByStudent[e.student_id] = e; });
+    const nameOf = (p) => p ? ((`${p.first_name || ''} ${p.last_name || ''}`).trim() || p.email || '—') : '—';
+    const cohortOf = (studentId) => { const e = studentId && enrByStudent[studentId]; const c = e && e.cohort_id && cohById[e.cohort_id]; return c ? c.name : (e && e.delivery === 'online' ? 'Online (self-paced)' : ''); };
+    const cohortFromNote = (note) => { const m = String(note || '').match(/\(([^()]*?(?:—|-)\s*In-Person[^()]*\([^()]*\))\)/i); return m ? m[1] : ''; };
+    const kindOf = (label, key, note) => { const t = `${label || ''} ${key || ''} ${note || ''}`; if (/online/i.test(t)) return 'online'; if (/in.?person|rda(Weekly)?|tuition/i.test(t)) return 'in-person'; return 'other'; };
+
+    const customers = (SQ && SQ.customers) || {};
+    const purBySquare = {}; DB.purchases.forEach(p => { if (p.square_payment_id) purBySquare[p.square_payment_id] = p; if (p.external_payment_id) purBySquare[p.external_payment_id] = p; });
+
+    // ---- merged rows: Square payments first (truth), then DB rows Square doesn't cover
+    ROWS = [];
+    const seenSquare = new Set();
+    if (SQ) {
+      SQ.payments.forEach(p => {
+        seenSquare.add(p.id);
+        const cust = p.customer_id && customers[p.customer_id];
+        const email = p.buyer_email || (cust && cust.email) || null;
+        const prof = (email && profByEmail[email]) || null;
+        const rec = purBySquare[p.id] || null;
+        const student = prof ? nameOf(prof) : (p.buyer_name || (cust && cust.name) || (rec && profById[rec.student_id] && nameOf(profById[rec.student_id])) || '—');
+        const product = (rec && rec.product_label) || p.note || (p.product === 'INVOICES' ? 'Square invoice' : p.product === 'SQUARE_POS' ? 'Square point of sale' : 'Square payment');
+        ROWS.push({
+          date: p.created_at, student, email, product, amount: p.amount_cents, status: p.status, kind: kindOf(rec && rec.product_label, rec && rec.product_key, p.note + ' ' + product),
+          cohort: (prof && cohortOf(prof.id)) || (rec && cohortOf(rec.student_id)) || cohortFromNote(p.note) || '',
+          square_id: p.id, receipt: p.receipt_url, recorded: !!rec, error: p.error, customer_id: p.customer_id, source: p.product,
+        });
+      });
+    }
+    DB.purchases.forEach(r => {
+      if (r.square_payment_id && seenSquare.has(r.square_payment_id)) return;
+      if (r.external_payment_id && seenSquare.has(r.external_payment_id)) return;
+      const prof = profById[r.student_id] || (r.contact_email && profByEmail[r.contact_email.toLowerCase()]) || null;
+      ROWS.push({
+        date: r.created_at, student: nameOf(prof), email: (prof && prof.email) || r.contact_email || null, product: r.product_label || r.product_key, amount: r.amount_cents,
+        status: String(r.status || '').toUpperCase() === 'COMPLETED' ? 'COMPLETED' : String(r.status || 'pending').toUpperCase(), kind: kindOf(r.product_label, r.product_key, ''),
+        cohort: cohortOf(r.student_id), square_id: r.square_payment_id || r.external_payment_id || null, receipt: null, recorded: true, error: null, customer_id: null, source: r.source,
+        outsideWindow: !!SQ && !!r.square_payment_id,
+      });
+    });
+    ROWS.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // ---- tiles
+    const sqCompleted = SQ ? SQ.payments.filter(p => p.status === 'COMPLETED') : [];
+    const sqTotal = sqCompleted.reduce((a, p) => a + p.amount_cents, 0);
+    const dbTotal = DB.purchases.filter(p => String(p.status || '').toLowerCase() !== 'failed').reduce((a, p) => a + (p.amount_cents || 0), 0);
+    const gapRows = sqCompleted.filter(p => !purBySquare[p.id]);
+    const gapTotal = gapRows.reduce((a, p) => a + p.amount_cents, 0);
+    $('t-square').textContent = SQ ? money(sqTotal) : 'n/a';
+    $('t-square-sub').textContent = SQ ? sqCompleted.length + ' completed payments, last ' + SQ.window_days + ' days' : 'Square feed unavailable';
+    $('t-db').textContent = money(dbTotal); $('t-db-sub').textContent = DB.purchases.length + ' rows in purchases (all time)';
+    $('t-gap').textContent = SQ ? money(gapTotal) : 'n/a'; $('t-gap-sub').textContent = SQ ? gapRows.length + ' payment' + (gapRows.length === 1 ? '' : 's') + ' our totals are missing' : 'needs the Square feed';
+
+    // ---- gap list
+    $('gap').innerHTML = !SQ ? '<div class="text-slate-500">Square feed unavailable.</div>' : gapRows.length ? gapRows.map(p => {
+      const cust = p.customer_id && customers[p.customer_id];
+      const who = p.buyer_name || (cust && cust.name) || p.buyer_email || (cust && cust.email) || 'Unknown buyer';
+      return `<div class="flex items-start justify-between gap-3 border-t border-slate-100 pt-2"><div><div class="font-semibold">${esc(who)}</div><div class="text-xs text-slate-500">${esc(fmtDate(p.created_at))} · ${esc(p.note || p.product || 'Square')}</div></div><div class="text-right"><div class="font-bold num">${money(p.amount_cents)}</div>${p.receipt_url ? `<a class="text-xs text-teal-700 underline" target="_blank" rel="noopener" href="${esc(p.receipt_url)}">receipt</a>` : ''}</div></div>`;
+    }).join('') : '<div class="text-emerald-700">Every completed Square payment in the window is in our records.</div>';
+
+    // ---- failed charges (private action items; never shown to students)
+    const failed = SQ ? SQ.payments.filter(p => p.status === 'FAILED') : [];
+    $('failed').innerHTML = !SQ ? '<div class="text-slate-500">Square feed unavailable.</div>' : failed.length ? failed.map(p => {
+      const cust = p.customer_id && customers[p.customer_id];
+      const who = p.buyer_name || (cust && cust.name) || p.buyer_email || (cust && cust.email) || 'Unknown';
+      const phone = cust && cust.phone;
+      return `<div class="border-t border-slate-100 pt-2"><div class="flex items-start justify-between gap-3"><div><div class="font-semibold">${esc(who)}</div><div class="text-xs text-slate-500">${esc(fmtDate(p.created_at))} · ${esc(p.error || 'declined')} · ${esc(p.product === 'INVOICES' ? 'scheduled installment' : 'checkout')}</div></div><div class="font-bold num">${money(p.amount_cents)}</div></div>${phone ? `<a href="sms:${esc(phone)}" class="text-xs text-teal-700 underline">text them</a>` : ''}</div>`;
+    }).join('') : '<div class="text-emerald-700">No failed charges in the window.</div>';
+
+    // ---- down payment, no balance schedule
+    // In-person students: money in (Square completed + DB rows not seen in Square), vs
+    // anything in Square that collects the rest (open/scheduled invoice, active
+    // subscription, or paid installment invoices).
+    const byStudent = {};
+    const addPaid = (key, label, email, cents, when, customerId, studentId) => {
+      if (!key) return;
+      const s = byStudent[key] || (byStudent[key] = { key, label, email, paid: 0, first: when, customerIds: new Set(), studentId: null });
+      s.paid += cents; if (when && (!s.first || when < s.first)) s.first = when;
+      if (customerId) s.customerIds.add(customerId); if (studentId) s.studentId = studentId; if (!s.label || s.label === '—') s.label = label;
+    };
+    ROWS.forEach(r => {
+      if (r.kind !== 'in-person' || r.status !== 'COMPLETED') return;
+      const key = (r.email || r.student || '').toLowerCase(); if (!key || key === '—') return;
+      const prof = r.email && profByEmail[r.email];
+      addPaid(key, r.student, r.email, r.amount, r.date, r.customer_id, prof && prof.id);
+    });
+    const unsched = [];
+    Object.values(byStudent).forEach(s => {
+      if (s.paid >= PIF_TOTAL) return; // paid in full (or more) — nothing to schedule
+      const cohort = (s.studentId && cohortOf(s.studentId)) || '';
+      const enr = s.studentId && enrByStudent[s.studentId];
+      if (enr && /withdrawn|dropped|refunded|cancel/i.test(enr.status || '')) return;
+      let scheduled = false;
+      if (SQ) {
+        const ids = s.customerIds;
+        const emailMatch = (x) => x.email && s.email && x.email === s.email;
+        scheduled = SQ.invoices.some(i => (ids.has(i.customer_id) || emailMatch(i)) && (/^(UNPAID|SCHEDULED|PARTIALLY_PAID|PAYMENT_PENDING|DRAFT)$/.test(i.status) || (i.status === 'PAID' && i.subscription_id)))
+          || SQ.subscriptions.some(x => ids.has(x.customer_id) && /^(ACTIVE|PENDING)$/.test(x.status))
+          || SQ.invoices.filter(i => (ids.has(i.customer_id) || emailMatch(i)) && i.status === 'PAID').length >= 2; // installments already flowing
+      }
+      if (!scheduled) unsched.push(Object.assign({ cohort }, s));
+    });
+    unsched.sort((a, b) => (a.first || '').localeCompare(b.first || ''));
+    $('t-unsched').textContent = SQ ? String(unsched.length) : 'n/a';
+    const estRemaining = unsched.reduce((a, s) => a + Math.max(0, PLAN_TOTAL - s.paid), 0);
+    $('t-unsched-sub').textContent = SQ ? 'about ' + money(estRemaining) + ' unscheduled if all are on the ' + money(PLAN_TOTAL).replace('.00', '') + ' plan' : 'needs the Square feed';
+    $('unsched').innerHTML = !SQ ? '<div class="text-slate-500">Square feed unavailable.</div>' : unsched.length ? unsched.map(s => `
+      <div class="border-t border-slate-100 pt-2">
+        <div class="flex items-start justify-between gap-3"><div><div class="font-semibold">${esc(s.label)}</div><div class="text-xs text-slate-500">${esc(s.cohort || 'class not assigned')} · first paid ${esc(fmtDate(s.first))}</div></div><div class="text-right"><div class="font-bold num">${money(s.paid)} paid</div><div class="text-xs text-amber-800 num">~${money(Math.max(0, PLAN_TOTAL - s.paid))} left on the plan</div></div></div>
+        ${s.customerIds.size ? `<a class="text-xs text-teal-700 underline" target="_blank" rel="noopener" href="https://app.squareup.com/dashboard/customers/directory/${esc([...s.customerIds][0])}">open in Square</a>` : ''}
+      </div>`).join('') : '<div class="text-emerald-700">Every in-person down payment has a balance schedule in Square.</div>';
+
+    renderTable();
+  }
+
+  function renderTable() {
+    const q = ($('q').value || '').trim().toLowerCase();
+    const fs = $('f-status').value, fk = $('f-kind').value;
+    const rows = ROWS.filter(r => {
+      if (fs === 'other' ? (r.status === 'COMPLETED' || r.status === 'FAILED') : (fs && r.status !== fs)) return false;
+      if (fk && r.kind !== fk) return false;
+      if (q && !(`${r.student} ${r.email || ''} ${r.product} ${r.cohort} ${r.square_id || ''}`.toLowerCase().includes(q))) return false;
+      return true;
+    });
+    $('empty').hidden = ROWS.length > 0;
+    const badge = (s) => s === 'COMPLETED' ? '<span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">Completed</span>'
+      : s === 'FAILED' ? '<span class="bg-rose-100 text-rose-800 text-xs font-bold px-2 py-0.5 rounded-full">Failed</span>'
+      : `<span class="bg-slate-100 text-slate-700 text-xs font-bold px-2 py-0.5 rounded-full">${esc(s)}</span>`;
+    $('rows').innerHTML = rows.map(r => `
+      <tr class="border-t border-slate-100 align-top">
+        <td class="px-4 py-2.5 whitespace-nowrap">${esc(fmtDate(r.date))}</td>
+        <td class="px-4 py-2.5"><div class="font-semibold">${esc(r.student)}</div><div class="text-xs text-slate-500">${esc(r.email || '')}</div></td>
+        <td class="px-4 py-2.5 max-w-xs"><div class="truncate" title="${esc(r.product)}">${esc(r.product)}</div><div class="text-xs text-slate-400">${esc(r.source || '')}</div></td>
+        <td class="px-4 py-2.5 text-right font-semibold num whitespace-nowrap">${money(r.amount)}</td>
+        <td class="px-4 py-2.5">${badge(r.status)}</td>
+        <td class="px-4 py-2.5 text-xs">${esc(r.cohort || (r.kind === 'in-person' && r.status === 'COMPLETED' ? '⚠ not assigned' : ''))}</td>
+        <td class="px-4 py-2.5 text-xs mono">${r.square_id ? (r.receipt ? `<a class="text-teal-700 underline" target="_blank" rel="noopener" href="${esc(r.receipt)}">${esc(r.square_id.slice(0, 10))}…</a>` : esc(r.square_id.slice(0, 10)) + '…') : '<span class="text-slate-400">none</span>'}</td>
+        <td class="px-4 py-2.5 text-xs">${r.status === 'FAILED' ? '<span class="text-slate-400">n/a</span>' : r.recorded ? (r.outsideWindow ? '<span class="text-slate-500">yes (older than Square window)</span>' : '<span class="text-emerald-700 font-semibold">yes</span>') : '<span class="text-rose-700 font-semibold">missing</span>'}</td>
+      </tr>`).join('');
+    $('count').textContent = rows.length + ' of ' + ROWS.length + ' payments shown' + (SQ ? '' : ' (database only)');
+  }
+
+  ['q', 'f-status', 'f-kind'].forEach(id => $(id).addEventListener('input', renderTable));
+  $('reload').onclick = load; $('days').onchange = load; $('retry').onclick = load;
+  await load();
+})();</script>
+<script defer src="/assets/admin-nav.js"></script>
+</body>
+</html>
