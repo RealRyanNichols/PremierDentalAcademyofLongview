@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Labor Day Offer: $100 Reserves Your Seat | Premier Dental Academy of Longview</title>
+  <meta name="description" content="Labor Day offer from Premier Dental Academy of Longview: reserve your seat in the September 14 or September 29 in person dental assistant class with $100 today instead of the usual $500 down. Every dollar goes toward your tuition. Ends Monday, September 7 at midnight." />
+  <!-- Two-day paid-traffic promo page: not for search engines, not in the sitemap. -->
+  <meta name="robots" content="noindex,nofollow" />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/labor-day" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/labor-day" />
+  <meta property="og:title" content="Labor Day Offer: $100 Reserves Your Seat | Premier Dental Academy of Longview" />
+  <meta property="og:description" content="Reserve your seat in the September 14 or September 29 in person class with $100 today instead of the usual $500 down. Every dollar goes toward your tuition. Ends Monday, September 7 at midnight." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Single source of truth for the offer (window.PDA_FACTS.laborDay2026). Loaded
+       synchronously so the page never renders a price the facts file doesn't carry. -->
+  <script src="/assets/site-facts.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
+    .display { font-family: 'Fraunces', serif; }
+    /* Deadline chip: a slow, gentle glow instead of a blink (a true blink can trigger
+       seizures and is an accessibility failure). Reduced-motion users get a static chip. */
+    @keyframes pda-glow { 0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, .55); } 50% { box-shadow: 0 0 0 10px rgba(245, 158, 11, 0); } }
+    .pda-glow { animation: pda-glow 2.4s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .pda-glow { animation: none; } }
+    .cd-num { font-variant-numeric: tabular-nums; min-width: 2.2ch; display: inline-block; }
+    /* Big, thumb-friendly controls on phones. */
+    .btn-cta { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; }
+    /* Belt-and-braces: the page must still make sense if the Tailwind CDN is slow or blocked. */
+    [hidden] { display: none !important; }
+    .hidden { display: none; }
+    input:focus-visible, button:focus-visible, a:focus-visible, select:focus-visible { outline: 3px solid #0d9488; outline-offset: 2px; }
+    .field-error { border-color: #dc2626 !important; }
+    .skeleton { background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%); background-size: 200% 100%; animation: pda-shimmer 1.4s infinite; }
+    @keyframes pda-shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+    @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+  </style>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+</head>
+<body class="bg-slate-50 min-h-screen pda-tinted">
+
+<main>
+
+  <!-- ─────────── HERO + COUNTDOWN (live state) ─────────── -->
+  <section id="hero" class="bg-gradient-to-b from-cyan-900 to-[#0a1226] text-white">
+    <div class="max-w-3xl mx-auto px-5 pt-10 pb-12 sm:pt-16 sm:pb-16 text-center">
+      <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold">Labor Day offer</p>
+      <h1 class="display text-4xl sm:text-5xl font-semibold mt-3 leading-tight">
+        <span class="text-amber-400">$100</span> reserves your seat, and every dollar of it goes toward your tuition.
+      </h1>
+
+      <div id="countdown-wrap" class="mt-7">
+        <div class="pda-glow inline-flex items-center gap-2 bg-amber-500 text-[#3a2606] font-bold text-sm sm:text-base px-4 py-2 rounded-full">
+          <span aria-hidden="true">⏳</span>
+          <span>Offer ends Monday, September 7 at midnight</span>
+        </div>
+        <div class="mt-4 flex justify-center gap-3 sm:gap-5 text-center" role="timer" aria-live="off" aria-label="Time left in the Labor Day offer">
+          <div class="bg-white/10 rounded-xl px-3 py-2 min-w-[64px]"><div id="cd-d" class="cd-num display text-3xl font-semibold">0</div><div class="text-[11px] uppercase tracking-wide text-slate-300">days</div></div>
+          <div class="bg-white/10 rounded-xl px-3 py-2 min-w-[64px]"><div id="cd-h" class="cd-num display text-3xl font-semibold">00</div><div class="text-[11px] uppercase tracking-wide text-slate-300">hours</div></div>
+          <div class="bg-white/10 rounded-xl px-3 py-2 min-w-[64px]"><div id="cd-m" class="cd-num display text-3xl font-semibold">00</div><div class="text-[11px] uppercase tracking-wide text-slate-300">min</div></div>
+          <div class="bg-white/10 rounded-xl px-3 py-2 min-w-[64px]"><div id="cd-s" class="cd-num display text-3xl font-semibold">00</div><div class="text-[11px] uppercase tracking-wide text-slate-300">sec</div></div>
+        </div>
+        <p id="cd-note" class="sr-only" aria-live="polite"></p>
+      </div>
+
+      <div class="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
+        <a href="#classes" class="btn-cta inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-[#3a2606] font-extrabold px-7 py-3.5 rounded-full text-lg shadow-lg">Pick my class →</a>
+        <a id="hero-call" href="tel:+19039136444" data-event="call_click" class="btn-cta inline-flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-full">📞 Call or text (903) 913-6444</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── ENDED PANEL (expired state; hidden until needed) ─────────── -->
+  <section id="ended" hidden class="bg-gradient-to-b from-cyan-900 to-[#0a1226] text-white">
+    <div class="max-w-3xl mx-auto px-5 py-14 sm:py-20 text-center">
+      <p class="text-[12.5px] uppercase tracking-[0.16em] text-teal-300 font-bold">Labor Day offer</p>
+      <h2 class="display text-4xl sm:text-5xl font-semibold mt-3 leading-tight">This offer has ended.</h2>
+      <p class="text-slate-300 mt-5 text-lg max-w-xl mx-auto">Thank you for looking. You can still reserve a seat in an upcoming in person class the regular way, with $500 down or by paying in full.</p>
+      <div class="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
+        <a id="ended-enroll" href="/enroll" class="btn-cta inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-[#3a2606] font-extrabold px-7 py-3.5 rounded-full text-lg shadow-lg">See how to enroll →</a>
+        <a href="tel:+19039136444" data-event="call_click" class="btn-cta inline-flex items-center justify-center bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3.5 rounded-full">📞 Call or text (903) 913-6444</a>
+      </div>
+      <p class="text-slate-400 text-sm mt-6">Not ready to decide yet? Leave your name below and we will reach out.</p>
+    </div>
+  </section>
+
+  <!-- ─────────── THE OFFER (approved copy, verbatim) ─────────── -->
+  <section id="offer" class="max-w-3xl mx-auto px-5 py-10 sm:py-14">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-4 text-slate-800 text-[17px] leading-relaxed">
+      <p>Labor Day offer: reserve your seat in our September 14 or September 29 in person class with $100 today instead of the usual $500 down.</p>
+      <p>You choose your class, choose your payment plan, and put your card on file at the same time.</p>
+      <p>On the Labor Day offer your tuition is $3,100 on a payment plan: $100 today and a $3,000 balance, billed automatically on the schedule you choose. That is $400 less than our regular payment plan price.</p>
+      <p>Offer ends Monday, September 7 at midnight.</p>
+      <p>Questions? Call or text <a href="tel:+19039136444" data-event="call_click" class="text-teal-700 font-semibold underline underline-offset-2">(903) 913-6444</a>.</p>
+    </div>
+  </section>
+
+  <!-- ─────────── CLASS CARDS ─────────── -->
+  <section id="classes" class="max-w-3xl mx-auto px-5 pb-10 sm:pb-14">
+    <h2 class="display text-3xl font-bold text-slate-900 text-center">Choose your class</h2>
+    <p class="text-slate-600 text-center mt-2">Both classes meet at our Longview campus, 2800 Gilmer Rd, Suite 106.</p>
+
+    <div id="cards" class="mt-6 grid sm:grid-cols-2 gap-5" aria-live="polite">
+      <!-- loading state -->
+      <div class="rounded-2xl border border-slate-200 bg-white p-6"><div class="skeleton h-4 w-24 rounded"></div><div class="skeleton h-7 w-40 rounded mt-3"></div><div class="skeleton h-4 w-48 rounded mt-3"></div><div class="skeleton h-12 w-full rounded-full mt-6"></div></div>
+      <div class="rounded-2xl border border-slate-200 bg-white p-6"><div class="skeleton h-4 w-24 rounded"></div><div class="skeleton h-7 w-40 rounded mt-3"></div><div class="skeleton h-4 w-48 rounded mt-3"></div><div class="skeleton h-12 w-full rounded-full mt-6"></div></div>
+    </div>
+    <p id="cards-note" class="text-sm text-slate-500 text-center mt-4"></p>
+  </section>
+
+  <!-- ─────────── WHAT HAPPENS NEXT (approved copy, verbatim) ─────────── -->
+  <section class="max-w-3xl mx-auto px-5 pb-10 sm:pb-14">
+    <div class="bg-teal-50 border border-teal-200 rounded-2xl p-6 sm:p-8 text-slate-800 text-[17px] leading-relaxed space-y-4">
+      <h2 class="display text-2xl font-bold text-teal-900">What happens after you reserve</h2>
+      <p>Your card stays on file and your remaining balance is billed automatically on the schedule you picked. Square emails you a receipt for every payment.</p>
+      <p>Your $100 is credited toward your tuition. It is not an extra fee and it is not added on top.</p>
+    </div>
+  </section>
+
+  <!-- ─────────── LEAD CAPTURE ─────────── -->
+  <section id="lead" class="max-w-3xl mx-auto px-5 pb-10 sm:pb-14">
+    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+      <h2 class="display text-2xl sm:text-3xl font-bold text-slate-900">Not ready to reserve tonight?</h2>
+      <p class="text-slate-600 mt-2">Leave your name and we will call or text you with the details. No payment, no pressure.</p>
+
+      <form id="lead-form" class="mt-6 space-y-4" novalidate>
+        <!-- Honeypot: hidden from humans; bots fill it and are silently dropped. -->
+        <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden">
+          <label>Company<input type="text" name="company" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div id="form-errors" hidden role="alert" class="rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm p-3"></div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <label class="block">
+            <span class="text-sm font-medium">First name <span class="text-rose-600" aria-hidden="true">*</span></span>
+            <input name="first_name" autocomplete="given-name" required aria-describedby="err-first_name" class="mt-1 w-full px-3 py-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+            <span id="err-first_name" class="text-xs text-rose-700 hidden">Please enter your first name.</span>
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Last name <span class="text-rose-600" aria-hidden="true">*</span></span>
+            <input name="last_name" autocomplete="family-name" required aria-describedby="err-last_name" class="mt-1 w-full px-3 py-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+            <span id="err-last_name" class="text-xs text-rose-700 hidden">Please enter your last name.</span>
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Phone <span class="text-rose-600" aria-hidden="true">*</span></span>
+            <input name="phone" type="tel" inputmode="tel" autocomplete="tel" required aria-describedby="err-phone" class="mt-1 w-full px-3 py-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+            <span id="err-phone" class="text-xs text-rose-700 hidden">Please enter a phone number we can text or call.</span>
+          </label>
+          <label class="block">
+            <span class="text-sm font-medium">Email <span class="text-rose-600" aria-hidden="true">*</span></span>
+            <input name="email" type="email" inputmode="email" autocomplete="email" required aria-describedby="err-email" class="mt-1 w-full px-3 py-3 border border-slate-300 rounded-lg focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
+            <span id="err-email" class="text-xs text-rose-700 hidden">Please enter a valid email address.</span>
+          </label>
+        </div>
+
+        <label class="block">
+          <span class="text-sm font-medium">Which class are you thinking about?</span>
+          <select name="cohort_pref" class="mt-1 w-full px-3 py-3 border border-slate-300 rounded-lg focus:border-teal-600 bg-white">
+            <option value="">Not sure yet</option>
+            <option>September 14 (Mon, Wed, Fri)</option>
+            <option>September 29 (Tue, Thu)</option>
+            <option>A later class</option>
+          </select>
+        </label>
+
+        <div class="flex items-start gap-2 text-sm text-slate-600">
+          <input id="consent" name="consent" type="checkbox" class="mt-1 accent-teal-600 w-4 h-4" aria-describedby="err-consent" />
+          <label for="consent">It is okay for Premier Dental Academy of Longview to call, text, or email me about this class. I can opt out any time by replying STOP.</label>
+        </div>
+        <span id="err-consent" class="text-xs text-rose-700 hidden">Please check the box so we know it is okay to contact you.</span>
+
+        <button type="submit" id="lead-submit" data-event="laborday_lead_submit" class="btn-cta w-full rounded-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3.5 shadow">Send me the details →</button>
+        <p class="text-xs text-slate-500 text-center">No payment required. We keep your info private and never sell it.</p>
+      </form>
+
+      <div id="lead-success" hidden class="text-center py-6">
+        <div class="text-5xl mb-3" aria-hidden="true">✅</div>
+        <h3 class="display text-2xl font-bold text-slate-900">Got it. We will reach out soon.</h3>
+        <p class="text-slate-600 mt-2">Want an answer right now? Call or text us.</p>
+        <a href="tel:+19039136444" data-event="call_click" class="inline-flex items-center justify-center mt-4 bg-teal-700 hover:bg-teal-800 text-white font-semibold px-6 py-3 rounded-full">📞 (903) 913-6444</a>
+      </div>
+
+      <div id="lead-error" hidden class="mt-4 rounded-xl border border-amber-200 bg-amber-50 text-amber-900 text-sm p-4">
+        We could not save that just now. Your entries are still here. Please try again, or call or text <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a>.
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────────── YOUR RIGHT TO CANCEL (required copy, verbatim) ─────────── -->
+  <section id="terms" class="max-w-3xl mx-auto px-5 pb-12">
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 text-slate-700 text-[15px] leading-relaxed space-y-3">
+      <h2 class="display text-2xl font-bold text-slate-900">Your right to cancel</h2>
+      <p>If you change your mind, you may cancel and receive a full refund of everything you have paid, up until midnight on Thursday, September 10, 2026.</p>
+      <p>You may also cancel within your first three scheduled class days and receive a refund of everything you have paid, less $100.</p>
+      <div class="pt-3 border-t border-slate-200 text-slate-600">
+        <p class="font-semibold text-slate-800">Premier Dental Academy of Longview</p>
+        <p>2800 Gilmer Rd, Suite 106, Longview, TX 75604</p>
+        <p><a href="tel:+19039136444" data-event="call_click" class="underline underline-offset-2">(903) 913-6444</a></p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var F = window.PDA_FACTS || {};
+  var OFFER = F.laborDay2026 || null;
+  var PHONE_HREF = (F.phone && F.phone.href) || 'tel:+19039136444';
+  var PHONE = (F.phone && F.phone.display) || '(903) 913-6444';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return (s == null ? '' : String(s)).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); };
+  var track = function (name, props) { try { if (window.PDA && window.PDA.track) window.PDA.track(name, props || {}); } catch (e) {} };
+
+  var SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var sb = null;
+  try { if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {}
+
+  // ── Offer window: one absolute instant, evaluated in America/Chicago via the
+  // ISO offset. The visitor's clock only supplies "now"; it cannot move the deadline.
+  var END_MS = OFFER ? Date.parse(OFFER.endsAtISO) : NaN;
+  function isLive() { return !!(OFFER && typeof F.offerIsLive === 'function' && F.offerIsLive(OFFER)); }
+
+  // ── UTM preservation: incoming ad params (or the ones pda-analytics stored on a
+  // previous page) ride along on every CTA so the promo is measurable end to end.
+  function incomingUtm() {
+    var a = {};
+    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
+    try {
+      var p = new URLSearchParams(location.search);
+      ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
+    } catch (e) {}
+    return a;
+  }
+  function withUtm(url, content) {
+    var a = incomingUtm();
+    var params = {
+      utm_source: a.utm_source || 'website',
+      utm_medium: a.utm_medium || 'promo',
+      utm_campaign: (OFFER && OFFER.key) || 'laborday2026',
+      utm_content: content || a.utm_content || 'labor-day'
+    };
+    try {
+      var u = new URL(url, location.origin);
+      Object.keys(params).forEach(function (k) { if (!u.searchParams.get(k)) u.searchParams.set(k, params[k]); });
+      return u.origin === location.origin ? (u.pathname + u.search) : u.toString();
+    } catch (e) { return url; }
+  }
+
+  // ── Countdown
+  var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+  var timer = null;
+  function tick() {
+    var left = END_MS - Date.now();
+    if (!isLive() || !(left > 0)) { showEnded(); return; }
+    var s = Math.floor(left / 1000);
+    var d = Math.floor(s / 86400); s -= d * 86400;
+    var h = Math.floor(s / 3600); s -= h * 3600;
+    var m = Math.floor(s / 60); s -= m * 60;
+    $('cd-d').textContent = d; $('cd-h').textContent = pad(h); $('cd-m').textContent = pad(m); $('cd-s').textContent = pad(s);
+    if (s === 0) $('cd-note').textContent = d + ' days, ' + h + ' hours and ' + m + ' minutes left in the Labor Day offer.'; // screen readers: once a minute, not every second
+  }
+
+  var ended = false;
+  function showEnded() {
+    if (ended) return;
+    ended = true;
+    if (timer) clearInterval(timer);
+    $('hero').hidden = true;
+    $('ended').hidden = false;
+    var off = $('offer'); if (off) off.hidden = true;
+    var cls = $('classes'); if (cls) cls.hidden = true;
+    $('ended-enroll').href = withUtm('/enroll', 'ended');
+    document.title = 'Labor Day Offer Has Ended | Premier Dental Academy of Longview';
+    track('laborday_view', { state: 'ended' });
+  }
+
+  // ── Class cards. The deposit link for each class lives in cohorts.deposit_link_url
+  // (Amanda pastes the Square link there). A NULL link renders a call-us card, never a
+  // dead button. Seat COUNTS are never shown; a full class points to the phone.
+  var CARD_META = {
+    'a808608c-df03-40de-822e-f587c7e64395': { label: 'September 14', days: 'Mon, Wed, Fri', content: 'sep14' },
+    '69d28988-f34c-49f4-a7bf-f99333f87585': { label: 'September 29', days: 'Tue, Thu', content: 'sep29' }
+  };
+  function schedTime(s) {
+    // "Mon/Wed/Fri 8:30 AM – 12:30 PM" → "8:30 AM – 12:30 PM"
+    var m = String(s || '').match(/(\d{1,2}:\d{2}\s*[AP]M\s*[–-]\s*\d{1,2}:\d{2}\s*[AP]M)/i);
+    return m ? m[1] : '';
+  }
+  function callCard(meta, c, reason) {
+    return '<div class="rounded-2xl border border-slate-200 bg-white p-6 flex flex-col">' +
+      '<div class="text-[11px] uppercase tracking-wide font-bold text-teal-700">In person · Longview</div>' +
+      '<div class="display text-2xl font-bold text-slate-900 mt-1">' + esc(meta.label) + '</div>' +
+      '<div class="text-sm text-slate-600 mt-1">' + esc(meta.days) + (c && schedTime(c.schedule) ? ' · ' + esc(schedTime(c.schedule)) : '') + '</div>' +
+      '<p class="text-sm text-slate-700 mt-3">' + esc(reason) + '</p>' +
+      '<a href="' + PHONE_HREF + '" data-event="call_click" data-cohort="' + esc(meta.content) + '" class="btn-cta mt-5 inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-3.5 rounded-full">📞 Call or text ' + esc(PHONE) + '</a>' +
+      '</div>';
+  }
+  function payCard(meta, c) {
+    var href = withUtm(c.deposit_link_url, meta.content);
+    return '<div class="rounded-2xl border-2 border-amber-400 bg-white p-6 flex flex-col shadow-sm">' +
+      '<div class="text-[11px] uppercase tracking-wide font-bold text-teal-700">In person · Longview</div>' +
+      '<div class="display text-2xl font-bold text-slate-900 mt-1">' + esc(meta.label) + '</div>' +
+      '<div class="text-sm text-slate-600 mt-1">' + esc(meta.days) + (schedTime(c.schedule) ? ' · ' + esc(schedTime(c.schedule)) : '') + '</div>' +
+      '<div class="mt-4 text-sm text-slate-700"><span class="font-bold text-slate-900">' + esc(OFFER.depositDisplay) + ' today</span>, then your ' + esc(OFFER.balanceDisplay) + ' balance on the schedule you choose. ' + esc(OFFER.planTotalDisplay) + ' total.</div>' +
+      '<a href="' + esc(href) + '" rel="noopener" data-event="laborday_deposit_click" data-cohort="' + esc(meta.content) + '" class="btn-cta mt-5 inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-[#3a2606] font-extrabold px-5 py-3.5 rounded-full text-lg">Reserve my seat for ' + esc(OFFER.depositDisplay) + ' →</a>' +
+      '<div class="text-xs text-slate-500 mt-2 text-center">Secure checkout by Square. You will pick your payment plan there.</div>' +
+      '</div>';
+  }
+  function renderCards(rows, err) {
+    if (!isLive()) return;
+    var ids = OFFER.eligibleCohortIds || [];
+    var byId = {}; (rows || []).forEach(function (r) { byId[r.id] = r; });
+    var html = ids.map(function (id) {
+      var meta = CARD_META[id] || { label: 'In person class', days: '', content: 'class' };
+      var c = byId[id];
+      if (err || !c) return callCard(meta, null, 'Call or text us to reserve this class with ' + OFFER.depositDisplay + '.');
+      var full = (c.capacity || 0) > 0 && (c.enrolled_count || 0) >= (c.capacity || 0);
+      if (full) return callCard(meta, c, 'This class is full. Call or text us and the same ' + OFFER.depositDisplay + ' holds your seat in an October class.');
+      if (!c.deposit_link_url) return callCard(meta, c, 'Call or text us to reserve this class with ' + OFFER.depositDisplay + '. It takes about two minutes.');
+      return payCard(meta, c);
+    }).join('');
+    $('cards').innerHTML = html;
+    $('cards-note').textContent = err ? 'We could not load live class details. Calling works just as well.' : '';
+  }
+  function loadCards() {
+    if (!isLive() || !OFFER) return;
+    var ids = OFFER.eligibleCohortIds || [];
+    if (!sb) { renderCards([], true); return; }
+    sb.from('cohorts').select('id,name,start_date,schedule,capacity,enrolled_count,status,deposit_link_url').in('id', ids)
+      .then(function (res) { renderCards(res.data || [], !!res.error); })
+      .catch(function () { renderCards([], true); });
+  }
+
+  // ── Lead form: validates without losing entries, saves to public.leads (same
+  // pattern as /waitlist), falls back to localStorage when the insert fails.
+  var form = $('lead-form');
+  var FIELDS = ['first_name', 'last_name', 'phone', 'email'];
+  function setErr(name, show) {
+    var el = $('err-' + name); var input = form.elements[name];
+    if (el) el.classList.toggle('hidden', !show);
+    if (input) { input.classList.toggle('field-error', show); input.setAttribute('aria-invalid', show ? 'true' : 'false'); }
+  }
+  form.onsubmit = function (e) {
+    e.preventDefault();
+    var fd = new FormData(form);
+    if ((fd.get('company') || '').trim()) { form.hidden = true; $('lead-success').hidden = false; return; }
+    var bad = [];
+    FIELDS.forEach(function (n) {
+      var v = String(fd.get(n) || '').trim();
+      var ok = n === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : n === 'phone' ? v.replace(/\D/g, '').length >= 10 : v.length > 0;
+      setErr(n, !ok); if (!ok) bad.push(n);
+    });
+    var consent = form.elements.consent.checked; setErr('consent', !consent); if (!consent) bad.push('consent');
+    var box = $('form-errors');
+    if (bad.length) {
+      var names = { first_name: 'first name', last_name: 'last name', phone: 'phone', email: 'email', consent: 'the contact permission box' };
+      box.textContent = 'Please fix: ' + bad.map(function (b) { return names[b]; }).join(', ') + '.';
+      box.hidden = false;
+      var first = form.elements[bad[0]]; if (first && first.focus) first.focus();
+      return;
+    }
+    box.hidden = true;
+    var btn = $('lead-submit'); btn.disabled = true; btn.textContent = 'Sending…';
+    $('lead-error').hidden = true;
+
+    var a = incomingUtm();
+    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
+    var lead = {
+      first_name: String(fd.get('first_name')).trim(),
+      last_name: String(fd.get('last_name')).trim(),
+      email: String(fd.get('email')).trim().toLowerCase(),
+      phone: String(fd.get('phone')).trim(),
+      interest_path: 'In-Person (Longview)',
+      message: ['Labor Day offer lead', fd.get('cohort_pref') ? 'Class: ' + fd.get('cohort_pref') : '', isLive() ? 'Offer live' : 'Offer ended', parts.length ? 'Attribution: ' + parts.join(', ') : ''].filter(Boolean).join(' · '),
+      source: 'labor-day.html'
+    };
+    var utm = { utm_campaign: (OFFER && OFFER.key) || 'laborday2026' };
+    Object.keys(a).forEach(function (k) { if (k.indexOf('utm_') === 0 && a[k]) utm[k] = String(a[k]).slice(0, 120); });
+    lead.utm = utm;
+    lead.landing_page = String(location.pathname + location.search).slice(0, 250);
+
+    var done = function (saved) {
+      track('laborday_lead_submit', { saved: saved, cohort_pref: fd.get('cohort_pref') || '' });
+      if (!saved) {
+        try { var ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e2) {}
+        btn.disabled = false; btn.textContent = 'Try again →';
+        $('lead-error').hidden = false;
+        return;
+      }
+      form.hidden = true; $('lead-success').hidden = false;
+    };
+    if (!sb) { done(false); return; }
+    sb.from('leads').insert(lead).then(function (res) { if (res.error) console.error('[labor-day]', res.error.message); done(!res.error); })
+      .catch(function (err) { console.error('[labor-day] threw', err); done(false); });
+  };
+  FIELDS.forEach(function (n) { var i = form.elements[n]; if (i) i.addEventListener('input', function () { setErr(n, false); }); });
+  form.elements.consent.addEventListener('change', function () { setErr('consent', false); });
+
+  // ── Boot
+  if (!OFFER || !isLive()) { showEnded(); }
+  else {
+    tick(); timer = setInterval(tick, 1000);
+    loadCards();
+    $('hero-call').href = PHONE_HREF;
+    track('laborday_view', { state: 'live' });
+  }
+})();
+</script>
+<script defer src="/assets/pda-track.js"></script>
+</body>
+</html>
