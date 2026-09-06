@@ -1,5 +1,9 @@
 -- ============================================================================
--- NOT APPLIED. Review, then run with Amanda's approval.
+-- APPLIED 2026-09-06 (Ryan: "push it all and make it go live"). Oct 5 was inserted with the
+-- neutral schedule string 'Call or text (903) 913-6444 for current class days & times'
+-- (the Jul 6, 2026 pattern) until Amanda confirms the MWF block; Oct 20 got the approved
+-- Tue/Thu string. Update Oct 5 with:
+--   update public.cohorts set schedule = 'Mon/Wed/Fri 8:30 AM – 12:30 PM' where start_date = '2026-10-05';
 --
 -- Adds the two October 2026 in-person cohorts Amanda named on Sep 6, 2026.
 --   * Oct 5, 2026 is a MONDAY  → MWF track
@@ -35,7 +39,7 @@ insert into public.cohorts
   (name, delivery_mode, start_date, capacity, status, program, schedule, instructor)
 values
   ('October 5, 2026 — In-Person (MWF)',  'in_person', '2026-10-05', 8, 'upcoming', 'foundation',
-   '<<MWF TIME BLOCK — AMANDA MUST SUPPLY (expected: Mon/Wed/Fri 8:30 AM – 12:30 PM)>>', 'Amanda Williams'),
+   'Call or text (903) 913-6444 for current class days & times'  -- placeholder until Amanda confirms, 'Amanda Williams'),
   ('October 20, 2026 — In-Person (T/Th)', 'in_person', '2026-10-20', 8, 'upcoming', 'foundation',
    'Tue/Thu 9:00 AM – 3:00 PM', 'Amanda Williams');
 
