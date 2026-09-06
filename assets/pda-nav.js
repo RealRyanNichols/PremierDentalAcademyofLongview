@@ -496,15 +496,28 @@
   // Site-wide urgency bar for the soonest upcoming class — funnels last-minute
   // signups to /enroll. Only shows when a class starts within ~10 days,
   // and pulls real seat counts (no fabricated numbers).
-  function injectUrgencyBar() {
+  function injectUrgencyBar(attempt) {
     var path = location.pathname.toLowerCase().replace(/\/$/, '');
     // Homepage already leads with its own amber "Next cohort starts… / N days
     // left" banner — don't stack a second cohort countdown on top of it.
     if (path === '' || path === '/index.html') return;
-    if (/^\/(admin|login|logout|enroll|enroll-success|night-class)/.test(path)) return;
-    try { if (sessionStorage.getItem('pda.urgency.x') === '1') return; } catch (e) {}
+    // site-facts.js may still be loading (init() injects it asynchronously on pages
+    // that don't ship it inline). Wait up to ~3s for it before deciding which bar
+    // to show; fall through with the regular bar if it never arrives.
+    attempt = attempt || 0;
+    if (!window.PDA_FACTS && attempt < 30) { setTimeout(function () { injectUrgencyBar(attempt + 1); }, 100); return; }
     var URL_BASE = 'https://lmbsuwslsycukynzpzik.supabase.co/rest/v1';
     var KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+
+    // ── Dated promo bar (Labor Day 2026). Reads the offer from site-facts and
+    // shows ONLY while the offer is live in America/Chicago AND at least one
+    // eligible class has a real Square deposit link — a "$100" bar must never
+    // appear while checkout would still charge $500. Shows on /enroll too (the
+    // regular skip list below would hide it there). Own dismiss key.
+    if (injectPromoBar(path, URL_BASE, KEY)) return;
+
+    if (/^\/(admin|login|logout|enroll|enroll-success|night-class|labor-day)/.test(path)) return;
+    try { if (sessionStorage.getItem('pda.urgency.x') === '1') return; } catch (e) {}
     fetch(URL_BASE + '/cohorts?select=name,start_date,capacity,enrolled_count,delivery_mode,status&status=eq.upcoming&order=start_date.asc&limit=8', {
       headers: { apikey: KEY, Authorization: 'Bearer ' + KEY }
     }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
@@ -539,6 +552,67 @@
       var x = document.getElementById('pda-urgency-x');
       if (x) x.addEventListener('click', function () { bar.remove(); try { sessionStorage.setItem('pda.urgency.x', '1'); } catch (e) {} });
     }).catch(function () {});
+  }
+
+  // Returns true when the promo owns the top bar for this page (so the regular
+  // cohort urgency bar stays out of the way), false when the promo is off.
+  function injectPromoBar(path, URL_BASE, KEY) {
+    var F = window.PDA_FACTS || {};
+    var O = F.laborDay2026;
+    if (!O || typeof F.offerIsLive !== 'function' || !F.offerIsLive(O)) return false;
+    if (/^\/(admin|login|logout|labor-day|enroll-success)/.test(path)) return true;
+    try { if (sessionStorage.getItem('pda.laborday.x') === '1') return true; } catch (e) {}
+    var ids = (O.eligibleCohortIds || []).map(encodeURIComponent).join(',');
+    fetch(URL_BASE + '/cohorts?select=id,deposit_link_url,capacity,enrolled_count&id=in.(' + ids + ')', {
+      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY }
+    }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+      // Re-check the clock after the network round trip — the deadline may have passed.
+      if (!F.offerIsLive(O)) return;
+      var payable = (rows || []).some(function (c) {
+        var full = (c.capacity || 0) > 0 && (c.enrolled_count || 0) >= (c.capacity || 0);
+        return !!c.deposit_link_url && !full;
+      });
+      if (!payable) return; // no working $100 path yet → say nothing
+      if (!document.getElementById('pda-promo-css')) {
+        var css = document.createElement('style');
+        css.id = 'pda-promo-css';
+        // A soft shimmer, not a blink: a true blink can trigger seizures. Reduced-motion
+        // users get a static bar.
+        css.textContent =
+          '@keyframes pda-promo-shimmer{0%{background-position:0 0}100%{background-position:200% 0}}' +
+          '#pda-promo-bar{background:linear-gradient(90deg,#b45309,#f59e0b,#fbbf24,#f59e0b,#b45309);background-size:200% 100%;animation:pda-promo-shimmer 6s linear infinite;color:#3a2606}' +
+          '@media (prefers-reduced-motion: reduce){#pda-promo-bar{animation:none;background:#f59e0b}}';
+        document.head.appendChild(css);
+      }
+      var href = O.landingPath || '/labor-day';
+      try {
+        var u = new URL(href, location.origin);
+        var a = {}; try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e2) {}
+        u.searchParams.set('utm_source', a.utm_source || 'website');
+        u.searchParams.set('utm_medium', a.utm_medium || 'banner');
+        u.searchParams.set('utm_campaign', O.key || 'laborday2026');
+        u.searchParams.set('utm_content', 'topbar');
+        href = u.pathname + u.search;
+      } catch (e3) {}
+      var bar = document.createElement('div');
+      bar.id = 'pda-promo-bar';
+      bar.setAttribute('role', 'region');
+      bar.setAttribute('aria-label', 'Labor Day offer');
+      bar.style.cssText = 'font:600 13px/1.35 Inter,system-ui,sans-serif;padding:9px 12px;text-align:center';
+      bar.innerHTML = '<div style="max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap">' +
+        '<span><b>Labor Day offer:</b> ' + O.depositDisplay + ' reserves your seat in the September 14 or September 29 class instead of ' + O.regularDownDisplay + ' down. Ends ' + O.endsDisplay + '.</span>' +
+        '<a href="' + href + '" data-event="laborday_banner_click" style="background:#0a1226;color:#fff;padding:5px 14px;border-radius:999px;font-weight:800;text-decoration:none;white-space:nowrap">Reserve for ' + O.depositDisplay + ' →</a>' +
+        '<a href="' + ((F.phone && F.phone.href) || 'tel:+19039136444') + '" style="color:#3a2606;text-decoration:underline;white-space:nowrap">or call ' + ((F.phone && F.phone.display) || '(903) 913-6444') + '</a>' +
+        '<button type="button" aria-label="Dismiss" id="pda-promo-x" style="background:transparent;color:#3a2606;border:0;font-size:18px;cursor:pointer;line-height:1;padding:2px 6px">×</button>' +
+        '</div>';
+      document.body.insertBefore(bar, document.body.firstChild);
+      var x = document.getElementById('pda-promo-x');
+      if (x) x.addEventListener('click', function () { bar.remove(); try { sessionStorage.setItem('pda.laborday.x', '1'); } catch (e4) {} });
+      // Self-removing: when the deadline passes while the tab is open, the bar goes away.
+      var left = Date.parse(O.endsAtISO) - Date.now();
+      if (isFinite(left) && left > 0 && left < 2147483647) setTimeout(function () { try { bar.remove(); } catch (e5) {} }, left);
+    }).catch(function () {});
+    return true;
   }
 
   // (Removed: the dormant "$1,500 pay-in-full" special offer bar. It was never
