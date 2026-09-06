@@ -4,7 +4,9 @@
 // owner hello@premierdentalacademyoflongview.com). Set up 2026-07-22.
 window.PDA_ANALYTICS_CONFIG = {
   ga4Id: "G-XWTZL5JZ6C",
-  metaPixelId: "",    // set when Meta pixel is approved for use
+  // The live pixel (same id pda-nav.js initialises). Was "" — which silently gated
+  // EVERY PDA.track() custom event (incl. purchase) off Meta. Filled 2026-09-06.
+  metaPixelId: "1290830552877730",
   tiktokPixelId: "",
   debug: false
 };
