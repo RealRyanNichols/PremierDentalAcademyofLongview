@@ -47,6 +47,43 @@
       online: { price: 997, priceDisplay: "$997", priceCents: 99700, regularPrice: 997, regularDisplay: "$997", sale: false, saleLabel: "regular price", saleEndsAtISO: null }
     },
 
+    // ── Labor Day 2026 seat-reservation offer (owner-approved Sep 6, 2026) ──
+    // $100 reserves a seat in the Sept 14 or Sept 29 in-person class instead
+    // of the usual $500 down. $100 + $3,000 balance = $3,100 on a plan, a real
+    // $400 promotional discount off the $3,500 plan price. Installments are the
+    // published $3,000-balance tables, unchanged. The $100 is a TUITION CREDIT
+    // (never call it nonrefundable — Tex. Educ. Code §132.061 gives every buyer
+    // a full refund right; see docs/labor-day-2026-offer.md).
+    // Deposits are collected on Square-hosted payment links stored per cohort
+    // in cohorts.deposit_link_url — api/enroll.js is NOT involved.
+    // The offer turns itself off three ways: `active`, the America/Chicago
+    // end time below (all consumers compare Date.now() to endsAtISO), and
+    // scripts/check-facts.mjs, which fails the build if `active` is still true
+    // after the deadline. KILL SWITCH: set active:false (or disable the links).
+    laborDay2026: {
+      active: true,
+      key: "laborday2026",
+      depositCents: 10000,          // $100
+      depositDisplay: "$100",
+      balanceCents: 300000,         // $3,000
+      balanceDisplay: "$3,000",
+      planTotalCents: 310000,       // $3,100 — owner-approved promo price
+      planTotalDisplay: "$3,100",
+      regularDownDisplay: "$500",
+      savingsDisplay: "$400",
+      startsAtISO: "2026-09-06T00:00:00-05:00",
+      endsAtISO:   "2026-09-07T23:59:59-05:00",   // = 2026-09-08T04:59:59Z (CDT is UTC-5)
+      endsDisplay: "Monday, September 7 at midnight",
+      eligibleCohortIds: [
+        "a808608c-df03-40de-822e-f587c7e64395",    // September 14, 2026 — In-Person (MWF)
+        "69d28988-f34c-49f4-a7bf-f99333f87585"     // September 29, 2026 — In-Person (T/Th)
+      ],
+      // Three counted days after a Sun Sep 6 / Mon Sep 7 (Labor Day) signature:
+      // Tue Sep 8, Wed Sep 9, Thu Sep 10 → full refund through midnight Thu Sep 10.
+      cancellationDeadline: "midnight on Thursday, September 10, 2026",
+      landingPath: "/labor-day"
+    },
+
     paymentPlan: {
       text: "Pay in full for $3,000, or go on a plan ($3,500): $500 down holds your seat, then the $3,000 balance in simple weekly or monthly payments (up to 12). No big lump sum.",
       cadence: "weekly or monthly",
@@ -153,10 +190,24 @@
     },
 
     _meta: {
-      updated: "2026-07-02",
+      updated: "2026-09-06",
       maintainer: "docs/business-facts-source-of-truth.md",
       rule: "Do not hard-code these facts in pages. Read from window.PDA_FACTS."
     }
+  };
+
+  // Is a dated offer live right now? Compares the absolute instant only, so the
+  // visitor's clock/timezone cannot extend it: endsAtISO carries its own UTC
+  // offset (America/Chicago) and Date.parse resolves it to one exact moment.
+  // `now` is injectable for tests. Returns false for anything malformed.
+  FACTS.offerIsLive = function (offer, now) {
+    if (!offer || offer.active !== true) return false;
+    var t = (typeof now === "number") ? now : Date.now();
+    var start = Date.parse(offer.startsAtISO || "");
+    var end = Date.parse(offer.endsAtISO || "");
+    if (!isFinite(end)) return false;
+    if (isFinite(start) && t < start) return false;
+    return t <= end;
   };
 
   // Browser global (classic script). Node validator reads via indirect eval.

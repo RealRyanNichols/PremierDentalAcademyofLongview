@@ -59,12 +59,45 @@ if (F.cohortSeats && F.cohortSeats.verified === false) warns.push('cohortSeats "
 if (F.employer && F.employer.noPlacementFee && F.employer.noPlacementFee.verified === false)
   warns.push("employer no-placement-fee claim unverified — do not assert");
 
+// ── Dated offers (laborDay2026 etc.) ─────────────────────────────────────────
+// Build-side guard: a dated offer must be internally consistent, and it must not
+// still be `active` after its own deadline. This is what stops a deploy from ever
+// shipping a dead "$100 today" promise on a cached page.
+const offerErrors = [];
+const offers = { laborDay2026: F.laborDay2026 };
+for (const [key, o] of Object.entries(offers)) {
+  if (!o) continue;
+  const end = Date.parse(o.endsAtISO || "");
+  const start = Date.parse(o.startsAtISO || "");
+  if (!Number.isFinite(end)) offerErrors.push(`${key}.endsAtISO is not a parseable date`);
+  if (!Number.isFinite(start)) offerErrors.push(`${key}.startsAtISO is not a parseable date`);
+  if (Number.isFinite(end) && Number.isFinite(start) && start >= end) offerErrors.push(`${key} starts after it ends`);
+  if (typeof o.depositCents !== "number" || typeof o.balanceCents !== "number" || typeof o.planTotalCents !== "number")
+    offerErrors.push(`${key} money fields must be integer cents`);
+  else if (o.depositCents + o.balanceCents !== o.planTotalCents)
+    offerErrors.push(`${key}: deposit ${o.depositCents} + balance ${o.balanceCents} ≠ planTotal ${o.planTotalCents}`);
+  if (!Array.isArray(o.eligibleCohortIds) || !o.eligibleCohortIds.length) offerErrors.push(`${key}.eligibleCohortIds is empty`);
+  if (typeof F.offerIsLive !== "function") offerErrors.push("PDA_FACTS.offerIsLive helper is missing");
+  if (o.active === true && Number.isFinite(end) && Date.now() > end)
+    offerErrors.push(`${key} is still active:true but ended ${o.endsAtISO} — set active:false before deploying`);
+  if (/nonrefundable|non-refundable/i.test(JSON.stringify(o)))
+    offerErrors.push(`${key} must never describe the deposit as nonrefundable`);
+}
+
 console.log("Premier Dental Academy — business-facts validation");
 console.log("  required fields checked: " + required.length);
 warns.forEach((w) => console.log("  ⚠ needs owner confirmation: " + w));
+if (F.laborDay2026) {
+  const live = F.offerIsLive(F.laborDay2026);
+  console.log("  laborDay2026: active=" + F.laborDay2026.active + ", live now=" + live + ", ends " + F.laborDay2026.endsAtISO);
+}
 
 if (missing.length) {
   console.error("  ✗ MISSING REQUIRED FACTS: " + missing.join(", "));
+  process.exit(1);
+}
+if (offerErrors.length) {
+  offerErrors.forEach((e) => console.error("  ✗ OFFER: " + e));
   process.exit(1);
 }
 console.log("  ✓ all required business facts present");
