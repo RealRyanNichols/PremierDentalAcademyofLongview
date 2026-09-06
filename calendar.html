@@ -203,7 +203,9 @@
   <!-- Grid of class cards, grouped by month -->
   <div id="months"></div>
 
-  <div id="static-dates" class="max-w-3xl mx-auto text-center text-slate-700 mt-2 mb-6"><strong>Upcoming In-Person start dates:</strong> Sep 14 · Sep 29 · Nov 9 · Nov 17, 2026 — daytime classes, 12 weeks, 8 seats each. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down. Online is self-paced and starts any day.</div>
+  <!-- Start dates come from the live cohorts query (render() rewrites this line); the
+       fallback text below deliberately names NO dates so it can never go stale. -->
+  <div id="static-dates" class="max-w-3xl mx-auto text-center text-slate-700 mt-2 mb-6"><strong>Upcoming In-Person start dates</strong> are listed above — daytime classes, 12 weeks, 8 seats each. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down. Online is self-paced and starts any day.</div>
   <p id="empty-state" hidden class="text-center text-slate-600 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
 
   <!-- Reserve walkthrough — schedule a seat step-by-step + reassurance -->
@@ -405,6 +407,20 @@ function render() {
   set('stat-closed',  closed);
 
   document.getElementById('empty-state').hidden = filtered.length > 0;
+
+  // The one-line date summary reads from the same live rows as the cards, so a new
+  // cohort (e.g. October) shows up here the moment it exists in the database.
+  const staticEl = document.getElementById('static-dates');
+  if (staticEl) {
+    const inPerson = cohorts.filter(c => c.delivery_mode !== 'online');
+    if (inPerson.length) {
+      const yr = new Date(inPerson[inPerson.length - 1].start_date + 'T00:00:00').getFullYear();
+      const list = inPerson.map(c => fmtShort(c.start_date)).join(' · ') + ', ' + yr;
+      staticEl.innerHTML = '<strong>Upcoming In-Person start dates:</strong> ' + list + ' — daytime classes, 12 weeks, 8 seats each. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down. Online is self-paced and starts any day.';
+    } else {
+      staticEl.hidden = true;
+    }
+  }
 
   // Group by month
   const groups = {};
