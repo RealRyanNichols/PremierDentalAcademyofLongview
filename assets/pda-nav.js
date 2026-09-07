@@ -562,17 +562,11 @@
     if (!O || typeof F.offerIsLive !== 'function' || !F.offerIsLive(O)) return false;
     if (/^\/(admin|login|logout|labor-day|enroll-success)/.test(path)) return true;
     try { if (sessionStorage.getItem('pda.laborday.x') === '1') return true; } catch (e) {}
-    var ids = (O.eligibleCohortIds || []).map(encodeURIComponent).join(',');
-    fetch(URL_BASE + '/cohorts?select=id,deposit_link_url,capacity,enrolled_count&id=in.(' + ids + ')', {
-      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY }
-    }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
-      // Re-check the clock after the network round trip — the deadline may have passed.
+    // The $100 deposit is taken by the regular /enroll checkout (api/enroll.js
+    // applies it server-side for the eligible classes while the offer is live),
+    // so the only gate is the offer clock. Sold-out handling lives on /labor-day.
+    Promise.resolve().then(function () {
       if (!F.offerIsLive(O)) return;
-      var payable = (rows || []).some(function (c) {
-        var full = (c.capacity || 0) > 0 && (c.enrolled_count || 0) >= (c.capacity || 0);
-        return !!c.deposit_link_url && !full;
-      });
-      if (!payable) return; // no working $100 path yet → say nothing
       if (!document.getElementById('pda-promo-css')) {
         var css = document.createElement('style');
         css.id = 'pda-promo-css';

@@ -31,6 +31,31 @@ const CUTOVER_MS = Date.parse('2026-07-01T05:00:00Z'); // 2026-07-01 00:00 Ameri
 const newPricing = () => Date.now() >= CUTOVER_MS;
 const NEW_IN_PERSON = { pifCents: 300000, planTotalCents: 350000, downCents: 50000, balanceCents: 300000 };
 
+// ── Labor Day 2026 seat-reservation offer (owner-approved Sep 6, 2026) ──────
+// $100 down instead of $500 on the PAYMENT-PLAN path for the September 14 and
+// September 29 in-person classes only, Sun Sep 6 00:00 → Mon Sep 7 23:59:59 CT.
+// $100 + the unchanged $3,000 balance = $3,100 plan total (a real $400 discount
+// off the $3,500 plan). The installment tables are identical to the published
+// ones because the balance is identical. Pay-in-full ($3,000), online, and every
+// other cohort are untouched. All three gates are enforced HERE, server-side —
+// the client flag `special` is ignored. When any gate fails we fall through to
+// the normal $500 down; we never error. Mirrors assets/site-facts.js laborDay2026
+// and enroll.html computeSchedule(). Same date idiom as CUTOVER_MS above.
+const LD_START = Date.parse('2026-09-06T05:00:00Z'); // 2026-09-06 00:00:00 America/Chicago (CDT, UTC-5)
+const LD_END   = Date.parse('2026-09-08T04:59:59Z'); // 2026-09-07 23:59:59 America/Chicago
+const LABOR_DAY = {
+  key: 'laborday2026',
+  depositCents: 10000,     // $100 today
+  balanceCents: 300000,    // $3,000, unchanged
+  planTotalCents: 310000,  // $3,100
+  cohortIds: new Set([
+    'a808608c-df03-40de-822e-f587c7e64395', // September 14, 2026 — In-Person (MWF)
+    '69d28988-f34c-49f4-a7bf-f99333f87585', // September 29, 2026 — In-Person (T/Th)
+  ]),
+};
+const laborDayActive = () => { const n = Date.now(); return n >= LD_START && n <= LD_END; };
+const laborDayEligible = (cohortId) => laborDayActive() && LABOR_DAY.cohortIds.has(String(cohortId || ''));
+
 // ── Current ONLINE price ──────────────────────────────────────────────
 const onlineCents = () => 99700;
 
@@ -268,6 +293,7 @@ export default async function handler(req, res) {
 
   // down / remaining / paidInFull / total drive the charge + invoice below.
   let down, remaining, paidInFull, schedule = null, total;
+  let laborDayApplied = false; // set only when all three Labor Day gates hold
   if (isOnline) {
     // Online: single $997 charge, no schedule.
     total = onlineCents();
@@ -284,8 +310,16 @@ export default async function handler(req, res) {
       down = NEW_IN_PERSON.downCents;          // $500 down today
       remaining = NEW_IN_PERSON.balanceCents;  // $3,000 balance, auto-charged
       paidInFull = false;
+      // Labor Day 2026: gate 1 (time window) + gate 2 (Sept 14 / Sept 29 by
+      // cohortId, never a client flag) + gate 3 (this is the plan branch).
+      if (laborDayEligible(cohortId)) {
+        laborDayApplied = true;
+        down = LABOR_DAY.depositCents;         // $100 today
+        total = LABOR_DAY.planTotalCents;      // $3,100 promo plan total
+        remaining = LABOR_DAY.balanceCents;    // $3,000 balance, unchanged
+      }
       try {
-        schedule = buildScheduleV2({ balanceCents: NEW_IN_PERSON.balanceCents, cadence, count, firstPaymentDate });
+        schedule = buildScheduleV2({ balanceCents: remaining, cadence, count, firstPaymentDate });
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
@@ -365,7 +399,9 @@ export default async function handler(req, res) {
       // welcome + grant access. Without it (pre-Jul-16 bug) paid-in-full and
       // down-payment students were silently skipped (case: Blythe S.).
       buyer_email_address: email,
-      note: `${planDef.name} — ${paidInFull ? 'Paid in full' : 'Down payment'}${cohortName ? ` (${cohortName})` : ''}`,
+      // The offer tag makes promo deposits identifiable in Square and on the
+      // purchases row the webhook records from this payment.
+      note: `${planDef.name} — ${paidInFull ? 'Paid in full' : (laborDayApplied ? `Labor Day $100 deposit (${LABOR_DAY.key})` : 'Down payment')}${cohortName ? ` (${cohortName})` : ''}`,
     })).payment;
   } catch (err) {
     console.error('[enroll] charge failure:', err.squareErrors || err);
@@ -393,7 +429,7 @@ export default async function handler(req, res) {
             // installment — the order has to match or Square will reject the
             // INSTALLMENT requests as exceeding the order amount.
             base_price_money: { amount: schedule.totalCharged, currency: 'USD' },
-            note: cohortName || undefined,
+            note: [cohortName, laborDayApplied ? `offer: ${LABOR_DAY.key} · deposit_cents: ${LABOR_DAY.depositCents} · plan_total_cents: ${LABOR_DAY.planTotalCents}` : null].filter(Boolean).join(' · ') || undefined,
           }],
         },
       })).order;
@@ -436,6 +472,9 @@ export default async function handler(req, res) {
     totalCents: total,
     downCents: down,
     remainingCents: remaining,
+    offer: laborDayApplied ? LABOR_DAY.key : null,
+    depositCents: laborDayApplied ? LABOR_DAY.depositCents : null,
+    planTotalCents: laborDayApplied ? LABOR_DAY.planTotalCents : null,
     schedule: schedule ? {
       cadence,
       count: schedule.count,

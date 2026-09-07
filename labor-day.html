@@ -289,9 +289,10 @@
     track('laborday_view', { state: 'ended' });
   }
 
-  // ── Class cards. The deposit link for each class lives in cohorts.deposit_link_url
-  // (Amanda pastes the Square link there). A NULL link renders a call-us card, never a
-  // dead button. Seat COUNTS are never shown; a full class points to the phone.
+  // ── Class cards. Each card deep-links into the regular /enroll checkout with the
+  // class, the plan path and the campaign pre-filled; api/enroll.js applies the $100
+  // server-side for these two classes while the offer is live. Seat COUNTS are never
+  // shown; a full class points to the phone (the same $100 holds an October seat).
   var CARD_META = {
     'a808608c-df03-40de-822e-f587c7e64395': { label: 'September 14', days: 'Mon, Wed, Fri', content: 'sep14' },
     '69d28988-f34c-49f4-a7bf-f99333f87585': { label: 'September 29', days: 'Tue, Thu', content: 'sep29' }
@@ -310,15 +311,19 @@
       '<a href="' + PHONE_HREF + '" data-event="call_click" data-cohort="' + esc(meta.content) + '" class="btn-cta mt-5 inline-flex items-center justify-center bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-3.5 rounded-full">📞 Call or text ' + esc(PHONE) + '</a>' +
       '</div>';
   }
+  function checkoutHref(cohortId, content) {
+    var base = (OFFER.checkoutPath || '/enroll?plan=in-person&paymode=plan') + '&cohort=' + encodeURIComponent(cohortId);
+    return withUtm(base, content);
+  }
   function payCard(meta, c) {
-    var href = withUtm(c.deposit_link_url, meta.content);
+    var href = checkoutHref(c.id, meta.content);
     return '<div class="rounded-2xl border-2 border-amber-400 bg-white p-6 flex flex-col shadow-sm">' +
       '<div class="text-[11px] uppercase tracking-wide font-bold text-teal-700">In person · Longview</div>' +
       '<div class="display text-2xl font-bold text-slate-900 mt-1">' + esc(meta.label) + '</div>' +
       '<div class="text-sm text-slate-600 mt-1">' + esc(meta.days) + (schedTime(c.schedule) ? ' · ' + esc(schedTime(c.schedule)) : '') + '</div>' +
       '<div class="mt-4 text-sm text-slate-700"><span class="font-bold text-slate-900">' + esc(OFFER.depositDisplay) + ' today</span>, then your ' + esc(OFFER.balanceDisplay) + ' balance on the schedule you choose. ' + esc(OFFER.planTotalDisplay) + ' total.</div>' +
-      '<a href="' + esc(href) + '" rel="noopener" data-event="laborday_deposit_click" data-cohort="' + esc(meta.content) + '" class="btn-cta mt-5 inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-[#3a2606] font-extrabold px-5 py-3.5 rounded-full text-lg">Reserve my seat for ' + esc(OFFER.depositDisplay) + ' →</a>' +
-      '<div class="text-xs text-slate-500 mt-2 text-center">Secure checkout by Square. You will pick your payment plan there.</div>' +
+      '<a href="' + esc(href) + '" data-event="laborday_deposit_click" data-cohort="' + esc(meta.content) + '" class="btn-cta mt-5 inline-flex items-center justify-center bg-amber-500 hover:bg-amber-400 text-[#3a2606] font-extrabold px-5 py-3.5 rounded-full text-lg">Reserve my seat for ' + esc(OFFER.depositDisplay) + ' →</a>' +
+      '<div class="text-xs text-slate-500 mt-2 text-center">Secure checkout by Square. Your class is pre-selected; you pick your payment plan there.</div>' +
       '</div>';
   }
   function renderCards(rows, err) {
@@ -328,10 +333,11 @@
     var html = ids.map(function (id) {
       var meta = CARD_META[id] || { label: 'In person class', days: '', content: 'class' };
       var c = byId[id];
-      if (err || !c) return callCard(meta, null, 'Call or text us to reserve this class with ' + OFFER.depositDisplay + '.');
+      // Live class details unavailable: the checkout still validates the class
+      // itself, so offer the checkout rather than a dead end.
+      if (err || !c) return payCard(meta, { id: id, schedule: '' });
       var full = (c.capacity || 0) > 0 && (c.enrolled_count || 0) >= (c.capacity || 0);
       if (full) return callCard(meta, c, 'This class is full. Call or text us and the same ' + OFFER.depositDisplay + ' holds your seat in an October class.');
-      if (!c.deposit_link_url) return callCard(meta, c, 'Call or text us to reserve this class with ' + OFFER.depositDisplay + '. It takes about two minutes.');
       return payCard(meta, c);
     }).join('');
     $('cards').innerHTML = html;
@@ -341,7 +347,7 @@
     if (!isLive() || !OFFER) return;
     var ids = OFFER.eligibleCohortIds || [];
     if (!sb) { renderCards([], true); return; }
-    sb.from('cohorts').select('id,name,start_date,schedule,capacity,enrolled_count,status,deposit_link_url').in('id', ids)
+    sb.from('cohorts').select('id,name,start_date,schedule,capacity,enrolled_count,status').in('id', ids)
       .then(function (res) { renderCards(res.data || [], !!res.error); })
       .catch(function () { renderCards([], true); });
   }

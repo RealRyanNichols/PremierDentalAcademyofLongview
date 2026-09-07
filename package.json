@@ -14,7 +14,8 @@
     "check:sitemap": "node scripts/check-sitemap.mjs",
     "check:pricing": "node scripts/check-pricing.mjs",
     "check:labor-day": "node scripts/check-labor-day.mjs",
-    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-dates.mjs && node scripts/check-labor-day.mjs",
+    "check:enroll-promo": "node scripts/check-enroll-promo.mjs",
+    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-dates.mjs && node scripts/check-labor-day.mjs && node scripts/check-enroll-promo.mjs",
     "check:dates": "node scripts/check-dates.mjs"
   }
 }
