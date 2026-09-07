@@ -10,6 +10,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/site-facts.js"></script>
   <style>
     body{font-family:Inter,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased}
     .display{font-family:Fraunces,serif}
@@ -61,7 +62,29 @@
       </div>
     </div>
 
-    <div id="stats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6"></div>
+    <div id="stats" class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4"></div>
+
+    <!-- Money waiting in open seats + the leads most likely to fill them -->
+    <section id="money" class="hidden mb-6 rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-white shadow-sm p-5" aria-labelledby="money-title">
+      <div class="flex flex-wrap items-start justify-between gap-4">
+        <div class="min-w-0">
+          <p class="text-[11px] uppercase tracking-widest text-amber-700 font-semibold">Money waiting in open seats</p>
+          <h2 id="money-title" class="display text-3xl font-bold mono mt-1 text-slate-900"><span id="money-total">—</span></h2>
+          <p id="money-sub" class="text-sm text-slate-600 mt-1"></p>
+        </div>
+        <div class="text-right text-xs text-slate-500 max-w-xs">
+          <p id="money-basis"></p>
+        </div>
+      </div>
+      <div id="money-leads-wrap" class="mt-4 hidden">
+        <div class="flex items-center justify-between gap-3 mb-2">
+          <h3 class="text-sm font-bold text-slate-800">Call these first — best match for each upcoming class</h3>
+          <a href="/admin/leads" class="text-xs font-semibold text-teal-700 hover:underline">All leads →</a>
+        </div>
+        <div id="money-leads" class="grid sm:grid-cols-2 xl:grid-cols-4 gap-2"></div>
+      </div>
+      <p id="money-leads-empty" class="mt-3 text-sm text-slate-500 hidden"></p>
+    </section>
 
     <div class="flex flex-wrap gap-2 mb-5">
       <div class="inline-flex rounded-lg border border-slate-300 bg-white p-0.5 text-slate-600" id="seg-status">
@@ -135,10 +158,13 @@
   $('signout').onclick = () => location.href = '/logout?then=home';
 
   // ---- load data
-  const [cohRes, enrRes, profRes] = await Promise.all([
+  const [cohRes, enrRes, profRes, leadRes] = await Promise.all([
     sb.from('cohorts').select('*').order('start_date', { ascending:true }),
     sb.from('enrollments').select('id, student_id, cohort_id, status, progress_percent, student_name, delivery, source, roster_note, enrolled_at'),
-    sb.from('profiles').select('id, first_name, last_name, email, phone, city, state, program, cohort, enrolled_at, created_at, is_admin, tags, kajabi_id, portal_status').neq('is_admin', true)
+    sb.from('profiles').select('id, first_name, last_name, email, phone, city, state, program, cohort, enrolled_at, created_at, is_admin, tags, kajabi_id, portal_status').neq('is_admin', true),
+    // Leads feed the "who is most likely to fill this seat" picks. A failed read only
+    // hides that panel — classes and seats still render.
+    sb.from('leads').select('id, first_name, last_name, email, phone, interest_path, message, source, status, created_at, pipeline_stage, pay_intent, pay_when, path_preference, last_contact_at, lead_grade, ready_timeline')
   ]);
   const loadErr = cohRes.error || enrRes.error || profRes.error;
   if (loadErr) {
@@ -151,6 +177,14 @@
   const cohorts = cohRes.data || [];
   const enrollments = (enrRes.data || []).map((e,i)=>({ ...e, _i:i }));
   const profiles = {}; (profRes.data||[]).forEach(p => profiles[p.id]=p);
+  const leads = leadRes.error ? null : (leadRes.data || []);
+
+  // Prices come from site-facts (the single source the payment engine also follows).
+  // If the facts file failed to load we show no dollar figures rather than guess.
+  const PRICE = (window.PDA_FACTS && window.PDA_FACTS.pricing && window.PDA_FACTS.pricing.inPerson) || null;
+  const PIF = PRICE && Number(PRICE.total) > 0 ? Number(PRICE.total) : null;          // pay in full
+  const PLAN = PRICE && Number(PRICE.planTotal) > 0 ? Number(PRICE.planTotal) : null; // payment-plan total
+  const money = (n) => '$' + Math.round(n).toLocaleString('en-US');
 
   $('loading').classList.add('hidden');
   $('view').classList.remove('hidden');
@@ -186,6 +220,200 @@
   // filter state
   let fStatus='active', fDelivery='all', fSearch='';
 
+  // ---------- open-seat money + the leads most likely to fill each seat
+  // "Fillable" = an in-person class that has not started yet and still has open seats.
+  // Classes already running still show their open-seat dollars, but we do not match
+  // leads to them (late joins are Amanda's call, not the page's).
+  const openSeatsOf = (c) => Math.max((c.capacity||0) - (seatsByCohort[c.id]||[]).length, 0);
+  const notStarted = (c) => !!c.start_date && new Date(c.start_date+'T00:00:00') >= today;
+  const isFillable = (c) => c.delivery_mode!=='online' && c.status!=='cancelled' && c.status!=='past' && notStarted(c) && openSeatsOf(c) > 0;
+  const fillable = cohorts.filter(isFillable).sort((a,b)=> a.start_date.localeCompare(b.start_date));
+  const runningOpen = cohorts.filter(c => c.delivery_mode!=='online' && c.status==='current' && !notStarted(c) && openSeatsOf(c) > 0);
+
+  // Same stage fallback the Leads page uses, so both pages agree on who is still in play.
+  const leadStage = (l) => (l.pipeline_stage) ? l.pipeline_stage
+    : (l.status==='enrolled' || l.status==='converted') ? 'enrolled'
+    : l.status==='closed' ? 'lost'
+    : l.status==='contacted' ? 'contacted' : 'new';
+  const fmtPhone = (p) => { const d=String(p||'').replace(/\D/g,''); const t=d.length>10?d.slice(-10):d; return t.length===10?`(${t.slice(0,3)}) ${t.slice(3,6)}-${t.slice(6)}`:(p||''); };
+  const leadName = (l) => (`${l.first_name||''} ${l.last_name||''}`).trim() || l.email || (l.phone ? fmtPhone(l.phone) : 'No name');
+  const prefTrack = (l) => { const p=(l.path_preference||'').toLowerCase(); if (/mon\/wed\/fri|mwf/.test(p)) return 'MWF'; if (/tue\/thu|t\/th|tth/.test(p)) return 'T/Th'; return ''; };
+  const intentText = (l) => `${l.path_preference||''} ${l.interest_path||''}`.toLowerCase();
+  const wantsOnline = (l) => /online/.test(intentText(l)) && !/in[-_ ]?person/.test(intentText(l));
+  const isTestLead = (l) => /<test|dummy data|test lead/i.test(`${l.first_name||''} ${l.last_name||''} ${l.path_preference||''} ${l.message||''}`) || /(^|[.+])test@|@example\./i.test(l.email||'');
+  const daysSince = (iso) => iso ? (Date.now() - new Date(iso).getTime())/86400000 : null;
+  const monthLabel = (ym) => new Date(ym+'-01T00:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'});
+  const monthDiff = (a,b) => (Number(a.slice(0,4))*12+Number(a.slice(5,7))) - (Number(b.slice(0,4))*12+Number(b.slice(5,7)));
+
+  function eligibleLead(l){
+    const st = leadStage(l);
+    if (st==='enrolled' || st==='lost') return false;
+    if (l.lead_grade==='non_qualified') return false;
+    if (!l.phone && !l.email) return false;           // nothing to call or write to
+    if (isTestLead(l)) return false;
+    return true;
+  }
+
+  // How well one lead fits one class. Every point has a plain-English reason so
+  // Amanda can see WHY someone is the pick, not just that they are.
+  function fitScore(l, c){
+    let s = 0; const why = [];
+    const st = leadStage(l);
+    if (st==='paying')           { s += 40; why.push('Mid-payment'); }
+    else if (st==='tour_booked') { s += 28; why.push('Tour booked'); }
+    else if (st==='interested')  { s += 18; why.push('Said interested'); }
+    else if (st==='contacted')   { s += 6; }
+    if (l.lead_grade==='hot')            { s += 35; why.push('Graded hot'); }
+    else if (l.lead_grade==='qualified') { s += 22; why.push('Qualified'); }
+    if (l.pay_intent) { s += 25; why.push('Picked a payment plan'); }
+
+    // When they said they could start vs. when this class starts.
+    const cm = String(c.start_date).slice(0,7), r = l.ready_timeline || '';
+    if (r === 'ready_now') { s += 30; why.push('Ready now'); }
+    else if (/^\d{4}-\d{2}$/.test(r)) {
+      const d = monthDiff(r, cm);
+      if (d === 0)              { s += 30; why.push('Wants to start ' + monthLabel(r)); }
+      else if (Math.abs(d) === 1) { s += 15; why.push('Wants ' + monthLabel(r)); }
+      else if (d < 0)           { s += 8;  why.push('Was ready ' + monthLabel(r)); }
+      else                      { s -= 20; why.push('Not until ' + monthLabel(r)); }
+    }
+
+    // Which days they asked for (Meta lead form) vs. this class's track.
+    const pt = prefTrack(l), ct = schedTag(c);
+    if (pt && ct) { if (pt === ct) { s += 25; why.push('Asked for ' + ct); } else { s -= 25; } }
+    if (wantsOnline(l)) s -= 40;
+    else if (/in[-_ ]?person/.test(intentText(l))) { s += 10; why.push('Wants in-person'); }
+
+    // Named this exact class or its start date anywhere in what they sent.
+    const txt = `${l.interest_path||''} ${l.message||''}`;
+    if (c.name && txt.includes(c.name))                                   { s += 60; why.unshift('Asked about this class'); }
+    else if (txt.toLowerCase().includes(fmtDate(c.start_date).toLowerCase())) { s += 45; why.unshift('Mentioned this date'); }
+
+    // Fresh leads convert best; a lead nobody has called is an open opportunity.
+    const age = daysSince(l.created_at);
+    if (age != null) { if (age <= 7) { s += 15; why.push('New this week'); } else if (age <= 30) s += 8; else if (age > 180) s -= 10; }
+    const touch = daysSince(l.last_contact_at);
+    if (touch == null) { s += 8; why.push('Never contacted'); }
+    else if (touch > 14) { s += 5; why.push('Quiet ' + Math.round(touch) + ' days'); }
+    return { score: s, why };
+  }
+
+  // Each lead lands on ONE class — the one they fit best — and each class keeps up to
+  // three picks (never more than it has open seats). Best pairs anywhere go first.
+  const picks = {};
+  (function matchLeads(){
+    if (!leads || !fillable.length) return;
+    const pairs = [];
+    leads.filter(eligibleLead).forEach(l => fillable.forEach(c => {
+      const f = fitScore(l, c);
+      if (f.score > 0) pairs.push({ l, c, score: f.score, why: f.why });
+    }));
+    pairs.sort((a,b) => b.score - a.score || new Date(b.l.created_at) - new Date(a.l.created_at));
+    const used = new Set();
+    pairs.forEach(p => {
+      if (used.has(p.l.id)) return;
+      const list = picks[p.c.id] = picks[p.c.id] || [];
+      if (list.length >= Math.min(3, openSeatsOf(p.c))) return;
+      list.push(p); used.add(p.l.id);
+    });
+  })();
+
+  const seatMoneyLine = (open) => PIF ? `${open} × ${money(PIF)} paid in full${PLAN ? ` · up to ${money(open*PLAN)} on plans` : ''}` : `${open} open seat${open===1?'':'s'}`;
+
+  function leadActions(l, compact){
+    const ph = digits(l.phone);
+    const btn = (cls, inner) => `<span class="${cls} inline-flex items-center justify-center min-h-[36px] px-3 rounded-lg text-xs font-semibold">${inner}</span>`;
+    return `<div class="flex flex-wrap gap-1.5 ${compact?'mt-2':'mt-3'}">
+      ${ph ? `<a href="tel:${esc(ph)}" class="inline-flex items-center justify-center min-h-[36px] px-3 rounded-lg text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white">📞 Call</a>` : btn('bg-slate-100 text-slate-300','📞 Call')}
+      ${ph ? `<button type="button" data-lead-sms="${esc(l.id)}" class="inline-flex items-center justify-center min-h-[36px] px-3 rounded-lg text-xs font-semibold bg-cyan-700 hover:bg-cyan-800 text-white">💬 Text</button>` : btn('bg-slate-100 text-slate-300','💬 Text')}
+      ${l.email ? `<a href="mailto:${esc(l.email)}?subject=Premier%20Dental%20Academy" class="inline-flex items-center justify-center min-h-[36px] px-3 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white">✉️ Email</a>` : ''}
+      <a href="/admin/leads#lead=${esc(l.id)}" class="inline-flex items-center justify-center min-h-[36px] px-3 rounded-lg text-xs font-semibold bg-white border border-slate-300 text-slate-700 hover:bg-slate-50">Open lead →</a>
+    </div>`;
+  }
+  const whyChips = (why, n) => why.slice(0, n).map(w => `<span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">${esc(w)}</span>`).join('');
+
+  function topPickCard(p, c){
+    const l = p.l, name = leadName(l);
+    return `<div class="rounded-xl border border-amber-200 bg-white p-3">
+      <div class="flex items-start gap-2">
+        <span class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white grid place-items-center text-xs font-bold shrink-0">${esc(initials(name))}</span>
+        <div class="min-w-0 flex-1">
+          <div class="text-[11px] uppercase tracking-widest text-amber-700 font-semibold">${esc(fmtDateShort(c.start_date))}${schedTag(c)?' · '+esc(schedTag(c)):''} · ${openSeatsOf(c)} open</div>
+          <div class="font-bold text-sm truncate">${esc(name)}</div>
+          <div class="mt-1 flex flex-wrap gap-1">${whyChips(p.why, 3) || '<span class="text-[11px] text-slate-400">Best available match</span>'}</div>
+        </div>
+      </div>
+      ${leadActions(l, true)}
+    </div>`;
+  }
+
+  // Per-class block: dollars waiting + the top pick (with runners-up), or a plain reason why not.
+  function seatMoneyBlock(c, open){
+    if (c.delivery_mode==='online' || open<=0) return '';
+    const dollars = PIF ? money(open*PIF) : '';
+    const head = `<div class="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <div class="text-[11px] uppercase tracking-widest text-amber-700 font-semibold">Waiting in open seats</div>
+          ${dollars ? `<div class="text-xl font-bold mono leading-tight">${dollars}</div>` : ''}
+          <div class="text-xs text-slate-500">${esc(seatMoneyLine(open))}</div>
+        </div>
+      </div>`;
+    if (!isFillable(c)) {
+      return `<div class="mt-4 pt-4 border-t border-slate-100">${head}<p class="text-xs text-slate-500 mt-2">Class already started — no lead picks shown.</p></div>`;
+    }
+    const list = picks[c.id] || [];
+    let body;
+    if (!leads) body = '<p class="text-xs text-slate-500 mt-2">Lead picks unavailable right now (could not read leads).</p>';
+    else if (!list.length) body = '<p class="text-xs text-slate-500 mt-2">No open lead fits this class yet — every good match is already placed on an earlier class or has enrolled.</p>';
+    else {
+      const [top, ...rest] = list;
+      const tl = top.l, tn = leadName(tl);
+      body = `<div class="mt-3">
+        <div class="text-xs font-bold text-slate-800 mb-1.5">Most likely to fill a seat — call now</div>
+        <div class="rounded-xl border border-amber-200 bg-amber-50/60 p-3">
+          <div class="flex items-start gap-2">
+            <span class="w-9 h-9 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 text-white grid place-items-center text-xs font-bold shrink-0">${esc(initials(tn))}</span>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-sm truncate">${esc(tn)}</div>
+              <div class="text-[11px] text-slate-500 truncate">${esc([tl.phone?fmtPhone(tl.phone):'', tl.email||''].filter(Boolean).join(' · '))}</div>
+              <div class="mt-1 flex flex-wrap gap-1">${whyChips(top.why, 4) || '<span class="text-[11px] text-slate-400">Best available match</span>'}</div>
+            </div>
+          </div>
+          ${leadActions(tl, true)}
+        </div>
+        ${rest.length ? `<div class="mt-2 flex flex-wrap gap-1.5">${rest.map((p,i)=>`<a href="/admin/leads#lead=${esc(p.l.id)}" class="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs hover:bg-slate-50" title="${esc(p.why.join(', '))}"><span class="text-slate-400 font-bold">${i+2}.</span><span class="font-semibold">${esc(leadName(p.l))}</span>${p.why[0]?`<span class="text-slate-500">· ${esc(p.why[0])}</span>`:''}</a>`).join('')}</div>` : ''}
+      </div>`;
+    }
+    return `<div class="mt-4 pt-4 border-t border-slate-100">${head}${body}</div>`;
+  }
+
+  // Page-level strip: total dollars in not-yet-started classes + the #1 pick for each.
+  function renderMoney(){
+    const sec = $('money');
+    const show = fDelivery !== 'online' && (fillable.length > 0 || runningOpen.length > 0);
+    sec.classList.toggle('hidden', !show);
+    if (!show) return;
+    const openUp = fillable.reduce((s,c)=> s + openSeatsOf(c), 0);
+    const openRun = runningOpen.reduce((s,c)=> s + openSeatsOf(c), 0);
+    $('money-total').textContent = PIF ? money(openUp*PIF) : `${openUp} open seats`;
+    $('money-sub').textContent = PIF
+      ? `${openUp} open seat${openUp===1?'':'s'} across ${fillable.length} upcoming in-person class${fillable.length===1?'':'es'}, at ${money(PIF)} paid in full${PLAN ? ` — up to ${money(openUp*PLAN)} if every seat goes on a plan` : ''}.`
+      : `${openUp} open seat${openUp===1?'':'s'} across ${fillable.length} upcoming in-person class${fillable.length===1?'':'es'}.`;
+    $('money-basis').textContent = (PIF ? 'Prices from the site facts file (same as checkout). ' : 'Price file did not load — no dollar figures shown. ')
+      + (openRun ? `Not counted: ${openRun} open seat${openRun===1?'':'s'} in ${runningOpen.length} class${runningOpen.length===1?'':'es'} already running${PIF?` (${money(openRun*PIF)})`:''}.` : '');
+    const wrap = $('money-leads-wrap'), empty = $('money-leads-empty');
+    if (!leads) { wrap.classList.add('hidden'); empty.classList.remove('hidden'); empty.textContent = 'Lead picks unavailable right now (could not read leads).'; return; }
+    const tops = fillable.map(c => (picks[c.id]||[])[0] ? { p: (picks[c.id])[0], c } : null).filter(Boolean).slice(0, 4);
+    if (!tops.length) { wrap.classList.add('hidden'); empty.classList.remove('hidden'); empty.textContent = 'No open lead currently fits an upcoming class. New leads show up here automatically.'; return; }
+    empty.classList.add('hidden'); wrap.classList.remove('hidden');
+    $('money-leads').innerHTML = tops.map(t => topPickCard(t.p, t.c)).join('');
+    bindLeadButtons($('money-leads'));
+  }
+  const leadById = {}; (leads||[]).forEach(l => leadById[l.id] = l);
+  function bindLeadButtons(root){
+    root.querySelectorAll('[data-lead-sms]').forEach(b => b.onclick = () => { const l = leadById[b.dataset.leadSms]; if (l) openSms(digits(l.phone), leadName(l), { lead: l.id }); });
+  }
+
   // ---------- stats
   function renderStats(){
     const nonCancelled = cohorts.filter(c=>c.status!=='cancelled');
@@ -201,9 +429,12 @@
       { label:'Classes running', val:running, sub:'marked current', tone:'bg-white border border-slate-200', subc:'text-slate-500' },
       { label:'Next class starts', val: next?fmtDateShort(next.start_date):'—', sub: next?((next.delivery_mode==='online'?'Online ':'In-Person ')+(schedTag(next)||'')).trim():'nothing scheduled', tone:'bg-white border border-slate-200', subc:'text-slate-500' },
     ];
+    // The first card is the teal gradient; the rest are plain white cards. (The old
+    // test matched "text-white" as a white card, which left white text on a white page.)
+    const isPlain = (c) => c.tone.startsWith('bg-white');
     $('stats').innerHTML = cards.map(c => `
-      <div class="rounded-2xl p-4 ${c.tone.includes('white')?c.tone:'bg-gradient-to-br '+c.tone}">
-        <div class="text-[11px] uppercase tracking-widest font-semibold ${c.tone.includes('white')?'text-slate-500':'text-teal-50'}">${esc(c.label)}</div>
+      <div class="rounded-2xl p-4 ${isPlain(c)?c.tone:'bg-gradient-to-br '+c.tone}">
+        <div class="text-[11px] uppercase tracking-widest font-semibold ${isPlain(c)?'text-slate-500':'text-teal-50'}">${esc(c.label)}</div>
         <div class="text-3xl font-bold mono mt-1">${esc(c.val)}</div>
         <div class="text-xs mt-0.5 ${c.subc}">${esc(c.sub)}</div>
       </div>`).join('');
@@ -285,9 +516,11 @@
           ${seats.map(e=> searchDim(seatChip(e), e)).join('')}
           ${Array.from({length: Math.min(open, Math.max(cap,0))}).map(openSeatChip).join('')}
         </div>
+        ${fSearch ? '' : seatMoneyBlock(c, open)}
       </div>`;
     }).join('');
     bindSeatButtons($('cohorts'));
+    bindLeadButtons($('cohorts'));
   }
 
   function renderOnline(){
@@ -314,7 +547,7 @@
     bindSeatButtons($('unassigned-list'));
   }
 
-  function renderAll(){ renderStats(); renderCohorts(); renderOnline(); renderUnassigned(); }
+  function renderAll(){ renderStats(); renderMoney(); renderCohorts(); renderOnline(); renderUnassigned(); }
 
   // ---------- drawer / student profile
   function bindSeatButtons(root){
@@ -379,7 +612,7 @@
   function renderDrawer(v){
     $('drawer-body').innerHTML = drawerHTML(v);
     $('d-close').onclick = hideDrawer;
-    const t = $('d-text'); if (t) t.onclick = ()=> openSms(digits(v.phone), v.name, v.pid);
+    const t = $('d-text'); if (t) t.onclick = ()=> openSms(digits(v.phone), v.name, { student: v.pid });
     showDrawer();
   }
   function openFromEnrollment(e){
@@ -412,14 +645,19 @@
   }
 
   // ---------- SMS modal (same engine as /admin/students)
-  const modal=$('sms-modal'); let smsTo=null, smsId=null;
+  // ref = { student: profileId } or { lead: leadId } so the sent text is logged against
+  // the right record (same fields the Students and Leads pages send).
+  const modal=$('sms-modal'); let smsTo=null, smsRef={};
   $('sms-close').onclick=()=>modal.classList.add('hidden');
   modal.addEventListener('click', e=>{ if(e.target===modal) modal.classList.add('hidden'); });
-  function openSms(phone,name,id){ smsTo=phone; smsId=id; $('sms-target').textContent=`${name} · ${phone}`; $('sms-body').value=''; $('sms-status').textContent=''; modal.classList.remove('hidden'); setTimeout(()=>$('sms-body').focus(),50); }
+  function openSms(phone,name,ref){ smsTo=phone; smsRef=ref||{}; $('sms-target').textContent=`${name} · ${fmtPhone(phone)}`; $('sms-body').value=''; $('sms-status').textContent=''; modal.classList.remove('hidden'); setTimeout(()=>$('sms-body').focus(),50); }
   $('sms-send').onclick=async()=>{
     const body=$('sms-body').value.trim(); if(!body||!smsTo) return;
     $('sms-status').textContent='Sending…';
-    const resp=await sb.functions.invoke('quo-send-sms',{ body:{ to:smsTo, body, related_student_id:smsId } });
+    const payload = { to:smsTo, body };
+    if (smsRef.student) payload.related_student_id = smsRef.student;
+    if (smsRef.lead) payload.related_lead_id = smsRef.lead;
+    const resp=await sb.functions.invoke('quo-send-sms',{ body: payload });
     if(resp?.error||resp?.data?.error){ $('sms-status').textContent='✗ '+(resp?.data?.error||resp?.error?.message||'failed'); }
     else { $('sms-status').textContent='✓ Sent'; setTimeout(()=>modal.classList.add('hidden'),700); }
   };

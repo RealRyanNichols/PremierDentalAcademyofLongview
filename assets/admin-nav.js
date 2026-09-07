@@ -5,7 +5,11 @@
  * Replaces the page's own top <nav> (or prepends one if the page has none)
  * with an identical dark header: brand, every admin section, active-page
  * highlighting, #user-label and #signout preserved so existing page JS keeps
- * working. Links wrap on desktop; on phones a Menu button opens every section.
+ * working. On wide screens (xl+) row 1 holds four group tabs (Daily, People,
+ * Teaching, Marketing) and row 2 the links of the selected group — always two tidy
+ * rows, the current page's group selected by default. Below xl (laptops, tablets,
+ * phones) a Menu button opens a grouped panel and the current page is named next to
+ * the brand — nothing side-scrolls.
  *
  * This is the real fix for "every admin page has different buttons".
  * It replaces the old floating admin-quicknav pill.
@@ -55,7 +59,12 @@
   }
 
   function groupHeading(name, extra) {
-    return '<span data-pda-group-heading="' + name + '" class="' + extra + ' text-[10px] uppercase tracking-wide font-bold text-slate-500 select-none">' + name + '</span>';
+    return '<span data-pda-group-heading="' + name + '" class="' + extra + ' text-[10px] uppercase tracking-wide font-bold text-slate-400 select-none">' + name + '</span>';
+  }
+
+  function linkFor(path) {
+    for (var i = 0; i < LINKS.length; i++) if (LINKS[i][0] === path) return LINKS[i];
+    return null;
   }
 
   function badgeSpan(path) {
@@ -79,61 +88,97 @@
     nav.setAttribute('data-pda-admin-nav', '');
     nav.className = 'bg-slate-900 text-white sticky top-0 z-50';
 
-    // Desktop: four group headings, each followed by its links, wrapping freely.
-    var desktopLinks = GROUPS.map(function (g) {
-      return groupHeading(g, 'shrink-0 pl-2 pr-1') +
+    // Wide screens (xl+): two tidy rows. Row 1 has the brand + four group TABS (Daily,
+    // People, Teaching, Marketing) + account; row 2 shows the links of the selected
+    // group only. The tab for the page you are on is selected by default, so the row
+    // under it always contains the highlighted current page. Every group's row stays
+    // in the DOM (hidden) so badge counts paint on all of them.
+    var cur = linkFor(here);
+    var selected = (cur && cur[3]) || GROUPS[0];
+    var desktopTabs = GROUPS.map(function (g) {
+      var on = g === selected;
+      return '<button type="button" role="tab" data-pda-tab="' + g + '" aria-selected="' + (on ? 'true' : 'false') + '" aria-controls="pda-admin-row-' + g + '" ' +
+        'class="relative min-h-[36px] inline-flex items-center gap-1.5 px-3 rounded-lg text-sm font-semibold ' +
+        (on ? 'bg-white/15 text-white' : 'text-slate-300 hover:text-white hover:bg-white/10') + '">' +
+        g + '<span data-pda-tab-badge="' + g + '" class="hidden"></span></button>';
+    }).join('');
+    var desktopRows = GROUPS.map(function (g) {
+      return '<div id="pda-admin-row-' + g + '" role="tabpanel" data-pda-cluster="' + g + '" class="' + (g === selected ? 'flex' : 'hidden') + ' flex-wrap items-center gap-1">' +
         LINKS.filter(function (l) { return l[3] === g; }).map(function (l) {
           var active = here === l[0];
-          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="shrink-0 whitespace-nowrap inline-flex items-center text-sm font-semibold px-2.5 py-1.5 rounded-lg ' +
+          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="shrink-0 whitespace-nowrap inline-flex items-center min-h-[36px] text-sm font-semibold px-3 rounded-lg ' +
             (active ? 'bg-teal-600 text-white' : 'text-slate-300 hover:text-white hover:bg-white/10') + '">' +
             l[1] + ' ' + l[2] + badgeSpan(l[0]) + '</a>';
-        }).join('');
+        }).join('') +
+      '</div>';
     }).join('');
 
-    // Mobile: a 2-column grid of every link under the same four headings.
-    var mobileLinks = GROUPS.map(function (g) {
-      return groupHeading(g, 'col-span-2 pt-2 px-2') +
+    // Menu panel (below xl): one column per group, links stacked under their heading.
+    // Two groups per row on phones, all four across on tablets/laptops.
+    var panelLinks = GROUPS.map(function (g) {
+      return '<div data-pda-cluster="' + g + '" class="min-w-0">' +
+        groupHeading(g, 'block pt-2 pb-1 px-3') +
         LINKS.filter(function (l) { return l[3] === g; }).map(function (l) {
           var active = here === l[0];
-          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="min-h-[44px] min-w-0 flex items-center gap-1.5 px-3 rounded-lg text-sm font-semibold ' +
+          return '<a href="' + l[0] + '" data-pda-link="' + l[0] + '" data-pda-group="' + l[3] + '" class="min-h-[44px] min-w-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold ' +
             (active ? 'bg-teal-600 text-white' : 'text-slate-200 hover:text-white hover:bg-white/10') + '">' +
-            '<span class="shrink-0">' + l[1] + '</span><span class="truncate">' + l[2] + '</span>' + badgeSpan(l[0]) + '</a>';
-        }).join('');
+            '<span class="shrink-0">' + l[1] + '</span><span class="leading-tight">' + l[2] + '</span>' + badgeSpan(l[0]) + '</a>';
+        }).join('') +
+      '</div>';
     }).join('');
 
+    // "Where am I" label for the collapsed layout (desktop shows the teal active pill).
+    var hereLabel = cur && cur[0] !== '/admin'
+      ? '<span data-pda-here class="xl:hidden min-w-0 truncate text-sm text-slate-300"><span class="text-slate-500">/ </span>' + cur[1] + ' ' + cur[2] + '</span>'
+      : '';
+
     nav.innerHTML =
-      '<div class="max-w-7xl mx-auto px-3 sm:px-6 min-h-14 flex flex-wrap items-center gap-3 py-2">' +
-        '<a href="/admin" data-pda-brand class="flex items-center gap-2 font-bold shrink-0">' +
-          '<span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>' +
-          '<span class="hidden sm:inline">PDA Admin</span>' +
-        '</a>' +
-        '<div class="hidden sm:flex flex-wrap items-center gap-1 flex-1 min-w-0">' +
-          desktopLinks +
+      '<div class="max-w-screen-2xl mx-auto px-3 sm:px-6">' +
+        '<div class="min-h-14 flex flex-wrap items-center gap-x-3 gap-y-1.5 py-2">' +
+          '<a href="/admin" data-pda-brand class="flex items-center gap-2 font-bold shrink-0">' +
+            '<span class="w-7 h-7 rounded bg-gradient-to-br from-teal-500 to-cyan-600 text-white grid place-items-center font-extrabold">P</span>' +
+            '<span class="hidden sm:inline">PDA Admin</span>' +
+          '</a>' +
+          hereLabel +
+          '<div role="tablist" aria-label="Admin sections" class="hidden xl:flex items-center gap-1 ml-2">' + desktopTabs + '</div>' +
+          '<button id="pda-admin-menu-btn" type="button" aria-expanded="false" aria-controls="pda-admin-menu" ' +
+            'class="xl:hidden relative ml-auto min-h-[40px] inline-flex items-center gap-1 px-3 rounded-lg text-sm font-semibold text-slate-200 bg-white/10 hover:bg-white/20">' +
+            'Menu <span aria-hidden="true">&#9662;</span>' +
+            '<span data-pda-menu-dot class="hidden"></span>' +
+          '</button>' +
+          '<div class="flex items-center gap-3 text-sm shrink-0 xl:ml-auto">' +
+            '<span id="user-label" class="text-slate-400 hidden md:inline"></span>' +
+            '<a href="/dashboard" class="text-slate-300 hover:text-white hidden sm:inline" title="Student dashboard">🎒</a>' +
+            '<button id="signout" class="text-slate-300 hover:text-white min-h-[40px]">Sign out</button>' +
+          '</div>' +
         '</div>' +
-        '<button id="pda-admin-menu-btn" type="button" aria-expanded="false" aria-controls="pda-admin-menu" ' +
-          'class="sm:hidden relative ml-auto min-h-[40px] inline-flex items-center gap-1 px-3 rounded-lg text-sm font-semibold text-slate-200 bg-white/10 hover:bg-white/20">' +
-          'Menu <span aria-hidden="true">&#9662;</span>' +
-          '<span data-pda-menu-dot class="hidden"></span>' +
-        '</button>' +
-        '<div class="flex items-center gap-3 text-sm shrink-0">' +
-          '<span id="user-label" class="text-slate-400 hidden md:inline"></span>' +
-          '<a href="/dashboard" class="text-slate-300 hover:text-white hidden sm:inline" title="Student dashboard">🎒</a>' +
-          '<button id="signout" class="text-slate-300 hover:text-white min-h-[40px]">Sign out</button>' +
-        '</div>' +
+        '<div data-pda-desktop-rows class="hidden xl:block pb-2">' + desktopRows + '</div>' +
       '</div>' +
-      '<div id="pda-admin-menu" class="hidden sm:hidden border-t border-white/10 px-3 pb-3 max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">' +
-        '<div class="grid grid-cols-2 gap-1">' + mobileLinks + '</div>' +
+      '<div id="pda-admin-menu" class="hidden xl:hidden border-t border-white/10 px-3 pb-3 max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">' +
+        '<div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-x-3 gap-y-1">' + panelLinks + '</div>' +
       '</div>';
 
-    // Mobile menu toggle (closed by default; toggled via the hidden class only).
+    // Group tabs: clicking one swaps the link row underneath (no page load).
+    var tabs = nav.querySelectorAll('[data-pda-tab]');
+    Array.prototype.forEach.call(tabs, function (t) {
+      t.addEventListener('click', function () { selectGroup(t.getAttribute('data-pda-tab')); });
+    });
+
+    // Menu toggle (closed by default; toggled via the hidden class only). Closes on
+    // Escape, on a tap outside the header, and when a link inside it is chosen.
     var menuBtn = nav.querySelector('#pda-admin-menu-btn');
     var menuPanel = nav.querySelector('#pda-admin-menu');
+    function setMenu(open) {
+      if (!menuBtn || !menuPanel) return;
+      if (open) menuPanel.classList.remove('hidden'); else menuPanel.classList.add('hidden');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      syncMenuDot();
+    }
     if (menuBtn && menuPanel) {
-      menuBtn.addEventListener('click', function () {
-        var open = menuPanel.classList.contains('hidden');
-        if (open) menuPanel.classList.remove('hidden'); else menuPanel.classList.add('hidden');
-        menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        syncMenuDot();
+      menuBtn.addEventListener('click', function () { setMenu(menuPanel.classList.contains('hidden')); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+      document.addEventListener('click', function (e) {
+        if (!menuPanel.classList.contains('hidden') && navEl && !navEl.contains(e.target)) setMenu(false);
       });
     }
 
@@ -154,6 +199,47 @@
 
     // Queue-count badges: run after the page's own Supabase client initialises.
     setTimeout(paintBadges, 0);
+  }
+
+  // Desktop: show one group's link row and mark its tab selected.
+  function selectGroup(g) {
+    if (!navEl) return;
+    var rows = navEl.querySelectorAll('[data-pda-desktop-rows] [data-pda-cluster]');
+    Array.prototype.forEach.call(rows, function (r) {
+      var on = r.getAttribute('data-pda-cluster') === g;
+      r.classList.toggle('hidden', !on);
+      r.classList.toggle('flex', on);
+    });
+    var tabs = navEl.querySelectorAll('[data-pda-tab]');
+    Array.prototype.forEach.call(tabs, function (t) {
+      var on = t.getAttribute('data-pda-tab') === g;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.className = 'relative min-h-[36px] inline-flex items-center gap-1.5 px-3 rounded-lg text-sm font-semibold ' +
+        (on ? 'bg-white/15 text-white' : 'text-slate-300 hover:text-white hover:bg-white/10');
+    });
+  }
+
+  // Desktop tabs carry the total waiting-work count of the links inside them, so
+  // "Leads 147" is still visible while you are on a Teaching page.
+  function syncTabBadges() {
+    if (!navEl) return;
+    var tabs = navEl.querySelectorAll('[data-pda-tab]');
+    Array.prototype.forEach.call(tabs, function (t) {
+      var g = t.getAttribute('data-pda-tab');
+      var badges = navEl.querySelectorAll('[data-pda-desktop-rows] [data-pda-cluster="' + g + '"] [data-pda-badge]');
+      var sum = 0;
+      Array.prototype.forEach.call(badges, function (b) { sum += Number(b.textContent) || 0; });
+      var el = t.querySelector('[data-pda-tab-badge]');
+      if (!el) return;
+      if (sum > 0) {
+        el.textContent = String(sum);
+        el.className = 'inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full text-[11px] font-bold leading-none ' +
+          (sum >= 10 ? 'bg-rose-600 text-white' : 'bg-amber-400 text-slate-900');
+      } else {
+        el.textContent = '';
+        el.className = 'hidden';
+      }
+    });
   }
 
   // Rose dot on the Menu button when the panel is closed and any queue is non-zero.
@@ -193,12 +279,21 @@
     Array.prototype.forEach.call(links, function (a) {
       if (INSTRUCTOR_PATHS.indexOf(a.getAttribute('data-pda-link')) === -1 && a.parentNode) a.parentNode.removeChild(a);
     });
-    var heads = navEl.querySelectorAll('[data-pda-group-heading]');
-    Array.prototype.forEach.call(heads, function (h) {
-      var g = h.getAttribute('data-pda-group-heading');
-      var left = h.parentNode ? h.parentNode.querySelectorAll('a[data-pda-group="' + g + '"]').length : 0;
-      if (!left && h.parentNode) h.parentNode.removeChild(h);
+    // A group left with no links loses its row (desktop + menu panel) and its tab; if
+    // the selected tab was one of them, fall back to the first group still standing.
+    var clusters = navEl.querySelectorAll('[data-pda-cluster]');
+    Array.prototype.forEach.call(clusters, function (c) {
+      if (!c.querySelector('a[data-pda-link]') && c.parentNode) c.parentNode.removeChild(c);
     });
+    var tabs = navEl.querySelectorAll('[data-pda-tab]');
+    var firstLeft = null, selectedLeft = false;
+    Array.prototype.forEach.call(tabs, function (t) {
+      var g = t.getAttribute('data-pda-tab');
+      if (!navEl.querySelector('[data-pda-desktop-rows] [data-pda-cluster="' + g + '"]')) { if (t.parentNode) t.parentNode.removeChild(t); return; }
+      if (!firstLeft) firstLeft = g;
+      if (t.getAttribute('aria-selected') === 'true') selectedLeft = true;
+    });
+    if (!selectedLeft && firstLeft) selectGroup(firstLeft);
     var brand = navEl.querySelector('a[data-pda-brand]');
     if (brand) brand.setAttribute('href', INSTRUCTOR_HOME);
   }
@@ -252,6 +347,7 @@
             try { setBadge(queues[i][0], n); } catch (e) { /* never break the nav */ }
           });
           badgeTotal = total;
+          try { syncTabBadges(); } catch (e) { /* never break the nav */ }
           syncMenuDot();
         });
       }).catch(function () { /* never break the nav */ });

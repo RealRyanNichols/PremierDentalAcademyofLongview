@@ -9,13 +9,24 @@ own header. Fixed by giving each audience ONE shared shell:
 | Students (signed-in) | `assets/student-nav.js` (new) | `/dashboard`, `/portal`, all 8 `skills-lab/*` pages |
 | Amanda / staff | `assets/admin-nav.js` (new) | `/admin` + all 9 admin subpages (incl. KPI + Questions) |
 
-## Admin shell (`assets/admin-nav.js`)
-- Replaces each page's hand-rolled `<nav>` with an identical sticky dark header:
-  Home · KPI · Leads · Questions · Students · Progress · Instructors · Chat ·
-  Feedback · Brain, plus `#user-label`, a 🎒 link back to the student dashboard,
-  and Sign out.
-- Active page is highlighted teal. On phones the link row scrolls sideways —
-  no button ever disappears.
+## Admin shell (`assets/admin-nav.js`) — layout as of Sep 7, 2026
+- Replaces each page's hand-rolled `<nav>` with an identical sticky dark header
+  holding all 17 admin pages in four groups (Daily · People · Teaching · Marketing),
+  plus `#user-label`, a 🎒 link back to the student dashboard, and Sign out.
+- **Wide screens (≥1280px):** two tidy rows. Row 1 = brand + four group TABS +
+  account. Row 2 = the links of the selected group only. The group containing the
+  current page is selected on load, so the teal "you are here" pill is always visible.
+  Clicking a tab swaps row 2 without leaving the page. Each tab shows the summed
+  waiting-work count of its pages (so "Leads 147" is visible from a Teaching page).
+- **Below 1280px (laptops, tablets, phones):** one 56px row — brand, "/ current page"
+  label, Menu button (rose dot when any queue is non-zero), Sign out. Menu opens a
+  grouped panel: four columns on tablets, two on phones, 44px tap targets, labels wrap
+  (never truncate), closes on Escape / tap outside. Nothing side-scrolls.
+- Why not one wrapped row: with the plain-English labels the 17 links need ~2,400px,
+  so a single wrapped row put group headings mid-row and stacked 3–4 rows on a
+  1440px desktop (the "menu looks weird" report, Sep 7).
+- Instructor-only accounts see just Student progress / Student questions / Enrolled
+  students; empty groups lose their tab and panel column.
 - Keeps the `#user-label` / `#signout` ids so every page's existing JS still works.
 - The old floating `admin-quicknav.js` pill is REMOVED (this shell replaces it).
 

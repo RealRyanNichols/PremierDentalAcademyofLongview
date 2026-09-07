@@ -1872,7 +1872,16 @@
   }
 
   applyViewMode();
-  load();
+  const firstLoad = load();
+
+  // Deep link: /admin/leads#lead=<id> (from the Class dates & seats picks) opens that
+  // lead's profile drawer once the list has loaded.
+  const leadLink = /^#lead=([0-9a-f-]{36})$/i.exec(location.hash || '');
+  if (leadLink) {
+    Promise.resolve(firstLoad).then(() => {
+      if (allLeads.some(x => x.id === leadLink[1])) openLeadDrawer(leadLink[1]);
+    }).catch(() => {});
+  }
 
   // Deep link: /admin/leads#messages opens the Messages tab straight away.
   if (location.hash === '#messages') {
