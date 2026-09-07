@@ -237,6 +237,22 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   domain verify, Mux tokens, 30 broadcast email bodies import, Kajabi contacts CSV,
   lesson content_html/quizzes for weeks 10–12, Mux signed playback for paid videos.
 
+## LABOR DAY 2026 OFFER — LIVE BY PHONE ONLY (Sep 6–7, 2026)
+- Offer lives once in `assets/site-facts.js` (`laborDay2026`, `offerIsLive`). /labor-day + the
+  promo bars self-expire at 2026-09-07 23:59:59 CT; `check:facts` fails a build still active
+  after that. After Sep 7: set `active:false` (or leave; the clock already hides everything).
+- The $100 Square links were NEVER turned on: nothing writes `cohorts.deposit_link_url`,
+  the square-webhook (v6) assigns the class only from the Square customer note, and a $100
+  buyer with an account would get full course access with a refund right open. Page stays in
+  "call or text" mode. Do not add deposit links until all three are fixed.
+- /admin/payments (owner-only) + read-only api/admin-payments.js reconcile purchases vs Square.
+  Known: checkout auto-pay (enroll.js STEP 3 invoice) has NEVER succeeded — orders exist,
+  invoices don't. $11,000 of balances (Selena/Linsey/Madisyn $3,000 each, Crystal $2,000) have
+  no schedule; plan choices were never stored. Retired Square links ($1,997, $2,100 plans,
+  $397 online) are still live; Square location phone is the never-use 903-230-6444.
+- Selena moved to Sept 29 (applied Sep 6). October 5 (MWF, hours TBC) + October 20 (T/Th) live.
+- Runbook + Amanda's action list: docs/labor-day-2026-offer.md, docs/COWORK-REQUEST-2026-09-06.md.
+
 ## To continue building
 Describe what you want. This file is your memory: read the repo, propose a short
 plan, then make focused changes that follow the rules above.

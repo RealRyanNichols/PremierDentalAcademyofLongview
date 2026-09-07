@@ -1,85 +1,78 @@
-# Cowork request — Labor Day offer go-live (Sunday, September 6, 2026)
+# Cowork request — Labor Day offer (updated Sunday, September 6, 2026, ~10 PM CT)
 
-Paste everything below the line into Claude Cowork (or hand it to Amanda in Claude). It is
-written so Amanda can answer each item without opening the code. Every answer comes back to
-Ryan or to the repo agent, which then finishes the wiring.
+Paste everything below the line into Claude Cowork (or hand it to Amanda in Claude). Each
+item ends with the exact reply that lets the repo agent finish the wiring.
 
 ---
 
-Hi Amanda. The Labor Day offer is deployed and waiting on three things only you can do.
-Nothing charges $100 until step 1 is done, and the site shows "call or text to reserve"
-until then, so there is no rush risk. Please do them in order.
+Hi Amanda. The Labor Day offer is live at /labor-day, written as a tuition credit with the
+September 10 full-refund date, and it correctly says "call or text to reserve" instead of
+showing a $100 button. Here is what needs you.
 
-## 1. Create the two $100 Square links (about 5 minutes, in Square)
+## 1. Take the $100 by phone. Do NOT create Square links tonight.
 
-Square Dashboard → Online → Payment Links → Create a link → "Collect a payment".
+Verified: the website cannot save a Square link to a class yet, and the payment system would
+put a $100 buyer in no class (or the wrong one) and could hand a $100 buyer the whole course
+with a refund right still open. So the offer runs by phone: when someone calls or texts
+(903) 913-6444, take the $100 in Square as usual and assign their class yourself. Volume will
+be a handful of people. Nothing to reply on this one.
 
-Make TWO links, one per class. For each:
+## 2. Selena is moved to September 29. Send her the note tomorrow.
 
-- **Item name (copy exactly):**
-  - Link A: `PDA RDA Program — In-Person — Labor Day seat reservation (September 14, 2026 — In-Person (MWF))`
-  - Link B: `PDA RDA Program — In-Person — Labor Day seat reservation (September 29, 2026 — In-Person (T/Th))`
-  The words "In-Person" must stay in the name. Our system reads that to know it is the in-person program.
-- **Price:** $100.00, quantity fixed at 1.
-- **Collect from the buyer:** name, email address, and phone number (turn all three on).
-- Leave "nonrefundable" or any fine print OFF the link. The cancellation terms are already on the website page.
+Done tonight with Ryan's go: she is in the September 29 class, the seat counts are right, and
+her open task is closed. Tomorrow, between 8 AM and 6 PM:
 
-Then paste each link into the class record so the website picks it up automatically:
-
-- Website → sign in as hello@ → `/admin/cohorts` → open **September 14, 2026 — In-Person (MWF)** → field **deposit_link_url** → paste Link A → save.
-- Same for **September 29, 2026 — In-Person (T/Th)** → paste Link B → save.
-
-The moment both are saved, the Labor Day bar appears on every page and the two "Reserve my
-seat for $100" buttons go live on `/labor-day`. If you ever want it off instantly, disable
-the link in Square.
-
-Reply with: **"Links done"** (or paste the two links here and Ryan will save them).
-
-## 2. Approve moving Selena to the September 29 class (one word)
-
-Selena paid $500 on September 1 and texted the same day that the checkout put her in
-September 14 but she cannot start until the 29th. Everything is staged:
-
-- Her enrollment moves from September 14 to September 29 (seat counts fix themselves).
-- Her open "assign a cohort" task closes.
-- A corrected email is sitting as a DRAFT in the hello@ Gmail, subject
-  "Your start date is September 29 (corrected)". It is not sent.
-- A text for her thread is written (below) and not sent.
-
-Reply with: **"Move Selena"** and the agent applies it. Then send the Gmail draft and this text
-(between 8 AM and 6 PM):
+- Open the Gmail draft in the hello@ inbox, subject **"Your start date is September 29
+  (corrected)"**, and press send.
+- Text this to **+1 903-399-2992 only** (there is another Selena in the system with a similar
+  schedule preference; do not text +1 903-407-6758):
 
 > Hi Selena, this is Amanda at Premier Dental Academy. Got your text, and I am sorry about the mix-up. You are now in the September 29 class: Tuesdays and Thursdays, 9:00 AM to 3:00 PM, at 2800 Gilmer Rd, Suite 106. Your $500 down is not affected. Please ignore the September 14 date in the welcome email. I just sent you a corrected email too. Text or call me here with any questions.
 
-Also: Linsey Jaimes has an identical open "assign a cohort" task and she IS on September 14.
-If September 14 is right for her, reply **"Linsey stays"** and that task gets closed too.
+Reply **"Selena sent"** when both are out.
 
-## 3. One question: October 5 class hours
+## 3. Ask Linsey which class she wants (do not assume September 14)
 
-The October 5 (Mon/Wed/Fri) and October 20 (Tue/Thu) classes are created and live on the
-calendar. October 20 shows the approved hours (9:00 AM to 3:00 PM). October 5 currently shows
-"Call or text (903) 913-6444 for current class days & times" because the Mon/Wed/Fri block
-for October has not been confirmed.
+Linsey has never sent us a human message; her September 14 seat was a computer guess. Text
+her tomorrow (8 AM to 6 PM):
 
-Reply with one of:
-- **"October 5 is 8:30 to 12:30"** (same as the September 14 class), or
-- the correct hours.
+> Hi, this is Amanda at Premier Dental Academy. Thank you for your $500 deposit. I have you down for the class starting Monday, September 14 (Mon/Wed/Fri, 8:30 AM to 12:30 PM). Is that the class you want, or would September 29 (Tue/Thu) fit better? Also, so your certificate is right: is your name spelled Linsey or Lindsey? Text or call me here any time.
 
-No evening, night, or Saturday times can be published.
+Reply with her answer, for example **"Linsey: Sept 14, spelled Lindsey"**.
 
-## 4. Two money items to know about (no action tonight)
+## 4. October 5 class hours (one line)
 
-- Four students who paid deposits (Selena, Linsey, Madisyn, Crystal S.) have no balance
-  invoices or subscription in Square. About $9,000 is not scheduled for collection.
-  `/admin/payments` (new page, owner login) shows who, and a "open in Square" link for each.
-- Seven completed Square payments were never recorded in our database (Madisyn $500,
-  Crystal $500, Fayth $300, Ashley $150, a $150 invoice, two $175 point-of-sale). The same
-  page lists them under "In Square but not in our records". Dashboard totals are understated
-  until these are added.
+October 5 (Mon/Wed/Fri) and October 20 (Tue/Thu) are live on the calendar. October 20 shows
+9:00 AM to 3:00 PM. October 5 shows "call or text for hours" until you confirm.
 
-## 5. Confirm the online $100 item name says "Online"
+Reply **"October 5 is 8:30 to 12:30"** or the correct hours. No evening or Saturday times.
 
-The online program's first $100 payment link (`square.link/u/V47Vjqx3`) must have "Online"
-in its Square item name, otherwise a $100 online payment could be treated as in-person now
-that two $100 products are live at once. Open that link's item in Square and reply
-**"Online item name checked"** (or paste the name).
+## 5. Balance plans: confirm each student's total and schedule
+
+Four students paid deposits and have no balance plan in Square, $11,000 total. Nothing was
+ever set up to collect it, and we never recorded whether each chose weekly or monthly.
+
+| Student | Paid so far | Left on the $3,500 plan |
+|---|---|---|
+| Selena | $500 | $3,000 |
+| Linsey | $500 | $3,000 |
+| Madisyn Bice | $500 | $3,000 |
+| Crystal Suniga (August 25 class, in session) | $1,500 | $2,000 |
+
+For each, reply with the total you agreed and the schedule, for example
+**"Madisyn: $3,500 total, weekly over 12"** or **"Crystal: $3,500 total, monthly over 4"**.
+If you want us to text each one and ask, reply **"Ask them"** and we will draft the texts.
+Once you answer, the plans get created in Square on the card each student already saved,
+and you see the exact dates and amounts before anything is charged.
+
+## 6. Old prices that are still buyable in Square (approve turning off)
+
+These Square links still work and sell the program at retired prices: the one-time full
+tuition link at the old price (square.link/u/BDrjqV0d), the three May 2026 $2,100 plans
+(daily, weekly, monthly), and the online plan at $397 (square.link/u/V47Vjqx3). There are
+also old catalog items at $200 down, $425 "non-refundable deposit", $4,500 and $4,800.
+
+Reply **"Turn off the old links"** to disable the full-tuition and $2,100 links, or tell us
+which of your current students still pay through the weekly or monthly $2,100 link so we
+keep those on. Separately, reply **"Fix the Square phone"** and the receipt phone number
+changes from 903-230-6444 to (903) 913-6444.

@@ -1,5 +1,5 @@
 -- ============================================================================
--- NOT APPLIED. APPROVAL-GATED: this touches a real student's enrollment record.
+-- APPLIED 2026-09-06 ~9:45 PM CT (Ryan's go after the pre-flight verification). Result: Sept 29 enrolled_count 2, Sept 14 enrolled_count 2, task 4e60add0 done.
 --
 -- Who: Selena (enrollment 2fd402eb-baed-4fd9-ba38-967360f143b3; paid $500 down on
 --      Sep 1, 2026 through the website checkout).

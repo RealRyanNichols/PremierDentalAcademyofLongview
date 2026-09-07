@@ -30,28 +30,26 @@ Three independent off-switches, no human action needed at the deadline:
 
 **Hard ordering constraint, enforced by data:** the bars only render when a real `deposit_link_url` exists. Until Amanda pastes the Square links, the page shows "call or text to reserve" cards and the bars stay hidden. A "$100" bar can never appear while checkout would charge $500.
 
-## Amanda's launch steps (in order)
+## Status after verification (Sunday Sep 6, ~9:30 PM CT)
 
-1. **Create two Square payment links** (Square Dashboard → Payment Links → Checkout link), one per class:
-   - Item name must contain **"In-Person"** (the webhook classifies the program from the order line-item text): e.g. `PDA RDA Program — In-Person — Labor Day seat reservation (September 14, 2026 — In-Person (MWF))`.
-   - Price **$100.00**, quantity fixed at 1, collect buyer **name, email and phone**.
-   - Repeat for `September 29, 2026 — In-Person (T/Th)`.
-2. **Paste each link into the class record**: `/admin/cohorts` → the class → `deposit_link_url` (or SQL: `update public.cohorts set deposit_link_url = '<link>' where id = '<cohort id>';`).
-   - Sept 14 id: `a808608c-df03-40de-822e-f587c7e64395`
-   - Sept 29 id: `69d28988-f34c-49f4-a7bf-f99333f87585`
-3. **Deploy `main`** once this branch is merged (Ryan). The moment both a deploy and the links exist, the page sells and the bars appear. Nothing else to flip.
-4. **After each $100 payment**: open `/admin/payments`. A Labor Day buyer will show as an in-person payment with the class **not assigned** (see "Known gap" below). Assign the class on `/admin/cohorts`, then set up their balance plan in Square (invoices or a subscription) so the page's "no balance schedule" flag clears.
-5. **Kill switch** at any time: disable the Square link (instant, no deploy), or set `active:false` and deploy.
+**The $100 links are ON HOLD.** Verified against the code and Square:
 
-## Known gap: the webhook cannot auto-assign a class from a payment link
+- Nothing in the codebase can save `cohorts.deposit_link_url`. `/admin/cohorts` is a read-only viewer (zero writes, zero mentions of the column). The only way to set it is SQL.
+- Even with a link saved, the `square-webhook` (still v6) assigns the class only from the Square **customer note**, which a hosted payment link cannot set. A buyer would land with no class (`cohort_id NULL`), or, if they already have a stale customer note, in the wrong class. With `cohort_id NULL` the seat counter never moves, so the site would keep selling past 8 seats during a week when every buyer holds a full-refund right.
+- A buyer with a website account is auto-enrolled with full course access, and the webhook has no refund branch. A $100 buyer could take the course library and claim the $100 back by Thursday.
+- The real kill switch is nulling `deposit_link_url` (SQL), not disabling the Square link: a disabled link leaves the button pointing at a dead checkout.
 
-`square-webhook` v6 (live, read on Sep 6) resolves the class only from the Square **customer note** (`Cohort: <exact cohort name>`). A hosted payment link does not set that note, so every Labor Day buyer will land in `enrollments` with `cohort_id = NULL` and their welcome email will carry no start date. `/admin/payments` flags these as "not assigned". If Amanda wants automatic assignment, the fix is a small webhook change (read the cohort name from the order line-item text as well); that is a separate, approval-gated deploy and is **not** part of this build.
+**So the offer runs by phone.** The page stays in its "call or text to reserve" state, which it renders correctly, and Amanda assigns the class herself when she takes the $100 at (903) 913-6444. The bars stay hidden by design.
 
-**Amount-based program inference is still present in v6** but only as the last fallback (`if (!path) path = amount === 39700 || amount === 99700 ? "online" : "in-person"`), after the customer note, the lead's `path_preference`, and the order line-item text. A $100 Labor Day payment therefore cannot be misclassified as online. It classifies correctly by item name, and falls back to in-person anyway. The residual risk is the **other** $100 product (the online plan's first $100 payment on `square.link/u/V47Vjqx3`): it classifies correctly only if its line-item name contains "Online". Amanda should confirm that item name says "Online" before both $100 products are live at once.
+To turn the links on later, all three must be true first: a write path for `deposit_link_url` (SQL or a small admin field), a webhook change that reads the class from the order line item and does not grant course access on a $100 deposit, and the retired Square links below disabled.
+
+## Retired prices still buyable in Square (needs Amanda's approval to disable)
+
+Live hosted links found Sep 6: `square.link/u/BDrjqV0d` (full tuition one-time, retired price), `square.link/u/MyXAJViU`, `BNSrfAvW`, `UCHKPVPK` (the May 2026 $2,100 daily/monthly/weekly plans), and `V47Vjqx3` (online at the retired $397). Unarchived catalog items at $200 down, $425 "non-refundable deposit", $4,500, $4,800 and three any-amount items. The Square location also prints **+1 903-230-6444** on every receipt (the never-use number). Disabling links and fixing the phone are Square writes; the $2,100 weekly/monthly links may be what current students still pay through, so each one is reviewed with Amanda before it is turned off.
 
 ## Selena: correction email (Gmail draft, NOT sent) + text (NOT sent)
 
-Gmail draft created Sep 6 in the hello@ inbox, subject **"Your start date is September 29 (corrected)"**, to her enrollment email. **Send it only after `db/pending/2026-09-06_move_selena_to_sep29.sql` has been applied**, so the email and the record agree.
+**The move was applied Sep 6 (Ryan's go).** Selena is on September 29; the Sept 14 seat count dropped by one and her open task is closed. Gmail draft `r7181875990320985896` in the hello@ inbox, subject **"Your start date is September 29 (corrected)"**, is ready to send **tomorrow between 8 AM and 6 PM CT**. Text only **+1 903-399-2992** (her thread). There is a second Selena in the system (Selena Gonzalez, +1 903-407-6758) with the same Tue/Thu preference; do not text that number.
 
 Text to send on her existing Quo thread, after the SQL is applied and inside 8 AM to 6 PM CT (staged here, not sent, not queued):
 
@@ -63,10 +61,20 @@ Checked live on Sep 6: `admin_student_progress()` and `admin_student_activity()`
 
 Two things Amanda has **not** decided, so nothing was changed: instructors cannot see `purchases` (no instructor policy), and `is_instructor` has no JWT claim (only `is_admin` does). Also note the `trg_pda_auto_admin_hello` trigger hard-denies `is_admin` for every email except hello@, so a plain `UPDATE profiles SET is_admin = true` for anyone else silently writes false.
 
+## Linsey Jaimes: ask, do not assume
+
+Every one of her communications is machine-generated; she has never sent a human message. Her Sept 14 seat was assigned by the webhook from a generic item name. Her roster name is "Linsey", her email says "lindsey", and her profile has no name. Text to send (8 AM to 6 PM):
+
+> Hi, this is Amanda at Premier Dental Academy. Thank you for your $500 deposit. I have you down for the class starting Monday, September 14 (Mon/Wed/Fri, 8:30 AM to 12:30 PM). Is that the class you want, or would September 29 (Tue/Thu) fit better? Also, so your certificate is right: is your name spelled Linsey or Lindsey? Text or call me here any time.
+
+## Balance plans: confirmed amounts
+
+Zero invoices and zero subscriptions exist for all four. Correct balances if each is on the $3,500 plan: **Selena $3,000 · Linsey $3,000 · Madisyn $3,000 · Crystal S. $2,000** (Crystal has paid $1,500 and is a current August 25 student, not September). Only Crystal's $3,500 total is written down anywhere. The weekly/monthly choice for the other three was never stored. Confirm the agreed total and schedule with each student before any invoice is created.
+
 ## Findings Amanda needs to know (not fixed in this build)
 
-1. **Roughly $9,000 of down-payment balances have no scheduled collection in Square.** Selena ($500, Sep 1), Linsey ($500, Sep 3), Madisyn ($500, Aug 24) and Crystal S. ($500 Aug 25 + $1,000 Sep 1) have **no invoices and no subscription** under their Square customer ids. `/admin/payments` shows this live under "No balance schedule in Square".
-2. **Real payments are missing from our database.** Completed Square payments with no `purchases` row as of Sep 6: Madisyn $500 (8/24), Crystal S. $500 (8/25), Fayth D. $300 (8/28), Ashley G. $150 (8/21), one $150 invoice payment (9/4), and two $175 point-of-sale payments (8/15, 8/21). Every dashboard total that reads `purchases` is understated by at least $1,000 and in fact by more. `/admin/payments` lists them under "In Square but not in our records".
+1. **$11,000 of balances have no scheduled collection in Square** (Selena $3,000, Linsey $3,000, Madisyn $3,000, Crystal $2,000). The checkout's auto-pay step has never worked once: Square holds the $3,000 "remaining balance" orders for all four, but the installment invoice failed every time and the account has zero installment invoices in its history. `/admin/payments` shows this live under "No balance schedule in Square".
+2. **The revenue table captures about one dollar in six.** Square has 53 completed payments since July 1 totalling $25,440; 12 ($4,142) are in `purchases`. `public.failed_payments` is empty while Square logged 20 failed payments ($6,998) in the same window, so nobody is followed up after a decline. All 1,604 `admin_tasks` are `status='open'`, so the queue carries no signal, and the cohort-assignment tasks have `related_student_id = NULL`. `/admin/payments` lists the gaps under "In Square but not in our records".
 3. `purchases` has **no unique index on `square_payment_id`** (only on `external_payment_id`), so a webhook re-fire can double-record. Add a partial unique index this week.
 4. The `tuition-reserve` edge function still defaults to **$1,997 total / $200 down** when a caller omits the amount fields. The promo never touches it; retire or fix it this week.
 5. RLS: `subscribers` (913 rows) and `chat_messages` (311) are readable by every signed-in user, and `subscribers` is publicly UPDATE-able. Security fix this week.
