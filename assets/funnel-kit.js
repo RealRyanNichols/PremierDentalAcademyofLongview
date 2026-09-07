@@ -35,6 +35,29 @@
   var ENROLL_PLAN = '/enroll?plan=in-person&paymode=plan&' + UTM;
   var ENROLL_FULL = '/enroll?plan=in-person&paymode=full&' + UTM;
 
+  /* ── Dated offer bar (Labor Day 2026). Source of truth: assets/site-facts.js.
+   * The funnel pages hard-code the regular "$500 down holds your seat" line, so an
+   * ad that says $100 landed on a page that said $500. While the offer clock in
+   * site-facts is live, the top bar becomes the offer line and points at the
+   * offer page; the moment it expires the page is back to the regular copy. ── */
+  function offerBar(attempt) {
+    attempt = attempt || 0;
+    if (!window.PDA_FACTS) {
+      if (attempt === 0 && !document.querySelector('script[src="/assets/site-facts.js"]')) { var s = document.createElement('script'); s.src = '/assets/site-facts.js'; document.head.appendChild(s); }
+      if (attempt < 30) setTimeout(function () { offerBar(attempt + 1); }, 100);
+      return;
+    }
+    try {
+      var F = window.PDA_FACTS, O = F.laborDay2026, bar = document.querySelector('.topbar');
+      if (!bar || !O || typeof F.offerIsLive !== 'function' || !F.offerIsLive(O)) return;
+      var href = (O.landingPath || '/labor-day') + '?utm_source=facebook&utm_medium=cpc&utm_campaign=' + encodeURIComponent(O.key || 'laborday2026') + '&utm_content=' + encodeURIComponent(CAMPAIGN);
+      bar.innerHTML = '<b>Labor Day offer:</b> <span>' + O.depositDisplay + ' reserves your seat</span> in the September 14 or September 29 class instead of ' + O.regularDownDisplay + ' down. Ends ' + O.endsDisplay + '. <a href="' + href + '" style="color:#fff;text-decoration:underline;font-weight:800;white-space:nowrap">See the offer →</a>';
+      var left = Date.parse(O.endsAtISO) - Date.now();
+      if (isFinite(left) && left > 0 && left < 2147483647) setTimeout(function () { location.reload(); }, left + 1000);
+    } catch (e) {}
+  }
+  offerBar();
+
   /* ── Meta Pixel (one copy for every funnel) ── */
   try {
     if (!window.fbq) {

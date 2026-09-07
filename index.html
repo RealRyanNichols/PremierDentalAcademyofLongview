@@ -1141,8 +1141,11 @@
     // Labor Day 2026 promo bar. Source of truth: assets/site-facts.js (laborDay2026).
     // Shows only while the offer is live (America/Chicago) AND an eligible class has a
     // real Square deposit link — never a "$100" promise the checkout can't honor.
-    try {
-      const F = window.PDA_FACTS || {};
+    // site-facts.js is injected asynchronously by pda-nav.js, so poll for it briefly
+    // instead of reading window.PDA_FACTS once and silently giving up.
+    const laborDayBar = (attempt) => { try {
+      const F = window.PDA_FACTS;
+      if (!F) { if (attempt < 40) setTimeout(() => laborDayBar(attempt + 1), 100); return; }
       const O = F.laborDay2026;
       const bar = document.getElementById('laborday-bar');
       let dismissed = false; try { dismissed = sessionStorage.getItem('pda.laborday.x') === '1'; } catch (e) {}
@@ -1161,7 +1164,8 @@
           if (isFinite(left) && left > 0 && left < 2147483647) setTimeout(() => { try { bar.remove(); if (strike) strike.style.display = ''; } catch (e) {} }, left);
         }
       }
-    } catch (e) {}
+    } catch (e) {} };
+    laborDayBar(0);
 
     // Live "By the numbers" stats — live counts + admin overrides for marketing numbers
     try {

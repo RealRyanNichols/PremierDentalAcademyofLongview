@@ -760,6 +760,10 @@ function laborDayPromoFor(cohort) {
     return O;
   } catch (e) { return null; }
 }
+// True while the offer clock is live, whatever class is selected.
+function laborDayLive() {
+  try { const F = window.PDA_FACTS || {}; return !!(F.laborDay2026 && typeof F.offerIsLive === 'function' && F.offerIsLive(F.laborDay2026)); } catch (e) { return false; }
+}
 
 // Big, unmissable "this is the class you are reserving" panel + the Labor Day
 // notice. Selena's whole problem was not seeing where to change the date.
@@ -779,6 +783,11 @@ function renderClassConfirm() {
     note.hidden = false;
   } else if (promo) {
     note.textContent = 'Labor Day offer: choose "Payment plan" above to reserve this class with ' + fmtMoney(promo.depositCents) + ' today instead of ' + promo.regularDownDisplay + '.';
+    note.hidden = false;
+  } else if (laborDayLive() && paymode === 'plan') {
+    // Someone who came from a $100 ad and switched to an October/November class
+    // must see why the deposit is $500 before they pay, not after.
+    note.textContent = 'This class is not part of the Labor Day offer, so the regular $500 down applies. The $100 offer covers the September 14 and September 29 classes only.';
     note.hidden = false;
   } else {
     note.hidden = true;
