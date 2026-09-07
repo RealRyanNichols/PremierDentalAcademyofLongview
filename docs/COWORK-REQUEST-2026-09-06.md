@@ -40,12 +40,9 @@ her tomorrow (8 AM to 6 PM):
 
 Reply with her answer, for example **"Linsey: Sept 14, spelled Lindsey"**.
 
-## 4. October 5 class hours (one line)
+## 4. October 5 hours: done
 
-October 5 (Mon/Wed/Fri) and October 20 (Tue/Thu) are live on the calendar. October 20 shows
-9:00 AM to 3:00 PM. October 5 shows "call or text for hours" until you confirm.
-
-Reply **"October 5 is 8:30 to 12:30"** or the correct hours. No evening or Saturday times.
+Amanda answered (same as every Monday). October 5 now shows Mon/Wed/Fri 8:30 AM to 12:30 PM.
 
 ## 5. Balance plans: confirm each student's total and schedule
 
@@ -65,14 +62,10 @@ If you want us to text each one and ask, reply **"Ask them"** and we will draft 
 Once you answer, the plans get created in Square on the card each student already saved,
 and you see the exact dates and amounts before anything is charged.
 
-## 6. Old prices that are still buyable in Square (approve turning off)
+## 6. Old prices: removed
 
-These Square links still work and sell the program at retired prices: the one-time full
-tuition link at the old price (square.link/u/BDrjqV0d), the three May 2026 $2,100 plans
-(daily, weekly, monthly), and the online plan at $397 (square.link/u/V47Vjqx3). There are
-also old catalog items at $200 down, $425 "non-refundable deposit", $4,500 and $4,800.
-
-Reply **"Turn off the old links"** to disable the full-tuition and $2,100 links, or tell us
-which of your current students still pay through the weekly or monthly $2,100 link so we
-keep those on. Separately, reply **"Fix the Square phone"** and the receipt phone number
-changes from 903-230-6444 to (903) 913-6444.
+Per Amanda (Sep 6, ~10 PM): $397 and $1,997 are dead prices. Removed from Square tonight: the
+$1,997 full-tuition link, the $397 online link, and the three May 2026 $2,100 daily/weekly/
+monthly links. Existing invoices and subscriptions were not touched. The Square receipt phone
+now reads (903) 913-6444. Still to review with Amanda: old catalog items at $200 down, $425
+"non-refundable deposit", $4,500 and $4,800 (archive them in Square → Items).
