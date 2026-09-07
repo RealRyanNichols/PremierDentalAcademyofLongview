@@ -72,9 +72,13 @@ ok(/function isLive\(\)[\s\S]*offerIsLive/.test(page), "labor-day.html gates on 
 ok(/function renderCards[\s\S]*if \(!isLive\(\)\) return;/.test(page), "labor-day.html never renders a class card when expired");
 ok(/if \(!OFFER \|\| !isLive\(\)\) \{ showEnded\(\); \}/.test(page), "labor-day.html boots straight into the ended panel when expired");
 ok(/id="ended" hidden/.test(page) && /href="\/enroll"/.test(page), "ended panel exists and points at /enroll");
-ok(/offerIsLive\(O\)\) return false;/.test(nav) && /if \(!F\.offerIsLive\(O\)\) return;/.test(nav), "pda-nav promo bar checks the clock before AND after the network call");
-ok(/deposit_link_url && !full/.test(nav), "pda-nav promo bar requires a real deposit link on a non-full class");
-ok(/id="laborday-bar" hidden/.test(home) && /F\.offerIsLive\(O\) && !dismissed/.test(home) && /payable && F\.offerIsLive\(O\)/.test(home), "homepage bar is hidden by default and double-checks live + deposit link");
+ok(/offerIsLive\(O\)\) return false;/.test(nav) && /if \(!F\.offerIsLive\(O\)\) return;/.test(nav), "pda-nav promo bar checks the clock twice (before and inside the render)");
+ok(!/deposit_link_url/.test(nav) && !/deposit_link_url/.test(page), "no surface depends on cohorts.deposit_link_url any more (hosted links abandoned)");
+ok(/checkoutPath/.test(page) && /plan=in-person&paymode=plan/.test(readFileSync(join(root, "assets/site-facts.js"), "utf8")), "labor-day cards deep-link into the pre-filled /enroll checkout");
+ok(/id="laborday-bar" hidden/.test(home) && /F\.offerIsLive\(O\) && !dismissed/.test(home), "homepage bar is hidden by default and gated on the offer clock");
+const enrollHtml = readFileSync(join(root, "enroll.html"), "utf8");
+ok(/function laborDayPromoFor/.test(enrollHtml) && /PDA_FACTS\.laborDay2026|F\.laborDay2026/.test(enrollHtml) && !/10000|310000/.test(enrollHtml.replace(/<!--[\s\S]*?-->/g, "")), "enroll.html mirrors the promo from site-facts (no second hardcoded $100 / $3,100)");
+ok(/id="class-confirm"/.test(enrollHtml) && /You are reserving a seat in/.test(enrollHtml), "enroll.html shows the unmissable class confirmation panel");
 ok(/prefers-reduced-motion: reduce/.test(page) && /prefers-reduced-motion: reduce/.test(nav) && /prefers-reduced-motion: reduce/.test(home.slice(0, 20000)), "pulse/shimmer is disabled for prefers-reduced-motion on all three surfaces");
 
 // ── 4. Copy safety on the promo surfaces

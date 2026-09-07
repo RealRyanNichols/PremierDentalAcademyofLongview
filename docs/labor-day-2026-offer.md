@@ -1,7 +1,7 @@
 # Labor Day 2026 offer — runbook, action pack, and findings
 
-Prepared Sunday, September 6, 2026 (America/Chicago). Branch `feat/labor-day-offer-2026-09`.
-Nothing here is deployed or applied. Amanda approves each production step separately.
+Prepared Sunday, September 6, 2026 (America/Chicago). First build merged to `main` Sep 6 (~9 PM CT).
+The $100-via-checkout change is on branch `feat/labor-day-checkout-deposit`, NOT deployed, awaiting Ryan's approval.
 
 ## The offer (locked decisions)
 
@@ -18,34 +18,31 @@ Nothing here is deployed or applied. Amanda approves each production step separa
 
 | Surface | File | Shows when |
 |---|---|---|
-| Landing page `/labor-day` | `labor-day.html` | offer live (date window + `active`). Expired → "this offer has ended" panel pointing at `/enroll`. |
-| Site-wide top bar (every page except the homepage, admin, login) | `assets/pda-nav.js` → `injectPromoBar()` | offer live **and** at least one eligible class has a Square link in `cohorts.deposit_link_url` and is not full |
-| Homepage top bar | `index.html` (`#laborday-bar`) | same two conditions; hides the online strike banner while it shows |
+| **The charge itself** | `api/enroll.js` (`LABOR_DAY`, `laborDayEligible`) | all three gates hold, server-side: offer window open, submitted `cohortId` is Sept 14 or Sept 29, payment-plan path. Then $100 down / $3,100 plan / $3,000 balance. Anything else: the normal $500 / $3,500. Pay-in-full and online untouched. The client `special` flag is ignored. |
+| Checkout preview | `enroll.html` (`laborDayPromoFor`, `renderClassConfirm`) | mirrors the same three gates from `PDA_FACTS.laborDay2026`; shows an unmissable "You are reserving a seat in <class>" panel with a change link, and the Labor Day notice |
+| Landing page `/labor-day` | `labor-day.html` | offer live. Cards deep-link to `/enroll?plan=in-person&paymode=plan&cohort=<id>&utm_…`. A full class shows the call-us card. Expired → "this offer has ended" panel pointing at `/enroll`. |
+| Site-wide top bar (every page except the homepage, admin, login; includes `/enroll`) | `assets/pda-nav.js` → `injectPromoBar()` | offer live |
+| Homepage top bar | `index.html` (`#laborday-bar`) | offer live; hides the online strike banner while it shows |
+
+Why the checkout and not a hosted Square link (verified Sep 6): `api/enroll.js` writes `Cohort: <name>` into the Square customer note, which is the exact field `square-webhook` v6 reads to assign the class, and the buyer picks the class themselves. A hosted link cannot write that note (buyers landed with no class), and nothing in the codebase can save `cohorts.deposit_link_url`. Hosted links are abandoned; `deposit_link_url` is no longer read anywhere.
 
 Three independent off-switches, no human action needed at the deadline:
 
-1. **Clock.** Every consumer compares `Date.now()` to `endsAtISO` (an absolute instant with the Chicago offset, so a visitor's clock cannot extend it). Open tabs remove the bar at the exact second.
-2. **`active` flag.** `laborDay2026.active = false` kills everything instantly (one-line change, deploy).
-3. **Build guard.** `npm test` (`check:facts`) fails if `active` is still true after the deadline, so a deploy on Tuesday cannot ship a dead offer. `vercel.json` already serves HTML with `max-age=0, must-revalidate`, so no CDN copy outlives a flip.
+1. **Clock.** Server and every page compare `Date.now()` to the same instant (`2026-09-08T04:59:59Z`). At 12:00:01 AM CT Tuesday the checkout charges $500 again and the bars remove themselves, even in open tabs.
+2. **`active` flag.** `laborDay2026.active = false` hides every page surface instantly (one-line change, deploy). The server gate is date-only, so also revert `api/enroll.js` if the offer must end early.
+3. **Build guard.** `npm test` (`check:facts`) fails if `active` is still true after the deadline; `check:enroll-promo` drives the real handler with Square mocked and asserts the four money cases.
 
-**Hard ordering constraint, enforced by data:** the bars only render when a real `deposit_link_url` exists. Until Amanda pastes the Square links, the page shows "call or text to reserve" cards and the bars stay hidden. A "$100" bar can never appear while checkout would charge $500.
+Known limitation, unchanged from before the offer: the checkout's balance-invoice step (STEP 3) has never succeeded in this account, so a $100 buyer, like every $500 buyer before them, gets the "Amanda will set up your payment plan within 1 business day" note and their plan is set up by hand in Square. The class assignment and the $100 charge are correct.
 
-## Status after verification (Sunday Sep 6, ~9:30 PM CT)
+## Retired prices: removed Sep 6 (~10 PM CT, per Amanda)
 
-**The $100 links are ON HOLD.** Verified against the code and Square:
+Deleted from Square: the $1,997 full-tuition link, the $397 online link, and the three May 2026 $2,100 daily/weekly/monthly links. The Square location phone now reads (903) 913-6444. Still to archive in Square → Items: $200 down, $425 "non-refundable deposit", $4,500, $4,800 and three any-amount items.
 
-- Nothing in the codebase can save `cohorts.deposit_link_url`. `/admin/cohorts` is a read-only viewer (zero writes, zero mentions of the column). The only way to set it is SQL.
-- Even with a link saved, the `square-webhook` (still v6) assigns the class only from the Square **customer note**, which a hosted payment link cannot set. A buyer would land with no class (`cohort_id NULL`), or, if they already have a stale customer note, in the wrong class. With `cohort_id NULL` the seat counter never moves, so the site would keep selling past 8 seats during a week when every buyer holds a full-refund right.
-- A buyer with a website account is auto-enrolled with full course access, and the webhook has no refund branch. A $100 buyer could take the course library and claim the $100 back by Thursday.
-- The real kill switch is nulling `deposit_link_url` (SQL), not disabling the Square link: a disabled link leaves the button pointing at a dead checkout.
+## Monday: the $100-buyer access exposure (do not deploy tonight)
 
-**So the offer runs by phone.** The page stays in its "call or text to reserve" state, which it renders correctly, and Amanda assigns the class herself when she takes the $100 at (903) 913-6444. The bars stay hidden by design.
+A promo buyer who has a website account is auto-enrolled by `square-webhook` v6 exactly like a $3,000 payer: `profiles.program` flips to `foundation` (full /learn access) and `grantKajabiOffers` runs. Every promo buyer holds a statutory full-refund right through midnight Thursday September 10, and the webhook has no refund branch. Two facts soften it: the Kajabi grant currently fails on every payment ("Invalid client credentials" in the log), so the only access actually granted is the website portal; and the customer note plus payment note now tag these payments (`laborday2026`).
 
-To turn the links on later, all three must be true first: a write path for `deposit_link_url` (SQL or a small admin field), a webhook change that reads the class from the order line item and does not grant course access on a $100 deposit, and the retired Square links below disabled.
-
-## Retired prices still buyable in Square (needs Amanda's approval to disable)
-
-Live hosted links found Sep 6: `square.link/u/BDrjqV0d` (full tuition one-time, retired price), `square.link/u/MyXAJViU`, `BNSrfAvW`, `UCHKPVPK` (the May 2026 $2,100 daily/monthly/weekly plans), and `V47Vjqx3` (online at the retired $397). Unarchived catalog items at $200 down, $425 "non-refundable deposit", $4,500, $4,800 and three any-amount items. The Square location also prints **+1 903-230-6444** on every receipt (the never-use number). Disabling links and fixing the phone are Square writes; the $2,100 weekly/monthly links may be what current students still pay through, so each one is reviewed with Amanda before it is turned off.
+Smallest safe mitigation (webhook v7, one guard): when the payment note contains `laborday2026`, insert the enrollment with `status = 'reserved'` instead of `active`, do not flip `profiles.program`, and skip the Kajabi grant; still send the welcome email and record the purchase. Amanda flips `reserved` → `active` (one field on /admin/cohorts, or one SQL) after Thursday September 10 or when the balance plan is in place. Rollback: redeploy v6 (copy in the project). Nothing else in the webhook changes.
 
 ## Selena: correction email (Gmail draft, NOT sent) + text (NOT sent)
 

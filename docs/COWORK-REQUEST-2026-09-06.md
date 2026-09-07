@@ -9,13 +9,13 @@ Hi Amanda. The Labor Day offer is live at /labor-day, written as a tuition credi
 September 10 full-refund date, and it correctly says "call or text to reserve" instead of
 showing a $100 button. Here is what needs you.
 
-## 1. Take the $100 by phone. Do NOT create Square links tonight.
+## 1. The $100 online checkout is built and tested, waiting on Ryan's deploy
 
-Verified: the website cannot save a Square link to a class yet, and the payment system would
-put a $100 buyer in no class (or the wrong one) and could hand a $100 buyer the whole course
-with a refund right still open. So the offer runs by phone: when someone calls or texts
-(903) 913-6444, take the $100 in Square as usual and assign their class yourself. Volume will
-be a handful of people. Nothing to reply on this one.
+Until it deploys, take the $100 by phone at (903) 913-6444 and assign the class yourself.
+Once it is live, the two buttons on /labor-day open the normal checkout with the class
+pre-selected; the checkout charges $100 for the September 14 and 29 classes on a payment
+plan and $500 for everything else, and turns itself off at midnight Monday. Nothing for you
+to do on this one.
 
 ## 2. Selena is moved to September 29. Send her the note tomorrow.
 

@@ -1147,9 +1147,9 @@
       const bar = document.getElementById('laborday-bar');
       let dismissed = false; try { dismissed = sessionStorage.getItem('pda.laborday.x') === '1'; } catch (e) {}
       if (bar && O && typeof F.offerIsLive === 'function' && F.offerIsLive(O) && !dismissed) {
-        const { data: elig } = await sb.from('cohorts').select('id,deposit_link_url,capacity,enrolled_count').in('id', O.eligibleCohortIds || []);
-        const payable = (elig || []).some(c => !!c.deposit_link_url && !((c.capacity || 0) > 0 && (c.enrolled_count || 0) >= (c.capacity || 0)));
-        if (payable && F.offerIsLive(O)) {
+        // The $100 deposit is taken by the regular /enroll checkout (server-side
+        // gate in api/enroll.js), so the only condition is the offer clock.
+        if (F.offerIsLive(O)) {
           document.getElementById('laborday-msg').innerHTML = '<b>Labor Day offer:</b> ' + O.depositDisplay + ' reserves your seat in the September 14 or September 29 class instead of ' + O.regularDownDisplay + ' down. Ends ' + O.endsDisplay + '.';
           const cta = document.getElementById('laborday-cta');
           cta.textContent = 'Reserve for ' + O.depositDisplay + ' →';

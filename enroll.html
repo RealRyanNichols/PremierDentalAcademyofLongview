@@ -266,9 +266,18 @@
       <!-- Left: form -->
       <div class="lg:col-span-3 space-y-5">
 
+        <!-- Unmissable class confirmation. Filled by renderClassConfirm(); hidden for Online. -->
+        <div id="class-confirm" hidden data-online-hide class="rounded-xl border-2 border-amber-400 bg-amber-50 p-4">
+          <div class="text-[11px] uppercase tracking-widest font-bold text-amber-800">You are reserving a seat in</div>
+          <div class="display text-xl sm:text-2xl font-bold text-slate-900 mt-1" id="class-confirm-name">—</div>
+          <div class="text-sm text-slate-700 mt-0.5" id="class-confirm-start"></div>
+          <p id="class-confirm-promo" hidden class="text-sm font-semibold text-teal-800 mt-2"></p>
+          <a href="#cohort" class="inline-block mt-2 text-sm font-semibold text-teal-700 underline underline-offset-2" onclick="document.getElementById('cohort').focus()">Not this class? Change it here</a>
+        </div>
+
         <div data-online-hide>
-          <label class="block text-sm font-semibold text-slate-900 mb-1.5">Choose your class</label>
-          <select id="cohort" class="w-full border-2 border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:border-teal-600 focus:outline-none"></select>
+          <label for="cohort" class="block text-base font-bold text-slate-900 mb-1.5">Choose your class <span class="text-slate-500 font-normal text-sm">(check the start date)</span></label>
+          <select id="cohort" class="w-full border-2 border-teal-600 rounded-lg px-3 py-3 text-base focus:border-teal-700 focus:outline-none bg-white"></select>
           <p id="cohort-meta" class="text-xs text-slate-500 mt-1.5">—</p>
         </div>
 
@@ -313,10 +322,10 @@
             <label class="paymode-opt cursor-pointer border-2 border-slate-200 rounded-lg p-3 text-center hover:border-teal-600 transition">
               <input type="radio" name="paymode" value="plan" class="sr-only" />
               <div class="text-sm font-semibold">Payment plan</div>
-              <div class="text-xs text-slate-500">$3,500 · $500 down</div>
+              <div class="text-xs text-slate-500" id="paymode-plan-sub">$3,500 · $500 down</div>
             </label>
           </div>
-          <p class="text-xs text-slate-500 mt-1.5">Pay in full is <strong>$3,000</strong>. On a plan it's <strong>$3,500</strong> — <strong>$500 down today</strong>, then the <strong>$3,000</strong> balance auto-billed on the schedule you choose.</p>
+          <p class="text-xs text-slate-500 mt-1.5" id="paymode-help">Pay in full is <strong>$3,000</strong>. On a plan it's <strong>$3,500</strong> — <strong>$500 down today</strong>, then the <strong>$3,000</strong> balance auto-billed on the schedule you choose.</p>
 
           <!-- Premier Pay-in-Full Pack — first 2 pay-in-full students -->
           <div class="mt-3 rounded-xl border-2 border-amber-300 bg-amber-50 p-4">
@@ -695,14 +704,21 @@ function computeSchedule() {
     };
   }
 
-  // Payment plan
+  // Payment plan. Labor Day 2026 (read from site-facts, the single source of
+  // truth): $100 down instead of $500 for the Sept 14 / Sept 29 classes while
+  // the offer is live. Same three gates the server enforces; the server is the
+  // authority, this only makes the preview match what will be charged.
+  const promo = laborDayPromoFor(state.cohort);
   const cadence = document.querySelector('[name="cadence"]:checked').value; // weekly | monthly
   let count = parseInt((document.getElementById('count') || {}).value, 10);
   if (!Number.isFinite(count) || count < 1) count = 1;
   if (count > 13) count = 13;
   const firstDate = document.getElementById('first-date').value;
   const out = {
-    total: NEW.planTotal, down: NEW.down, remaining: NEW.balance,
+    total: promo ? promo.planTotalCents : NEW.planTotal,
+    down: promo ? promo.depositCents : NEW.down,
+    remaining: NEW.balance,
+    offer: promo ? promo.key : null,
     cadence, count, firstDate, end: null, payInFull: false,
     valid: false, warning: '', plan,
   };
@@ -726,13 +742,60 @@ function computeSchedule() {
   out.lastAmount = amounts[count - 1];
   out.per = amounts[count - 1];
   out.totalCharged = amounts.reduce((a, b) => a + b, 0); // == $3,000 balance
-  out.totalAll = NEW.down + out.totalCharged;            // == $3,500 plan total
+  out.totalAll = out.down + out.totalCharged;            // == $3,500 plan total ($3,100 on the Labor Day offer)
   out.valid = true;
   return out;
 }
 
+// Labor Day 2026 offer, mirrored from window.PDA_FACTS.laborDay2026 (never
+// hardcoded here). Returns the offer when it is live AND the selected class is
+// one of the eligible September cohorts, else null. The server re-checks all of
+// this; a wrong answer here can only make the preview differ, never the charge.
+function laborDayPromoFor(cohort) {
+  try {
+    const F = window.PDA_FACTS || {};
+    const O = F.laborDay2026;
+    if (!O || typeof F.offerIsLive !== 'function' || !F.offerIsLive(O)) return null;
+    if (!cohort || !(O.eligibleCohortIds || []).includes(cohort.id)) return null;
+    return O;
+  } catch (e) { return null; }
+}
+
+// Big, unmissable "this is the class you are reserving" panel + the Labor Day
+// notice. Selena's whole problem was not seeing where to change the date.
+function renderClassConfirm() {
+  const box = document.getElementById('class-confirm');
+  if (!box) return;
+  if (state.plan !== 'in-person' || !state.cohort) { box.hidden = true; return; }
+  const c = state.cohort;
+  const promo = laborDayPromoFor(c);
+  const paymode = (document.querySelector('[name="paymode"]:checked') || {}).value || 'full';
+  const fmtMoney = (cents) => '$' + (cents / 100).toLocaleString('en-US');
+  document.getElementById('class-confirm-name').textContent = c.name;
+  document.getElementById('class-confirm-start').textContent = 'Starts ' + fmtDate(c.start_date);
+  const note = document.getElementById('class-confirm-promo');
+  if (promo && paymode === 'plan') {
+    note.textContent = 'Labor Day offer applied: ' + fmtMoney(promo.depositCents) + ' today instead of the usual ' + promo.regularDownDisplay + ' down. Your plan total is ' + promo.planTotalDisplay + '. Ends ' + promo.endsDisplay + '.';
+    note.hidden = false;
+  } else if (promo) {
+    note.textContent = 'Labor Day offer: choose "Payment plan" above to reserve this class with ' + fmtMoney(promo.depositCents) + ' today instead of ' + promo.regularDownDisplay + '.';
+    note.hidden = false;
+  } else {
+    note.hidden = true;
+  }
+  box.hidden = false;
+  // Keep the paymode sub-labels honest for the selected class.
+  const sub = document.getElementById('paymode-plan-sub');
+  if (sub) sub.textContent = promo ? (promo.planTotalDisplay + ' · ' + promo.depositDisplay + ' down (Labor Day)') : '$3,500 · $500 down';
+  const help = document.getElementById('paymode-help');
+  if (help) help.innerHTML = promo
+    ? 'Pay in full is <strong>$3,000</strong>. On the Labor Day offer the plan is <strong>' + promo.planTotalDisplay + '</strong>: <strong>' + promo.depositDisplay + ' today</strong>, then the <strong>' + promo.balanceDisplay + '</strong> balance auto-billed on the schedule you choose.'
+    : 'Pay in full is <strong>$3,000</strong>. On a plan it\'s <strong>$3,500</strong> — <strong>$500 down today</strong>, then the <strong>$3,000</strong> balance auto-billed on the schedule you choose.';
+}
+
 function renderSummary() {
   if (!state.plan) return;
+  renderClassConfirm();
   const s = computeSchedule();
   document.getElementById('sum-plan-name').textContent = s.plan.name;
   // Total displayed is now the GRAND TOTAL the student will actually be

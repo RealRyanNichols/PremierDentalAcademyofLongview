@@ -241,10 +241,13 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
 - Offer lives once in `assets/site-facts.js` (`laborDay2026`, `offerIsLive`). /labor-day + the
   promo bars self-expire at 2026-09-07 23:59:59 CT; `check:facts` fails a build still active
   after that. After Sep 7: set `active:false` (or leave; the clock already hides everything).
-- The $100 Square links were NEVER turned on: nothing writes `cohorts.deposit_link_url`,
-  the square-webhook (v6) assigns the class only from the Square customer note, and a $100
-  buyer with an account would get full course access with a refund right open. Page stays in
-  "call or text" mode. Do not add deposit links until all three are fixed.
+- Hosted Square deposit links were ABANDONED (nothing writes `cohorts.deposit_link_url`; the
+  webhook assigns the class only from the Square customer note, which only /enroll writes).
+  The $100 is applied SERVER-SIDE in `api/enroll.js` (`LABOR_DAY`, `laborDayEligible`): offer
+  window + Sept 14/29 `cohortId` + payment-plan path, else the normal $500. Branch
+  `feat/labor-day-checkout-deposit` (Sep 6 ~11 PM), tested by `check:enroll-promo` (real
+  handler, Square mocked). Deploy only on Ryan's say-so. Monday: webhook v7 should treat
+  `laborday2026` payments as `reserved` (no /learn access until the Sep 10 refund window ends).
 - /admin/payments (owner-only) + read-only api/admin-payments.js reconcile purchases vs Square.
   Known: checkout auto-pay (enroll.js STEP 3 invoice) has NEVER succeeded — orders exist,
   invoices don't. $11,000 of balances (Selena/Linsey/Madisyn $3,000 each, Crystal $2,000) have

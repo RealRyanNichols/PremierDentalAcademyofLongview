@@ -54,8 +54,12 @@
     // published $3,000-balance tables, unchanged. The $100 is a TUITION CREDIT
     // (never call it nonrefundable — Tex. Educ. Code §132.061 gives every buyer
     // a full refund right; see docs/labor-day-2026-offer.md).
-    // Deposits are collected on Square-hosted payment links stored per cohort
-    // in cohorts.deposit_link_url — api/enroll.js is NOT involved.
+    // Deposits are collected by the regular /enroll checkout: api/enroll.js
+    // applies the $100 server-side when (1) the offer window is open, (2) the
+    // submitted cohortId is one of eligibleCohortIds, and (3) the buyer is on
+    // the payment-plan path. Anything else charges the normal $500. That keeps
+    // the class assignment correct (the checkout writes the Square customer
+    // note the webhook reads). Hosted Square links were abandoned Sep 6.
     // The offer turns itself off three ways: `active`, the America/Chicago
     // end time below (all consumers compare Date.now() to endsAtISO), and
     // scripts/check-facts.mjs, which fails the build if `active` is still true
@@ -81,7 +85,9 @@
       // Three counted days after a Sun Sep 6 / Mon Sep 7 (Labor Day) signature:
       // Tue Sep 8, Wed Sep 9, Thu Sep 10 → full refund through midnight Thu Sep 10.
       cancellationDeadline: "midnight on Thursday, September 10, 2026",
-      landingPath: "/labor-day"
+      landingPath: "/labor-day",
+      // Deep link into the pre-filled checkout; append &cohort=<id> per class.
+      checkoutPath: "/enroll?plan=in-person&paymode=plan"
     },
 
     paymentPlan: {
