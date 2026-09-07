@@ -87,6 +87,7 @@
           <a href="/tools/flashcards"         class="block px-4 py-2 hover:bg-slate-50">RDA flashcards</a>
           <a href="/study-guide"              class="block px-4 py-2 hover:bg-slate-50">Exam study guide</a>
           <a href="/tools/how-to-chart"       class="block px-4 py-2 hover:bg-slate-50">How to chart</a>
+          <a href="/tools/charting-drills"    class="block px-4 py-2 hover:bg-slate-50">Charting drills</a>
           <a href="/tools/resume-builder"     class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
           <a href="/skills-lab/abbreviations" class="block px-4 py-2 hover:bg-slate-50">Charting abbreviations</a>
@@ -154,6 +155,7 @@
     <a href="/tools/flashcards"         data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">RDA flashcards</a>
     <a href="/study-guide"              data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Exam study guide</a>
     <a href="/tools/how-to-chart"       data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">How to chart</a>
+    <a href="/tools/charting-drills"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Charting drills</a>
     <a href="/tools/resume-builder"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Resume builder</a>
     <a href="/skills-lab/instruments"   data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Instrument library</a>
     <a href="/skills-lab/abbreviations" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Charting abbreviations</a>
@@ -400,7 +402,8 @@
   // an active transaction or where the visitor is already enrolled.
   function armExitIntent() {
     const path = location.pathname.toLowerCase().replace(/\/$/, '');
-    if (/^\/(admin|login|logout|dashboard|enroll|enroll-success|tools\/practice-exam|special-offer)/.test(path)) return;
+    // Also never interrupt a student mid-lesson or mid-drill (/learn, /certificate, charting drills).
+    if (/^\/(admin|login|logout|dashboard|enroll|enroll-success|tools\/practice-exam|tools\/charting-drills|learn|certificate|paperwork|special-offer)/.test(path)) return;
     try { if (localStorage.getItem('pda.exit.shown.v1') === '1') return; } catch (e) {}
 
     let shown = false;

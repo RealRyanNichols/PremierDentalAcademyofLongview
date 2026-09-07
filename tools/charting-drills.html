@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Charting Drills: Practice Dental Charting on a Real Tooth Chart | Premier Dental Academy</title>
+  <meta name="description" content="Five levels of dental charting practice on the same anatomical tooth chart used in PDA Practice Pro: find the tooth, name the surface, chart existing work in blue, chart the treatment plan in red, then take full-mouth dictation." />
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/charting-drills" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Premier Dental Academy of Longview" />
+  <meta property="og:url" content="https://www.premierdentalacademyoflongview.com/tools/charting-drills" />
+  <meta property="og:title" content="Charting Drills: Practice Dental Charting on a Real Tooth Chart | Premier Dental Academy" />
+  <meta property="og:description" content="Five levels of dental charting practice: find the tooth, name the surface, chart existing work in blue, chart the treatment plan in red, then take full-mouth dictation." />
+  <meta property="og:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Charting Drills | Premier Dental Academy" />
+  <meta name="twitter:description" content="Practice dental charting on the same anatomical tooth chart you will use in the office." />
+  <meta name="twitter:image" content="https://www.premierdentalacademyoflongview.com/assets/og-cover.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/assets/skills-lab/access.js"></script>
+  <script src="/assets/tooth-shapes.js"></script>
+  <script src="/assets/pda-odontogram.js"></script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; background: #f8fafc; }
+    .display { font-family: 'Fraunces', serif; }
+    .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    .chart-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; background: #fff; border-radius: 1rem; border: 1px solid #e2e8f0; padding: 8px 4px; }
+    .chart-wrap.zoomed svg { width: 780px !important; max-width: none !important; }
+    .pda-odontogram .tooth { cursor: pointer; }
+    .pda-odontogram .tooth:focus { outline: none; }
+    .pda-odontogram .tooth:focus-visible .tooth-shape { stroke: #0d9488 !important; stroke-width: 2.6 !important; }
+    .pda-odontogram .surface { cursor: pointer; }
+    .pda-odontogram .surface.target { fill: #99f6e4 !important; stroke: #0d9488 !important; stroke-width: 2.4 !important; animation: pulse 1.1s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { fill-opacity: 1; } 50% { fill-opacity: .45; } }
+    .chip { border: 1.5px solid #cbd5e1; background: #fff; border-radius: 9999px; padding: .45rem .8rem; font-size: 13px; font-weight: 700; color: #334155; display: inline-flex; align-items: center; gap: .4rem; min-height: 40px; }
+    .chip[aria-pressed="true"] { border-color: #0d9488; background: #ccfbf1; color: #115e59; }
+    .chip .dot { width: 12px; height: 12px; border-radius: 9999px; border: 1px solid rgba(15,23,42,.25); }
+    .sbtn { min-width: 44px; min-height: 44px; border-radius: .75rem; border: 1.5px solid #cbd5e1; background: #fff; font-weight: 800; font-size: 14px; color: #334155; }
+    .sbtn[aria-pressed="true"] { border-color: #0d9488; background: #0d9488; color: #fff; }
+    .fb-ok { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
+    .fb-bad { background: #fff1f2; border-color: #fda4af; color: #9f1239; }
+    .level-card { transition: transform .15s ease, box-shadow .15s ease; }
+    .level-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15,23,42,.10); }
+    .burst { position: fixed; left: 50%; top: 40%; pointer-events: none; z-index: 60; }
+    .burst span { position: absolute; font-size: 26px; animation: fly 1.1s ease-out forwards; }
+    @keyframes fly { from { transform: translate(0,0) scale(.6); opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(1.2); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) { .pda-odontogram .surface.target { animation: none; } .burst span { animation: none; display: none; } .level-card { transition: none; } }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+  </style>
+  <script src="/assets/pda-seo.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-track.js" defer></script>
+</head>
+<body class="min-h-screen pda-tinted">
+
+<main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+
+  <!-- Hero -->
+  <header id="hero" class="text-center mb-8">
+    <p class="text-xs uppercase tracking-widest text-teal-700 font-bold">Student practice tool</p>
+    <h1 class="display text-3xl sm:text-4xl font-black mt-2">Charting <span class="gradient-text">Drills</span></h1>
+    <p class="text-slate-600 mt-3 max-w-2xl mx-auto">The dentist calls it out, you chart it. Five levels on the same anatomical tooth chart you use in Practice Pro, so what you learn here is exactly what you will do in the office.</p>
+    <p class="text-xs text-slate-500 mt-3">Tip: existing work is charted in <span class="font-bold text-blue-700">blue</span>. Work that still needs to be done is charted in <span class="font-bold text-red-700">red</span>.</p>
+  </header>
+
+  <!-- Level picker -->
+  <section id="levels" aria-label="Choose a level">
+    <div class="flex items-end justify-between flex-wrap gap-2 mb-3">
+      <h2 class="display text-xl sm:text-2xl font-bold">Pick a level</h2>
+      <p id="streak-line" class="text-xs text-slate-500"></p>
+    </div>
+    <div id="level-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    <p id="lock-note" class="hidden mt-3 text-sm text-slate-600 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">Levels 1 and 2 are open to everyone. Levels 3 to 5 are part of the PDA program. <a href="/login" class="font-bold text-teal-700 underline">Students sign in here</a>, or <a href="/enroll" class="font-bold text-teal-700 underline">see how to enroll</a>.</p>
+  </section>
+
+  <!-- Drill -->
+  <section id="drill" class="hidden mt-6" aria-live="polite">
+    <div class="flex items-center justify-between gap-3 flex-wrap mb-3">
+      <button id="back-btn" class="text-sm font-semibold text-slate-500 hover:text-teal-700">← All levels</button>
+      <div class="flex items-center gap-3 text-xs font-bold text-slate-500">
+        <span id="counter"></span>
+        <span id="streak" class="text-amber-600"></span>
+        <span id="timer" class="tabular-nums"></span>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-6">
+      <p id="level-label" class="text-xs uppercase tracking-widest text-teal-700 font-bold"></p>
+      <h2 id="prompt" class="display text-xl sm:text-2xl font-bold mt-1"></h2>
+      <p id="hint" class="text-sm text-slate-500 mt-1"></p>
+      <ol id="dictation" class="hidden mt-3 space-y-1.5 text-sm"></ol>
+    </div>
+
+    <!-- Palette (levels 3 to 5) -->
+    <div id="palette" class="hidden mt-4 bg-white rounded-2xl border border-slate-200 p-4">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <p class="text-xs font-bold uppercase tracking-widest text-slate-500">1. Pick what to chart</p>
+        <div id="status-toggle" class="inline-flex rounded-full border border-slate-300 overflow-hidden" role="group" aria-label="Existing or needed">
+          <button type="button" data-status="existing" aria-pressed="true" class="st px-3 py-1.5 text-xs font-bold min-h-[36px]">Existing (blue)</button>
+          <button type="button" data-status="needed" aria-pressed="false" class="st px-3 py-1.5 text-xs font-bold min-h-[36px]">Needed (red)</button>
+        </div>
+      </div>
+      <div id="markers" class="flex flex-wrap gap-2 mt-3" role="group" aria-label="Marker"></div>
+      <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mt-4">2. Tap the surface on the chart, or pick the tooth and use the buttons</p>
+      <div class="flex items-center gap-2 flex-wrap mt-2">
+        <label class="text-sm font-semibold text-slate-700" for="tooth-select">Tooth #</label>
+        <select id="tooth-select" class="rounded-lg border border-slate-300 px-3 py-2 text-sm min-h-[44px]"><option value="">choose</option></select>
+        <div id="surface-btns" class="flex gap-1.5" role="group" aria-label="Surface"></div>
+        <button id="whole-btn" type="button" class="sbtn px-3">Whole tooth</button>
+      </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="mt-4">
+      <div class="flex items-center justify-between gap-2 mb-2">
+        <p class="text-xs text-slate-500">You are facing the patient: their right is on your left.</p>
+        <button id="zoom-btn" type="button" class="text-xs font-bold text-teal-700 border border-teal-200 rounded-full px-3 py-1.5 min-h-[36px]">Zoom in</button>
+      </div>
+      <div id="chart-wrap" class="chart-wrap"><div id="chart"></div></div>
+      <p id="swipe-hint" class="hidden text-center text-[11px] text-slate-400 mt-1">Swipe sideways to see the other side of the mouth.</p>
+    </div>
+
+    <!-- Answer buttons for level 2 -->
+    <div id="surface-answer" class="hidden mt-4 bg-white rounded-2xl border border-slate-200 p-4">
+      <p class="text-sm font-semibold text-slate-700 mb-2">Which surface is highlighted?</p>
+      <div id="surface-answer-btns" class="flex flex-wrap gap-2"></div>
+    </div>
+
+    <div id="feedback" class="hidden mt-4 rounded-2xl border px-4 py-3 text-sm"></div>
+
+    <div class="mt-4 flex items-center gap-3 flex-wrap">
+      <button id="check-btn" class="hidden bg-teal-700 hover:bg-teal-800 text-white font-bold px-6 py-3 rounded-full text-sm min-h-[44px]">Check my chart</button>
+      <button id="next-btn" class="hidden bg-slate-900 hover:bg-black text-white font-bold px-6 py-3 rounded-full text-sm min-h-[44px]">Next →</button>
+      <button id="clear-btn" class="hidden text-sm font-semibold text-slate-500 hover:text-rose-700 min-h-[44px]">Clear chart</button>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section id="results" class="hidden mt-6">
+    <div class="bg-gradient-to-br from-[#0a1226] to-[#0f2a33] text-white rounded-3xl p-6 sm:p-10 text-center">
+      <div id="res-emoji" class="text-5xl">🏆</div>
+      <h2 id="res-title" class="display text-2xl sm:text-3xl font-black mt-3"></h2>
+      <p id="res-sub" class="text-slate-300 mt-2"></p>
+      <div id="res-badge" class="hidden mt-4 inline-block bg-amber-400 text-slate-900 font-bold text-sm rounded-full px-4 py-1.5"></div>
+      <div class="mt-6 flex flex-wrap gap-3 justify-center">
+        <button id="again-btn" class="bg-white text-slate-900 font-bold px-6 py-3 rounded-full text-sm min-h-[44px]">Play again</button>
+        <button id="next-level-btn" class="hidden bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold px-6 py-3 rounded-full text-sm min-h-[44px]">Next level →</button>
+        <a id="return-link" class="hidden border border-white/40 text-white font-semibold px-6 py-3 rounded-full text-sm min-h-[44px] inline-flex items-center">Back to the lesson</a>
+      </div>
+      <p id="res-log" class="text-xs text-slate-400 mt-4"></p>
+    </div>
+  </section>
+
+  <section class="mt-10 grid sm:grid-cols-3 gap-4 text-sm">
+    <a href="/tools/practice-pro" class="bg-white rounded-2xl border border-slate-200 p-4 hover:border-teal-500 block"><div class="text-2xl">🖥️</div><p class="font-bold mt-1">Practice Pro</p><p class="text-slate-600 mt-1">The full practice-management trainer with this same chart, perio and treatment plans.</p></a>
+    <a href="/tools/how-to-chart" class="bg-white rounded-2xl border border-slate-200 p-4 hover:border-teal-500 block"><div class="text-2xl">📈</div><p class="font-bold mt-1">How to chart</p><p class="text-slate-600 mt-1">The plain-English walkthrough of charting the way offices do it.</p></a>
+    <a href="/tools/chairside" class="bg-white rounded-2xl border border-slate-200 p-4 hover:border-teal-500 block"><div class="text-2xl">🦷</div><p class="font-bold mt-1">ChairSide</p><p class="text-slate-600 mt-1">Procedures, tray setups and assisting steps.</p></a>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var O = window.PDA_ODONTOGRAM;
+  var SB_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
+  var SB_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  var STORE_KEY = 'pda.chartingDrills.v1';
+  var ROUND = 10;
+
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; }); }
+  function shuffle(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+  function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+  function reducedMotion() { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+  // ---- Levels -------------------------------------------------------------
+  var LEVELS = [
+    { n: 1, key: 'find', emoji: '🔎', title: 'Find the tooth', blurb: 'Hear a number or a name, tap the right tooth. Universal numbering, 1 to 32.', open: true },
+    { n: 2, key: 'surface', emoji: '🧭', title: 'Name the surface', blurb: 'Mesial, distal, occlusal, incisal, facial, lingual. Both directions: tap it, or name it.', open: true },
+    { n: 3, key: 'existing', emoji: '🔵', title: 'Chart existing work', blurb: 'Fillings, crowns, root canals, implants and missing teeth the patient already has. Charted in blue.', open: false },
+    { n: 4, key: 'needed', emoji: '🔴', title: 'Chart the treatment plan', blurb: 'What the dentist wants done. Charted in red, exactly as called out.', open: false },
+    { n: 5, key: 'dictation', emoji: '🎧', title: 'Full-mouth dictation', blurb: 'A whole exam at once: existing and needed, timed, like a real new-patient visit.', open: false }
+  ];
+  var BADGES = { 1: 'Tooth Finder', 2: 'Surface Navigator', 3: 'Blue Pen', 4: 'Red Pen', 5: 'Charting Champ' };
+
+  var POSTERIOR = [1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 28, 29, 30, 31, 32];
+  var ANTERIOR = [6, 7, 8, 9, 10, 11, 22, 23, 24, 25, 26, 27];
+  var MOLARS = [1, 2, 3, 14, 15, 16, 17, 18, 19, 30, 31, 32];
+  var THIRDS = [1, 16, 17, 32];
+  var LABEL = { amalgam: 'amalgam', composite: 'composite', sealant: 'sealant', pfm: 'PFM crown', fgc: 'gold crown (FGC)', rct: 'root canal (RCT)', implant: 'implant', missing: 'missing', extract: 'extraction' };
+  var PALETTE = ['amalgam', 'composite', 'sealant', 'pfm', 'fgc', 'rct', 'implant', 'missing', 'extract'];
+
+  // Surface letter for dictation: F for facial on front teeth, B for buccal on back teeth.
+  function letter(num, k) { if (k === 'B') return O.isAnterior(num) ? 'F' : 'B'; return k === 'O' || k === 'I' ? O.centerSurface(num) : k; }
+  function surfWords(num, keys) { return keys.map(function (k) { return O.surfaceName(num, k).replace(' / facial', ''); }).map(function (w, i) { return O.isAnterior(num) && keys[i] === 'B' ? 'facial' : w; }).join(', '); }
+  function findingText(f) {
+    if (f.whole) return '#' + f.tooth + ' ' + LABEL[f.whole] + (f.whole === 'missing' ? '' : ', ' + (f.status === 'needed' ? 'needed' : 'existing'));
+    return '#' + f.tooth + ' ' + f.surfaces.map(function (k) { return letter(f.tooth, k); }).join('') + ' ' + LABEL[f.type] + ', ' + (f.status === 'needed' ? 'needed' : 'existing');
+  }
+  function findingPlain(f) {
+    var col = f.status === 'needed' ? 'red' : 'blue';
+    if (f.whole) return '#' + f.tooth + ' (' + O.toothLabel(f.tooth, true) + '): whole tooth ' + LABEL[f.whole] + ' in ' + col;
+    return '#' + f.tooth + ' (' + O.toothLabel(f.tooth, true) + '): ' + LABEL[f.type] + ' on the ' + surfWords(f.tooth, f.surfaces) + ' in ' + col;
+  }
+
+  function surfaceCombo(num) {
+    if (O.isAnterior(num)) return pick([['M'], ['D'], ['B'], ['L'], ['M', 'I'], ['D', 'I']]);
+    return pick([['O'], ['M', 'O'], ['D', 'O'], ['M', 'O', 'D'], ['B'], ['L'], ['O', 'B']]);
+  }
+  function surfaceFinding(tooth, type, status) {
+    // Sealants only go in the pits and grooves of a chewing surface, never on a front tooth.
+    if (type === 'sealant') return { tooth: tooth, surfaces: ['O'], type: 'sealant', status: status };
+    return { tooth: tooth, surfaces: surfaceCombo(tooth), type: type, status: status };
+  }
+  function makeFinding(status, used) {
+    var tooth, tries = 0;
+    do { tooth = 1 + Math.floor(Math.random() * 32); tries++; } while (used[tooth] && tries < 100);
+    used[tooth] = true;
+    var r = Math.random();
+    if (status === 'existing') {
+      if (r < 0.55) return surfaceFinding(tooth, O.isAnterior(tooth) ? 'composite' : pick(['amalgam', 'composite', 'composite', 'sealant']), 'existing');
+      if (r < 0.75) return { tooth: tooth, whole: pick(MOLARS.indexOf(tooth) > -1 ? ['pfm', 'fgc', 'rct'] : ['pfm', 'rct']), status: 'existing' };
+      if (r < 0.9) return { tooth: tooth, whole: 'missing', status: 'existing' };
+      return { tooth: tooth, whole: 'implant', status: 'existing' };
+    }
+    if (r < 0.6) return surfaceFinding(tooth, O.isAnterior(tooth) ? 'composite' : pick(['composite', 'composite', 'amalgam', 'sealant']), 'needed');
+    if (r < 0.8) return { tooth: tooth, whole: pick(['pfm', 'rct']), status: 'needed' };
+    return { tooth: tooth, whole: 'extract', status: 'needed' };
+  }
+  function expectedChart(findings) {
+    var c = {};
+    findings.forEach(function (f) {
+      var t = c['T-' + f.tooth] = c['T-' + f.tooth] || {};
+      if (f.whole) t.whole = f.whole + ':' + f.status;
+      else f.surfaces.forEach(function (k) { t[k] = f.type + ':' + f.status; });
+    });
+    return c;
+  }
+  // Compare the student's chart with the dictation, one finding at a time.
+  function grade(findings, chart) {
+    var exp = expectedChart(findings), out = { items: [], extras: [] };
+    findings.forEach(function (f) {
+      var have = chart['T-' + f.tooth] || {}, want = exp['T-' + f.tooth] || {}, problems = [];
+      Object.keys(want).forEach(function (k) {
+        if (!have[k]) problems.push('nothing on the ' + (k === 'whole' ? 'whole tooth' : O.surfaceName(f.tooth, k)));
+        else if (have[k] !== want[k]) {
+          var h = O.parseMarker(have[k]), w = O.parseMarker(want[k]);
+          if (h.type !== w.type) problems.push((k === 'whole' ? 'whole tooth' : O.surfaceName(f.tooth, k)) + ' is ' + (LABEL[h.type] || h.type) + ', should be ' + (LABEL[w.type] || w.type));
+          else problems.push((k === 'whole' ? 'whole tooth' : O.surfaceName(f.tooth, k)) + ' is ' + h.status + ' (' + (h.status === 'needed' ? 'red' : 'blue') + '), should be ' + w.status + ' (' + (w.status === 'needed' ? 'red' : 'blue') + ')');
+        }
+      });
+      Object.keys(have).forEach(function (k) { if (!want[k] && have[k]) problems.push('extra mark on the ' + (k === 'whole' ? 'whole tooth' : O.surfaceName(f.tooth, k))); });
+      out.items.push({ f: f, ok: !problems.length, problems: problems });
+    });
+    Object.keys(chart).forEach(function (key) {
+      if (!/^T-\d+$/.test(key) || exp[key]) return;
+      var marks = Object.keys(chart[key]).filter(function (k) { return chart[key][k]; });
+      if (marks.length) out.extras.push('#' + key.slice(2) + ' has ' + marks.length + ' mark' + (marks.length > 1 ? 's' : '') + ' that were never called out');
+    });
+    return out;
+  }
+
+  // ---- State --------------------------------------------------------------
+  var state = { level: null, items: [], i: 0, correct: 0, streak: 0, bestStreak: 0, chart: {}, marker: 'amalgam', status: 'existing', tooth: null, started: 0, answered: false, timerId: null };
+  var access = 'preview';
+  var store = load();
+  function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { return {}; } }
+  function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
+
+  // ---- Level picker -------------------------------------------------------
+  function renderLevels() {
+    var best = store.best || {}, plays = store.plays || {};
+    $('level-grid').innerHTML = LEVELS.map(function (L) {
+      var locked = !L.open && access !== 'student';
+      var b = best[L.n];
+      return '<button type="button" data-level="' + L.n + '" ' + (locked ? 'aria-disabled="true"' : '') + ' class="level-card text-left bg-white rounded-2xl border ' + (locked ? 'border-slate-200 opacity-70' : 'border-slate-200 hover:border-teal-500') + ' p-4 min-h-[44px]">' +
+        '<div class="flex items-start justify-between"><div class="text-2xl">' + L.emoji + '</div>' +
+        (locked ? '<span class="text-[11px] font-bold text-slate-500 bg-slate-100 rounded-full px-2 py-0.5">🔒 Students</span>' : (b != null ? '<span class="text-[11px] font-bold ' + (b === 100 ? 'text-amber-700 bg-amber-100' : 'text-teal-700 bg-teal-50') + ' rounded-full px-2 py-0.5">Best ' + b + '%' + (b === 100 ? ' ★' : '') + '</span>' : '<span class="text-[11px] font-bold text-slate-400">New</span>')) + '</div>' +
+        '<p class="font-bold mt-2">Level ' + L.n + ': ' + L.title + '</p><p class="text-sm text-slate-600 mt-1">' + L.blurb + '</p>' +
+        (plays[L.n] ? '<p class="text-[11px] text-slate-400 mt-2">Played ' + plays[L.n] + ' time' + (plays[L.n] > 1 ? 's' : '') + '</p>' : '') +
+        '</button>';
+    }).join('');
+    Array.prototype.forEach.call($('level-grid').querySelectorAll('[data-level]'), function (b) {
+      b.addEventListener('click', function () {
+        var n = Number(b.getAttribute('data-level'));
+        if (b.getAttribute('aria-disabled') === 'true') { $('lock-note').classList.remove('hidden'); $('lock-note').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+        start(n);
+      });
+    });
+    $('lock-note').classList.toggle('hidden', access === 'student');
+    var badges = Object.keys(best).filter(function (k) { return best[k] === 100; }).map(function (k) { return BADGES[k]; });
+    $('streak-line').textContent = badges.length ? 'Badges earned: ' + badges.join(' · ') : 'Score 100% on a level to earn its badge.';
+  }
+
+  // ---- Round setup --------------------------------------------------------
+  function start(n) {
+    var L = LEVELS[n - 1];
+    state.level = L; state.i = 0; state.correct = 0; state.streak = 0; state.bestStreak = 0; state.chart = {}; state.tooth = null; state.answered = false;
+    state.marker = 'amalgam'; state.status = n === 4 ? 'needed' : 'existing';
+    var used = {};
+    if (n === 1) state.items = shuffle(Array.from({ length: 32 }, function (_, i) { return i + 1; })).slice(0, ROUND).map(function (t, i) { return { tooth: t, byName: i % 2 === 1 }; });
+    else if (n === 2) state.items = Array.from({ length: ROUND }, function (_, i) { var t = 1 + Math.floor(Math.random() * 32); var ks = O.isAnterior(t) ? ['M', 'D', 'B', 'L', 'I'] : ['M', 'D', 'B', 'L', 'O']; return { tooth: t, surface: pick(ks), reverse: i % 2 === 1 }; });
+    else if (n === 3) state.items = Array.from({ length: ROUND }, function () { return makeFinding('existing', used); });
+    else if (n === 4) state.items = Array.from({ length: ROUND }, function () { return makeFinding('needed', used); });
+    else state.items = shuffle(Array.from({ length: 5 }, function () { return makeFinding('existing', used); }).concat(Array.from({ length: 4 }, function () { return makeFinding('needed', used); })));
+    $('levels').classList.add('hidden'); $('results').classList.add('hidden'); $('drill').classList.remove('hidden');
+    $('level-label').textContent = 'Level ' + n + ' · ' + L.title;
+    $('palette').classList.toggle('hidden', n < 3);
+    $('clear-btn').classList.toggle('hidden', n < 3);
+    $('dictation').classList.toggle('hidden', n !== 5);
+    buildPalette();
+    state.started = Date.now();
+    clearInterval(state.timerId);
+    state.timerId = setInterval(tick, 1000); tick();
+    if (window.innerWidth < 640) { $('chart-wrap').classList.add('zoomed'); $('zoom-btn').textContent = 'Fit to screen'; $('swipe-hint').classList.remove('hidden'); }
+    try { if (window.PDA && window.PDA.track) window.PDA.track('charting_drill_start', { level: n }); } catch (e) {}
+    showItem();
+    $('drill').scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'start' });
+  }
+  function tick() { var s = Math.floor((Date.now() - state.started) / 1000); $('timer').textContent = '⏱ ' + Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+
+  function buildPalette() {
+    $('markers').innerHTML = PALETTE.map(function (id) {
+      var m = O.MARKERS.filter(function (x) { return x.id === id; })[0];
+      return '<button type="button" class="chip" data-marker="' + id + '" aria-pressed="' + (id === state.marker) + '"><span class="dot" style="background:' + m.color + '"></span>' + esc(m.label) + (m.whole ? ' <span class="text-[10px] font-semibold text-slate-400">whole</span>' : '') + '</button>';
+    }).join('') + '<button type="button" class="chip" data-marker="" aria-pressed="false">⌫ Erase</button>';
+    Array.prototype.forEach.call($('markers').querySelectorAll('[data-marker]'), function (b) {
+      b.addEventListener('click', function () { state.marker = b.getAttribute('data-marker'); Array.prototype.forEach.call($('markers').querySelectorAll('[data-marker]'), function (x) { x.setAttribute('aria-pressed', String(x === b)); }); updateSurfaceBtns(); });
+    });
+    Array.prototype.forEach.call($('status-toggle').querySelectorAll('.st'), function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-status') === state.status));
+      b.onclick = function () { state.status = b.getAttribute('data-status'); Array.prototype.forEach.call($('status-toggle').querySelectorAll('.st'), function (x) { x.setAttribute('aria-pressed', String(x === b)); x.className = 'st px-3 py-1.5 text-xs font-bold min-h-[36px] ' + (x === b ? (state.status === 'needed' ? 'bg-red-600 text-white' : 'bg-blue-700 text-white') : 'bg-white text-slate-600'); }); };
+      b.className = 'st px-3 py-1.5 text-xs font-bold min-h-[36px] ' + (b.getAttribute('data-status') === state.status ? (state.status === 'needed' ? 'bg-red-600 text-white' : 'bg-blue-700 text-white') : 'bg-white text-slate-600');
+    });
+    var sel = $('tooth-select'); sel.innerHTML = '<option value="">choose</option>';
+    for (var t = 1; t <= 32; t++) sel.innerHTML += '<option value="' + t + '">#' + t + ' ' + O.toothLabel(t, true) + '</option>';
+    sel.onchange = function () { state.tooth = Number(sel.value) || null; updateSurfaceBtns(); };
+    $('whole-btn').onclick = function () { if (!state.tooth) { flash('Pick a tooth number first.'); return; } applyWhole(state.tooth); };
+    updateSurfaceBtns();
+  }
+  function updateSurfaceBtns() {
+    var t = state.tooth, host = $('surface-btns');
+    var keys = t ? ['M', O.centerSurface(t), 'D', 'B', 'L'] : ['M', 'O', 'D', 'B', 'L'];
+    host.innerHTML = keys.map(function (k) { return '<button type="button" class="sbtn px-2" data-k="' + k + '" title="' + (t ? O.surfaceName(t, k) : k) + '"' + (t ? '' : ' disabled') + '>' + (t ? letter(t, k) : k) + '</button>'; }).join('');
+    Array.prototype.forEach.call(host.querySelectorAll('[data-k]'), function (b) { b.addEventListener('click', function () { applySurface(state.tooth, b.getAttribute('data-k')); }); });
+    var mk = O.MARKERS.filter(function (x) { return x.id === state.marker; })[0];
+    $('whole-btn').disabled = !t; $('whole-btn').style.opacity = t ? '1' : '.5';
+    if (mk && mk.whole) Array.prototype.forEach.call(host.querySelectorAll('[data-k]'), function (b) { b.disabled = true; b.style.opacity = '.5'; });
+  }
+
+  // ---- Chart --------------------------------------------------------------
+  function drawChart(opts) {
+    opts = opts || {};
+    O.mount($('chart'), state.chart, { width: 1000, highlight: opts.highlight || [] });
+    if (opts.targetSurface) {
+      var el = $('chart').querySelector('[data-tooth="' + opts.targetSurface.tooth + '"] [data-surface="' + opts.targetSurface.surface + '"]');
+      if (el) el.classList.add('target');
+    }
+  }
+  O.bind($('chart'), {
+    onSurface: function (tooth, k) {
+      var n = state.level && state.level.n;
+      if (n === 1) return answerTooth(tooth);
+      if (n === 2) return answerSurface(tooth, k);
+      if (n >= 3) { state.tooth = tooth; $('tooth-select').value = String(tooth); updateSurfaceBtns(); applySurface(tooth, k); }
+    },
+    onTooth: function (tooth) {
+      var n = state.level && state.level.n;
+      if (n === 1) return answerTooth(tooth);
+      if (n === 2) { flash('Tap the exact surface, not the number. Or use the buttons below the chart.'); return; }
+      if (n >= 3) {
+        state.tooth = tooth; $('tooth-select').value = String(tooth); updateSurfaceBtns();
+        var mk = O.MARKERS.filter(function (x) { return x.id === state.marker; })[0];
+        if (mk && mk.whole) applyWhole(tooth); else if (!state.marker) { delete state.chart['T-' + tooth]; drawChart(); }
+        else flash('Tooth #' + tooth + ' selected. Tap a surface, or use the M / O / D / B / L buttons.');
+      }
+    }
+  });
+  function applySurface(tooth, k) {
+    if (!tooth || state.answered) return;
+    var mk = O.MARKERS.filter(function (x) { return x.id === state.marker; })[0];
+    if (mk && mk.whole) { applyWhole(tooth); return; }
+    var t = state.chart['T-' + tooth] = state.chart['T-' + tooth] || {};
+    if (t.whole && state.marker) { flash('#' + tooth + ' is charted as a whole tooth. Erase that first to chart a surface.'); return; }
+    if (!state.marker) delete t[k]; else t[k] = state.marker + ':' + state.status;
+    if (!Object.keys(t).length) delete state.chart['T-' + tooth];
+    drawChart();
+  }
+  function applyWhole(tooth) {
+    if (!tooth || state.answered) return;
+    var mk = O.MARKERS.filter(function (x) { return x.id === state.marker; })[0];
+    if (!state.marker) { delete state.chart['T-' + tooth]; drawChart(); return; }
+    if (!mk || !mk.whole) { flash(mk.label + ' goes on a surface. Tap a surface, or pick a crown, RCT, implant, missing or extraction for the whole tooth.'); return; }
+    state.chart['T-' + tooth] = { whole: state.marker + ':' + state.status };
+    drawChart();
+  }
+  $('clear-btn').addEventListener('click', function () { if (state.answered) return; state.chart = {}; drawChart(); });
+  $('zoom-btn').addEventListener('click', function () {
+    var z = $('chart-wrap').classList.toggle('zoomed');
+    $('zoom-btn').textContent = z ? 'Fit to screen' : 'Zoom in';
+    $('swipe-hint').classList.toggle('hidden', !z);
+  });
+
+  // ---- Items --------------------------------------------------------------
+  function showItem() {
+    var n = state.level.n, it = state.items[state.i];
+    state.answered = false; state.tooth = null;
+    $('feedback').classList.add('hidden'); $('next-btn').classList.add('hidden'); $('surface-answer').classList.add('hidden');
+    $('check-btn').classList.toggle('hidden', n < 3);
+    $('counter').textContent = n === 5 ? state.items.length + ' findings' : (state.i + 1) + ' / ' + state.items.length;
+    $('streak').textContent = state.streak >= 2 ? '🔥 ' + state.streak + ' in a row' : '';
+    if (n === 1) {
+      $('prompt').textContent = it.byName ? 'Tap the ' + O.toothLabel(it.tooth, true) : 'Tap tooth #' + it.tooth;
+      $('hint').textContent = it.byName ? 'Upper or lower, right or left, then count in from the back.' : 'Numbers start at the upper right third molar (#1) and go around to the lower right (#32).';
+      state.chart = {}; drawChart();
+    } else if (n === 2) {
+      state.chart = {};
+      if (it.reverse) {
+        $('prompt').textContent = 'Which surface of #' + it.tooth + ' is glowing?';
+        $('hint').textContent = O.toothLabel(it.tooth, true) + '. Pick the answer below.';
+        drawChart({ highlight: [it.tooth], targetSurface: it });
+        var keys = ['M', O.centerSurface(it.tooth), 'D', 'B', 'L'];
+        $('surface-answer-btns').innerHTML = keys.map(function (k) { return '<button type="button" class="sbtn px-4" data-ans="' + k + '">' + esc(O.surfaceName(it.tooth, k).replace(' / facial', O.isAnterior(it.tooth) ? '' : '')) + (k === 'B' && O.isAnterior(it.tooth) ? ' (facial)' : '') + '</button>'; }).join('');
+        Array.prototype.forEach.call($('surface-answer-btns').querySelectorAll('[data-ans]'), function (b) { b.addEventListener('click', function () { answerSurface(it.tooth, b.getAttribute('data-ans')); }); });
+        $('surface-answer').classList.remove('hidden');
+      } else {
+        $('prompt').textContent = 'Tap the ' + O.surfaceName(it.tooth, it.surface).replace(' / facial', O.isAnterior(it.tooth) ? '' : '') + (it.surface === 'B' && O.isAnterior(it.tooth) ? ' (facial)' : '') + ' surface of #' + it.tooth;
+        $('hint').textContent = O.toothLabel(it.tooth, true) + '. Mesial faces the midline, distal faces away from it.';
+        drawChart({ highlight: [it.tooth] });
+      }
+    } else if (n === 3 || n === 4) {
+      $('prompt').textContent = '"' + findingText(it) + '"';
+      $('hint').textContent = (n === 3 ? 'The patient already has this. Chart it in blue.' : 'The dentist wants this done. Chart it in red.') + ' Then press Check.';
+      state.chart = {}; drawChart();
+    } else {
+      $('prompt').textContent = 'New patient exam. Chart everything the dentist calls out.';
+      $('hint').textContent = 'Existing work in blue, treatment needed in red. Check when the whole chart is done.';
+      $('dictation').innerHTML = state.items.map(function (f, i) { return '<li class="flex gap-2" data-line="' + i + '"><span class="text-slate-400 w-5 shrink-0">' + (i + 1) + '.</span><span>"' + esc(findingText(f)) + '"</span></li>'; }).join('');
+      state.chart = {}; drawChart();
+    }
+  }
+
+  function answerTooth(tooth) {
+    if (state.answered) return;
+    var it = state.items[state.i], ok = tooth === it.tooth;
+    finish(ok, ok ? 'That is #' + tooth + ', the ' + O.toothLabel(tooth, true) + '.' : 'You tapped #' + tooth + ' (' + O.toothLabel(tooth, true) + '). The answer is #' + it.tooth + ', the ' + O.toothLabel(it.tooth, true) + '. It is circled now.');
+    if (!ok) drawChart({ highlight: [it.tooth] });
+  }
+  function answerSurface(tooth, k) {
+    if (state.answered) return;
+    var it = state.items[state.i];
+    if (k === 'O' || k === 'I') k = O.centerSurface(tooth);
+    var ok = tooth === it.tooth && k === it.surface;
+    var name = function (t, s) { return O.surfaceName(t, s).replace(' / facial', '') + (s === 'B' && O.isAnterior(t) ? ' (facial)' : ''); };
+    finish(ok, ok ? 'Yes. The ' + name(it.tooth, it.surface) + ' of #' + it.tooth + '.' : (tooth !== it.tooth ? 'That was #' + tooth + '. The question was about #' + it.tooth + ', the ' + O.toothLabel(it.tooth, true) + '.' : 'That is the ' + name(tooth, k) + '. The answer is the ' + name(it.tooth, it.surface) + ', now glowing on the chart.'));
+    if (!ok) drawChart({ highlight: [it.tooth], targetSurface: it });
+    $('surface-answer').classList.add('hidden');
+  }
+  $('check-btn').addEventListener('click', function () {
+    if (state.answered) return;
+    var n = state.level.n;
+    if (n === 5) {
+      var g = grade(state.items, state.chart), okCount = g.items.filter(function (x) { return x.ok; }).length;
+      var all = okCount === g.items.length && !g.extras.length;
+      g.items.forEach(function (x, i) { var li = $('dictation').querySelector('[data-line="' + i + '"]'); if (li) li.className = 'flex gap-2 rounded px-1 ' + (x.ok ? 'bg-emerald-50 text-emerald-800' : 'bg-rose-50 text-rose-800'); });
+      var msg = okCount + ' of ' + g.items.length + ' findings charted correctly.' + (g.extras.length ? ' ' + g.extras.join('; ') + '.' : '');
+      if (!all) {
+        var fixes = g.items.filter(function (x) { return !x.ok; }).map(function (x) { return '<li><b>' + esc(findingText(x.f)) + '</b>: ' + esc(x.problems.join('; ')) + '.</li>'; }).join('');
+        showFeedback(false, msg + ' Fix the red lines and check again, or finish now.<ul class="mt-2 list-disc pl-5 space-y-1">' + fixes + '</ul>');
+        $('next-btn').textContent = 'Finish with this score'; $('next-btn').classList.remove('hidden');
+        state.pendingScore = okCount;
+        return;
+      }
+      state.correct = okCount; state.answered = true;
+      showFeedback(true, 'Perfect chart. Every finding is where the dentist said, in the right color.');
+      celebrate();
+      $('next-btn').textContent = 'See my result →'; $('next-btn').classList.remove('hidden');
+      return;
+    }
+    var it = state.items[state.i], r = grade([it], state.chart), item = r.items[0];
+    var okAll = item.ok && !r.extras.length;
+    finish(okAll, okAll ? 'Charted right: ' + findingPlain(it) + '.' : 'Not yet. ' + item.problems.concat(r.extras).join('; ') + '. It should be: ' + findingPlain(it) + '.');
+    if (!okAll) { state.chart = expectedChart([it]); drawChart({ highlight: [it.tooth] }); }
+  });
+  function finish(ok, text) {
+    state.answered = true;
+    if (ok) { state.correct++; state.streak++; state.bestStreak = Math.max(state.bestStreak, state.streak); } else state.streak = 0;
+    showFeedback(ok, text + (ok && state.streak >= 3 ? ' 🔥 ' + state.streak + ' in a row!' : ''));
+    if (ok && state.streak && state.streak % 5 === 0) celebrate();
+    $('next-btn').textContent = state.i + 1 < state.items.length ? 'Next →' : 'See my result →';
+    $('next-btn').classList.remove('hidden');
+    $('streak').textContent = state.streak >= 2 ? '🔥 ' + state.streak + ' in a row' : '';
+    $('next-btn').focus();
+  }
+  function showFeedback(ok, html) {
+    var fb = $('feedback');
+    fb.className = 'mt-4 rounded-2xl border px-4 py-3 text-sm ' + (ok ? 'fb-ok' : 'fb-bad');
+    fb.innerHTML = (ok ? '✓ ' : '✗ ') + html;
+    fb.classList.remove('hidden');
+  }
+  function flash(text) { var fb = $('feedback'); fb.className = 'mt-4 rounded-2xl border border-slate-200 bg-slate-50 text-slate-700 px-4 py-3 text-sm'; fb.textContent = text; fb.classList.remove('hidden'); }
+  $('next-btn').addEventListener('click', function () {
+    if (state.level.n === 5) {
+      if (!state.answered) { state.correct = state.pendingScore || 0; state.answered = true; }
+      return results();
+    }
+    state.i++;
+    if (state.i >= state.items.length) return results();
+    showItem();
+  });
+  $('back-btn').addEventListener('click', function () { clearInterval(state.timerId); $('drill').classList.add('hidden'); $('results').classList.add('hidden'); $('levels').classList.remove('hidden'); renderLevels(); });
+
+  // ---- Results ------------------------------------------------------------
+  function results() {
+    clearInterval(state.timerId);
+    var n = state.level.n, total = state.items.length, pct = Math.round(state.correct / total * 100), secs = Math.round((Date.now() - state.started) / 1000);
+    store.best = store.best || {}; store.plays = store.plays || {};
+    var newBest = store.best[n] == null || pct > store.best[n];
+    if (newBest) store.best[n] = pct;
+    store.plays[n] = (store.plays[n] || 0) + 1;
+    save();
+    $('drill').classList.add('hidden'); $('results').classList.remove('hidden');
+    $('res-emoji').textContent = pct === 100 ? '🏆' : pct >= 80 ? '🎉' : pct >= 50 ? '💪' : '🌱';
+    $('res-title').textContent = pct === 100 ? 'Perfect. ' + state.correct + ' out of ' + total + '.' : state.correct + ' out of ' + total + ' (' + pct + '%)';
+    $('res-sub').textContent = (pct === 100 ? 'That is office-ready charting.' : pct >= 80 ? 'Strong. One more round and this is automatic.' : pct >= 50 ? 'You are getting it. Run it again while it is fresh.' : 'Charting is a skill you build by repetition. Go again, it gets easier every time.') + ' Time: ' + Math.floor(secs / 60) + ':' + ('0' + (secs % 60)).slice(-2) + (state.bestStreak >= 3 ? '. Best streak: ' + state.bestStreak + '.' : '.');
+    var badge = $('res-badge');
+    if (pct === 100) { badge.textContent = '🏅 Badge earned: ' + BADGES[n]; badge.classList.remove('hidden'); } else if (newBest && store.plays[n] > 1) { badge.textContent = '⬆ New personal best'; badge.classList.remove('hidden'); } else badge.classList.add('hidden');
+    var nextL = LEVELS[n], canNext = nextL && (nextL.open || access === 'student');
+    $('next-level-btn').classList.toggle('hidden', !canNext);
+    $('next-level-btn').onclick = function () { start(n + 1); };
+    $('again-btn').onclick = function () { start(n); };
+    if (pct === 100) celebrate();
+    logResult(n, state.correct, total, secs);
+    try { if (window.PDA && window.PDA.track) window.PDA.track('charting_drill_complete', { level: n, score: pct }); } catch (e) {}
+    window.scrollTo({ top: 0, behavior: reducedMotion() ? 'auto' : 'smooth' });
+  }
+  function celebrate() {
+    if (reducedMotion()) return;
+    var host = document.createElement('div'); host.className = 'burst'; host.setAttribute('aria-hidden', 'true');
+    var em = ['🦷', '✨', '⭐', '🎉', '💙', '❤️'];
+    for (var i = 0; i < 14; i++) { var s = document.createElement('span'); s.textContent = em[i % em.length]; var a = (i / 14) * Math.PI * 2; s.style.setProperty('--dx', Math.round(Math.cos(a) * (90 + Math.random() * 80)) + 'px'); s.style.setProperty('--dy', Math.round(Math.sin(a) * (70 + Math.random() * 60)) + 'px'); host.appendChild(s); }
+    document.body.appendChild(host);
+    setTimeout(function () { host.remove(); }, 1300);
+  }
+  // Practice log (signed-in students only): shows up on the dashboard and the instructor gradebook.
+  async function logResult(level, correct, total, secs) {
+    var line = $('res-log'); line.textContent = '';
+    try {
+      if (!(window.supabase && window.supabase.createClient)) return;
+      var sb = window.supabase.createClient(SB_URL, SB_KEY);
+      var session = (await sb.auth.getSession()).data.session;
+      if (!session) { line.textContent = 'Sign in as a student and your drill scores are saved to your dashboard.'; return; }
+      var r = await sb.from('pp_practice_log').insert({ student_id: session.user.id, app: 'charting-drills', action: 'chart_drill_complete', metadata: { level: level, correct: correct, total: total, pct: Math.round(correct / total * 100) }, duration_seconds: secs });
+      line.textContent = r.error ? 'Score saved on this device (could not reach your dashboard right now).' : 'Saved to your dashboard and your instructor can see it.';
+    } catch (e) { line.textContent = 'Score saved on this device.'; }
+  }
+
+  // ---- Boot ---------------------------------------------------------------
+  var q = new URLSearchParams(location.search);
+  var ret = q.get('return');
+  if (ret && /^\/[\w\-\/?=&.%]*$/.test(ret) && ret.indexOf('//') !== 0) { $('return-link').href = ret; $('return-link').classList.remove('hidden'); }
+  if (!O || !window.PDA_TOOTH_SHAPES) {
+    $('levels').innerHTML = '<p class="text-rose-700 text-sm bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">The tooth chart did not load. Check your connection and reload the page.</p>';
+  } else {
+    renderLevels();
+    var want = Number(q.get('level'));
+    (window.PDA_ACCESS ? window.PDA_ACCESS.get() : Promise.resolve('preview')).then(function (a) {
+      access = a || 'preview';
+      renderLevels();
+      if (want >= 1 && want <= 5 && (LEVELS[want - 1].open || access === 'student')) start(want);
+    }).catch(function () { renderLevels(); if (want === 1 || want === 2) start(want); });
+  }
+})();
+</script>
+</body>
+</html>

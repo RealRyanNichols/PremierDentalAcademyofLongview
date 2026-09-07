@@ -237,6 +237,25 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   domain verify, Mux tokens, 30 broadcast email bodies import, Kajabi contacts CSV,
   lesson content_html/quizzes for weeks 10–12, Mux signed playback for paid videos.
 
+## COURSE PLATFORM — journey layout + charting drills (Sep 7, 2026)
+- Amanda's rules: EVERYTHING in the courses is English (a Spanish course is a separate future
+  build). Chapter 34's video was Spanish and was removed from both courses; a replacement
+  English video is an owner/Cowork pick. `docs/course-video-audit.md` lists every lesson video.
+- /learn is a "journey" now: catalog with continue-where-you-left-off, weeks grouped by
+  `course_modules.unit_label` with the current week open, lesson page with week bar + sidebar +
+  done panel (next lesson / week done / certificate). Keep the quiz gating, feedback form, tutor,
+  reports, attachments and class-date lock exactly as they are.
+- Tooth chart is ONE library: `assets/tooth-shapes.js` (geometry) + `assets/pda-odontogram.js`
+  (render/mount/bind, same chart data format as Practice Pro). Use it for any new chart UI; do not
+  draw a second chart.
+- /tools/charting-drills = five levels (find tooth, name surface, existing/blue, needed/red,
+  dictation). Levels 1–2 open, 3–5 students (`PDA_ACCESS`). Scores log to `pp_practice_log`
+  (app `charting-drills`, action `chart_drill_complete`). Lessons link in via `tool_url`
+  (Chapters 11/12/28/48/50, both courses). `interactive_key` widgets: infection_chain,
+  tooth_numbering, tooth_surfaces; other keys render a practice link.
+- Quiz lessons: the old "being moved over from our previous system" notice was wrong (the quizzes
+  were live). Never reintroduce it; write a real intro.
+
 ## LABOR DAY 2026 OFFER — LIVE BY PHONE ONLY (Sep 6–7, 2026)
 - Offer lives once in `assets/site-facts.js` (`laborDay2026`, `offerIsLive`). /labor-day + the
   promo bars self-expire at 2026-09-07 23:59:59 CT; `check:facts` fails a build still active
