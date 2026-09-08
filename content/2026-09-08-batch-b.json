@@ -1,0 +1,82 @@
+[
+{
+  "slug": "what-is-the-career-vault",
+  "title": "What the Career Vault Is (and Who Actually Needs It)",
+  "meta_desc": "The PDA Career Vault is four self-paced tracks — Texas RDA exam prep, dental software, front office, and the job hunt. Here is exactly what is inside, and an honest read on who should skip it.",
+  "og_desc": "Four tracks, 44 self-paced lessons: RDA exam prep, dental software, front office, and the job hunt. What is inside — and who should skip it.",
+  "tw_title": "What the Career Vault Is (and Who Needs It)",
+  "tw_desc": "Four self-paced tracks for future dental assistants. An honest look at what is inside — and who should skip it.",
+  "date": "2026-09-08",
+  "chip": "Career",
+  "emoji": "🧰",
+  "card_grad": "from-amber-100 to-teal-100",
+  "card_desc": "Four self-paced tracks — the state exam, the software, the front desk, and the job hunt. What is actually inside, and an honest read on who should skip it.",
+  "card_date": "Sep 8, 2026",
+  "hero": "blog-art/what-is-the-career-vault-hero.jpg",
+  "hero_alt": "Illustration of four career tracks branching from a single vault — Premier Dental Academy of Longview Career Vault",
+  "h1": "What the Career Vault is (and who actually needs it)",
+  "lead": "It is the online half of what we teach — the state exam, the software offices run on, the front desk, and the job hunt — in short lessons you can do on your phone. Here is exactly what is in it, and an honest read on who should not bother.",
+  "stats": [
+    { "v": "4", "l": "career tracks" },
+    { "v": "44", "l": "self-paced lessons" },
+    { "v": "6", "l": "modules, orientation included" }
+  ],
+  "widget_after": 4,
+  "widget": {
+    "type": "reveal",
+    "cards": [
+      { "e": "📝", "t": "My state exam is coming up", "b": "Start at <strong>Track 1</strong>. It is the exam-prep track — jurisprudence, infection control, and the question styles that trip people up — and it includes the full Exam-Prep Course and Study Pack. Pair it with the free <a class='text-teal-700 font-semibold' href='/tools/practice-exam'>practice exam</a> so you are testing yourself, not just re-reading." },
+      { "e": "💻", "t": "I have never touched dental software", "b": "Start at <strong>Track 2</strong>. Ten lessons inside Practice Pro — charting, scheduling, and the practice-management work an office watches for on day one. This is the track that most often surprises people who thought clinical skill was the whole job." },
+      { "e": "📞", "t": "I want the front-desk side too", "b": "<strong>Track 3</strong>. Scheduling, insurance, claims and phone skills — ten lessons on the half of the office most training programs skip entirely. Useful if you are aiming at a small practice, where everybody ends up doing a bit of everything." },
+      { "e": "💼", "t": "I am applying to jobs right now", "b": "Jump to <strong>Track 4</strong>. Eight lessons on résumé, interviews, LinkedIn and salary conversations, written for East-Texas dental offices. Then go back and pick up Track 1. The free <a class='text-teal-700 font-semibold' href='/tools/resume-builder'>resume builder</a> and <a class='text-teal-700 font-semibold' href='/tools/interview-prep'>interview prep</a> tools work alongside it." }
+    ]
+  },
+  "sections": [
+    {
+      "h2": "The short version",
+      "html": "<p>The <a href='/career-vault' class='text-teal-700 font-semibold'>Career Vault</a> is six modules and 44 self-paced lessons, built out of what we teach at the Longview campus outside of the hands-on clinical hours. It opens with a welcome module — a short self-assessment and a goal date — then runs through four tracks, and ends with a completion certificate.</p><p>It lives in the same student area as everything else we run, at <a href='/learn' class='text-teal-700 font-semibold'>/learn</a>. It is built for a phone, in fifteen-minute pieces, because that is realistically when most people study. One payment, and you keep access — your progress and materials stay in your member area.</p><div class='not-prose bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg my-5'><p class='text-slate-700 text-[15px] m-0'><strong>What it is not:</strong> it is not the 12-week program, and it is not a substitute for hands-on training. It is the self-paced companion. More on that below.</p></div>"
+    },
+    {
+      "h2": "Track 1 — Texas RDA exam prep",
+      "html": "<p>Eleven lessons aimed at the state exam: jurisprudence, infection control, and the question styles that catch people out. It folds in the full <a href='/exam-prep-course' class='text-teal-700 font-semibold'>Exam-Prep Course</a> and the <a href='/study-pack' class='text-teal-700 font-semibold'>Study Pack</a>, so you are not buying those separately.</p><p>Two things to be straight about. First, our questions are written from scratch by PDA — nothing is copied from a live exam or a publisher's test bank, and nobody here has access to real state exam content. Second, the RDA credential itself comes from the State of Texas, not from us. For the actual requirements, fees and timelines, go to <a href='https://tsbde.texas.gov' rel='noopener' target='_blank' class='text-teal-700 font-semibold'>tsbde.texas.gov</a> — that is the authority, and it is the only one we will point you at for those details.</p>"
+    },
+    {
+      "h2": "Track 2 — the software offices actually run",
+      "html": "<p>Ten lessons in Practice Pro, our own practice-management trainer: charting, scheduling, and the workflow side of a real operatory day. This is the track people underestimate.</p><p>Clinical skill gets you through the interview. Being the new assistant who can already chart existing versus treatment-planned work, or move a schedule around without breaking the day, is what makes an office glad they hired you in week one. You can see what the trainer looks like in <a href='/blog/inside-pda-practice-pro-free-trainer' class='text-teal-700 font-semibold'>this walkthrough</a> before you decide.</p><div class='not-prose bg-cyan-50 border-l-4 border-cyan-600 p-4 rounded-r-lg my-5'><p class='text-cyan-900 text-[15px] m-0'>Lessons link straight into Practice Pro and the Skills Lab — the same trainers our campus students use. You are practising in the software, not reading about it.</p></div>"
+    },
+    {
+      "h2": "Track 3 — the front office almost nobody teaches",
+      "html": "<p>Ten lessons on scheduling, insurance, claims and phone skills. If you have only ever pictured the chairside half of the job, this is the part of the office you have not seen.</p><p>It matters most in smaller practices — the kind that make up a lot of East Texas. In a four-person office, the assistant who can also read a claim rejection or handle a new-patient call is worth considerably more than one who cannot, and everybody in the building knows it.</p>"
+    },
+    {
+      "h2": "Track 4 — the part where you get hired",
+      "html": "<p>Eight lessons on résumé, interviews, LinkedIn and salary conversations, tuned for the offices around here rather than a generic national market.</p><p>What it will not do is promise you a job, an interview, or a particular wage — nobody can honestly promise those, and we are not going to start. What it does is make sure you are not the candidate who has never said their own experience out loud before the interview. For what dental assistants in this region are actually paid, see our <a href='/salary' class='text-teal-700 font-semibold'>salary page</a>, and for the questions that come up most, <a href='/blog/dental-assistant-interview-questions-and-answers' class='text-teal-700 font-semibold'>this post</a>.</p>"
+    },
+    {
+      "h2": "Which track should you start with?",
+      "html": "<p>The tracks are ordered, and the welcome module tells you to work through them in sequence. But if you came here with one specific problem, start where the problem is. Tap the one that sounds like you.</p>"
+    },
+    {
+      "h2": "Who should skip it",
+      "html": "<p>Plenty of people should, and we would rather say so now than take somebody's money badly.</p><ul class='list-disc pl-6 text-slate-700 space-y-1'><li><strong>You are already enrolled in our 12-week program.</strong> A good chunk of this material is in your course already. Ask before you buy.</li><li><strong>You want hands-on training and nothing else.</strong> The Vault is self-paced and online. You cannot learn to seat a patient or pass an instrument through a screen — that is what the campus is for.</li><li><strong>You are not sure dental assisting is the path yet.</strong> Start free. Take the <a href='/tools/is-it-for-me' class='text-teal-700 font-semibold'>is-it-for-me check</a>, sit in on a <a href='/tour' class='text-teal-700 font-semibold'>free campus tour</a>, and decide before you spend anything.</li><li><strong>You only need one piece of it.</strong> If the state exam is your whole question, the <a href='/exam-prep-course' class='text-teal-700 font-semibold'>Exam-Prep Course</a> on its own may be all you want.</li></ul><div class='not-prose bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg my-5'><p class='text-amber-900 text-[15px] m-0'>If you are unsure which of those describes you, text Amanda at <a href='tel:+19039136444' class='text-amber-900 font-semibold underline'>(903) 913-6444</a> and describe your situation. She will tell you if the answer is \"you do not need this.\"</p></div>"
+    },
+    {
+      "h2": "How it fits with the 12-week program",
+      "html": "<p>They are different things and they are priced differently. The <a href='/enroll' class='text-teal-700 font-semibold'>12-week in-person program</a> is the hands-on training at our Longview campus — real equipment, small classes, an instructor in the room. The Vault is self-paced online study you do on your own time.</p><p>Some students buy the Vault first, to get moving before a cohort starts. Some use it alongside the program as extra reps on the software and the front-office side. Some never take the in-person program at all and use it purely as exam prep and job-search prep. All three are reasonable. If you want the classroom, <a href='/apply' class='text-teal-700 font-semibold'>applying is free</a> and does not lock you into a date — and if online-only is what fits your life, our <a href='/online' class='text-teal-700 font-semibold'>online program</a> is the fuller version of that path.</p>"
+    }
+  ],
+  "lead_heading": "Not sure the Vault is right for you?",
+  "lead_cta": "Ask Amanda first",
+  "cta": {
+    "h2": "See what is in the Vault.",
+    "p": "Four tracks, 44 lessons, one payment, and you keep access. Full contents and current pricing are on the Vault page.",
+    "href": "/career-vault",
+    "btn": "Open the Career Vault →"
+  },
+  "keep_reading": [
+    { "href": "/blog/dental-assistant-interview-questions-and-answers", "label": "Interview questions and answers" },
+    { "href": "/blog/inside-pda-practice-pro-free-trainer", "label": "Inside Practice Pro" },
+    { "href": "/salary", "label": "What dental assistants earn here" }
+  ]
+}
+]

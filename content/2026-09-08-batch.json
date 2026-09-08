@@ -1,0 +1,90 @@
+[
+{
+  "slug": "help-finishing-school-when-life-gets-in-the-way",
+  "title": "When Life Gets in the Way of Finishing School (Real Help in East Texas)",
+  "meta_desc": "Most students who leave a career program leave over logistics, not ability. Here is the free East Texas help — childcare, food, bills, someone to talk to — and how to ask early.",
+  "og_desc": "Childcare, food, bills, someone to talk to. The free East Texas help that keeps students in class — and how to ask before you fall behind.",
+  "tw_title": "When Life Gets in the Way of Finishing School",
+  "tw_desc": "The free East Texas help that keeps students in class — childcare, food, bills, and someone to talk to.",
+  "date": "2026-09-08",
+  "chip": "Student life",
+  "emoji": "🧭",
+  "card_grad": "from-cyan-100 to-teal-100",
+  "card_desc": "Almost nobody quits because the coursework was too hard. Here is the free help East Texas students actually use — and how to ask for it before you fall behind.",
+  "card_date": "Sep 8, 2026",
+  "h1": "When life gets in the way of finishing school",
+  "lead": "Almost nobody leaves a program because the coursework was too hard. They leave because childcare fell through in week three, or the truck quit, or the light bill came due the same week as a big exam. Those are solvable problems — and most of the help is already out there, free.",
+  "stats": [
+    { "v": "6", "l": "kinds of help on our hub" },
+    { "v": "211", "l": "free 24/7 Texas help line" },
+    { "v": "$0", "l": "cost to use any of it" }
+  ],
+  "widget_after": 5,
+  "widget": {
+    "type": "checklist",
+    "label": "Your first-week backup plan",
+    "items": [
+      "Write down who picks up my kids if I am running late",
+      "Save 211 and (903) 913-6444 in my phone right now",
+      "Check whether childcare assistance applies to me (Workforce Solutions)",
+      "Figure out my ride plan for a week the car is down",
+      "Know which bill I would call about first if money got tight",
+      "Pick one person I will tell when I start falling behind"
+    ],
+    "messages": [
+      "",
+      "Good start. Keep going — the boring ones matter most.",
+      "You are past the halfway point. This is the part most people skip.",
+      "Almost there. One more and you have a real plan.",
+      "That is a backup plan. Print it, screenshot it, tell somebody."
+    ]
+  },
+  "sections": [
+    {
+      "h2": "Almost nobody leaves because the work was too hard",
+      "html": "<p>When somebody stops showing up, the reason is hardly ever the material. It is a Tuesday morning where the babysitter cancels, or a check that did not stretch as far as it needed to, or a season so heavy that class is the first thing to fall off the list. The coursework is learnable. Life is the part that blindsides people.</p><p>That is worth saying out loud, because when students disappear they usually think it is a personal failure. It almost never is. It is a logistics problem wearing a costume — and logistics problems have phone numbers attached to them.</p><div class='not-prose bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg my-5'><p class='text-slate-700 text-[15px] m-0'><strong>The pattern we watch for:</strong> it is rarely one big thing. It is a small thing that never got solved, stacked on another small thing, until missing class became easier than explaining it.</p></div><p>So we keep a page of the help that already exists in East Texas — not because we run any of it, but because knowing the number before you need it is most of the battle.</p>"
+    },
+    {
+      "h2": "What is on the Student Life Resource Hub",
+      "html": "<p>The <a href='/tools/resource-hub' class='text-teal-700 font-semibold'>Student Life Resource Hub</a> is a free page on this site. No login, no form, nothing to buy. It gathers six kinds of help into one place so you are not searching at 11 p.m. with a dead phone battery:</p><ul class='list-disc pl-6 text-slate-700 space-y-1'><li><strong>Childcare help</strong> — Texas programs for parents who are working or in training.</li><li><strong>Food assistance</strong> — SNAP and local food pantries.</li><li><strong>Rent, utilities and bills</strong> — emergency assistance programs in your county.</li><li><strong>Someone to talk to</strong> — free, confidential, 24/7 mental-health and substance-support lines.</li><li><strong>Safety at home</strong> — the national domestic violence hotline and local shelters.</li><li><strong>Finishing your GED</strong> — free adult-education classes across East Texas.</li></ul><div class='not-prose bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg my-5'><p class='text-amber-900 text-[15px] m-0'><strong>Two honest notes.</strong> These are independent organizations — Premier Dental Academy is not affiliated with them, and what they offer can change. We cannot tell you whether you will qualify for anything. In an emergency, call 911.</p></div><p>One number does a lot of work on that page: <strong>211</strong>. It is a free, 24-hour Texas line that connects you to local rent, utility, food and emergency assistance. If you only save one thing from this article, save that.</p>"
+    },
+    {
+      "h2": "Childcare: the one worth solving first",
+      "html": "<p>If you have small kids at home, childcare is usually the thing that decides whether a program is possible. It is also the one people assume they cannot get help with, so they never ask.</p><p>Texas has childcare assistance for parents who are working or in training, administered through Workforce Solutions. Whether it applies to you depends on your situation, your county and what funding is open at the time — which is exactly why the answer has to come from them and not from us. The hub links straight to the state page and to 211, which can point you at the right local office.</p><p>Worth doing early: ask before your class starts, not in week four. These programs take time to process, and a start date is a much better thing to plan around than a crisis.</p><div class='not-prose bg-cyan-50 border-l-4 border-cyan-600 p-4 rounded-r-lg my-5'><p class='text-cyan-900 text-[15px] m-0'>Already juggling kids and a start date? <a href='/blog/dental-school-with-kids-at-home' class='text-cyan-800 font-semibold underline'>Dental school with kids at home</a> covers the scheduling side — who covers what, and how students actually make the mornings work.</p></div>"
+    },
+    {
+      "h2": "Food, rent, and the month that got tight",
+      "html": "<p>A tight month is not a character flaw and it is not a reason to quit. It is a month.</p><p>For groceries, SNAP applications go through YourTexasBenefits.com, and the East Texas Food Bank can point you to a pantry near you — both are linked on the hub. For rent and utilities, 211 is the front door: they know which local programs currently have funds and which do not, which is information no website stays current on.</p><p>The thing most people get wrong is timing. Assistance programs are far easier to work with <em>before</em> a shutoff notice or an eviction filing than after. If you can see a tight month coming three weeks out, that is the week to call — not the week it lands.</p>"
+    },
+    {
+      "h2": "When what you need is someone to talk to",
+      "html": "<p>Some of what pulls people out of school is not a bill. It is carrying too much at once, or a season of grief, or anxiety that turns a normal exam into something much bigger.</p><p>Those lines are on the hub too, and they are free and confidential around the clock: <strong>988</strong> for the Suicide &amp; Crisis Lifeline, and the SAMHSA helpline for mental health or substance support. If home is not safe, the National Domestic Violence Hotline is on there as well, along with a pointer to local shelters through 211.</p><div class='not-prose bg-slate-50 border-l-4 border-slate-400 p-4 rounded-r-lg my-5'><p class='text-slate-700 text-[15px] m-0'>You do not have to be at your worst to call one of those numbers. They are also for the ordinary version of hard — the kind you would not bother anybody about.</p></div><p>Talking to somebody is not a detour from finishing school. For a lot of students it is the reason they finish.</p>"
+    },
+    {
+      "h2": "Build your backup plan in the first week",
+      "html": "<p>Here is the trick nobody tells you: the students who finish are usually not the ones with the easiest lives. They are the ones who decided what they would do <em>before</em> the hard week arrived. A plan you made calmly on a Sunday is worth ten decisions made in a panic on a Wednesday.</p><p>Run through this once. It takes about five minutes, and it is most of the difference between a rough week and a dropped semester.</p>"
+    },
+    {
+      "h2": "If the problem is paying for school, that is a different door",
+      "html": "<p>Everything above is about the costs of ordinary life. Paying for the training itself is a separate question with separate answers — Texas Workforce Solutions, WIOA, and GI Bill benefits among them.</p><p>Our <a href='/tools/funding-finder' class='text-teal-700 font-semibold'>Funding Finder</a> walks you through which of those paths are worth asking about for your situation. It cannot approve you for anything and it does not pretend to; it tells you who to call and what to ask. And if a payment plan is the real question, the <a href='/tools/tuition-planner' class='text-teal-700 font-semibold'>Tuition Planner</a> lays out the schedule in plain numbers before you commit to anything.</p><p>Neither one costs a dime, and neither one puts you on a list.</p>"
+    },
+    {
+      "h2": "Tell us early. That is the whole ask.",
+      "html": "<p>If you are already enrolled and something has gone sideways, the single most useful thing you can do is say so — early, in whatever words you have. Amanda answers the school phone herself. There is no call center and no script.</p><p>We cannot fix a broken transmission or make a landlord patient. What we can usually do is help you find the right number, work around a week, or make a plan that keeps you in the class instead of starting over next year. What we cannot do is help with something we never heard about.</p><p>And if you have not started yet and you are reading this because you are wondering whether now is a bad time — <a href='/blog/starting-over-in-longview-east-texas' class='text-teal-700 font-semibold'>it usually is a bad time</a>. People rarely get a clean season to start over in. They just start.</p>"
+    }
+  ],
+  "lead_heading": "Something in the way? Tell Amanda.",
+  "lead_cta": "Send my question",
+  "cta": {
+    "h2": "Start where you are.",
+    "p": "Applying is free, and it does not commit you to a start date. Ask your questions first — we would rather help you plan than watch you guess.",
+    "href": "/apply",
+    "btn": "Apply free →"
+  },
+  "keep_reading": [
+    { "href": "/blog/dental-school-with-kids-at-home", "label": "Dental school with kids at home" },
+    { "href": "/blog/five-habits-of-students-who-finish", "label": "Five habits of students who finish" },
+    { "href": "/blog/starting-over-in-longview-east-texas", "label": "Starting over in Longview" }
+  ]
+}
+]

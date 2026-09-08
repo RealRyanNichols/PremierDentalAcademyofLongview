@@ -77,8 +77,8 @@ TOUR_CTA = """
       <div class="grid sm:grid-cols-2 gap-3 mt-4">
         <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">September 14</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
         <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">September 29</div><div class="text-xs text-slate-600">Tue/Thu · daytime</div></div>
-        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">November 9</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
-        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">November 17</div><div class="text-xs text-slate-600">Tue/Thu · daytime</div></div>
+        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">October 5</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
+        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">October 20</div><div class="text-xs text-slate-600">Tue/Thu · daytime</div></div>
       </div>
       <div class="flex flex-wrap gap-3 mt-4">
         <a href="/tour" data-event="blog_tour_click" class="bg-teal-700 hover:bg-teal-800 text-white font-bold px-5 py-2.5 rounded-full text-sm">Schedule a free tour →</a>
