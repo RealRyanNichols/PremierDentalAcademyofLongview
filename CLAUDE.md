@@ -172,6 +172,14 @@ system) is itself the asset — investors and other academies will want it.
 - `check:seo` — every indexable page has static title/description/canonical + OG.
 - `check:a11y` — `<html lang>`, viewport, `<img alt>`, single `<h1>`.
 
+Social-preview images (Open Graph / Twitter cards), Sep 9, 2026:
+- `npm run og` renders `assets/og/blog-<slug>.jpg` for every blog post + the site-wide
+  `assets/og-cover.jpg` (2400×1260 JPEG, brand fonts vendored in `scripts/og-fonts/`, logo,
+  category accent + the Practice Pro anatomical arch as line art). Headline = the post's
+  og:title, eyebrow = its category line; nothing else is typed in by hand. New posts built with
+  `scripts/build_blog_batch.py` get a card automatically; `npm run og:missing` fills gaps.
+  Playwright (global or local) is required. Do NOT hand-draw cards or reintroduce og-cover.png.
+
 Shared client modules (auto-loaded site-wide by `assets/pda-nav.js`):
 - `pda-nav.js` — canonical nav + shared footer; also loads site-facts & analytics.
 - `pda-analytics.js` — `window.PDA.track()` + UTM attribution; auto-fires on any

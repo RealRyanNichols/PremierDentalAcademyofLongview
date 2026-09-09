@@ -45,12 +45,15 @@ HEAD = """<!doctype html>
   <meta property="og:url" content="{site}/blog/{slug}" />
   <meta property="og:title" content="{title}" />
   <meta property="og:description" content="{og_desc}" />
-  <meta property="og:image" content="{site}/assets/og/blog-{slug}.png" />
+  <meta property="og:image" content="{site}/assets/og/blog-{slug}.jpg" />
+  <meta property="og:image:width" content="2400" />
+  <meta property="og:image:height" content="1260" />
+  <meta property="og:image:type" content="image/jpeg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="{tw_title}" />
   <meta name="twitter:description" content="{tw_desc}" />
-  <meta name="twitter:image" content="{site}/assets/og/blog-{slug}.png" />
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BlogPosting","headline":"{title}","description":"{og_desc}","datePublished":"{date}","dateModified":"{date}","author":{{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"{site}"}},"publisher":{{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{{"@type":"ImageObject","url":"{site}/assets/logo-mark.png"}}}},"image":"{site}/assets/og/blog-{slug}.png","mainEntityOfPage":"{site}/blog/{slug}"}}</script>
+  <meta name="twitter:image" content="{site}/assets/og/blog-{slug}.jpg" />
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"BlogPosting","headline":"{title}","description":"{og_desc}","datePublished":"{date}","dateModified":"{date}","author":{{"@type":"Organization","name":"Premier Dental Academy of Longview","url":"{site}"}},"publisher":{{"@type":"Organization","name":"Premier Dental Academy of Longview","logo":{{"@type":"ImageObject","url":"{site}/assets/logo-mark.png"}}}},"image":"{site}/assets/og/blog-{slug}.jpg","mainEntityOfPage":"{site}/blog/{slug}"}}</script>
 </head>
 <body class="bg-white">
 
@@ -212,6 +215,11 @@ def main():
     lines = "".join("\n  <url><loc>%s/blog/%s</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>" % (SITE, a["slug"]) for a in articles)
     s = s[:eidx] + lines + s[eidx:]
     open(sp, "w").write(s); print("sitemap entries:", len(articles))
+    # social-preview cards (assets/og/blog-<slug>.jpg) — rendered from the finished post
+    import subprocess
+    for a in articles:
+        r = subprocess.run(["node", os.path.join(ROOT, "scripts", "generate-og.mjs"), "--slug", a["slug"]])
+        if r.returncode: print("WARN: card not rendered for", a["slug"], "— run: npm run og:missing")
 
 if __name__ == "__main__":
     main()

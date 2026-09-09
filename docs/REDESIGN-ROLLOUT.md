@@ -28,7 +28,7 @@ Ryan built the new look in a **Figma Make** file: **"PDA Website"**, file key **
 - Root-level **static HTML**, ~101 pages, no build step. Clean URLs via `vercel.json`.
 - Styling = **Tailwind Play CDN** (`https://cdn.tailwindcss.com`) on each page + Google Fonts (Inter + Fraunces) + small per-page inline `<style>`. The brand is already navy / teal / amber + Fraunces headings.
 - **Shared chrome = `assets/pda-nav.js`** — it runtime-injects the nav, mobile menu, footer, sticky Call/Apply bar, cohort urgency bar, exit-intent modal, and does Supabase auth-aware nav. Pages opt out of nav replacement with `data-pda-keep` (dashboard, etc.). **One source of truth — edit the chrome here, not per page.**
-- Business facts: `assets/site-facts.js` (`window.PDA_FACTS`). SEO: `assets/pda-seo.js` + per-page meta + `sitemap.xml` / `robots.txt` / `assets/og-cover.png`. Analytics: `assets/pda-analytics.js` + `data-event` attributes.
+- Business facts: `assets/site-facts.js` (`window.PDA_FACTS`). SEO: `assets/pda-seo.js` + per-page meta + `sitemap.xml` / `robots.txt` / `assets/og-cover.jpg`. Analytics: `assets/pda-analytics.js` + `data-event` attributes.
 - **Payments are LIVE — do not rebuild.** `api/enroll.js` charges $200 down then auto-charges the balance via a Square invoice (weekly $160×12 or monthly $640×3 on the $1,997 plan; online is one $397). Just **re-skin** `enroll.html`; keep the form logic + `/api/enroll` contract + the `enroll_plan_selected` / `begin_checkout` / `purchase` events intact.
 - Auth/dashboard/leads = **Supabase** (RLS). Trainers = `tools/*` and `skills-lab/*` (interactive apps — re-skin chrome only, do not touch app logic).
 

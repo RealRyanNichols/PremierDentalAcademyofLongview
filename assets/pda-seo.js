@@ -23,7 +23,7 @@
   // ── Defaults if page didn't ship its own meta ─────────────────
   const META = {
     description: "Premier Dental Academy of Longview — the East Texas RDA training program where you practice on real-grade practice management software before your first day.",
-    image: location.origin + '/assets/og-cover.png',
+    image: location.origin + '/assets/og-cover.jpg',
     siteName: 'Premier Dental Academy of Longview',
     twitter: '@PremierDental',
   };
@@ -97,7 +97,7 @@
       description: META.description,
       url: 'https://www.premierdentalacademyoflongview.com/',
       logo: 'https://www.premierdentalacademyoflongview.com/assets/logo-mark.png',
-      image: 'https://www.premierdentalacademyoflongview.com/assets/og-cover.png',
+      image: 'https://www.premierdentalacademyoflongview.com/assets/og-cover.jpg',
       telephone: '+1-903-913-6444',
       priceRange: '$997–$3,500',
       address: {

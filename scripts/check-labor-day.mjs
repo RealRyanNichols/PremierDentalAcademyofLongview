@@ -54,15 +54,18 @@ ok(driftFree, `every 1..${Math.max(13, MAX_INSTALLMENTS)}-payment split of the $
 // ── 2. Timezone
 const END = Date.parse("2026-09-08T04:59:59Z");
 ok(Date.parse(O.endsAtISO) === END, "endsAtISO === Date.parse('2026-09-08T04:59:59Z')");
-ok(F.offerIsLive(O, Date.parse("2026-09-07T23:59:00-05:00")), "live at 2026-09-07T23:59:00-05:00 (11:59 PM CT Monday)");
-ok(F.offerIsLive(O, Date.parse("2026-09-07T23:59:59-05:00")), "live at the final second");
-ok(!F.offerIsLive(O, Date.parse("2026-09-08T00:00:01-05:00")), "expired at 2026-09-08T00:00:01-05:00");
-ok(!F.offerIsLive(O, Date.parse("2026-09-08T04:59:59Z") + 1), "expired one millisecond after the end constant");
-ok(!F.offerIsLive(O, Date.parse("2026-09-05T23:59:59-05:00")), "not live before Sunday Sep 6 (America/Chicago)");
+// Window logic is tested with the kill switch forced ON so these stay meaningful
+// after the offer is retired (active:false past the deadline, per check:facts).
+const OW = Object.assign({}, O, { active: true });
+ok(F.offerIsLive(OW, Date.parse("2026-09-07T23:59:00-05:00")), "live at 2026-09-07T23:59:00-05:00 (11:59 PM CT Monday)");
+ok(F.offerIsLive(OW, Date.parse("2026-09-07T23:59:59-05:00")), "live at the final second");
+ok(!F.offerIsLive(OW, Date.parse("2026-09-08T00:00:01-05:00")), "expired at 2026-09-08T00:00:01-05:00");
+ok(!F.offerIsLive(OW, Date.parse("2026-09-08T04:59:59Z") + 1), "expired one millisecond after the end constant");
+ok(!F.offerIsLive(OW, Date.parse("2026-09-05T23:59:59-05:00")), "not live before Sunday Sep 6 (America/Chicago)");
 ok(!F.offerIsLive(Object.assign({}, O, { active: false }), Date.parse("2026-09-07T12:00:00-05:00")), "active:false kills it even inside the window");
 // A visitor whose clock claims a different zone cannot extend the deadline:
 // the instant is absolute, so "Sep 7 11:59 PM" in Hawaii (UTC-10) is already past.
-ok(!F.offerIsLive(O, Date.parse("2026-09-07T23:59:00-10:00")), "a UTC-10 visitor's 11:59 PM Monday is already expired (absolute instant)");
+ok(!F.offerIsLive(OW, Date.parse("2026-09-07T23:59:00-10:00")), "a UTC-10 visitor's 11:59 PM Monday is already expired (absolute instant)");
 
 // ── 3. Expired-state code paths (static)
 const page = readFileSync(join(root, "labor-day.html"), "utf8");

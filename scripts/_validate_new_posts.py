@@ -35,7 +35,7 @@ for slug in SLUGS:
     chk(len(re.findall(r'blog_tour_click', s)) == 1, slug + ': tour CTA count != 1')
     chk('tel:+19039136444' in s, slug + ': missing tap-to-call in tour CTA')
     chk('/calendar' in s, slug + ': missing /calendar link')
-    og = '/assets/og/blog-%s.png' % slug
+    og = '/assets/og/blog-%s.jpg' % slug
     chk(s.count(og) == 3, slug + ': og/twitter/json-ld image refs != 3')
     chk(os.path.exists(os.path.join(ROOT, 'assets', 'og', 'blog-%s.png' % slug)), slug + ': thumbnail file missing')
     chk('canonical" href="https://www.premierdentalacademyoflongview.com/blog/%s"' % slug in s, slug + ': canonical wrong')

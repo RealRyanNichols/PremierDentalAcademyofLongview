@@ -106,11 +106,11 @@ function head(c, url) {
   <meta property="og:url" content="${url}" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(`Train as a Registered Dental Assistant from ${c.town} — hands-on at our Longview campus (evening options) or 100% online.`)}" />
-  <meta property="og:image" content="${SITE}/assets/og-cover.png" />
+  <meta property="og:image" content="${SITE}/assets/og-cover.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(`Train as a Registered Dental Assistant from ${c.town} — in-person at our Longview campus or 100% online.`)}" />
-  <meta name="twitter:image" content="${SITE}/assets/og-cover.png" />
+  <meta name="twitter:image" content="${SITE}/assets/og-cover.jpg" />
 
 ${jsonLd(c, url)}
 </head>`;
@@ -414,11 +414,11 @@ function locationsHub() {
   <meta property="og:url" content="${url}" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(desc)}" />
-  <meta property="og:image" content="${SITE}/assets/og-cover.png" />
+  <meta property="og:image" content="${SITE}/assets/og-cover.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(desc)}" />
-  <meta name="twitter:image" content="${SITE}/assets/og-cover.png" />
+  <meta name="twitter:image" content="${SITE}/assets/og-cover.jpg" />
   <script type="application/ld+json">
   ${JSON.stringify(itemList)}
   </script>

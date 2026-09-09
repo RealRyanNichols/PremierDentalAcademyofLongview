@@ -65,7 +65,7 @@
     // scripts/check-facts.mjs, which fails the build if `active` is still true
     // after the deadline. KILL SWITCH: set active:false (or disable the links).
     laborDay2026: {
-      active: true,
+      active: false,   // offer ended Sep 7, 2026 11:59:59 PM CT — kill switch flipped Sep 9 (check:facts requires it)
       key: "laborday2026",
       depositCents: 10000,          // $100
       depositDisplay: "$100",
@@ -191,7 +191,7 @@
       brand: "Premier Dental Academy of Longview",
       defaultTitle: "Premier Dental Academy of Longview | East Texas RDA Training",
       defaultDescription: "East Texas RDA training with practice-management trainers built to teach. Train hands-on in Longview or fully online. Premier Dental Academy of Longview.",
-      ogImage: "https://www.premierdentalacademyoflongview.com/assets/og-cover.png",
+      ogImage: "https://www.premierdentalacademyoflongview.com/assets/og-cover.jpg",
       twitterCard: "summary_large_image"
     },
 
