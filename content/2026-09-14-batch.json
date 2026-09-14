@@ -1,0 +1,89 @@
+[
+{
+  "slug": "what-a-class-of-eight-feels-like",
+  "title": "What a Class of Eight Actually Feels Like",
+  "meta_desc": "We cap every dental assistant class at eight students. Here is what that number actually changes day to day — how often you touch the equipment, how fast a mistake gets corrected, and why nobody gets to hide in the back.",
+  "og_desc": "Eight seats is not a marketing number. Here is what a small dental assistant class changes about how you learn, minute to minute.",
+  "tw_title": "What a Class of Eight Actually Feels Like",
+  "tw_desc": "How often you touch the equipment, how fast a mistake gets caught, and why nobody hides in the back.",
+  "date": "2026-09-14",
+  "chip": "Inside PDA",
+  "emoji": "🪑",
+  "card_grad": "from-cyan-100 to-teal-100",
+  "card_desc": "Eight seats is not a marketing number. What a small class changes about how often you touch the equipment and how fast a mistake gets corrected.",
+  "card_date": "Sep 14, 2026",
+  "h1": "What a class of eight actually feels like",
+  "lead": "Every school says it has small classes. That phrase has been worn so smooth it barely means anything. So here is the specific version: we cap every in-person cohort at eight students, and this is what that number changes about the way a Tuesday actually goes.",
+  "stats": [
+    { "v": "8", "l": "seats per class" },
+    { "v": "~12", "l": "weeks, start to finish" },
+    { "v": "2", "l": "trainers we built ourselves" }
+  ],
+  "widget_after": 5,
+  "widget": {
+    "type": "checklist",
+    "label": "What to ask any program before you enroll",
+    "items": [
+      "How many students are in one class, and is that a cap or an average?",
+      "How many times will I personally use the equipment, not watch it used?",
+      "Who corrects me when I do something wrong, and how quickly?",
+      "What software will I practice on before my first day in an office?",
+      "Can I come see a room with students in it before I sign anything?",
+      "What are the class days and hours, in writing?",
+      "What happens if I fall behind in week six?"
+    ],
+    "messages": [
+      "Good. Those are the questions that separate programs.",
+      "You are already asking better questions than most people do.",
+      "Keep going — the answers should be specific, not reassuring.",
+      "That is the whole list. Ask us all seven on a tour."
+    ]
+  },
+  "sections": [
+    {
+      "h2": "Eight is a number you can feel",
+      "html": "<p>Class size is one of the few things about a school you can verify before you enroll. You can count the chairs. You can count the students. You cannot count a promise about &ldquo;personalized attention,&rdquo; and you certainly cannot count it after you have paid for it.</p><p>We cap at eight because eight is the number where a training room stops behaving like a classroom and starts behaving like a small office. Below that, there is not enough happening around you to learn from. Much above it, and the person teaching has to start managing a group instead of teaching individuals — and you learn to assist by being corrected, not by being managed.</p>"
+    },
+    {
+      "h2": "What actually changes when the room is small",
+      "html": "<p>The honest answer is not that the material is easier or the days are shorter. The material is the same material. What changes is the ratio of watching to doing.</p><p>In a large class, a demonstration is something you see once from six feet back and then try to reconstruct from memory at home. In a room of eight, the demonstration happens and then it is your turn, that morning, while the sequence is still in your hands. You are not queuing for equipment. You are not the person who ran out of time before the room had to be reset.</p><div class='not-prose bg-slate-50 border-l-4 border-teal-600 p-4 rounded-r-lg my-5'><p class='text-slate-700 text-[15px] m-0'>The thing nobody tells you about the first day in a real dental office is that the hard part is not the dentistry. It is the pace, the software, and the charting. That is exactly why we built our own trainers — <a href='/tools/practice-pro' class='text-teal-700 font-semibold'>Practice Pro</a> for the front desk and business side, <a href='/tools/chairside' class='text-teal-700 font-semibold'>ChairSide</a> for the clinical workflow — and why every student gets time on them instead of a turn.</p></div>"
+    },
+    {
+      "h2": "How fast a mistake gets caught",
+      "html": "<p>This is the part that matters most and gets talked about least. In dental assisting, a habit you build wrong on Tuesday is a habit you will be undoing in an operatory six months from now, in front of a patient, with a dentist waiting.</p><p>The whole value of a small room is the length of time between doing something wrong and hearing about it. In a class of eight, that gap is usually measured in seconds. Somebody is standing close enough to see your grip, your sequence, your charting entry — and close enough to stop you before the wrong version sets.</p><p>Getting corrected constantly is not a comfortable way to learn. It is, however, a fast one, and it is much kinder than the alternative, which is being corrected by an employer in your first month.</p>"
+    },
+    {
+      "h2": "Nobody gets to hide in the back",
+      "html": "<p>In a class of eight there is no back. That sounds like a threat and it is genuinely not meant as one — but it is true, and you should know it going in.</p><p>Plenty of people arrive convinced they are the quiet one who will just take notes. That lasts about a week. When there are eight of you, every question in the room is close enough to be your question, and every procedure is going to come around to you before the morning ends. Most students tell us the part they dreaded is the part that ended up building their confidence, because you cannot spend twelve weeks doing something in front of other people and still believe you cannot do it.</p><div class='not-prose bg-amber-50 border-l-4 border-amber-500 p-4 rounded-r-lg my-5'><p class='text-amber-900 text-[15px] m-0'><strong>If you are shy, say so on the tour.</strong> It is a completely normal thing to bring up and we would much rather know on day one than in week five. Call or text <a href='tel:+19039136444' class='text-amber-900 font-semibold underline'>(903) 913-6444</a>.</p></div>"
+    },
+    {
+      "h2": "What a small class does not do",
+      "html": "<p>Being honest about the limits is part of the point of this post.</p><p>Eight seats does not make the program shorter — it still runs about twelve weeks. It does not make the registration requirements go away; that is the state's process, and the current rules live with the <a href='https://tsbde.texas.gov' target='_blank' rel='noopener' class='text-teal-700 font-semibold'>Texas State Board of Dental Examiners</a>, not with any school. It does not do the studying for you, and it does not promise anybody a job.</p><p>What it does is remove the most common reason people finish a program still feeling unprepared: they never got enough repetitions. That is a real problem, it is fixable, and the fix is a number you can count when you walk in the room.</p>"
+    },
+    {
+      "h2": "The room itself",
+      "html": "<p>The campus is at 2800 Gilmer Rd, Suite 106, in Longview. It is set up to look and move like a working dental office rather than a lecture hall, because the gap between those two things is where new assistants struggle.</p><p>Classes are daytime, and there are two schedules depending on which cohort you join:</p><ul class='list-disc pl-6 text-slate-700 space-y-1'><li><strong>Mon/Wed/Fri cohorts — 8:30 AM to 12:30 PM.</strong></li><li><strong>Tue/Thu cohorts — 9:00 AM to 3:00 PM.</strong></li></ul><p>Those two lines are the only class hours we publish. If you see evening or Saturday times attached to our name on a third-party listing, that listing is out of date. A closer look at how the two patterns feel in practice is here: <a href='/blog/mwf-or-tuesday-thursday-class-schedule' class='text-teal-700 font-semibold'>MWF or Tuesday/Thursday — which schedule fits your life</a>.</p>"
+    },
+    {
+      "h2": "Check it yourself",
+      "html": "<p>Do not take our word for the number. Take the list below to us, and take it to any other program you are considering. A school that is proud of how it teaches will answer all seven of these quickly and specifically. Vague answers are an answer too.</p>"
+    },
+    {
+      "h2": "Come count the chairs",
+      "html": "<p>A tour takes about half an hour. You will see the room, meet Amanda Williams — who went through this same program, worked chairside in East Texas, and then bought the school — and get straight answers about whether this is a fit for the life you actually have. Nobody will pressure you, and you do not need to decide anything while you are standing there.</p><p>If you would rather read first, the <a href='/classes' class='text-teal-700 font-semibold'>classes page</a> has the program breakdown, <a href='/skills-lab' class='text-teal-700 font-semibold'>the Skills Lab</a> shows what you practice on, and <a href='/about' class='text-teal-700 font-semibold'>our story</a> explains why the school is built this way. When you are ready to start, <a href='/apply' class='text-teal-700 font-semibold'>the application</a> is free and takes a couple of minutes, and the <a href='/enroll' class='text-teal-700 font-semibold'>enrollment page</a> has current tuition and the payment-plan options.</p><p>Eight chairs. Come count them.</p>"
+    }
+  ],
+  "lead_heading": "Got a question about how the classes actually run?",
+  "cta": {
+    "h2": "See the room before you decide",
+    "p": "Book a free campus tour in Longview — see the equipment, meet Amanda, ask the hard questions.",
+    "href": "/tour",
+    "btn": "Schedule a free tour →"
+  },
+  "keep_reading": [
+    { "href": "/blog/why-classes-capped-at-eight", "label": "Why we cap classes at 8 students" },
+    { "href": "/blog/day-in-the-life-dental-assistant", "label": "A day in the life of a dental assistant" },
+    { "href": "/blog/mwf-or-tuesday-thursday-class-schedule", "label": "Which class schedule fits your life" }
+  ]
+}
+]
