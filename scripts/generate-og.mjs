@@ -14,6 +14,8 @@
  *   node scripts/generate-og.mjs --slug my-post  # one post
  *   node scripts/generate-og.mjs --missing       # only posts whose card is absent
  *   node scripts/generate-og.mjs --site          # only the site cover
+ *   node scripts/generate-og.mjs --pages         # only the tool / landing pages (PAGES below)
+ *   node scripts/generate-og.mjs --page enroll   # one of them
  *   node scripts/generate-og.mjs --preview out.html --slug my-post   # dump the HTML
  *
  * Needs Playwright's Chromium. Uses the project-local `playwright` package if
@@ -42,6 +44,8 @@ const ONLY_SLUG = opt("--slug");
 const PREVIEW = opt("--preview");
 const MISSING_ONLY = flag("--missing");
 const SITE_ONLY = flag("--site");
+const PAGES_ONLY = flag("--pages");
+const ONLY_PAGE = opt("--page");
 const JPEG_QUALITY = +(opt("--quality") || 86);
 
 // ── Facts (single source of truth) ───────────────────────────────────────────
@@ -125,6 +129,7 @@ const ICONS = {
   shield: '<path d="M12 2.5l7.5 3v6c0 5-3.3 8.4-7.5 10-4.2-1.6-7.5-5-7.5-10v-6z"/><path d="M8.8 12.2l2.2 2.2 4.4-4.6"/>',
   check: '<rect x="4" y="3.5" width="16" height="17" rx="2.5"/><path d="M8 12.2l2.6 2.6L16 9.4M8 8h3"/>',
   calendar: '<rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4M8 14h3M13 14h3M8 17.5h3"/>',
+  heart: '<path d="M12 20.5s-7.5-4.6-7.5-10A4.2 4.2 0 0 1 12 8.2a4.2 4.2 0 0 1 7.5 2.3c0 5.4-7.5 10-7.5 10z"/>',
   tooth: '<path d="M7.6 3.5c1.6 0 2.6.9 4.4.9s2.8-.9 4.4-.9c2.6 0 4.1 2.2 4.1 4.9 0 3.6-2.3 5.6-2.8 9-.3 2.1-.7 4.1-2.1 4.1-1.6 0-1.6-4.3-3.6-4.3s-2 4.3-3.6 4.3c-1.4 0-1.8-2-2.1-4.1C5.8 14 3.5 12 3.5 8.4c0-2.7 1.5-4.9 4.1-4.9z"/>',
 };
 const icon = (name) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ICONS.briefcase}</svg>`;
@@ -251,6 +256,32 @@ function hex(h, a) {
   return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
 }
 
+
+// ── Tool / landing pages with their own card ─────────────────────────────────
+// Headline = the page's own og:title / h1 wording (brand suffix dropped since the
+// card already carries the lockup). Chips only repeat facts from site-facts.js or
+// the page's own approved copy. Output: assets/og/page-<key>.jpg.
+const P = FACTS.pricing.inPerson;
+const PAGES = [
+  { key: "salary", files: ["salary.html"], title: "East Texas Dental Assistant Salary Calculator", eyebrow: "Free tool · Salary calculator", family: "money", chips: ["Longview · Tyler · Marshall · East Texas", "Calculated for your role and experience"] },
+  { key: "practice-exam", files: ["tools/practice-exam.html", "go/rda-practice-exam.html"], title: "Free Texas RDA Practice Exam", eyebrow: "Free tool · Exam prep", family: "exam", chips: ["Exam-style questions with instant explanations", "Practice only · not the official state exam"] },
+  { key: "skills-lab", files: ["skills-lab/index.html"], title: "Skills Lab: practice between class days. Walk in ready.", eyebrow: "Student tool · Skills Lab", family: "howto", chips: ["Procedures · tray setups · virtual office", "Quizzes · competency passport"] },
+  { key: "enroll", files: ["enroll.html"], title: "Enroll in Dental Assistant School in Longview, TX or Online", eyebrow: "Enrollment", family: "classes", chips: [`In person · ${P.pifDisplay} paid in full`, `Or ${P.downDisplay} down on a ${P.planTotalDisplay} plan`, "Online · self-paced"] },
+  { key: "share-your-win", files: ["tools/share-your-win.html"], title: "Share Your Win", eyebrow: "Student tool · Celebrate a milestone", family: "encouragement", chips: ["Make a card · post it · inspire the next student"] },
+  { key: "tuition-planner", files: ["tools/tuition-planner.html"], title: "Tuition Planner: build your exact payment schedule", eyebrow: "Free tool · No signup", family: "money", chips: [`${P.downDisplay} down`, `${FACTS.paymentPlan.cadence} · up to 12 payments`, "Same math as our checkout"] },
+  { key: "sponsor-a-student", files: ["sponsor-a-student.html"], title: "Sponsor a Student: adopt a future dental assistant", eyebrow: "Community · Sponsor a seat", family: "sponsor", chips: ["Sponsor a full seat or any part of one", "A three-way win for East Texas"] },
+  { key: "request-graduate", files: ["employers/request-graduate.html"], title: "Request a trained graduate for your dental office", eyebrow: "Employers · Hiring", family: "employers", chips: ["Tell us what your office needs", "We connect you with PDA graduates"] },
+];
+const FAMILY_BY_KEY = Object.fromEntries(FAMILIES.map((f) => [f.key, f]));
+FAMILY_BY_KEY.sponsor = { key: "sponsor", accent: "#fb7185", accent2: "#fda4af", label: "Community", icon: "heart" };
+
+function pageJobs() {
+  return PAGES.filter((pg) => !ONLY_PAGE || pg.key === ONLY_PAGE).map((pg) => ({
+    kind: "site", out: join(OUT_DIR, `page-${pg.key}.jpg`), title: pg.title, eyebrow: pg.eyebrow,
+    family: FAMILY_BY_KEY[pg.family] || DEFAULT_FAMILY, sub: pg.chips || [], page: pg.key,
+  }));
+}
+
 // ── Jobs ─────────────────────────────────────────────────────────────────────
 function blogSlugs() {
   return readdirSync(BLOG_DIR).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => f.replace(/\.html$/, "")).sort();
@@ -258,6 +289,7 @@ function blogSlugs() {
 
 function jobs() {
   const list = [];
+  if (PAGES_ONLY || ONLY_PAGE) return pageJobs();
   if (!ONLY_SLUG || SITE_ONLY) {
     if (!ONLY_SLUG) list.push({
       kind: "site", out: join(ROOT, "assets", "og-cover.jpg"),
@@ -268,6 +300,7 @@ function jobs() {
     });
   }
   if (SITE_ONLY) return list;
+  if (!ONLY_SLUG) list.push(...pageJobs());
   const slugs = ONLY_SLUG ? [ONLY_SLUG] : blogSlugs();
   for (const slug of slugs) {
     const out = join(OUT_DIR, `blog-${slug}.jpg`);

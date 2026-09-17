@@ -178,6 +178,9 @@ Social-preview images (Open Graph / Twitter cards), Sep 9, 2026:
   category accent + the Practice Pro anatomical arch as line art). Headline = the post's
   og:title, eyebrow = its category line; nothing else is typed in by hand. New posts built with
   `scripts/build_blog_batch.py` get a card automatically; `npm run og:missing` fills gaps.
+  Tool/landing pages (/enroll, /salary, practice exam, Skills Lab, tuition planner, sponsor,
+  share-your-win, request-graduate) come from the PAGES table in the same script →
+  `assets/og/page-<key>.jpg`; add a row there for any new page that deserves its own card.
   Playwright (global or local) is required. Do NOT hand-draw cards or reintroduce og-cover.png.
 
 Shared client modules (auto-loaded site-wide by `assets/pda-nav.js`):
