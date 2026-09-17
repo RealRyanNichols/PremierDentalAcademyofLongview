@@ -93,8 +93,8 @@
     <div class="not-prose bg-white border-2 border-teal-600 rounded-2xl p-6 my-6">
       <div class="display text-xl font-bold text-slate-900">📅 Upcoming class starts — Longview campus</div>
       <div class="grid sm:grid-cols-2 gap-3 mt-4">
-        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">September 14</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
         <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">September 29</div><div class="text-xs text-slate-600">Tue/Thu · daytime</div></div>
+        <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">October 5</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
         <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">November 9</div><div class="text-xs text-slate-600">Mon/Wed/Fri · daytime</div></div>
         <div class="bg-teal-50 rounded-xl p-3"><div class="font-bold text-teal-800">November 17</div><div class="text-xs text-slate-600">Tue/Thu · daytime</div></div>
       </div>
@@ -124,7 +124,7 @@
 </footer>
 <script>
 (function(){
-  var tabs=["<strong>Your move:</strong> tour first, then pick a start date you can protect \u2014 September 14, September 29, November 9, or November 17. Line up a backup ride before day one, and ask about carpooling with classmates from your side of the county.", "<strong>Your move:</strong> start the self-paced program any day, set a 3-session-per-week rhythm with the free study plan tool, and remember the 90-day credit means you can still switch to the classroom without losing a dollar.", "<strong>Your move:</strong> take the free practice exam tonight to see how the material feels, then book a tour. One drive to Longview answers more than a month of reading. Call or text (903) 913-6444 and just talk it through with Amanda."],box=document.getElementById('wxTabBox'),btns=document.querySelectorAll('.wx-tab');
+  var tabs=["<strong>Your move:</strong> tour first, then pick a start date you can protect \u2014 September 29, October 5, October 20, November 9, or November 17. Line up a backup ride before day one, and ask about carpooling with classmates from your side of the county.", "<strong>Your move:</strong> start the self-paced program any day, set a 3-session-per-week rhythm with the free study plan tool, and remember the 90-day credit means you can still switch to the classroom without losing a dollar.", "<strong>Your move:</strong> take the free practice exam tonight to see how the material feels, then book a tour. One drive to Longview answers more than a month of reading. Call or text (903) 913-6444 and just talk it through with Amanda."],box=document.getElementById('wxTabBox'),btns=document.querySelectorAll('.wx-tab');
   function show(i){box.innerHTML=tabs[i];btns.forEach(function(b,j){b.classList.toggle('active',i===j);});}
   btns.forEach(function(b){b.addEventListener('click',function(){show(+b.dataset.t);});});show(0);})();
 </script>
