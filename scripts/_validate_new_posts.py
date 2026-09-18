@@ -37,7 +37,7 @@ for slug in SLUGS:
     chk('/calendar' in s, slug + ': missing /calendar link')
     og = '/assets/og/blog-%s.jpg' % slug
     chk(s.count(og) == 3, slug + ': og/twitter/json-ld image refs != 3')
-    chk(os.path.exists(os.path.join(ROOT, 'assets', 'og', 'blog-%s.png' % slug)), slug + ': thumbnail file missing')
+    chk(os.path.exists(os.path.join(ROOT, 'assets', 'og', 'blog-%s.jpg' % slug)), slug + ': thumbnail file missing')
     chk('canonical" href="https://www.premierdentalacademyoflongview.com/blog/%s"' % slug in s, slug + ': canonical wrong')
     chk('premierdentalacademyoflongview.com' in s and not re.search(r'https://premierdentalacademyoflongview\.com', s), slug + ': apex host used somewhere')
     # every internal href resolves
