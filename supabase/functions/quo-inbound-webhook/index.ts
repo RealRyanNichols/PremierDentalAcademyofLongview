@@ -5,19 +5,35 @@
 //   CALLS  call.completed / call.transcript.completed / call.summary.completed
 //          → logged to communications (channel='call'), ONE row per call_id
 //            (transcript + summary merge into it), lead upserted, an admin task
-//            created on completion. Sona's captured fields (email / name /
-//            program interest / timeline) are parsed from the summary and used
-//            to seed the lead grade + "ready now vs which month".
+//            created on completion.
 //
-//   TEXTS  message.received
+//   TEXTS  message.received (inbound) AND outbound sends
 //          → logged to communications (channel='sms'), lead upserted, admin task
 //            created. *** AUTO-REPLY STAYS OFF. *** Texts are LOGGED, never
 //            auto-answered. The after-hours AI reply path is retained but gated
 //            behind app_secrets.QUO_AUTOREPLY_ENABLED ('off' = silent, the
 //            standing setting per Amanda). Logging happens regardless.
 //
-// PRICING (single source of truth — do NOT drift):
-//   In-Person $3,000 · Online $397 · $200 min down, build-your-own plan.
+// PRICING — must match business_settings / approved offers. Do NOT drift.
+//   In-Person: $3,000 paid in full, OR $3,500 on a plan = $500 down + $3,000 balance.
+//   Online:    $397 promotional one-time, $997 regular. Self-paced, starts any day.
+//   (Corrected Aug 7 2026 — previously held retired $1,997 / $200-down pricing.)
+//
+// 2026-09-18 changes (Claude, at Ryan's direction):
+//   1. OUTBOUND TEXTS ARE NOW LOGGED. The handler used to return early on any
+//      non-inbound message, so Amanda's own replies never reached the database.
+//      Nothing downstream could tell "we replied and they went quiet" from
+//      "nobody ever answered them", which made contacted leads read as cold.
+//   2. A MISSING DURATION NO LONGER MEANS MISSED. The admin task used
+//      `durationSec === 0`, and OpenPhone often omits `duration`. 256 calls with
+//      status 'completed' carried no duration and each filed a "Missed call"
+//      task. Status is authoritative; answeredAt is the fallback.
+//   3. DURATION IS DERIVED from answeredAt/completedAt when OpenPhone omits it.
+//   4. MESSAGE DEDUPE on msg_id, because sent and delivered both fire.
+//
+// NOTE: the repo mirror of this file was stale (it still held the retired
+// $200-down pricing) until 2026-09-18. Deployed is the source of truth. If you
+// edit this, deploy AND push, or the next person ships a price regression.
 //
 // Auth: ?secret= must equal SECRET below (matches the live Quo subscription).
 
@@ -30,9 +46,12 @@ const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SITE_URL = "https://premierdentalacademyoflongview.com";
 const PDA_DIGITS = "9039136444"; // our Quo number, used to pick the "other" party
 
-const PRICE_IN_PERSON = 3000;
-const PRICE_ONLINE = 397;
-const MIN_DOWN = 200;
+const PRICE_IN_PERSON_PIF = 3000;
+const PRICE_IN_PERSON_PLAN = 3500;
+const PLAN_DOWN = 500;
+const PRICE_ONLINE_PROMO = 397;
+const PRICE_ONLINE_REGULAR = 997;
+const TUITION_URL = `${SITE_URL}/apply`;
 
 const json = (o: unknown, s = 200) =>
   new Response(JSON.stringify(o), { status: s, headers: { "content-type": "application/json" } });
@@ -126,7 +145,16 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
   if (digits10(from) === PDA_DIGITS) external = to;
   if (digits10(to) === PDA_DIGITS) external = from;
   const status: string = obj.status || obj.disposition || "";
-  const durationSec: number = Number(obj.duration ?? obj.duration_seconds ?? obj.callDuration ?? 0) || 0;
+  const rawDuration: number = Number(obj.duration ?? obj.duration_seconds ?? obj.callDuration ?? 0) || 0;
+  const answeredAt: string = obj.answeredAt || obj.answered_at || "";
+  const completedAt: string = obj.completedAt || obj.completed_at || "";
+  // OpenPhone frequently omits `duration`. When it does, answeredAt +
+  // completedAt give it exactly. Never let a missing duration imply "missed".
+  let durationSec = rawDuration;
+  if (!durationSec && answeredAt && completedAt) {
+    const ms = new Date(completedAt).getTime() - new Date(answeredAt).getTime();
+    if (ms > 0) durationSec = Math.round(ms / 1000);
+  }
   const recordingUrl: string = obj.recordingUrl || obj.media?.[0]?.url || obj.recording?.url || "";
 
   if (!external && !callId) return json({ ok: false, reason: "call missing party + id", type, got: body }, 200);
@@ -180,6 +208,8 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
     transcript: transcriptText || existing?.metadata?.transcript || null,
     summary: summaryText || existing?.metadata?.summary || null,
     last_event: type, extracted,
+    answered_at: answeredAt || existing?.metadata?.answered_at || null,
+    completed_at: completedAt || existing?.metadata?.completed_at || null,
   };
   if (existing) {
     await sb.from("communications").update({
@@ -196,7 +226,11 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
 
   // One admin task per call, on the completion event.
   if (type === "call.completed") {
-    const missed = status.toLowerCase().includes("miss") || status.toLowerCase().includes("no-answer") || durationSec === 0;
+    // A missing duration is NOT evidence of a missed call. Status is
+    // authoritative here and answeredAt is the fallback.
+    const st = status.toLowerCase();
+    const missed = st.includes("miss") || st.includes("no-answer") ||
+      (st !== "completed" && !answeredAt);
     await sb.from("admin_tasks").insert({
       title: `📞 ${missed ? "Missed call" : "Call"} from ${extracted.firstName || external || from} — review`,
       notes: [
@@ -216,13 +250,13 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
 const SMS_KB: Array<{ test: RegExp; intent: string; confidence: "high" | "low"; reply: (t: string) => string }> = [
   { intent: "price", confidence: "high", test: /(price|cost|tuition|how much|expense|afford|payment|fee)/i,
     reply: (text) => { const p = detectPath(text);
-      if (p === "online") return `PDA Online is $${PRICE_ONLINE} total. Pay in full or build your own plan from $${MIN_DOWN} down. ${SITE_URL}/tuition.html`;
-      if (p === "in_person") return `PDA In-Person is $${PRICE_IN_PERSON} total. Pay in full or build your own plan from $${MIN_DOWN} down. ${SITE_URL}/tuition.html`;
-      return `Two tracks:\n• In-Person: $${PRICE_IN_PERSON}\n• Online: $${PRICE_ONLINE}\nBuild your own plan from $${MIN_DOWN} down. ${SITE_URL}/tuition.html`; } },
+      if (p === "online") return `PDA Online is $${PRICE_ONLINE_PROMO} right now (regular $${PRICE_ONLINE_REGULAR}), self-paced, start any day. ${TUITION_URL}`;
+      if (p === "in_person") return `PDA In-Person is $${PRICE_IN_PERSON_PIF.toLocaleString()} paid in full, or $${PRICE_IN_PERSON_PLAN.toLocaleString()} on a payment plan ($${PLAN_DOWN} down, then the $${PRICE_IN_PERSON_PIF.toLocaleString()} balance). ${TUITION_URL}`;
+      return `Two tracks:\n• In-Person: $${PRICE_IN_PERSON_PIF.toLocaleString()} paid in full, or $${PRICE_IN_PERSON_PLAN.toLocaleString()} on a plan ($${PLAN_DOWN} down)\n• Online: $${PRICE_ONLINE_PROMO} right now (regular $${PRICE_ONLINE_REGULAR}), self-paced\n${TUITION_URL}`; } },
   { intent: "payments", confidence: "high", test: /(payment plan|installment|weekly|monthly|daily|financing|finance|down|deposit|put down)/i,
-    reply: () => `$${MIN_DOWN} minimum down, then daily / weekly / monthly until paid off. ${SITE_URL}/tuition.html` },
+    reply: () => `On a plan it's $${PLAN_DOWN} down, then the $${PRICE_IN_PERSON_PIF.toLocaleString()} balance over 2–12 payments — $${PRICE_IN_PERSON_PLAN.toLocaleString()} total. Or $${PRICE_IN_PERSON_PIF.toLocaleString()} if you pay in full. ${TUITION_URL}` },
   { intent: "link", confidence: "high", test: /(send (me )?(a |the )?link|sign me up|enroll me|i want to (sign|enroll|join|pay))/i,
-    reply: () => `Tuition + enrollment: ${SITE_URL}/tuition.html` },
+    reply: () => `Here's the application — it's free and takes about a minute: ${TUITION_URL}` },
   { intent: "stop", confidence: "high", test: /\b(stop|unsubscribe|leave me alone)\b/i, reply: () => `Got it — you won't hear from us again.` },
   { intent: "hello", confidence: "low", test: /^(hi|hello|hey|yo|sup)$/i, reply: () => "" },
 ];
@@ -238,8 +272,35 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
   const direction: string = obj.direction || "";
   const phoneNumberId: string = obj.phoneNumberId || obj.phone_number_id || "";
   const senderName: string = obj.name || body.name || "";
+  const msgId: string = String(obj.id || obj.messageId || obj.message_id || "");
 
-  if (direction && direction !== "incoming" && direction !== "inbound") return json({ ok: true, skipped: "outbound message" });
+  // The same message arrives on more than one event (sent, delivered). One row.
+  if (msgId) {
+    const { data: dup } = await sb.from("communications").select("id")
+      .eq("channel", "sms").filter("metadata->>msg_id", "eq", msgId).maybeSingle();
+    if (dup) return json({ ok: true, skipped: "already logged", msg_id: msgId });
+  }
+
+  // OUTBOUND: log it and stop. No admin task, no auto-reply.
+  // Without these rows nothing can tell "we replied and they went quiet" from
+  // "nobody ever answered them", which is how a contacted lead reads as cold.
+  if (direction && direction !== "incoming" && direction !== "inbound") {
+    const toPhone: string = Array.isArray(obj.to) ? (obj.to[0] || "") : (obj.to || obj.to_number || "");
+    if (!toPhone || !text) return json({ ok: true, skipped: "outbound missing to or body" });
+    // Look up only. Never create a lead from an outbound text: Amanda also
+    // texts students, vendors and parents, and those are not leads.
+    const { data: outLead } = await sb.from("leads").select("id,first_name,email")
+      .ilike("phone", `%${digits10(toPhone)}%`).limit(1).maybeSingle();
+    await sb.from("communications").insert({
+      contact_phone: toPhone, contact_name: outLead?.first_name || null,
+      contact_email: outLead?.email || null,
+      channel: "sms", direction: "outbound", body: text, source: "quo",
+      related_lead_id: outLead?.id || null,
+      metadata: { quo_event: body.type || null, msg_id: msgId || null, logged_outbound: true },
+    });
+    return json({ ok: true, logged: "outbound sms", lead_id: outLead?.id, msg_id: msgId });
+  }
+
   if (!fromPhone || !text) return json({ ok: false, reason: "missing from or body", got: body });
 
   const extracted = extractInfo(text);
@@ -255,12 +316,14 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
   }
 
   // ALWAYS log the inbound text. This is the core requirement: texts are
-  // recorded in the DB whether or not anything replies.
+  // recorded in the DB whether or not anything replies. The SMS drip's
+  // stop-on-reply gate reads these rows, so this insert must never be skipped.
   await sb.from("communications").insert({
     contact_phone: fromPhone, contact_name: senderName || lead?.first_name || firstName || null,
     contact_email: extracted.email || lead?.email || null,
     channel: "sms", direction: "inbound", body: text, source: "quo",
-    related_lead_id: lead?.id || null, metadata: { intent, confidence, extracted, quo_event: body.type || null },
+    related_lead_id: lead?.id || null,
+    metadata: { intent, confidence, extracted, quo_event: body.type || null, msg_id: msgId || null },
   });
 
   // Auto-reply: OFF unless the kill switch is explicitly 'on'. Standing setting
