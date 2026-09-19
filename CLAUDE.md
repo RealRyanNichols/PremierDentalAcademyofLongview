@@ -66,8 +66,9 @@ system) is itself the asset — investors and other academies will want it.
 5. Never commit secrets. The Supabase anon key is public and fine in client
    code. `SQUARE_ACCESS_TOKEN`, service-role keys, and any access tokens live in
    Vercel env vars — never in the repo.
-6. Commits: author `Ryan Nichols <hello@premierdentalacademyoflongview.com>`,
-   normal cadence. Do NOT tag commits, PRs, or code as machine-generated.
+6. Commits: author `Premier Dental Academy of Longview <hello@premierdentalacademyoflongview.com>`
+   (the business, never an individual — Amanda, Sep 19, 2026), normal cadence.
+   Do NOT tag commits, PRs, or code as machine-generated.
 
 ## Payments (api/enroll.js)
 - Vercel serverless function; reads `SQUARE_ACCESS_TOKEN` from Vercel env.

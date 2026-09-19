@@ -36,7 +36,7 @@
       cta: { label: 'See enrollment options →', href: '/enroll' } },
 
     { match: /\b(how long|duration|weeks|time|months|schedule)\b/i,
-      reply: 'Pick the format that fits you:\n• **In-Person** at our Longview campus\n• **Online** — live video classes from anywhere\n\nSame curriculum, same instructors, same certificate. Tap to see class dates.',
+      reply: 'Both formats run about **12 weeks**:\n• **In-Person** at our Longview campus — daytime classes, hands-on\n• **Online** — self-paced, start any day, no live class schedule\n\nSame curriculum and the same trainers. Tap to see class dates.',
       cta: { label: 'See upcoming classes →', href: '/classes' } },
 
     { match: /\b(when|next class|start|begin|cohort)\b/i,
@@ -44,7 +44,7 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $997 one-time payment (regular price, normally $997). At that price it\'s one-and-done.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $997 one-time payment (regular price). One-and-done, start any day.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
       cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
     { match: /\b(sponsor|sponsorship|adopt a student|can'?t afford|cant afford)\b/i,
@@ -56,11 +56,11 @@
       cta: { label: 'Apply for funding →', href: '/apply' } },
 
     { match: /\b(salary|pay|earn|how much.*make|income|wage)\b/i,
-      reply: 'RDA starting pay in East Texas is **$36k–$46k/yr**. With software fluency + 1 year experience: **$42k–$56k**.\n\nTry our calculator to see what you could earn:',
+      reply: 'Pay varies by office, experience and role, so we don\'t quote one number. Our salary calculator shows East Texas RDA pay ranges with the sources listed:',
       cta: { label: 'Run the numbers →', href: '/salary' } },
 
     { match: /\b(job|hire|hired|placement|placed|career|employed)\b/i,
-      reply: 'Most students interview before graduation and have offers within 2 weeks after. We help match grads with East Texas offices that hire from PDA every cohort.',
+      reply: 'We help every graduate prepare for the job search and introduce them to hiring East Texas offices. See the real placements on our graduates page.',
       cta: { label: 'See where our grads work →', href: '/graduates' } },
 
     { match: /\b(apply|sign up|enroll|register|application)\b/i,
@@ -104,7 +104,7 @@
       cta: { label: 'Book a tour →', href: '/apply' } },
 
     { match: /\b(experience|prior|never|new to|background|qualif)\b/i,
-      reply: 'No dental experience required. About 70% of our students start with zero dental background — the curriculum and trainers are designed for that.' },
+      reply: 'No dental experience required. Many of our students start with zero dental background — the curriculum and trainers are designed for that.' },
 
     { match: /\b(age|old|young|teen|adult|18|16|65)\b/i,
       reply: 'You need to be at least 16 to enroll. Most students are between 18 and 45, but we\'ve had students in their 50s and 60s do great too.' },

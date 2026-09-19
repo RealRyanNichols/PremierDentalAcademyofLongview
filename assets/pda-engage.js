@@ -150,7 +150,7 @@
     host.innerHTML =
       '<div style="' + CARD + '">' +
       '<div style="' + H + '">💰 Dental Assistant Pay-Raise Calculator</div>' +
-      '<div style="' + SUB + '">See what becoming a Registered Dental Assistant could add to your income — and how fast training pays for itself. Estimates use real East-Texas RDA pay ranges.</div>' +
+      '<div style="' + SUB + '">See what becoming a Registered Dental Assistant could add to your income — and how that compares to the cost of training. Estimates use East Texas RDA pay ranges; pay varies by office and experience.</div>' +
       '<label style="' + LBL + '">What do you make now?</label>' +
       '<div style="display:flex;gap:8px"><input data-f="amt" inputmode="decimal" placeholder="e.g. 13" style="' + INP + '"><select data-f="per" style="' + INP + ';max-width:130px"><option value="hr">per hour</option><option value="yr">per year</option></select></div>' +
       '<button type="button" data-f="go" style="' + BTN + '">Calculate my raise →</button>' +
