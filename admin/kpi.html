@@ -117,6 +117,21 @@
       </section>
     </div>
 
+    <!-- Attribution: which Facebook post / campaign and which landing page each lead came from -->
+    <div class="grid lg:grid-cols-2 gap-6 mb-8">
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">Leads by campaign <span class="text-slate-400 font-normal text-sm">· last 30 days</span></h2>
+        <p class="text-xs text-slate-500 mt-1">From the campaign tags on each lead. Facebook short links (<span class="mono">/go/fb-…</span>) tag every click; "direct / none" means the lead arrived with no campaign.</p>
+        <div id="chart-leads-campaign" class="mt-4 space-y-2"></div>
+        <details class="mt-3 text-xs text-slate-500"><summary class="cursor-pointer">Data table</summary><div id="table-leads-campaign" class="mt-2"></div></details>
+      </section>
+      <section class="bg-white rounded-2xl border border-slate-200 p-5">
+        <h2 class="font-bold">Leads by landing page <span class="text-slate-400 font-normal text-sm">· last 30 days</span></h2>
+        <p class="text-xs text-slate-500 mt-1">The first page each lead saw on the site.</p>
+        <div id="chart-leads-landing" class="mt-4 space-y-2"></div>
+      </section>
+    </div>
+
     <div class="grid lg:grid-cols-2 gap-6 mb-8">
       <section class="bg-white rounded-2xl border border-slate-200 p-5">
         <h2 class="font-bold">Pipeline right now <span class="text-slate-400 font-normal text-sm">· all open leads</span></h2>
@@ -181,7 +196,7 @@
 
   // ── Data ──
   const [leadsQ, cohortsQ, purchasesQ, profilesQ, subsQ, tasksQ, failedQ] = await Promise.all([
-    sb.from('leads').select('id,created_at,source,status,pipeline_stage,lead_grade,last_contact_at,first_name,last_name,phone,interest_path').order('created_at', { ascending: false }).limit(1000),
+    sb.from('leads').select('id,created_at,source,status,pipeline_stage,lead_grade,last_contact_at,first_name,last_name,phone,interest_path,utm,landing_page').order('created_at', { ascending: false }).limit(1000),
     sb.from('cohorts').select('name,delivery_mode,start_date,capacity,enrolled_count,status'),
     sb.from('purchases').select('amount_cents,product_label,status,created_at'),
     sb.from('profiles').select('id,program,is_admin'),
@@ -288,6 +303,36 @@
     hbars($('chart-leads-source'), entries, '#0d9488');
     $('table-leads-source').innerHTML = '<table class="w-full text-left"><thead><tr><th class="pr-3 py-0.5">Source</th><th>Leads</th></tr></thead><tbody>' +
       entries.map(e => '<tr><td class="pr-3 py-0.5">' + esc(e[0]) + '</td><td>' + e[1] + '</td></tr>').join('') + '</tbody></table>';
+  });
+
+  // ── Attribution: leads by campaign (utm on the lead; last touch, then first touch) ──
+  function topEntries(counts, max) {
+    let entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    if (entries.length > max) { const rest = entries.slice(max - 1).reduce((s, e) => s + e[1], 0); entries = entries.slice(0, max - 1); entries.push(['other', rest]); }
+    return entries;
+  }
+  safeChart('chart-leads-campaign', function leadsByCampaign() {
+    const counts = {};
+    leads30.forEach(l => {
+      const u = (l.utm && typeof l.utm === 'object') ? l.utm : {};
+      const f = (u.first_touch && typeof u.first_touch === 'object') ? u.first_touch : {};
+      const key = u.utm_campaign || f.utm_campaign || u.utm_source || f.utm_source || 'direct / none';
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    const entries = topEntries(counts, 10);
+    hbars($('chart-leads-campaign'), entries, '#0d9488');
+    $('table-leads-campaign').innerHTML = '<table class="w-full text-left"><thead><tr><th class="pr-3 py-0.5">Campaign</th><th>Leads</th></tr></thead><tbody>' +
+      entries.map(e => '<tr><td class="pr-3 py-0.5">' + esc(e[0]) + '</td><td>' + e[1] + '</td></tr>').join('') + '</tbody></table>';
+  });
+  safeChart('chart-leads-landing', function leadsByLanding() {
+    const counts = {};
+    leads30.forEach(l => {
+      const u = (l.utm && typeof l.utm === 'object') ? l.utm : {};
+      const f = (u.first_touch && typeof u.first_touch === 'object') ? u.first_touch : {};
+      const k = String(l.landing_page || f.landing_path || u.landing_path || 'unknown').split('?')[0];
+      counts[k] = (counts[k] || 0) + 1;
+    });
+    hbars($('chart-leads-landing'), topEntries(counts, 10), '#0d9488');
   });
 
   // ── Chart 3: pipeline ──

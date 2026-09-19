@@ -44,11 +44,20 @@ const attr = window.PDA.attribution(); // { utm_source, utm_medium, ..., referre
 - `tool_start` — fires from the student dashboard's tool CTAs (Practice Pro, ChairSide,
   Flashcards, Practice Exam, Skills Lab stations). The tool is identified by the link href.
 
-## Lead attribution (UTM)
-- On every page load, `utm_source/medium/campaign/content/term` from the URL are saved to
-  `localStorage` (`pda.utm`) with the referrer.
-- Lead forms should attach `window.PDA.attribution()` to their payload so Amanda sees the
-  source/referrer of each lead. (Added to the form flows in the lead-flow prompt.)
+## Lead attribution (UTM) — first touch + last touch
+- **Last touch** (`localStorage` `pda.utm`): `utm_source/medium/campaign/content/term` plus
+  click ids (`fbclid`, `gclid`, `ttclid`, `msclkid`), referrer and landing path — overwritten
+  whenever a new campaign arrives.
+- **First touch** (`pda.utm_first`): written once per browser on the very first visit — landing
+  path, referrer and any campaign — never overwritten. Facebook drives several visits before an
+  application; first touch says which post started it, last touch which one closed it.
+- `window.PDA.attribution()` returns the last touch flat (backward compatible) with
+  `first_touch` nested and `page` (current path).
+- Every lead form submits through `assets/pda-lead.js`, which writes both into `leads.utm`
+  (jsonb) and the first landing page into `leads.landing_page`, and appends a readable
+  `Attribution: …` line to `message`. `/admin/kpi` charts leads by campaign and by landing page.
+- Short links for posts: `/go/<slug>` (see `docs/go-links.md`) add the tags automatically.
+- A lead event with `saved:false` (the save failed) is NOT reported to Meta as a Lead.
 - Privacy: we store only campaign/referrer/landing path — no sensitive personal data.
 
 ## Meta standard-event mapping (retargeting / lookalikes)

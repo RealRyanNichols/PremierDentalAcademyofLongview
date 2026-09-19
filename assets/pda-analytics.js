@@ -2,18 +2,26 @@
  * PDA analytics + lead attribution — safe, provider-agnostic, never throws.
  *
  * - Auto-fires `page_view` and any element with `data-event="..."` on click.
- * - Captures UTM params to localStorage and exposes them for form payloads.
+ * - Captures campaign attribution to localStorage and exposes it for form payloads:
+ *     pda.utm        LAST touch — overwritten whenever a new utm_* / click id arrives
+ *     pda.utm_first  FIRST touch — written once per browser (landing page, referrer,
+ *                    and any campaign on that very first visit), never overwritten.
+ *   Facebook posts drive many visits before someone applies; first touch tells Amanda
+ *   which post started it, last touch which one closed it.
  * - Sends to whatever provider is configured (Vercel Web Analytics if present,
  *   plus GA4 / Meta Pixel / TikTok when their public IDs are set in
  *   window.PDA_ANALYTICS_CONFIG — see assets/analytics-config.example.js).
  * - With no provider configured it is a no-op (console.debug only). Never crashes.
  *
  * API: window.PDA.track(name, props) · window.PDA.identifyLead(traits) ·
- *      window.PDA.attribution()  (returns {utm_*, referrer, landing_path})
+ *      window.PDA.attribution()  → { utm_*, fbclid?, referrer, landing_path, page, first_touch:{…} }
+ *      (top-level keys are the LAST touch, so older callers keep working unchanged)
  */
 (function () {
   var CFG = (typeof window !== "undefined" && window.PDA_ANALYTICS_CONFIG) || {};
   var UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+  var CLICK_IDS = ["fbclid", "gclid", "ttclid", "msclkid"];
+  var LAST_KEY = "pda.utm", FIRST_KEY = "pda.utm_first";
 
   // Named conversion events that map to the Meta STANDARD "Lead" event (used for
   // ad optimization + retargeting/lookalike audiences). The pixel is loaded
@@ -21,28 +29,53 @@
   var LEAD_EVENTS = {
     application_submit: 1, waitlist_submit: 1, tour_submit: 1, study_guide_submit: 1,
     practice_exam_lead_submit: 1, employer_request_submit: 1, night_class_lead: 1,
-    ask_premier_lead_submit: 1, lead_submit: 1,
+    ask_premier_lead_submit: 1, lead_submit: 1, contact_submit: 1, sponsor_submit: 1,
+    hiring_partner_submit: 1, class_reservation_submit: 1,
   };
 
   function safe(fn) { try { return fn(); } catch (e) { /* analytics must never break the page */ } }
+  function clip(v) { return String(v == null ? "" : v).slice(0, 200); }
 
   function captureUTM() {
     safe(function () {
       var p = new URLSearchParams(location.search), got = {};
-      UTM_KEYS.forEach(function (k) { var v = p.get(k); if (v) got[k] = v; });
-      if (Object.keys(got).length) {
+      UTM_KEYS.forEach(function (k) { var v = p.get(k); if (v) got[k] = clip(v); });
+      CLICK_IDS.forEach(function (k) { var v = p.get(k); if (v) got[k] = clip(v); });
+      var hasCampaign = Object.keys(got).length > 0;
+
+      // FIRST touch: once per browser. Even a plain organic first visit is recorded
+      // (landing page + referrer), so "how did they find us" is always answerable.
+      var first = null;
+      safe(function () { first = JSON.parse(localStorage.getItem(FIRST_KEY) || "null"); });
+      if (!first || typeof first !== "object") {
+        first = {};
+        Object.keys(got).forEach(function (k) { first[k] = got[k]; });
+        first.landing_path = location.pathname;
+        first.referrer = clip(document.referrer || "");
+        first._ts = Date.now();
+        localStorage.setItem(FIRST_KEY, JSON.stringify(first));
+      }
+
+      // LAST touch: overwritten only when a new campaign / click id arrives.
+      if (hasCampaign) {
         got._ts = Date.now();
-        if (!got.referrer) got.referrer = document.referrer || "";
-        localStorage.setItem("pda.utm", JSON.stringify(got));
+        got.referrer = clip(document.referrer || "");
+        got.landing_path = location.pathname;
+        localStorage.setItem(LAST_KEY, JSON.stringify(got));
       }
     });
   }
 
   function attribution() {
     var a = {};
-    safe(function () { a = JSON.parse(localStorage.getItem("pda.utm") || "{}"); });
-    safe(function () { if (!a.referrer) a.referrer = document.referrer || ""; });
-    safe(function () { a.landing_path = location.pathname; });
+    safe(function () { a = JSON.parse(localStorage.getItem(LAST_KEY) || "{}") || {}; });
+    safe(function () { if (!a.referrer) a.referrer = clip(document.referrer || ""); });
+    safe(function () { if (!a.landing_path) a.landing_path = location.pathname; });
+    safe(function () { a.page = location.pathname; });
+    safe(function () {
+      var f = JSON.parse(localStorage.getItem(FIRST_KEY) || "null");
+      if (f && typeof f === "object") a.first_touch = f;
+    });
     return a;
   }
 
@@ -61,9 +94,10 @@
     // Meta STANDARD event mapping — the pixel is loaded site-wide (pda-nav.js),
     // so gate on fbq itself, not the optional PDA_ANALYTICS_CONFIG.metaPixelId.
     // Purchase is intentionally NOT mapped here (each product/enroll path fires
-    // its own Purchase — mapping it centrally would double-count).
+    // its own Purchase — mapping it centrally would double-count). A lead that
+    // did NOT save (data.saved === false) is not reported as a Lead.
     safe(function () {
-      if (window.fbq && LEAD_EVENTS[name]) {
+      if (window.fbq && LEAD_EVENTS[name] && data.saved !== false) {
         window.fbq("track", "Lead", { content_name: name, value: data.value, currency: data.currency || "USD" });
       }
     });

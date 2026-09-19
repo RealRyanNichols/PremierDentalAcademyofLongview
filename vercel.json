@@ -46,6 +46,12 @@
       ]
     }
   ],
+  "rewrites": [
+    {
+      "source": "/go/:slug",
+      "destination": "/api/go?slug=:slug"
+    }
+  ],
   "redirects": [
     {
       "source": "/post/:path*",

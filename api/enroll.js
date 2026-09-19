@@ -234,7 +234,7 @@ function buildSchedule({ remainingCents, cadence, firstPaymentDate, classEndDate
 // No class-end constraint — post-July-1 plans may run up to 12 months; the
 // no-board-until-paid rule is what gates certification, not the calendar. The
 // last payment absorbs any rounding remainder so the total is exact.
-function buildScheduleV2({ balanceCents, cadence, count, firstPaymentDate }) {
+export function buildScheduleV2({ balanceCents, cadence, count, firstPaymentDate }) {
   let n = Math.round(Number(count));
   if (!Number.isFinite(n) || n < 1) n = 1;
   if (n > MAX_INSTALLMENTS) throw new Error(`A plan can have at most ${MAX_INSTALLMENTS} payments.`);

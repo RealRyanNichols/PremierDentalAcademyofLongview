@@ -13,9 +13,14 @@
       <tr><td style="padding:6px 0;color:#64748b">Email</td><td style="padding:6px 0"><a href="mailto:{{email}}" style="color:#0d9488">{{email}}</a></td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Interest</td><td style="padding:6px 0">{{interest_path}}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b;vertical-align:top">Details</td><td style="padding:6px 0;color:#334155">{{message}}</td></tr>
+      <!-- Rendered only when the lead carries attribution (assets/pda-lead.js → leads.utm / landing_page) -->
+      <tr><td style="padding:6px 0;color:#64748b">Campaign</td><td style="padding:6px 0">{{utm_source}} / {{utm_medium}} / {{utm_campaign}} / {{utm_content}}</td></tr>
+      <tr><td style="padding:6px 0;color:#64748b">Landing page</td><td style="padding:6px 0">{{landing_page}}</td></tr>
+      <tr><td style="padding:6px 0;color:#64748b">First visit</td><td style="padding:6px 0">{{first_touch.utm_source}} / {{first_touch.utm_campaign}} / {{first_touch.landing_path}}</td></tr>
     </table>
     <div style="margin-top:20px;text-align:center">
       <a href="tel:{{phone}}" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">📞 Call now</a>
+      <a href="sms:{{phone}}" style="display:inline-block;background:#0d9488;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">💬 Text</a>
       <a href="https://www.premierdentalacademyoflongview.com/admin/leads" style="display:inline-block;background:#0f172a;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">Open in admin</a>
     </div>
     <p style="margin:18px 0 0;font-size:12px;color:#94a3b8;text-align:center">Tip: leads convert best when you reach out within the first hour.</p>
