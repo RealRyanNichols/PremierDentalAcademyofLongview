@@ -41,10 +41,88 @@
     pricing: {
       // July 1, 2026 price change — must match api/enroll.js (the payment engine).
       // Pay in full: $3,000. Payment plan: $3,500 total = $500 down + $3,000 balance.
-      inPerson: { total: 3000, totalDisplay: "$3,000", totalCents: 300000, downPayment: 500, downDisplay: "$500", pifDisplay: "$3,000", planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000, balance: 3000, balanceDisplay: "$3,000" },
-      // Current regular online-program price. Keep this aligned with products.online_program
-      // and api/enroll.js.
-      online: { price: 997, priceDisplay: "$997", priceCents: 99700, regularPrice: 997, regularDisplay: "$997", sale: false, saleLabel: "regular price", saleEndsAtISO: null }
+      // scripts/check-pricing.mjs fails the build if api/enroll.js or enroll.html drift
+      // from these numbers, and if any public page shows "$500 down" without "$3,500".
+      inPerson: {
+        total: 3000, totalDisplay: "$3,000", totalCents: 300000,
+        downPayment: 500, downDisplay: "$500", downCents: 50000,
+        pifDisplay: "$3,000",
+        planTotal: 3500, planTotalDisplay: "$3,500", planTotalCents: 350000,
+        balance: 3000, balanceDisplay: "$3,000", balanceCents: 300000,
+        maxInstallments: 12,
+        // One sentence every page should use when it mentions both numbers, so the
+        // "$3,000 vs $3,500" confusion can never come back through copy drift.
+        summary: "$3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance)"
+      },
+      // ONLINE PRICE — one switch. The number shown on every page, in the chatbot, in
+      // JSON-LD and in api/enroll.js comes from here. It MUST equal
+      // products.online_program.price_cents in Supabase, because supabase/functions/
+      // buy-product charges that row. Owner brief (Sep 17, 2026) lists the online offer as
+      // "$397 promotional / $997 regular"; the live checkout has charged $997 since the
+      // Aug 22, 2026 flip. Flipping `sale` to true (and salePrice/saleCents to $397) is a
+      // payment-configuration change: do it together with the staged migration
+      // db/pending/20260917_online_price_397_promo.sql, only on Amanda's explicit go.
+      online: {
+        regularPrice: 997, regularDisplay: "$997", regularCents: 99700,
+        sale: false,
+        salePrice: 397, saleDisplay: "$397", saleCents: 39700,
+        saleLabel: "promotional price", saleEndsAtISO: null,
+        // Effective values (derived below from `sale`) — pages read these:
+        price: 997, priceDisplay: "$997", priceCents: 99700,
+        format: "self-paced, start any day, no live class schedule"
+      }
+    },
+
+    // ── APPROVED CLAIMS REGISTER ─────────────────────────────────────────────
+    // Every statistic or outcome claim the site could show. Only status:"approved"
+    // renders; anything else is HIDDEN or replaced by the neutral copy below.
+    // To approve a claim Amanda supplies: the number, how it was measured, the period,
+    // and an approval date. scripts/check-claims.mjs fails the build if a retired or
+    // unapproved figure appears hard-coded on a public page.
+    claims: {
+      placementRate:    { status: "needs_evidence", display: null, retiredValues: ["85%+", "85%"], neutral: "Our graduates go to work in dental offices across East Texas.", note: "Was fed from public_stats_overrides.placement_rate_pct (85). No methodology or period on file." },
+      graduateCount:    { status: "needs_evidence", display: null, retiredValues: ["406+", "400+", "406"], neutral: "Graduates on our placement wall are real people at real East Texas offices.", note: "Was placements + public_stats_overrides.graduates_extra (394). Only the placement records themselves are verified." },
+      noExperiencePct:  { status: "needs_evidence", display: null, retiredValues: ["70%"], neutral: "Many of our students start with no dental background. The curriculum and trainers are built for someone walking in cold.", note: "No survey on file." },
+      partnerOffices:   { status: "records",        display: null, neutral: "We introduce graduates to hiring East Texas offices.", note: "Rendered live from the hiring_partners table (verified = true). Not a typed number." },
+      salaryPayback:    { status: "retired",        display: null, retiredValues: ["pays for itself", "pays back in", "$36,000 – $44,000", "$42k+"], neutral: "Pay varies by office, experience and role. Run your own numbers on the salary calculator.", note: "Earnings and payback claims are never shown as promises. /salary is an estimate tool with its sources listed." },
+      seatCap:          { status: "records",        display: null, neutral: "Small classes.", note: "Seats come from cohorts.capacity / enrolled_count per class, never a typed '8 seats' line." },
+      superlatives:     { status: "retired",        retiredValues: ["the only RDA program", "only RDA program", "lowest tuition", "the best", "guaranteed job", "guaranteed placement"], note: "Never claim only / best / lowest / guaranteed outcomes." },
+      interviewTiming:  { status: "retired",        retiredValues: ["interviewing in week 10", "offers within 2 weeks"], neutral: "We help every graduate prepare for the job search and introduce them to hiring offices.", note: "Unverified outcome timing." }
+    },
+
+    // ── APPROVED TESTIMONIALS ────────────────────────────────────────────────
+    // Only items with status:"approved" (consent + approval date on file) may render.
+    // The former "Jasmine M." / "Aisha C." / "Dr. Williams" quotes are retired until
+    // Amanda supplies written consent and a date.
+    testimonials: {
+      status: "needs_approval",
+      items: [],
+      retiredNames: ["Jasmine M.", "Aisha C.", "Dr. Williams"]
+    },
+
+    // ── RETIRED FACTS (tripwire list) ────────────────────────────────────────
+    // Values that must NEVER appear on a public page again. scripts/check-claims.mjs
+    // and scripts/check-pricing.mjs scan for these.
+    retired: {
+      addresses: ["1405 McCann"],
+      phones: ["230-6444", "903-230-6444", "(903) 230-6444"],
+      prices: ["$1,997", "$1,995", "$3,495", "$2,120", "$200 down", "$200 locks", "locks your seat", "$499"],
+      spellings: ["Premiere Dental"]
+    },
+
+    // ── COHORT DATES: where they come from + honest fallback copy ────────────
+    // Dates and seats are NEVER typed into pages. They come from the Supabase `cohorts`
+    // table via assets/pda-cohorts.js. When that call fails or returns nothing, pages
+    // show these strings (no dates) instead of a blank or a spinner.
+    cohorts: {
+      source: "supabase:public.cohorts (status upcoming|current|open, delivery_mode in_person, start_date >= today America/Chicago)",
+      fallback: {
+        loading: "Checking the next class date…",
+        none: "New class dates are being scheduled. Call or text (903) 913-6444 and we'll tell you the next start.",
+        error: "We couldn't load class dates right now. Call or text (903) 913-6444 for the next start date, or check the calendar.",
+        nextLabel: "Next in-person class"
+      },
+      timeZone: "America/Chicago"
     },
 
     // ── Labor Day 2026 seat-reservation offer (owner-approved Sep 6, 2026) ──
@@ -113,7 +191,8 @@
     cohortSeats: {
       value: 8, display: "8 seats per class",
       verified: true,
-      note: "VERIFIED 2026-08-16 against the Supabase 'cohorts' table: every upcoming cohort has capacity = 8 (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17). Live per-cohort seats still come from capacity/enrolled_count."
+      showAsStaticClaim: false,
+      note: "VERIFIED 2026-08-16 against the Supabase 'cohorts' table: every upcoming cohort has capacity = 8. Per Amanda's Sep 17, 2026 brief the cap is not typed into marketing copy; pages show 'X of N seats' from each cohort row instead."
     },
 
     employer: {
@@ -123,13 +202,13 @@
     },
 
     placementStat: {
-      display: "85%+", verified: false,
-      note: "Hard-coded in index, enroll, practice-exam, night-class, teach, graduates. A data-driven value also exists (Supabase overview.placement_rate_pct). VERIFY the real number; prefer the live data value over the hard-coded one."
+      display: null, verified: false,
+      note: "Retired from every page 2026-09-17 (see claims.placementRate). Do not display until Amanda supplies a dated, measured figure."
     },
 
     graduateCount: {
       display: null, foundValues: ["406+", "400+"], verified: false,
-      note: "Inconsistent in repo: '406+' (enroll, practice-exam) vs '400+' (marketing email). Choose ONE verified value; until then do not display."
+      note: "Retired from every page 2026-09-17 (see claims.graduateCount). Only the visible placement records render."
     },
 
     salary: {
@@ -196,10 +275,34 @@
     },
 
     _meta: {
-      updated: "2026-09-06",
+      updated: "2026-09-17",
       maintainer: "docs/business-facts-source-of-truth.md",
       rule: "Do not hard-code these facts in pages. Read from window.PDA_FACTS."
     }
+  };
+
+  // Derive the effective online price from the `sale` switch so no page ever has to
+  // choose between two numbers. Everything downstream reads price / priceDisplay /
+  // priceCents; regularDisplay is shown struck-through only while sale is true.
+  (function deriveOnline() {
+    var o = FACTS.pricing.online;
+    var onSale = o.sale === true;
+    o.price = onSale ? o.salePrice : o.regularPrice;
+    o.priceCents = onSale ? o.saleCents : o.regularCents;
+    o.priceDisplay = onSale ? o.saleDisplay : o.regularDisplay;
+    o.label = onSale ? o.saleLabel : "regular price";
+  })();
+
+  // Is a claim allowed to render? Only an explicitly approved claim with a display value.
+  FACTS.claimApproved = function (key) {
+    var c = FACTS.claims && FACTS.claims[key];
+    return !!(c && c.status === "approved" && c.display);
+  };
+  // Neutral copy to use when a claim is not approved (never a fake-looking placeholder).
+  FACTS.claimText = function (key) {
+    var c = FACTS.claims && FACTS.claims[key];
+    if (!c) return "";
+    return FACTS.claimApproved(key) ? c.display : (c.neutral || "");
   };
 
   // Is a dated offer live right now? Compares the absolute instant only, so the

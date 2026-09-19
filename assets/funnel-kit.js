@@ -170,7 +170,7 @@
     var o = CFG.payback || {};
     el.innerHTML =
       '<div class="tool-card"><span class="kicker">🧮 ' + (o.kicker || 'The Payback Math') + '</span>' +
-      '<h2 class="sec">' + (o.heading || 'Slide your future wage. See when tuition pays for itself.') + '</h2>' +
+      '<h2 class="sec">' + (o.heading || 'Slide your future wage. See how tuition compares.') + '</h2>' +
       '<p class="lead">' + (o.lead || 'East Texas dental assistants in our published data earn roughly $38,000–$46,000 a year. Move the slider and do your own math:') + '</p>' +
       '<div class="slider-wrap">' +
         '<input type="range" id="fk-wage" min="15" max="25" step="0.5" value="20" aria-label="Hourly wage">' +

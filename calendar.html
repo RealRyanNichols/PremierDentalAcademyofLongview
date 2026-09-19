@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/assets/site-facts.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet" />
   <style>
@@ -136,7 +137,7 @@
     <div class="max-w-3xl mx-auto px-6 py-16 sm:py-24 text-center">
       <p class="text-[12.5px] uppercase tracking-[0.18em] text-teal-300 font-bold" data-aos="fade-up">In-person class calendar</p>
       <h1 class="display text-4xl sm:text-6xl font-semibold mt-4 leading-[1.05]" data-aos="fade-up">Pick your <span class="text-amber-400 italic">start date.</span></h1>
-      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$500 down</strong>.</p>
+      <p class="text-slate-300 mt-5 max-w-xl mx-auto text-lg" data-aos="fade-up" data-aos-delay="100">Real class dates at our Longview campus. Reserve your seat with <strong class="text-white">$500 down</strong> on the $3,500 plan, or pay $3,000 in full.</p>
       <div class="mt-9" data-aos="fade-up" data-aos-delay="150">
         <a href="#open-dates" data-event="calendar_see_dates_click" class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-7 py-3.5 rounded-full shadow-lg transition">See open dates ↓</a>
       </div>
@@ -155,7 +156,7 @@
         <span class="step-connect hidden md:block">→</span>
         <span class="step-num">1</span>
         <h3 class="display text-xl font-bold text-slate-900 mt-4">Pick your start date</h3>
-        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Choose any open class below. Each card shows the schedule, your instructor, and how many of the <strong>8 seats</strong> are still left.</p>
+        <p class="text-slate-600 text-sm mt-2 leading-relaxed">Choose any open class below. Each card shows the schedule, your instructor, and how many seats are still left.</p>
       </div>
       <div class="step-card accent" data-aos="fade-up" data-aos-delay="100">
         <span class="step-connect hidden md:block">→</span>
@@ -191,7 +192,7 @@
   <!-- What you're seeing — read-the-card legend -->
   <section id="open-dates" class="scroll-mt-24 mb-5" data-aos="fade-up">
     <h2 class="display text-2xl sm:text-3xl font-bold text-slate-900">Open class dates</h2>
-    <p class="text-slate-600 mt-1 text-sm sm:text-base">Each card below is one real class. The big number is <strong class="text-slate-900">seats left out of 8</strong> — tap <strong class="text-slate-900">Reserve seat</strong> on the date you want.</p>
+    <p class="text-slate-600 mt-1 text-sm sm:text-base">Each card below is one real class. The big number is <strong class="text-slate-900">seats left</strong> — tap <strong class="text-slate-900">Reserve seat</strong> on the date you want.</p>
     <div class="mt-3 flex flex-wrap gap-2">
       <span class="card-legend bg-cyan-50 text-cyan-900">Seats open</span>
       <span class="card-legend bg-rose-100 text-rose-800">🔥 Filling fast</span>
@@ -201,12 +202,13 @@
   </section>
 
   <!-- Grid of class cards, grouped by month -->
-  <div id="months"></div>
+  <div id="months"><p class="text-center text-slate-500 py-8">Checking the next class dates…</p></div>
 
   <!-- Start dates come from the live cohorts query (render() rewrites this line); the
        fallback text below deliberately names NO dates so it can never go stale. -->
-  <div id="static-dates" class="max-w-3xl mx-auto text-center text-slate-700 mt-2 mb-6"><strong>Upcoming In-Person start dates</strong> are listed above — daytime classes, 12 weeks, 8 seats each. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down. Online is self-paced and starts any day.</div>
-  <p id="empty-state" hidden class="text-center text-slate-600 mt-8">No upcoming In-Person classes scheduled. Call (903) 913-6444 to ask about new dates — or start Online any day.</p>
+  <div id="static-dates" class="max-w-3xl mx-auto text-center text-slate-700 mt-2 mb-6"><strong>Upcoming In-Person start dates</strong> are listed above — daytime classes, about 12 weeks, small classes. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down ($3,500 plan total, or $3,000 paid in full). Online is self-paced and starts any day.</div>
+  <p id="empty-state" hidden class="text-center text-slate-600 mt-8">New class dates are being scheduled. Call or text (903) 913-6444 and we'll tell you the next start — or start Online any day.</p>
+  <p id="load-error" hidden class="text-center text-slate-700 mt-8 bg-white border border-rose-200 rounded-2xl p-6 max-w-2xl mx-auto">We couldn't load class dates right now. Call or text <a href="tel:+19039136444" class="text-teal-700 font-semibold underline">(903) 913-6444</a> for the next start date, or <a href="/classes" class="text-teal-700 font-semibold underline">see the classes page</a>.</p>
 
   <!-- Reserve walkthrough — schedule a seat step-by-step + reassurance -->
   <section class="mt-14" aria-labelledby="reserve-how">
@@ -277,30 +279,47 @@
 </footer>
 
 <script>
-const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+let sb = null;
+try { sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'); } catch (e) {}
 const fmtMonth = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 const fmtDate  = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 const fmtShort = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-// Current prices shown in the schedule flow.
-const PRICE = { in_person: '$3,000', online: '$997' };
+// Prices come from the single source of truth (assets/site-facts.js); literals are only a fallback.
+const _F = (window.PDA_FACTS && window.PDA_FACTS.pricing) || {};
+const PRICE = { in_person: (_F.inPerson && _F.inPerson.totalDisplay) || '$3,000', online: (_F.online && _F.online.priceDisplay) || '$997' };
 const ICON  = { in_person: '🏫', online: '💻' };
 const LABEL = { in_person: 'In-Person',  online: 'Online' };
 
 let cohorts = [];
 let filter = 'all';
 
+function showLoadError() {
+  const root = document.getElementById('months'); if (root) root.innerHTML = '';
+  const es = document.getElementById('empty-state'); if (es) es.hidden = true;
+  const sd = document.getElementById('static-dates'); if (sd) sd.hidden = true;
+  const le = document.getElementById('load-error'); if (le) le.hidden = false;
+}
+
 async function loadCohorts() {
-  // Show every In-Person cohort whose start date is today or later,
-  // regardless of status flag — covers 'current' (actively-enrolling),
-  // 'upcoming', and 'open' so the next class isn't accidentally hidden.
-  const today = new Date().toISOString().slice(0, 10);
-  const { data } = await sb.from('cohorts')
-    .select('id,name,delivery_mode,start_date,end_date,schedule,instructor,location,capacity,enrolled_count,status')
-    .gte('start_date', today)
-    .in('status', ['current', 'upcoming', 'open'])
-    .neq('delivery_mode', 'online')
-    .order('start_date', { ascending: true });
-  cohorts = data || [];
+  // Show every In-Person cohort whose start date is today or later (America/Chicago),
+  // regardless of status flag — covers 'current' (actively-enrolling), 'upcoming',
+  // and 'open' so the next class isn't accidentally hidden. A failed request shows
+  // the error card, never the "no classes" message.
+  if (!sb) { showLoadError(); return; }
+  let today;
+  try { today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
+  catch (e) { today = new Date().toISOString().slice(0, 10); }
+  let data = null, error = null;
+  try {
+    ({ data, error } = await sb.from('cohorts')
+      .select('id,name,delivery_mode,start_date,end_date,schedule,instructor,location,capacity,enrolled_count,status')
+      .gte('start_date', today)
+      .in('status', ['current', 'upcoming', 'open'])
+      .or('delivery_mode.is.null,delivery_mode.neq.online')
+      .order('start_date', { ascending: true }));
+  } catch (e) { error = e; }
+  if (error || !Array.isArray(data)) { console.warn('[calendar] cohorts load failed', error); showLoadError(); return; }
+  cohorts = data;
   render();
 }
 
@@ -416,7 +435,7 @@ function render() {
     if (inPerson.length) {
       const yr = new Date(inPerson[inPerson.length - 1].start_date + 'T00:00:00').getFullYear();
       const list = inPerson.map(c => fmtShort(c.start_date)).join(' · ') + ', ' + yr;
-      staticEl.innerHTML = '<strong>Upcoming In-Person start dates:</strong> ' + list + ' — daytime classes, 12 weeks, 8 seats each. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down. Online is self-paced and starts any day.';
+      staticEl.innerHTML = '<strong>Upcoming In-Person start dates:</strong> ' + list + ' — daytime classes, about 12 weeks, small classes. Mon/Wed/Fri cohorts meet 8:30 AM–12:30 PM; Tue/Thu cohorts meet 9:00 AM–3:00 PM. Reserve with $500 down ($3,500 plan total, or $3,000 paid in full). Online is self-paced and starts any day.';
     } else {
       staticEl.hidden = true;
     }
