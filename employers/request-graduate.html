@@ -29,7 +29,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 tailwind.config = { theme: { extend: {
   fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
@@ -46,6 +45,7 @@ tailwind.config = { theme: { extend: {
   .chk:hover{border-color:#5eead4}
   .chk input{accent-color:#0d9488;width:1rem;height:1rem}
 </style>
+<script src="/assets/pda-lead.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
 <script src="/assets/pda-analytics.js" defer></script>
 </head>
@@ -153,78 +153,52 @@ tailwind.config = { theme: { extend: {
 <script>
 (function () {
   'use strict';
-  var SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
-  var SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-  var sb = null;
-  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {} }
-
   var form = document.getElementById('emp-form');
-  var success = document.getElementById('success');
   var btn = document.getElementById('submit-btn');
   // If the page is restored from the back/forward cache after a submit, re-enable the button.
   window.addEventListener('pageshow', function (e) { if (e.persisted && btn) { btn.disabled = false; btn.textContent = 'Send my request'; } });
 
-  function attribution() {
-    var a = {};
-    try { a = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
-    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
-    return parts.length ? parts.join(', ') : '';
-  }
+  // Lead submit goes through the shared module (/assets/pda-lead.js, loaded in <head>):
+  // /api/lead → direct REST insert → local stash + honest inline error near the button.
+  // The "Request received!" panel only shows when the save really succeeded; on failure
+  // the office's answers stay in the form and the button is re-enabled. Honeypot
+  // "website" filled → acts like success, saves nothing. Attribution is appended to
+  // message (and sent as leads.utm / landing_page) by the module.
+  var cfg = {
+    event: 'employer_request_submit',
+    button: btn,
+    successEl: document.getElementById('success'),
+    honeypot: 'website',
+    build: function (fd) {
+      var name = (fd.get('name') || '').trim();
+      var skills = fd.getAll('skill');
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    var fd = new FormData(form);
-    // Honeypot: bots fill the hidden field → show success, save nothing.
-    if ((fd.get('website') || '').trim()) { form.classList.add('hidden'); success.classList.remove('hidden'); return; }
-    btn.disabled = true; btn.textContent = 'Sending…';
-    var name = (fd.get('name') || '').trim();
-    var skills = fd.getAll('skill');
-    var attr = attribution();
+      // Pack the employer-specific details into the shared lead "message" field,
+      // so this flows into the same /admin/leads inbox as every other inquiry.
+      var msg = [
+        'EMPLOYER HIRING REQUEST',
+        'Practice: ' + (fd.get('practice') || ''),
+        'City/area: ' + (fd.get('city') || '—'),
+        'Position: ' + (fd.get('position') || '—'),
+        'Needed: ' + (fd.get('timeframe') || '—'),
+        'Key skills: ' + (skills.length ? skills.join(', ') : '—'),
+        '',
+        'Notes: ' + (fd.get('notes') || '—')
+      ].join('\n');
 
-    // Pack the employer-specific details into the shared lead "message" field,
-    // so this flows into the same /admin/leads inbox as every other inquiry.
-    var msg = [
-      'EMPLOYER HIRING REQUEST',
-      'Practice: ' + (fd.get('practice') || ''),
-      'City/area: ' + (fd.get('city') || '—'),
-      'Position: ' + (fd.get('position') || '—'),
-      'Needed: ' + (fd.get('timeframe') || '—'),
-      'Key skills: ' + (skills.length ? skills.join(', ') : '—'),
-      '',
-      'Notes: ' + (fd.get('notes') || '—')
-    ].concat(attr ? ['', 'Attribution: ' + attr] : []).join('\n');
-
-    var lead = {
-      first_name: name.split(' ')[0] || '',
-      last_name: name.split(' ').slice(1).join(' '),
-      email: fd.get('email'),
-      phone: fd.get('phone'),
-      interest_path: 'Employer — hiring request',
-      message: msg,
-      source: 'employers/request-graduate'
-    };
-
-    var saved = false;
-    if (sb) {
-      try {
-        var res = await sb.from('leads').insert(lead);
-        saved = !res.error;
-        if (res.error) console.error('[employer] insert error:', res.error.message);
-      } catch (err) { console.error('[employer] insert threw:', err); }
+      cfg.eventProps = { position: fd.get('position'), timeframe: fd.get('timeframe') }; // keeps these on the track event
+      return {
+        first_name: name.split(' ')[0] || '',
+        last_name: name.split(' ').slice(1).join(' '),
+        email: fd.get('email'),
+        phone: fd.get('phone'),
+        interest_path: 'Employer — hiring request',
+        message: msg,
+        source: 'employers/request-graduate'
+      };
     }
-    if (!saved) {
-      try {
-        var existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        existing.push(Object.assign({}, lead, { created_at: new Date().toISOString() }));
-        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
-      } catch (e2) {}
-    }
-
-    try { if (window.PDA && window.PDA.track) window.PDA.track('employer_request_submit', { position: fd.get('position'), timeframe: fd.get('timeframe'), saved: saved }); } catch (e3) {}
-    form.classList.add('hidden');
-    success.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
+  };
+  PDALead.bindForm(form, cfg);
 })();
 </script>
 <script defer src="/assets/pda-track.js"></script>

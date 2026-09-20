@@ -17,6 +17,7 @@
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
@@ -69,7 +70,7 @@
 
   <!-- Revealed after submit -->
   <div id="guide" class="hidden">
-    <div class="bg-teal-50 border border-teal-200 rounded-xl px-5 py-4 text-teal-900 text-sm mb-6">
+    <div id="guide-welcome" class="bg-teal-50 border border-teal-200 rounded-xl px-5 py-4 text-teal-900 text-sm mb-6">
       ✅ You're in! Here's your study guide. We also emailed study tips — and you can call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> any time.
     </div>
 
@@ -126,55 +127,66 @@
   let sb = null;
   if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {} }
 
+  // `sb` is kept ONLY for the fire-and-forget study-tips `subscribers` row below; the lead
+  // itself goes through the shared module (assets/pda-lead.js, loaded in <head>).
+
   const form = document.getElementById('guide-form');
   const gate = document.getElementById('gate');
   const guide = document.getElementById('guide');
+  const welcome = document.getElementById('guide-welcome');
   const err = document.getElementById('guide-err');
   const btn = document.getElementById('guide-submit');
 
-  function attribution() {
-    var a = {};
-    try { a = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
-    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
-    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
-  }
+  // Saved: hide the gate, show the "You're in!" banner and the guide.
+  function reveal() { gate.classList.add('hidden'); welcome.classList.remove('hidden'); guide.classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  // Save FAILED: the visitor did their part, so the guide still opens — below the form,
+  // which stays put with their answers, a usable button and the honest error under it.
+  // The "You're in! We also emailed…" banner stays hidden because nothing was saved or sent.
+  function revealAfterFailure() { welcome.classList.add('hidden'); guide.classList.remove('hidden'); }
 
-  function reveal() { gate.classList.add('hidden'); guide.classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+  // Study-tips list (separate from the lead; fire-and-forget, as before).
+  function subscribe(row) {
+    const email = row && row.email;
+    if (!sb || !email) return;
+    try { sb.from('subscribers').insert({ email: email, source: 'study-guide', tags: ['study-guide'] }).then(function () {}, function () {}); } catch (e) {}
+  }
 
   // If they've already unlocked on this device, skip the gate.
   try { if (localStorage.getItem('pda.studyGuide') === '1') reveal(); } catch (e) {}
 
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    if ((fd.get('company') || '').trim()) { reveal(); return; }
-    const name = (fd.get('name') || '').trim();
-    const email = (fd.get('email') || '').trim();
-    const phone = (fd.get('phone') || '').trim();
-    if (!email) { err.textContent = 'Please enter your email.'; err.classList.remove('hidden'); return; }
-    err.classList.add('hidden');
-    btn.disabled = true; btn.textContent = 'Unlocking…';
-
-    const lead = {
-      first_name: name.split(' ')[0] || '',
-      last_name: name.split(' ').slice(1).join(' '),
-      email: email, phone: phone || null,
-      interest_path: 'Free RDA Study Guide', source: 'study-guide.html',
-      message: attribution() || null,
-    };
-    let saved = false;
-    if (sb) {
-      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[study-guide] lead', error.message); }
-      catch (e2) { console.error('[study-guide] threw', e2); }
-      try { await sb.from('subscribers').insert({ email: email, source: 'study-guide', tags: ['study-guide'] }); } catch (e3) {}
-    }
-    if (!saved) {
-      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e4) {}
-    }
-    try { localStorage.setItem('pda.studyGuide', '1'); } catch (e5) {}
-    try { if (window.PDA && window.PDA.track) window.PDA.track('study_guide_submit', { saved: saved }); } catch (e6) {}
-    reveal();
-  };
+  // Shared lead path: /api/lead → direct REST insert → local stash (retried on the next
+  // page load). Honeypot "company" filled → acts like success, saves nothing. Attribution
+  // is appended by the module (leads.utm + leads.landing_page + readable line on message).
+  PDALead.bindForm(form, {
+    event: 'study_guide_submit',
+    button: btn,
+    errorEl: err,
+    busyLabel: 'Unlocking…',
+    honeypot: 'company',
+    build: function (fd) {
+      const name = (fd.get('name') || '').trim();
+      const email = (fd.get('email') || '').trim();
+      const phone = (fd.get('phone') || '').trim();
+      if (!email) { err.textContent = 'Please enter your email.'; err.hidden = false; err.classList.remove('hidden'); return null; }
+      return {
+        first_name: name.split(' ')[0] || '',
+        last_name: name.split(' ').slice(1).join(' '),
+        email: email, phone: phone || null,
+        interest_path: 'Free RDA Study Guide', source: 'study-guide.html',
+      };
+    },
+    onSuccess: function (result) {
+      if (result.via !== 'honeypot') {
+        try { localStorage.setItem('pda.studyGuide', '1'); } catch (e) {}
+        subscribe(result.row);
+      }
+      reveal();
+    },
+    onError: function (result) {
+      subscribe(result.row);
+      revealAfterFailure();
+    },
+  });
 })();
 </script>
 <script defer src="/assets/pda-track.js"></script>

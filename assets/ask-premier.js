@@ -3,6 +3,9 @@
  * Has canned responses for the most-asked PDA questions, escapes to a
  * human via /contact for anything it can't answer. All conversations
  * are logged to Supabase `chat_messages` if the table exists.
+ * The intake lead (name + phone/email) is saved through the shared
+ * /assets/pda-lead.js module (never fails silently); if that module has
+ * not loaded, it falls back to the direct `leads` insert.
  */
 (function () {
   'use strict';
@@ -175,6 +178,7 @@
     .ap-lead input:focus { outline: none; border-color: #0d9488; box-shadow: 0 0 0 3px rgba(13,148,136,.15); }
     .ap-lead button { width: 100%; background: #f59e0b; color: #0f172a; font-weight: 800; border: 0; border-radius: 999px; padding: 10px; font-size: 13.5px; cursor: pointer; }
     .ap-lead button:hover { background: #d97706; color: #fff; }
+    .ap-lead button:disabled { opacity: .65; cursor: default; }
     .ap-btn .ap-pulse { position: absolute; top: 8px; right: 8px; width: 10px; height: 10px;
       background: #f59e0b; border-radius: 999px; box-shadow: 0 0 0 0 rgba(245,158,11,.7);
       animation: ap-pulse 2s infinite; }
@@ -410,24 +414,53 @@
       wrap.innerHTML = '<input id="ap-l-name" placeholder="First name" autocomplete="given-name"><input id="ap-l-contact" placeholder="Phone or email" autocomplete="tel"><button type="button" id="ap-l-send">Send to Amanda →</button>';
       body.appendChild(wrap);
       body.scrollTop = body.scrollHeight;
-      wrap.querySelector('#ap-l-send').addEventListener('click', () => {
+      const sendBtn = wrap.querySelector('#ap-l-send');
+      sendBtn.addEventListener('click', async () => {
         const nm = wrap.querySelector('#ap-l-name').value.trim();
         const ct = wrap.querySelector('#ap-l-contact').value.trim();
         if (!ct) { wrap.querySelector('#ap-l-contact').focus(); return; }
-        submitLead(nm, ct, reason);
-        wrap.remove();
+        const idleLabel = sendBtn.textContent;
+        sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+        const saved = await submitLead(nm, ct, reason);
+        if (saved) { wrap.remove(); return; }
+        // Not saved: keep their entries in place so they can tap Send again.
+        sendBtn.disabled = false; sendBtn.textContent = idleLabel;
       });
+    }
+
+    // Saves the intake lead. Prefers the shared PDALead module (POST /api/lead →
+    // anon REST insert → local stash + honest error; adds first/last-touch
+    // attribution). Falls back to the old direct insert only if the module has
+    // not loaded. Resolves true ONLY when the lead really saved.
+    async function saveLead(rec) {
+      try {
+        if (window.PDALead && typeof window.PDALead.submit === 'function') {
+          const r = await window.PDALead.submit(rec);
+          return !!(r && r.ok);
+        }
+        if (!sb) return false;
+        const { error } = await sb.from('leads').insert(rec);
+        return !error;
+      } catch (e) { return false; }
     }
 
     async function submitLead(name, contact, reason) {
       const rec = { first_name: name || null, source: 'ask-premier', interest_path: reason,
         message: 'Ask Premier intake — ' + reason + ' · page ' + location.pathname };
       if (/@/.test(contact)) rec.email = contact; else rec.phone = contact;
-      addMsg((name ? name + ', y' : 'Y') + 'ou\'re all set! 🎉 Amanda or someone from PDA will reach out as quickly as possible. Ask me anything else in the meantime.', 'bot');
-      try { if (sb) await sb.from('leads').insert(rec); } catch (e) {}
+      const saved = await saveLead(rec);
       // Fire the Meta standard Lead event (pda-analytics maps this name).
-      try { if (window.PDA && window.PDA.track) window.PDA.track('ask_premier_lead_submit', { reason: reason }); } catch (e) {}
+      try { if (window.PDA && window.PDA.track) window.PDA.track('ask_premier_lead_submit', { reason: reason, saved: saved }); } catch (e) {}
+      if (saved) {
+        addMsg((name ? name + ', y' : 'Y') + 'ou\'re all set! 🎉 Amanda or someone from PDA will reach out as quickly as possible. Ask me anything else in the meantime.', 'bot');
+      } else {
+        // Honest failure: no false "all set". addMsg escapes HTML, so this is plain text
+        // (with **bold**) plus a tappable text-us CTA.
+        addMsg('Hmm — that didn\'t go through just now. Your info is still in the boxes above, so you can tap Send again in a moment. Or reach us directly: **text or call (903) 913-6444**, or email **hello@PremierDentalAcademyOfLongview.com**. We\'ll get right back to you.', 'bot');
+        addCta('sms:+19039136444', '📲 Text (903) 913-6444');
+      }
       showQuick();
+      return saved;
     }
 
     // Show the teaser after a short delay — once per session, only if chat is closed.

@@ -34,6 +34,7 @@
     @keyframes pop { from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
     .pop { animation: pop .25s ease both; }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
   <script defer src="/_vercel/insights/script.js"></script>
@@ -555,65 +556,93 @@
   });
 
   // ---- Unlock modal ----
+  // The lead itself goes through the shared module (assets/pda-lead.js, loaded in <head>);
+  // `sb` stays for the Pro/session checks above and the fire-and-forget `subscribers` row.
   const modal = $('unlock-modal');
-  $('unlock-cancel').onclick = () => modal.classList.add('hidden');
-  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
-  $('unlock-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const name = (fd.get('name') || '').trim();
-    const email = (fd.get('email') || '').trim();
-    const phone = (fd.get('phone') || '').trim();
-    const err = $('unlock-err');
-    if (!name) { err.textContent = 'Please enter your name.'; err.classList.remove('hidden'); return; }
-    if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.classList.remove('hidden'); return; }
-    // Honeypot: bots fill the hidden field → close silently, save nothing.
-    if ((fd.get('company') || '').trim()) { modal.classList.add('hidden'); return; }
-    err.classList.add('hidden');
-    const btn = $('unlock-submit'); btn.disabled = true; btn.textContent = 'Starting…';
+  const unlockForm = $('unlock-form');
+  const unlockBtn = $('unlock-submit');
+  const cancelBtn = $('unlock-cancel');
+  const cancelIdle = { label: cancelBtn.textContent, className: cancelBtn.className }; // "Maybe later"
+  const err = $('unlock-err');
+  let entry = null;            // what the visitor typed (unlock flag + email list), set in build()
+  let deliverOnClose = false;  // save failed → closing the modal (any way) starts their exam
+  const trackProps = {};       // hasEmail / hasPhone ride along on practice_exam_lead_submit
 
-    // Lead attribution (analytics layer, with a localStorage fallback).
-    let attrMsg = '';
-    try {
-      let a = {};
-      try { a = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e0) {}
-      const parts = Object.keys(a).filter(k => k !== '_ts' && a[k]).map(k => k + '=' + a[k]);
-      if (parts.length) attrMsg = 'Attribution: ' + parts.join(', ');
-    } catch (e0) {}
-
-    // Capture as a real lead (lands in /admin/leads), plus the email list.
-    const lead = {
-      first_name: name.split(' ')[0] || '',
-      last_name: name.split(' ').slice(1).join(' '),
-      email: email || null, phone: phone || null,
-      interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam',
-      message: attrMsg || null
-    };
-    // Structured attribution (utm jsonb + landing_page) so ads are measurable per ad/metro.
-    try {
-      let a2 = {};
-      try { a2 = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (eA) {}
-      const utmObj = {};
-      Object.keys(a2).forEach(k => { if (k.indexOf('utm_') === 0 && a2[k]) utmObj[k] = String(a2[k]).slice(0, 120); });
-      if (Object.keys(utmObj).length) lead.utm = utmObj;
-      if (a2.landing_path) lead.landing_page = String(a2.landing_path).slice(0, 250);
-    } catch (eB) {}
-    let saved = false;
-    if (sb) {
-      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[practice-exam] lead error:', error.message); }
-      catch (err2) { console.error('[practice-exam] lead threw:', err2); }
-      if (email) { try { await sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] }); } catch (e3) {} }
-    }
-    if (!saved) {
-      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e4) {}
-    }
-    try { if (window.PDA && window.PDA.track) window.PDA.track('practice_exam_lead_submit', { hasEmail: !!email, hasPhone: !!phone, saved: saved }); } catch (e6) {}
-    try { localStorage.setItem(LS_UNLOCK, '1'); localStorage.setItem('pda.examLead', JSON.stringify({ name: name, email: email, phone: phone })); } catch (e5) {}
-
-    modal.classList.add('hidden');
-    btn.disabled = false; btn.textContent = 'Start my exam →';
+  function startPending() {
     if (pendingStart) { const fn = pendingStart; pendingStart = null; fn(); }
     else begin(shuffle(BANK));
+  }
+  function hideModal() {
+    modal.classList.add('hidden');
+    cancelBtn.textContent = cancelIdle.label; cancelBtn.className = cancelIdle.className;
+  }
+  // "Maybe later" / backdrop tap — or "Start my exam anyway →" after a failed save.
+  function closeModal() {
+    hideModal();
+    if (deliverOnClose) { deliverOnClose = false; startPending(); }
+  }
+  // Unlocked on this device from now on — whether or not the lead saved (the visitor did their part).
+  function unlock(v) {
+    try { localStorage.setItem(LS_UNLOCK, '1'); localStorage.setItem('pda.examLead', JSON.stringify({ name: v.name, email: v.email, phone: v.phone })); } catch (e5) {}
+  }
+  // Email list (separate from the lead; fire-and-forget, as before).
+  function subscribe(email) {
+    if (!sb || !email) return;
+    try { sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] }).then(() => {}, () => {}); } catch (e3) {}
+  }
+  cancelBtn.onclick = closeModal;
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+  // Shared lead path: /api/lead → direct REST insert → local stash (retried on the next page
+  // load). Honeypot "company" filled → acts like success, saves nothing. Attribution (leads.utm +
+  // leads.landing_page + a readable line on message) is added by the module. On failure bindForm
+  // keeps the entries, re-enables the button and shows the honest error (call / text / email)
+  // right under it — no false "success".
+  PDALead.bindForm(unlockForm, {
+    event: 'practice_exam_lead_submit',
+    eventProps: trackProps,
+    button: unlockBtn,
+    errorEl: err,
+    busyLabel: 'Starting…',
+    honeypot: 'company',
+    build: function (fd) {
+      const name = (fd.get('name') || '').trim();
+      const email = (fd.get('email') || '').trim();
+      const phone = (fd.get('phone') || '').trim();
+      if (!name) { err.textContent = 'Please enter your name.'; err.hidden = false; err.classList.remove('hidden'); return null; }
+      if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.hidden = false; err.classList.remove('hidden'); return null; }
+      entry = { name, email, phone };
+      trackProps.hasEmail = !!email; trackProps.hasPhone = !!phone;
+      // Captured as a real lead (lands in /admin/leads).
+      return {
+        first_name: name.split(' ')[0] || '',
+        last_name: name.split(' ').slice(1).join(' '),
+        email: email || null, phone: phone || null,
+        interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam',
+      };
+    },
+    onSuccess: function (result) {
+      // Bot filled the hidden field: close quietly — nothing saved, nothing unlocked (as before).
+      if (result.via === 'honeypot') { hideModal(); return; }
+      deliverOnClose = false;
+      unlock(entry);
+      subscribe(entry.email);
+      hideModal();
+      unlockBtn.disabled = false; unlockBtn.textContent = 'Start my exam →';
+      startPending();
+    },
+    onError: function () {
+      // Lead NOT saved: the module has shown the honest error (call / text / email) under the
+      // button and left the entries in place so "Start my exam →" retries the save. The visitor
+      // still did their part, so they are unlocked anyway — say so in the error and turn the
+      // dismiss button into an explicit way in (any close of the modal now starts the exam).
+      unlock(entry);
+      subscribe(entry.email);
+      deliverOnClose = true;
+      err.insertAdjacentHTML('beforeend', ' <strong>Your exam is unlocked</strong> — you can start it now.');
+      cancelBtn.textContent = 'Start my exam anyway →';
+      cancelBtn.className = 'w-full text-teal-700 hover:text-teal-800 font-semibold text-sm';
+    },
   });
 
   // If already unlocked / signed in, soften the full-exam label.

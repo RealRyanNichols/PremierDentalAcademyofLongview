@@ -27,6 +27,7 @@
       color: #cbd5e1;
     }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
@@ -176,18 +177,17 @@
 </footer>
 
 <script>
-(async () => {
-  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-  let sb = null;
-  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){} }
-
+(() => {
+  // Lead submit goes through the shared module (/assets/pda-lead.js, loaded in <head>):
+  // /api/lead → direct REST insert → local stash + honest inline error. The success
+  // panel only shows when the save really succeeded; on failure the answers stay in
+  // the form and the button is re-enabled.
   const form = document.getElementById('contact-form');
-  const success = document.getElementById('success');
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const lead = {
+  PDALead.bindForm(form, {
+    event: 'contact_submit',
+    button: document.getElementById('submit-btn'),
+    successEl: document.getElementById('success'),
+    build: (fd) => ({
       first_name: (fd.get('name') || '').split(' ')[0],
       last_name: (fd.get('name') || '').split(' ').slice(1).join(' '),
       email: fd.get('email'),
@@ -195,25 +195,8 @@
       interest_path: fd.get('reason') || null,
       message: fd.get('message') || null,
       source: 'contact.html',
-    };
-    let saved = false;
-    if (sb) {
-      try {
-        const { error } = await sb.from('leads').insert(lead);
-        saved = !error;
-        if (error) console.error('[contact] insert error:', error.message);
-      } catch (err) { console.error('[contact] insert threw:', err); }
-    }
-    if (!saved) {
-      try {
-        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        existing.push({ ...lead, created_at: new Date().toISOString() });
-        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
-      } catch (e2) {}
-    }
-    form.classList.add('hidden');
-    success.classList.remove('hidden');
-  };
+    }),
+  });
 })();
 </script>
 <script defer src="/assets/pda-track.js"></script>
