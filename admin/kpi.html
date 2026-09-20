@@ -135,6 +135,7 @@
     <div class="grid lg:grid-cols-2 gap-6 mb-8">
       <section class="bg-white rounded-2xl border border-slate-200 p-5">
         <h2 class="font-bold">Pipeline right now <span class="text-slate-400 font-normal text-sm">· all open leads</span></h2>
+        <p class="text-xs text-slate-500 mt-1">"Contacted" = any call or text either way (Quo), a logged call/note, or a contact stamp — even if the stage was never moved. Facebook Messenger and personal-inbox emails are not visible here; use "I handled this" on the lead to record those.</p>
         <div id="chart-pipeline" class="mt-4 space-y-2"></div>
       </section>
       <section class="bg-white rounded-2xl border border-slate-200 p-5">
@@ -195,16 +196,32 @@
   $('asof').textContent = new Date().toLocaleString();
 
   // ── Data ──
-  const [leadsQ, cohortsQ, purchasesQ, profilesQ, subsQ, tasksQ, failedQ] = await Promise.all([
-    sb.from('leads').select('id,created_at,source,status,pipeline_stage,lead_grade,last_contact_at,first_name,last_name,phone,interest_path,utm,landing_page').order('created_at', { ascending: false }).limit(1000),
+  const [leadsQ, cohortsQ, purchasesQ, profilesQ, subsQ, tasksQ, failedQ, commsQ] = await Promise.all([
+    sb.from('leads').select('id,created_at,source,status,pipeline_stage,lead_grade,last_contact_at,first_name,last_name,phone,email,interest_path,utm,landing_page').order('created_at', { ascending: false }).limit(1000),
     sb.from('cohorts').select('name,delivery_mode,start_date,capacity,enrolled_count,status'),
     sb.from('purchases').select('amount_cents,product_label,status,created_at'),
     sb.from('profiles').select('id,program,is_admin'),
     sb.from('subscribers').select('id', { count: 'exact', head: true }).eq('status', 'subscribed'),
     sb.from('admin_tasks').select('id,title,priority,status').eq('status', 'open').order('priority', { ascending: true }).limit(50),
     sb.from('failed_payments').select('contact_name,contact_email,amount_cents,product_label,failure_reason,triage_status,created_at').order('created_at', { ascending: false }).limit(50),
+    // Human contact evidence: Amanda's calls/texts/notes out (Quo, admin buttons) and
+    // the lead's own calls/texts in (Quo). Automated drips are deliberately excluded.
+    sb.from('communications').select('related_lead_id,direction,source,contact_phone,contact_email')
+      .or('and(direction.eq.outbound,source.in.(quo,admin_manual)),and(direction.eq.inbound,source.eq.quo)').limit(8000),
   ]);
   const leads = leadsQ.data || [];
+  // "Contacted" means there is evidence of contact — a stamped last_contact_at, a logged
+  // call/text either way (matched by lead id, phone, or email) — not only that someone
+  // remembered to move the pipeline stage. Sep 20, 2026: 299 leads sat in "New
+  // (uncontacted)" with a contact stamp because the chart read pipeline_stage alone.
+  const comms = commsQ.data || [];
+  const d10 = (p) => String(p || '').replace(/\D/g, '').slice(-10);
+  const contactedIds = new Set(comms.map(c => c.related_lead_id).filter(Boolean));
+  const contactedPhones = new Set(comms.map(c => d10(c.contact_phone)).filter(p => p.length === 10));
+  const contactedEmails = new Set(comms.map(c => String(c.contact_email || '').trim().toLowerCase()).filter(Boolean));
+  const isContacted = (l) => !!l.last_contact_at || contactedIds.has(l.id)
+    || (d10(l.phone).length === 10 && contactedPhones.has(d10(l.phone)))
+    || (!!l.email && contactedEmails.has(String(l.email).trim().toLowerCase()));
   const cohorts = cohortsQ.data || [];
   const purchases = purchasesQ.data || [];
   const profiles = profilesQ.data || [];
@@ -216,6 +233,8 @@
   const days = (iso) => (now - new Date(iso).getTime()) / 864e5;
   // Same legacy-status fallback the other admin pages use.
   const stageOf = (l) => l.pipeline_stage || (l.status === 'enrolled' ? 'paying' : l.status === 'contacted' ? 'contacted' : 'new');
+  // What the charts and nudges show: a "new" lead with contact evidence counts as contacted.
+  const stageShown = (l) => { const s = stageOf(l); return s === 'new' && isContacted(l) ? 'contacted' : s; };
   // Bucket by LOCAL calendar day (Amanda is in Central time; UTC would shift evenings).
   const dayKey = (dt) => { const d2 = new Date(dt); return d2.getFullYear() + '-' + String(d2.getMonth() + 1).padStart(2, '0') + '-' + String(d2.getDate()).padStart(2, '0'); };
   // The last N local calendar days, stepping the DATE component (never fixed 24h
@@ -338,9 +357,9 @@
   // ── Chart 3: pipeline ──
   safeChart('chart-pipeline', function pipeline() {
     const ORDER = ['new', 'contacted', 'interested', 'tour_booked', 'paying'];
-    const LABEL = { new: 'New (uncontacted)', contacted: 'Contacted', interested: 'Interested', tour_booked: 'Tour booked', paying: 'Paying' };
+    const LABEL = { new: 'New (no contact on record)', contacted: 'Contacted', interested: 'Interested', tour_booked: 'Tour booked', paying: 'Paying' };
     const counts = {};
-    leads.forEach(l => { const s = stageOf(l); if (s === 'lost') return; counts[s] = (counts[s] || 0) + 1; });
+    leads.forEach(l => { const s = stageShown(l); if (s === 'lost') return; counts[s] = (counts[s] || 0) + 1; });
     const entries = ORDER.filter(k => counts[k]).map(k => [LABEL[k] || k, counts[k]]);
     Object.keys(counts).forEach(k => { if (!ORDER.includes(k)) entries.push([k, counts[k]]); });
     hbars($('chart-pipeline'), entries, '#0d9488');
@@ -370,7 +389,7 @@
   const actionable = leads.filter(l => days(l.created_at) <= ACTION_WINDOW);
   const attention = [];
   const money = [];
-  const stale = actionable.filter(l => stageOf(l) === 'new' && !l.last_contact_at && days(l.created_at) > 2);
+  const stale = actionable.filter(l => stageShown(l) === 'new' && days(l.created_at) > 2);
   const hot = actionable.filter(l => l.lead_grade === 'hot' && stageOf(l) !== 'paying');
   const name = (l) => esc([l.first_name, l.last_name].filter(Boolean).join(' ') || l.phone || 'lead');
 

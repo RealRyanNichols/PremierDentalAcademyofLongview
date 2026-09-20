@@ -191,6 +191,14 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
     if ((lead.pipeline_stage || "new") === "new") patch.pipeline_stage = "contacted";
     if (Object.keys(patch).length) await sb.from("leads").update(patch).eq("id", lead.id);
   }
+  // 2026-09-20: any completed call — Amanda dialing out, or an answered inbound call —
+  // is a contact even when no Sona summary ever arrives. Before this, a lead stayed
+  // "new" (and read as uncontacted on the KPI page) unless a summary event fired.
+  if (lead?.id && type === "call.completed" && (lead.pipeline_stage || "new") === "new") {
+    const st = status.toLowerCase();
+    const connected = direction === "outbound" || st === "completed" || !!answeredAt || durationSec > 0;
+    if (connected) await sb.from("leads").update({ pipeline_stage: "contacted" }).eq("id", lead.id);
+  }
 
   // ONE communications row per call_id; transcript + summary merge into it.
   let existing: any = null;
@@ -289,7 +297,7 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
     if (!toPhone || !text) return json({ ok: true, skipped: "outbound missing to or body" });
     // Look up only. Never create a lead from an outbound text: Amanda also
     // texts students, vendors and parents, and those are not leads.
-    const { data: outLead } = await sb.from("leads").select("id,first_name,email")
+    const { data: outLead } = await sb.from("leads").select("id,first_name,email,pipeline_stage")
       .ilike("phone", `%${digits10(toPhone)}%`).limit(1).maybeSingle();
     await sb.from("communications").insert({
       contact_phone: toPhone, contact_name: outLead?.first_name || null,
@@ -298,6 +306,13 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
       related_lead_id: outLead?.id || null,
       metadata: { quo_event: body.type || null, msg_id: msgId || null, logged_outbound: true },
     });
+    // 2026-09-20: a text FROM Amanda is a contact. Stamp the lead and move it out of
+    // "new" so the KPI page and the inbox stop calling a contacted lead uncontacted.
+    if (outLead?.id) {
+      const patch: any = { last_contact_at: new Date().toISOString() };
+      if ((outLead.pipeline_stage || "new") === "new") patch.pipeline_stage = "contacted";
+      await sb.from("leads").update(patch).eq("id", outLead.id);
+    }
     return json({ ok: true, logged: "outbound sms", lead_id: outLead?.id, msg_id: msgId });
   }
 
