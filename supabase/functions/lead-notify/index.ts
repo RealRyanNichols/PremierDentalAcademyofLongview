@@ -1,3 +1,15 @@
+// !! STALE MIRROR — DO NOT DEPLOY THIS FILE AS-IS (checked 2026-09-22) !!
+// Live is v5, deployed 2026-08-03. That version reads the sender identity from
+// public.app_secrets (EMAIL_FROM / EMAIL_REPLY_TO) — the same records email-worker
+// uses — precisely because hardcoding a sender here produced a Resend 403 ("domain is
+// not verified"): the account behind RESEND_API_KEY verifies the root domain, not the
+// updates.* subdomain. This file still hardcodes the sender, so deploying it would
+// reintroduce that failure and silently kill Amanda's new-lead alert emails.
+// What this file adds and live does NOT have: campaign/landing-page attribution rows
+// and a Text button in the alert email. Those are NOT live.
+// To ship: pull the deployed v5 source down, re-apply those two additions on top,
+// deploy that, and push the result here. See CHANGELOG 2026-09-22.
+//
 // lead-notify — fires on a new public.leads insert (via the notify_new_lead trigger,
 // pg_net). Emails Amanda a new-lead alert and sends genuine prospects an autoresponder,
 // via Resend. Deployed + wired live (see db/migrations + docs/lead-email-runbook.md).

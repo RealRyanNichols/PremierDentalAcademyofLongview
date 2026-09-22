@@ -1,4 +1,4 @@
--- STAGED — NOT APPLIED. Requires Amanda's approval (updates real lead records).
+-- APPLIED 2026-09-22 (333 leads moved new -> contacted: 302 stamped, 21 communications, 10 gmail).
 --
 -- Why: /admin/kpi showed 485 leads as "New (uncontacted)". 330 of them HAVE contact on
 -- record; the chart read pipeline_stage alone and nobody moves that field by hand.

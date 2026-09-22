@@ -1,3 +1,19 @@
+// !! STALE MIRROR — DO NOT DEPLOY THIS FILE AS-IS (checked 2026-09-22) !!
+// Live is v11, deployed 2026-09-22 20:03 UTC. It contains fixes this file does NOT:
+//   • a real 10-digit number is required before a lead is looked up or created
+//     (upsertLeadByPhone("") ran `ilike '%%'` and matched ANY lead — one lead had
+//     collected 166 rows that were not hers);
+//   • one communications row per call_id (the old maybeSingle() lookup returned
+//     nothing once two rows existed, so every later event inserted again);
+//   • events on The LeadFlow Pro line (903) 500-8898 are skipped instead of being
+//     created as dental leads;
+//   • one admin task per call.
+// Deploying this file would undo all four. Conversely, live v11 is missing the two
+// stamps below that this file adds (a completed call with no Sona summary, and an
+// outbound text, should move a lead out of "new"). Neither side is a superset.
+// To ship: pull the deployed v11 source down, re-apply those two stamps on top,
+// deploy that, and push the result here. See CHANGELOG 2026-09-22.
+//
 // Quo (OpenPhone) inbound webhook — Sona AI call data + SMS, into the pipeline.
 // =============================================================================
 // Handles two families of Quo events:
