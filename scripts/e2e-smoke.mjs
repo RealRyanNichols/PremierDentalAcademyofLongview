@@ -82,8 +82,10 @@ const FORMS = [
   { path: '/apply.html', form: '#apply-form', success: null, redirect: '/thank-you', fill: { first_name: 'Test', last_name: 'Person', email: 'test@example.com', phone: '9035550100' }, check: ['#consent'] },
   { path: '/contact.html', form: '#contact-form', success: '#success', fill: { name: 'Test Person', email: 'test@example.com', phone: '9035550100', message: 'Hello from the e2e test' } },
   { path: '/tour.html', form: '#tour-form', success: '#tour-success', fill: { first_name: 'Test', last_name: 'Person', email: 'test@example.com', phone: '9035550100' }, check: ['#consent'] },
-  { path: '/waitlist.html', form: '#waitlist-form', success: '#waitlist-success', fill: { first_name: 'Test', last_name: 'Person', email: 'test@example.com', phone: '9035550100' } },
-  { path: '/study-guide.html', form: '#guide-form', success: null, magnet: true, fill: { email: 'test@example.com' } },
+  { path: '/waitlist.html', form: '#waitlist-form', success: '#waitlist-success', fill: { first_name: 'Test', last_name: 'Person', email: 'test@example.com', phone: '9035550100' }, check: ['#consent'] },
+  // The magnet page gates the guide behind #gate; the form itself never hides, so the
+  // gate and the revealed content are what say whether the unlock worked.
+  { path: '/study-guide.html', form: '#guide-form', success: null, magnet: true, gate: '#gate', content: '#guide', welcome: '#guide-welcome', fill: { email: 'test@example.com' } },
 ];
 for (const f of FORMS) {
   console.log(f.path);
@@ -98,7 +100,12 @@ for (const f of FORMS) {
     const nav = f.redirect ? p.waitForURL((u) => u.pathname.startsWith(f.redirect), { timeout: 10000 }).then(() => true).catch(() => false) : null;
     await p.click(`${f.form} [type="submit"]`);
     if (f.redirect) ok(await nav, `happy path redirects to ${f.redirect}`);
-    else if (f.magnet) { await p.waitForTimeout(1500); ok(await p.$eval(f.form, (el) => el.hidden || el.classList.contains('hidden') || !el.offsetParent).catch(() => false), 'happy path reveals the content (form gate gone)'); }
+    else if (f.magnet) {
+      await p.waitForTimeout(1500);
+      const gateGone = await p.$eval(f.gate, (el) => el.hidden || el.classList.contains('hidden')).catch(() => false);
+      const shown = await p.$eval(f.content, (el) => !el.hidden && !el.classList.contains('hidden')).catch(() => false);
+      ok(gateGone && shown, 'happy path reveals the content (form gate gone)');
+    }
     else { await p.waitForTimeout(1500); ok(await p.$eval(f.success, (el) => !el.classList.contains('hidden') && !el.hidden).catch(() => false), 'happy path shows the success panel'); }
     ok(own().length === 0, 'no JS errors: ' + JSON.stringify(own()));
     await ctx.close();
@@ -114,14 +121,16 @@ for (const f of FORMS) {
     const errVisible = await p.$eval(`.pda-lead-error, [role="alert"]`, (el) => !el.hidden && !el.classList.contains('hidden') && /913-6444/.test(el.textContent)).catch(() => false);
     ok(errVisible, 'failure path shows the honest error with the phone number');
     if (f.magnet) {
-      ok(await p.$eval(f.form, (el) => el.hidden || el.classList.contains('hidden') || !el.offsetParent).catch(() => false), 'lead magnet still delivers the content on failure');
-    } else {
-      const firstField = Object.keys(f.fill)[0];
-      const kept = await p.$eval(`${f.form} [name="${firstField}"]`, (el) => el.value).catch(() => '');
-      ok(kept === f.fill[firstField], 'visitor entries are still in the form');
-      const enabled = await p.$eval(`${f.form} [type="submit"]`, (el) => !el.disabled).catch(() => false);
-      ok(enabled, 'submit button is usable again');
+      // Nothing saved, so the gate stays put with their answers and the guide still opens
+      // below it — without the "You're in! We also emailed…" banner, which would be a lie.
+      ok(await p.$eval(f.content, (el) => !el.hidden && !el.classList.contains('hidden')).catch(() => false), 'lead magnet still delivers the content on failure');
+      ok(await p.$eval(f.welcome, (el) => el.hidden || el.classList.contains('hidden')).catch(() => false), 'no false "we emailed you" banner on a failed save');
     }
+    const firstField = Object.keys(f.fill)[0];
+    const kept = await p.$eval(`${f.form} [name="${firstField}"]`, (el) => el.value).catch(() => '');
+    ok(kept === f.fill[firstField], 'visitor entries are still in the form');
+    const enabled = await p.$eval(`${f.form} [type="submit"]`, (el) => !el.disabled).catch(() => false);
+    ok(enabled, 'submit button is usable again');
     ok(!f.redirect || p.url().includes(f.path), 'no false redirect to a thank-you page');
     if (f.success) ok(await p.$eval(f.success, (el) => el.classList.contains('hidden') || el.hidden).catch(() => true), 'no false success panel');
     ok(own().length === 0, 'no JS errors: ' + JSON.stringify(own()));
