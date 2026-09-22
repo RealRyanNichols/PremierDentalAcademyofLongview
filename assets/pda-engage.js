@@ -3,6 +3,13 @@
  * Include once per page:  <script src="/assets/pda-engage.js" defer></script>
  * (Requires the Supabase JS CDN on the page; degrades gracefully without it.)
  *
+ * Leads go through the shared /assets/pda-lead.js module (POST /api/lead → anon
+ * REST insert → local stash + honest error; adds first/last-touch attribution).
+ * pda-nav.js loads that module site-wide; if it is missing at click time we fall
+ * back to the direct `leads` insert. Either way submitLead() resolves
+ * { ok: boolean } and every caller shows an honest failure message (call / text /
+ * email) instead of "Sent!" when the lead did not save. Never fails silently.
+ *
  * LEAD FORM  — writes to public.leads (shows in /admin/leads):
  *   <div data-pda-lead
  *        data-topic="Radiology certification"
@@ -55,8 +62,11 @@
     };
     return sb.from('brain_events').insert(row).then(function () {}, function () {});
   }
+  // Resolves { ok: boolean, row } — ok is true ONLY when the lead really saved.
+  // Prefers PDALead.submit (never throws, never fails silently); falls back to the
+  // old direct insert only if the shared module has not loaded. Never rejects.
   function submitLead(d) {
-    if (!sb) return Promise.resolve();
+    d = d || {};
     var parts = String(d.name || '').trim().split(/\s+/);
     var row = {
       first_name: parts[0] || '', last_name: parts.slice(1).join(' ') || null,
@@ -65,7 +75,49 @@
       interest_path: d.topic || null, source: d.source || 'blog',
       pipeline_stage: 'new', status: 'new', last_contact_at: new Date().toISOString()
     };
-    return sb.from('leads').insert(row).then(function () {}, function () {});
+    var p;
+    try {
+      if (window.PDALead && typeof window.PDALead.submit === 'function') {
+        p = Promise.resolve(window.PDALead.submit(row)).then(function (r) {
+          return { ok: !!(r && r.ok), via: (r && r.via) || null, row: (r && r.row) || row };
+        });
+      } else if (sb) {
+        p = Promise.resolve(sb.from('leads').insert(row)).then(function (res) {
+          return { ok: !(res && res.error), via: 'db-direct', row: row };
+        });
+      } else {
+        p = Promise.resolve({ ok: false, via: null, row: row });
+      }
+    } catch (e) { p = Promise.resolve({ ok: false, via: null, row: row }); }
+    return p.then(null, function () { return { ok: false, via: null, row: row }; }).then(function (r) {
+      try {
+        if (window.PDA && window.PDA.track) {
+          var props = { saved: r.ok, source: row.source };
+          if (r.via) props.via = r.via;
+          window.PDA.track('lead_submit', props);
+        }
+      } catch (e) {}
+      return r;
+    });
+  }
+  // Honest failure message (HTML) with call / text / email links. Uses the shared
+  // module's copy when available so every form on the site reads the same.
+  function failHtml(row) {
+    try { if (window.PDALead && typeof window.PDALead.errorHtml === 'function') return window.PDALead.errorHtml(row || {}); } catch (e) {}
+    var F = window.PDA_FACTS || {};
+    var phone = (F.phone && F.phone.display) || '(903) 913-6444';
+    var tel = (F.phone && F.phone.href) || 'tel:+19039136444';
+    var email = F.email || 'hello@premierdentalacademyoflongview.com';
+    return '<strong>We couldn\'t send that just now.</strong> Your answers are still here — please try again in a moment, ' +
+      'or reach us directly: <a href="' + tel + '" style="font-weight:700;text-decoration:underline">call ' + esc(phone) + '</a>, ' +
+      '<a href="sms:+19039136444" style="font-weight:700;text-decoration:underline">text us</a>, or ' +
+      '<a href="mailto:' + esc(email) + '" style="font-weight:700;text-decoration:underline">email ' + esc(email) + '</a>. We\'ll get right back to you.';
+  }
+  function showFail(el, row) {
+    if (!el) return;
+    el.style.color = '#b91c1c';
+    el.setAttribute('role', 'alert');
+    el.innerHTML = failHtml(row);
   }
 
   // ── Sharing ─────────────────────────────────────────────────────
@@ -126,20 +178,32 @@
       '<button type="button" data-f="go" style="' + BTN + '">Send my results →</button>' +
       '<a href="' + (ctaHref || '/enroll') + '" style="' + CTA + ';margin-left:8px">' + (ctaLabel || 'See programs →') + '</a>' +
       '<div data-f="msg" style="font-size:13px;margin-top:10px"></div>';
-    box.querySelector('[data-f="go"]').addEventListener('click', function () {
+    var goBtn = box.querySelector('[data-f="go"]');
+    var goLabel = goBtn.textContent;
+    goBtn.addEventListener('click', function () {
       var name = box.querySelector('[data-f="name"]').value.trim();
       var email = box.querySelector('[data-f="email"]').value.trim();
       var phone = box.querySelector('[data-f="phone"]').value.trim();
       var msgEl = box.querySelector('[data-f="msg"]');
       if (!email && !phone) { msgEl.style.color = '#b91c1c'; msgEl.textContent = 'Add an email or mobile so we can send it.'; return; }
       var contact = { name: name, email: email, phone: phone };
+      goBtn.disabled = true; goBtn.textContent = 'Sending…';
+      msgEl.removeAttribute('role'); msgEl.textContent = '';
       Promise.all([
         logBrain(tool, getInputs(), getOutputs(), contact, null),
         submitLead({ name: name, email: email, phone: phone, topic: tool + ' tool', source: 'tool:' + tool,
           message: 'Used the ' + tool + ' tool and asked for their results.', context: 'tool ' + tool + ' on ' + location.pathname })
-      ]).then(function () {
-        msgEl.style.color = '#047857';
-        msgEl.textContent = '✓ Sent! Amanda will follow up personally. Check your email/text.';
+      ]).then(function (results) {
+        var r = results[1] || {};
+        if (r.ok) {
+          goBtn.disabled = false; goBtn.textContent = goLabel;
+          msgEl.style.color = '#047857';
+          msgEl.textContent = '✓ Sent! Amanda will follow up personally. Check your email/text.';
+          return;
+        }
+        // Not saved: keep their entries in place, make the button usable again, be honest.
+        goBtn.disabled = false; goBtn.textContent = goLabel;
+        showFail(msgEl, r.row);
       });
     });
     host.appendChild(box);
@@ -284,16 +348,26 @@
       '<button type="button" data-f="go" style="' + BTN + '">' + esc(cta) + ' →</button>' +
       '<div data-f="out" style="font-size:13px;margin-top:10px"></div></div>';
     var card = host.firstChild;
-    card.querySelector('[data-f="go"]').addEventListener('click', function () {
+    var goBtn = card.querySelector('[data-f="go"]');
+    var goLabel = goBtn.textContent;
+    goBtn.addEventListener('click', function () {
       var name = card.querySelector('[data-f="name"]').value.trim();
       var email = card.querySelector('[data-f="email"]').value.trim();
       var phone = card.querySelector('[data-f="phone"]').value.trim();
       var msg = card.querySelector('[data-f="msg"]').value.trim();
       var o = card.querySelector('[data-f="out"]');
       if (!name || (!email && !phone)) { o.style.color = '#b91c1c'; o.textContent = 'Add your name and an email or mobile number.'; return; }
+      goBtn.disabled = true; goBtn.textContent = 'Sending…';
+      o.removeAttribute('role'); o.textContent = '';
       submitLead({ name: name, email: email, phone: phone, message: msg, topic: topic, source: 'blog',
-        context: 'blog ' + location.pathname }).then(function () {
-        card.innerHTML = '<div style="' + CARD + ';text-align:center"><div style="font-size:40px">✅</div><div style="' + H + '">Got it, ' + esc(name.split(' ')[0]) + '!</div><div style="' + SUB + '">Amanda will follow up personally — usually the same day. Want to keep exploring? <a href="/enroll" style="color:#0d9488;font-weight:700">See programs &amp; tuition →</a></div></div>';
+        context: 'blog ' + location.pathname }).then(function (r) {
+        if (r && r.ok) {
+          card.innerHTML = '<div style="' + CARD + ';text-align:center"><div style="font-size:40px">✅</div><div style="' + H + '">Got it, ' + esc(name.split(' ')[0]) + '!</div><div style="' + SUB + '">Amanda will follow up personally — usually the same day. Want to keep exploring? <a href="/enroll" style="color:#0d9488;font-weight:700">See programs &amp; tuition →</a></div></div>';
+          return;
+        }
+        // Not saved: no false "Got it". Entries stay in the fields; button works again.
+        goBtn.disabled = false; goBtn.textContent = goLabel;
+        showFail(o, r && r.row);
       });
     });
   }

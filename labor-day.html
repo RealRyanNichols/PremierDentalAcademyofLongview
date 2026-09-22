@@ -25,6 +25,9 @@
   <!-- Single source of truth for the offer (window.PDA_FACTS.laborDay2026). Loaded
        synchronously so the page never renders a price the facts file doesn't carry. -->
   <script src="/assets/site-facts.js"></script>
+  <!-- Shared lead-submit module (honest failure states + first/last-touch attribution).
+       Synchronous so the inline form handler below can rely on window.PDALead. -->
+  <script src="/assets/pda-lead.js"></script>
   <style>
     body { font-family: 'Inter', system-ui, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; }
     .display { font-family: 'Fraunces', serif; }
@@ -352,8 +355,14 @@
       .catch(function () { renderCards([], true); });
   }
 
-  // ── Lead form: validates without losing entries, saves to public.leads (same
-  // pattern as /waitlist), falls back to localStorage when the insert fails.
+  // ── Lead form: validates without losing entries, then saves through the shared
+  // module (assets/pda-lead.js, loaded in <head>): /api/lead → direct REST insert →
+  // local stash. The "Got it" panel shows ONLY when the lead really saved; otherwise
+  // the button re-enables and an honest error (call / text / email links) appears in
+  // #lead-error with the visitor's answers still in the form. Honeypot "company"
+  // filled → acts like success, saves nothing. Attribution (UTMs, click ids, first /
+  // last touch, landing page) is appended by the module (leads.utm, leads.landing_page
+  // and a readable line on message), so nothing is hand-built here.
   var form = $('lead-form');
   var FIELDS = ['first_name', 'last_name', 'phone', 'email'];
   function setErr(name, show) {
@@ -361,59 +370,51 @@
     if (el) el.classList.toggle('hidden', !show);
     if (input) { input.classList.toggle('field-error', show); input.setAttribute('aria-invalid', show ? 'true' : 'false'); }
   }
-  form.onsubmit = function (e) {
-    e.preventDefault();
-    var fd = new FormData(form);
-    if ((fd.get('company') || '').trim()) { form.hidden = true; $('lead-success').hidden = false; return; }
-    var bad = [];
-    FIELDS.forEach(function (n) {
-      var v = String(fd.get(n) || '').trim();
-      var ok = n === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : n === 'phone' ? v.replace(/\D/g, '').length >= 10 : v.length > 0;
-      setErr(n, !ok); if (!ok) bad.push(n);
-    });
-    var consent = form.elements.consent.checked; setErr('consent', !consent); if (!consent) bad.push('consent');
-    var box = $('form-errors');
-    if (bad.length) {
-      var names = { first_name: 'first name', last_name: 'last name', phone: 'phone', email: 'email', consent: 'the contact permission box' };
-      box.textContent = 'Please fix: ' + bad.map(function (b) { return names[b]; }).join(', ') + '.';
-      box.hidden = false;
-      var first = form.elements[bad[0]]; if (first && first.focus) first.focus();
-      return;
-    }
-    box.hidden = true;
-    var btn = $('lead-submit'); btn.disabled = true; btn.textContent = 'Sending…';
-    $('lead-error').hidden = true;
-
-    var a = incomingUtm();
-    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
-    var lead = {
-      first_name: String(fd.get('first_name')).trim(),
-      last_name: String(fd.get('last_name')).trim(),
-      email: String(fd.get('email')).trim().toLowerCase(),
-      phone: String(fd.get('phone')).trim(),
-      interest_path: 'In-Person (Longview)',
-      message: ['Labor Day offer lead', fd.get('cohort_pref') ? 'Class: ' + fd.get('cohort_pref') : '', isLive() ? 'Offer live' : 'Offer ended', parts.length ? 'Attribution: ' + parts.join(', ') : ''].filter(Boolean).join(' · '),
-      source: 'labor-day.html'
-    };
-    var utm = { utm_campaign: (OFFER && OFFER.key) || 'laborday2026' };
-    Object.keys(a).forEach(function (k) { if (k.indexOf('utm_') === 0 && a[k]) utm[k] = String(a[k]).slice(0, 120); });
-    lead.utm = utm;
-    lead.landing_page = String(location.pathname + location.search).slice(0, 250);
-
-    var done = function (saved) {
-      track('laborday_lead_submit', { saved: saved, cohort_pref: fd.get('cohort_pref') || '' });
-      if (!saved) {
-        try { var ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e2) {}
-        btn.disabled = false; btn.textContent = 'Try again →';
-        $('lead-error').hidden = false;
-        return;
+  var leadEventProps = {}; // filled per submit so laborday_lead_submit keeps cohort_pref
+  var leadCfg = {
+    event: 'laborday_lead_submit',
+    eventProps: leadEventProps,
+    button: $('lead-submit'),
+    successEl: $('lead-success'),
+    errorEl: $('lead-error'),
+    scrollTop: false, // the success panel replaces the form in place, as before
+    honeypot: 'company',
+    build: function (fd) {
+      var bad = [];
+      FIELDS.forEach(function (n) {
+        var v = String(fd.get(n) || '').trim();
+        var ok = n === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) : n === 'phone' ? v.replace(/\D/g, '').length >= 10 : v.length > 0;
+        setErr(n, !ok); if (!ok) bad.push(n);
+      });
+      var consent = form.elements.consent.checked; setErr('consent', !consent); if (!consent) bad.push('consent');
+      var box = $('form-errors');
+      if (bad.length) {
+        var names = { first_name: 'first name', last_name: 'last name', phone: 'phone', email: 'email', consent: 'the contact permission box' };
+        box.textContent = 'Please fix: ' + bad.map(function (b) { return names[b]; }).join(', ') + '.';
+        box.hidden = false;
+        var first = form.elements[bad[0]]; if (first && first.focus) first.focus();
+        return null; // not valid yet: nothing is sent, entries stay put
       }
-      form.hidden = true; $('lead-success').hidden = false;
-    };
-    if (!sb) { done(false); return; }
-    sb.from('leads').insert(lead).then(function (res) { if (res.error) console.error('[labor-day]', res.error.message); done(!res.error); })
-      .catch(function (err) { console.error('[labor-day] threw', err); done(false); });
+      box.hidden = true;
+      leadEventProps.cohort_pref = fd.get('cohort_pref') || '';
+      return {
+        first_name: String(fd.get('first_name')).trim(),
+        last_name: String(fd.get('last_name')).trim(),
+        email: String(fd.get('email')).trim().toLowerCase(),
+        phone: String(fd.get('phone')).trim(),
+        interest_path: 'In-Person (Longview)',
+        message: ['Labor Day offer lead', fd.get('cohort_pref') ? 'Class: ' + fd.get('cohort_pref') : '', isLive() ? 'Offer live' : 'Offer ended'].filter(Boolean).join(' · '),
+        source: 'labor-day.html'
+      };
+    },
+    onError: function () { $('lead-submit').textContent = 'Try again →'; } // same retry label as before
   };
+  if (window.PDALead) {
+    PDALead.bindForm(form, leadCfg);
+  } else {
+    // Module failed to load: never pretend to save. Show the honest error (entries stay put).
+    form.addEventListener('submit', function (e) { e.preventDefault(); $('lead-error').hidden = false; });
+  }
   FIELDS.forEach(function (n) { var i = form.elements[n]; if (i) i.addEventListener('input', function () { setErr(n, false); }); });
   form.elements.consent.addEventListener('change', function () { setErr('consent', false); });
 

@@ -35,6 +35,7 @@
     @keyframes pop { from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
     .pop { animation: pop .25s ease both; }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
   <script defer src="/_vercel/insights/script.js"></script>
@@ -473,6 +474,7 @@
 
   // ---- Start buttons (gated: capture a lead before the free exam) ----
   let pendingStart = null;
+  let examDelivered = false; // exam already started for the open modal (a retry after a failed save must not restart it)
 
   async function fullUnlocked() {
     if (localStorage.getItem(LS_UNLOCK) === '1') return true;
@@ -481,7 +483,7 @@
   }
   async function gateThenStart(startFn) {
     if (await fullUnlocked()) startFn();
-    else { pendingStart = startFn; $('unlock-modal').classList.remove('hidden'); }
+    else { pendingStart = startFn; examDelivered = false; $('unlock-modal').classList.remove('hidden'); }
   }
   $('start-quick').onclick = () => { currentMode = 'quick'; gateThenStart(() => begin(shuffle(BANK).slice(0, 10))); };
   $('start-full').onclick  = () => { currentMode = 'full';  gateThenStart(() => begin(shuffle(BANK))); };
@@ -559,62 +561,80 @@
   const modal = $('unlock-modal');
   $('unlock-cancel').onclick = () => modal.classList.add('hidden');
   modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
-  $('unlock-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const name = (fd.get('name') || '').trim();
-    const email = (fd.get('email') || '').trim();
-    const phone = (fd.get('phone') || '').trim();
-    const err = $('unlock-err');
-    if (!name) { err.textContent = 'Please enter your name.'; err.classList.remove('hidden'); return; }
-    if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.classList.remove('hidden'); return; }
-    // Honeypot: bots fill the hidden field → close silently, save nothing.
-    if ((fd.get('company') || '').trim()) { modal.classList.add('hidden'); return; }
-    err.classList.add('hidden');
-    const btn = $('unlock-submit'); btn.disabled = true; btn.textContent = 'Starting…';
 
-    // Lead attribution (analytics layer, with a localStorage fallback).
-    let attrMsg = '';
+  // `sb` stays for the signed-in checks / saveAttempt above and the fire-and-forget email-list
+  // `subscribers` row below; the LEAD itself goes through the shared module (assets/pda-lead.js,
+  // loaded in <head>): /api/lead → direct REST insert → local stash (retried on the next page
+  // load). The module appends attribution (leads.utm + leads.landing_page + a readable line on
+  // message) and fires practice_exam_lead_submit with saved:true|false.
+  const err = $('unlock-err');
+  const btn = $('unlock-submit');
+  const trackProps = { hasEmail: false, hasPhone: false }; // read by the module at fire time
+
+  // Email list (separate from the lead; fire-and-forget, as before).
+  function subscribe(row) {
+    const email = row && row.email;
+    if (!sb || !email) return;
+    try { sb.from('subscribers').insert({ email: email, source: 'practice-exam', tags: ['practice-exam'] }).then(function () {}, function () {}); } catch (e) {}
+  }
+  // Unlocked on this device from now on — whether or not the lead saved (the visitor did their
+  // part; a failed save is stashed by the module and re-sent on the next page load, so NOT
+  // unlocking would only re-prompt them and produce a duplicate lead).
+  function unlock(row) {
+    row = row || {};
     try {
-      let a = {};
-      try { a = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e0) {}
-      const parts = Object.keys(a).filter(k => k !== '_ts' && a[k]).map(k => k + '=' + a[k]);
-      if (parts.length) attrMsg = 'Attribution: ' + parts.join(', ');
-    } catch (e0) {}
-
-    // Capture as a real lead (lands in /admin/leads), plus the email list.
-    const lead = {
-      first_name: name.split(' ')[0] || '',
-      last_name: name.split(' ').slice(1).join(' '),
-      email: email || null, phone: phone || null,
-      interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam',
-      message: attrMsg || null
-    };
-    // Structured attribution (utm jsonb + landing_page) so ads are measurable per ad/metro.
-    try {
-      let a2 = {};
-      try { a2 = (window.PDA && window.PDA.attribution && window.PDA.attribution()) || JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (eA) {}
-      const utmObj = {};
-      Object.keys(a2).forEach(k => { if (k.indexOf('utm_') === 0 && a2[k]) utmObj[k] = String(a2[k]).slice(0, 120); });
-      if (Object.keys(utmObj).length) lead.utm = utmObj;
-      if (a2.landing_path) lead.landing_page = String(a2.landing_path).slice(0, 250);
-    } catch (eB) {}
-    let saved = false;
-    if (sb) {
-      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[practice-exam] lead error:', error.message); }
-      catch (err2) { console.error('[practice-exam] lead threw:', err2); }
-      if (email) { try { await sb.from('subscribers').insert({ email, source: 'practice-exam', tags: ['practice-exam'] }); } catch (e3) {} }
-    }
-    if (!saved) {
-      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push(Object.assign({}, lead, { created_at: new Date().toISOString() })); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e4) {}
-    }
-    try { if (window.PDA && window.PDA.track) window.PDA.track('practice_exam_lead_submit', { hasEmail: !!email, hasPhone: !!phone, saved: saved }); } catch (e6) {}
-    try { localStorage.setItem(LS_UNLOCK, '1'); localStorage.setItem('pda.examLead', JSON.stringify({ name: name, email: email, phone: phone })); } catch (e5) {}
-
-    modal.classList.add('hidden');
-    btn.disabled = false; btn.textContent = 'Start my exam →';
+      localStorage.setItem(LS_UNLOCK, '1');
+      localStorage.setItem('pda.examLead', JSON.stringify({ name: ((row.first_name || '') + ' ' + (row.last_name || '')).trim(), email: row.email || '', phone: row.phone || '' }));
+    } catch (e) {}
+  }
+  function deliverExam() {
+    if (examDelivered) return;
+    examDelivered = true;
     if (pendingStart) { const fn = pendingStart; pendingStart = null; fn(); }
     else begin(shuffle(BANK));
+  }
+
+  PDALead.bindForm($('unlock-form'), {
+    event: 'practice_exam_lead_submit',
+    eventProps: trackProps,
+    button: btn,
+    errorEl: err,
+    busyLabel: 'Starting…',
+    honeypot: 'company', // bots fill the hidden field → acts like success, saves nothing
+    build: function (fd) {
+      const name = (fd.get('name') || '').trim();
+      const email = (fd.get('email') || '').trim();
+      const phone = (fd.get('phone') || '').trim();
+      if (!name) { err.textContent = 'Please enter your name.'; err.hidden = false; err.classList.remove('hidden'); return null; }
+      if (!email && !phone) { err.textContent = 'Please add an email or a phone number.'; err.hidden = false; err.classList.remove('hidden'); return null; }
+      trackProps.hasEmail = !!email; trackProps.hasPhone = !!phone;
+      // Capture as a real lead (lands in /admin/leads), plus the email list.
+      return {
+        first_name: name.split(' ')[0] || '',
+        last_name: name.split(' ').slice(1).join(' '),
+        email: email || null, phone: phone || null,
+        interest_path: 'Free RDA Practice Exam', source: 'tools/practice-exam'
+      };
+    },
+    // Saved: close the modal, unlock this device, restore the button (the module only restores
+    // it on failure) and start the exam.
+    onSuccess: function (result) {
+      modal.classList.add('hidden');
+      if (result.via === 'honeypot') return; // bot: close silently, nothing saved, no exam
+      unlock(result.row);
+      subscribe(result.row);
+      btn.disabled = false; btn.textContent = 'Start my exam →';
+      deliverExam();
+    },
+    // Save FAILED: the visitor did their part, so the device is unlocked anyway and the exam still
+    // starts (behind the modal). The modal stays open with their answers, a usable button and the
+    // honest error under it — they can retry the save, or "Maybe later" straight into the running
+    // exam. The failed row is already queued by the module for retry on the next page load.
+    onError: function (result) {
+      unlock(result.row);
+      subscribe(result.row);
+      deliverExam();
+    }
   });
 
   // If already unlocked / signed in, soften the full-exam label.

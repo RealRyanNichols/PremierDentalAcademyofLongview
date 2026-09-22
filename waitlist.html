@@ -17,6 +17,7 @@
     .display { font-family: 'Fraunces', serif; }
     .gradient-text { background: linear-gradient(90deg, #0d9488 0%, #0891b2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
@@ -121,59 +122,41 @@
 <script>
 (function () {
   'use strict';
-  const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-  let sb = null;
-  if (window.supabase) { try { sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch (e) {} }
-
   const form = document.getElementById('waitlist-form');
   const success = document.getElementById('waitlist-success');
   const btn = document.getElementById('submit-btn');
 
-  function attribution() {
-    var a = {};
-    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
-    try {
-      var p = new URLSearchParams(location.search);
-      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
-    } catch (e) {}
-    try { if (!a.referrer) a.referrer = document.referrer || ''; } catch (e) {}
-    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
-    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
-  }
-
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    if ((fd.get('company') || '').trim()) { form.classList.add('hidden'); success.classList.remove('hidden'); return; }
-    btn.disabled = true; btn.textContent = 'Adding you…';
-    const details = [
-      'Waitlist request',
-      fd.get('timeline') ? `When: ${fd.get('timeline')}` : '',
-      attribution(),
-    ].filter(Boolean).join(' · ');
-    const lead = {
-      first_name: fd.get('first_name'),
-      last_name: fd.get('last_name'),
-      email: fd.get('email'),
-      phone: fd.get('phone'),
-      interest_path: fd.get('program') || null,
-      message: details,
-      source: 'waitlist.html',
-    };
-    let saved = false;
-    if (sb) {
-      try { const { error } = await sb.from('leads').insert(lead); saved = !error; if (error) console.error('[waitlist]', error.message); }
-      catch (err) { console.error('[waitlist] threw', err); }
-    }
-    if (!saved) {
-      try { const ex = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]'); ex.push({ ...lead, created_at: new Date().toISOString() }); localStorage.setItem('pda.pendingLeads', JSON.stringify(ex)); } catch (e) {}
-    }
-    try { if (window.PDA && window.PDA.track) window.PDA.track('waitlist_submit', { program: lead.interest_path, saved: saved }); } catch (e) {}
-    form.classList.add('hidden');
-    success.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Shared lead path (assets/pda-lead.js, loaded in <head>): /api/lead → direct REST
+  // insert → local stash. The "You're on the list" panel shows ONLY when the lead really
+  // saved; otherwise the button re-enables and an honest error (call / text / email
+  // links) appears under it with the visitor's answers still in the form. Honeypot
+  // "company" filled → acts like success, saves nothing. Attribution is appended by
+  // the module (leads.utm + leads.landing_page + readable line on message).
+  const cfg = {
+    event: 'waitlist_submit',
+    button: btn,
+    successEl: success,
+    busyLabel: 'Adding you…',
+    honeypot: 'company',
+    build: function (fd) {
+      const details = [
+        'Waitlist request',
+        fd.get('timeline') ? `When: ${fd.get('timeline')}` : '',
+      ].filter(Boolean).join(' · ');
+      const lead = {
+        first_name: fd.get('first_name'),
+        last_name: fd.get('last_name'),
+        email: fd.get('email'),
+        phone: fd.get('phone'),
+        interest_path: fd.get('program') || null,
+        message: details,
+        source: 'waitlist.html',
+      };
+      cfg.eventProps = { program: lead.interest_path }; // keeps `program` on the track event
+      return lead;
+    },
   };
+  PDALead.bindForm(form, cfg);
 })();
 </script>
 <script defer src="/assets/pda-track.js"></script>

@@ -188,6 +188,8 @@
     // Load the analytics layer so every [data-event] element is tracked site-wide (safe no-op without a provider).
     if (!window.PDA_ANALYTICS_CONFIG) { var __ac = document.createElement('script'); __ac.src = '/assets/analytics-config.js'; __ac.async = false; document.head.appendChild(__ac); }
     if (!window.PDA || !window.PDA.track) { var __an = document.createElement('script'); __an.src = '/assets/pda-analytics.js'; __an.async = false; document.head.appendChild(__an); }
+    // Shared lead-submit module (honest failure states + first/last-touch attribution) for every form.
+    if (!window.PDALead && !document.querySelector('script[src="/assets/pda-lead.js"]')) { var __ld = document.createElement('script'); __ld.src = '/assets/pda-lead.js'; __ld.async = false; document.head.appendChild(__ld); }
     // PWA: link the web app manifest + brand theme-color once, site-wide (guarded so a page may still ship its own).
     if (!document.querySelector('link[rel="manifest"]')) { var __mf = document.createElement('link'); __mf.rel = 'manifest'; __mf.href = '/site.webmanifest'; document.head.appendChild(__mf); }
     if (!document.querySelector('meta[name="theme-color"]')) { var __tc = document.createElement('meta'); __tc.name = 'theme-color'; __tc.content = '#0f766e'; document.head.appendChild(__tc); }

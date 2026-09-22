@@ -34,6 +34,21 @@ function safeEqual(a: string, b: string): boolean {
   return o === 0;
 }
 
+// Campaign attribution written by assets/pda-lead.js: leads.utm (last touch + first_touch)
+// and leads.landing_page. Rendered only when present so older leads look unchanged.
+function attributionRows(l: Record<string, unknown>): string {
+  const u = (l.utm && typeof l.utm === "object") ? l.utm as Record<string, unknown> : {};
+  const f = (u.first_touch && typeof u.first_touch === "object") ? u.first_touch as Record<string, unknown> : {};
+  const row = (k: string, v: string) => `<tr><td style="padding:6px 0;color:#64748b">${k}</td><td style="padding:6px 0">${v}</td></tr>`;
+  const camp = [u.utm_source, u.utm_medium, u.utm_campaign, u.utm_content].filter(Boolean).map(esc).join(" / ");
+  const first = [f.utm_source, f.utm_campaign, f.landing_path].filter(Boolean).map(esc).join(" / ");
+  const out: string[] = [];
+  if (camp) out.push(row("Campaign", camp));
+  if (l.landing_page) out.push(row("Landing page", esc(l.landing_page)));
+  if (first && first !== camp) out.push(row("First visit", first));
+  return out.join("");
+}
+
 function notifyHtml(l: Record<string, unknown>): string {
   const name = (esc(l.first_name) + " " + esc(l.last_name)).trim();
   return `<div style="font-family:Inter,Arial,sans-serif;max-width:560px;margin:0 auto;color:#0f172a">
@@ -47,9 +62,11 @@ function notifyHtml(l: Record<string, unknown>): string {
       <tr><td style="padding:6px 0;color:#64748b">Email</td><td style="padding:6px 0"><a href="mailto:${esc(l.email)}" style="color:#0d9488">${esc(l.email)}</a></td></tr>
       <tr><td style="padding:6px 0;color:#64748b">Interest</td><td style="padding:6px 0">${esc(l.interest_path)}</td></tr>
       <tr><td style="padding:6px 0;color:#64748b;vertical-align:top">Details</td><td style="padding:6px 0;color:#334155;white-space:pre-wrap">${esc(l.message)}</td></tr>
+      ${attributionRows(l)}
     </table>
     <div style="margin-top:20px;text-align:center">
       <a href="tel:${esc(l.phone)}" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">📞 Call now</a>
+      <a href="sms:${esc(l.phone)}" style="display:inline-block;background:#0d9488;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">💬 Text</a>
       <a href="${ADMIN_LEADS_URL}" style="display:inline-block;background:#0f172a;color:#fff;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:10px;margin:0 4px">Open in admin</a>
     </div>
   </div>

@@ -34,6 +34,7 @@ tailwind.config = { theme: { extend: {
   .display{font-family:'Fraunces',serif}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/pda-lead.js"></script>
 <script src="/assets/pda-seo.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
 <script src="/assets/pda-analytics.js" defer></script>
@@ -161,6 +162,7 @@ tailwind.config = { theme: { extend: {
         <div class="sm:col-span-2">
           <button type="submit" class="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Send — have Amanda call me →</button>
           <div id="sponsor-msg" class="hidden mt-2 font-semibold"></div>
+          <p class="pda-lead-error hidden mt-3 px-3.5 py-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm leading-relaxed" hidden></p>
         </div>
       </form>
     </div>
@@ -214,6 +216,7 @@ tailwind.config = { theme: { extend: {
         <div class="sm:col-span-2">
           <button type="submit" class="w-full sm:w-auto bg-teal-700 hover:bg-teal-800 text-white font-bold px-8 py-3 rounded-full shadow-md disabled:opacity-50">Apply for sponsorship — free →</button>
           <div id="student-msg" class="hidden mt-2 font-semibold"></div>
+          <p class="pda-lead-error hidden mt-3 px-3.5 py-3 rounded-xl border border-rose-200 bg-rose-50 text-rose-800 text-sm leading-relaxed" hidden></p>
         </div>
       </form>
     </div>
@@ -263,53 +266,39 @@ tailwind.config = { theme: { extend: {
 <script>
 (function () {
   'use strict';
+  // `sb` is kept ONLY for the sponsor-profiles board below. Both lead forms go through the
+  // shared module (assets/pda-lead.js, loaded in <head>): /api/lead → direct REST insert →
+  // local stash + honest inline error near the button (.pda-lead-error). The green
+  // "Got it" line shows ONLY when the lead really saved; on failure the visitor's answers
+  // stay in the form and the button comes back.
   var sb = null;
   try { sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh'); } catch (e) {}
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); };
   var money = function (c) { return '$' + Math.round(c / 100).toLocaleString('en-US'); };
 
-  // UTM attribution folded into the lead message (same pattern as /apply)
-  function attribution() {
-    var a = {};
-    try { a = JSON.parse(localStorage.getItem('pda.utm') || '{}'); } catch (e) {}
-    try {
-      var p = new URLSearchParams(location.search);
-      ['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(function (k) { if (p.get(k)) a[k] = p.get(k); });
-    } catch (e) {}
-    try { if (!a.referrer) a.referrer = document.referrer || ''; } catch (e) {}
-    var parts = Object.keys(a).filter(function (k) { return k !== '_ts' && a[k]; }).map(function (k) { return k + '=' + a[k]; });
-    return parts.length ? 'Attribution: ' + parts.join(', ') : '';
-  }
-
-  function wireForm(formId, msgId, buildLead, eventName) {
+  function wireForm(formId, msgId, buildLead, eventProps) {
     var form = document.getElementById(formId);
     var msg = document.getElementById(msgId);
-    if (!form) return;
-    form.onsubmit = async function (e) {
-      e.preventDefault();
-      var fd = new FormData(form);
-      if ((fd.get('website') || '').trim()) { form.reset(); return; } // honeypot
-      var btn = form.querySelector('button[type=submit]');
-      btn.disabled = true;
-      var lead = buildLead(fd);
-      var saved = false;
-      if (sb) {
-        try { saved = !(await sb.from('leads').insert(lead)).error; } catch (err) {}
+    if (!form || !window.PDALead) return; // guard so a missing module can't take the board down with it
+    var btn = form.querySelector('button[type=submit]');
+    var idleLabel = btn ? btn.textContent : '';
+    PDALead.bindForm(form, {
+      event: 'sponsor_submit',
+      eventProps: eventProps,
+      honeypot: 'website',
+      button: btn,
+      build: function (fd) {
+        msg.classList.add('hidden'); // clear a stale "Got it" from an earlier send before this attempt
+        return buildLead(fd);
+      },
+      onSuccess: function () {
+        if (btn) { btn.disabled = false; btn.textContent = idleLabel; }
+        msg.classList.remove('hidden');
+        msg.textContent = '✓ Got it — Amanda will reach out within 1 business day. Faster: call or text (903) 913-6444.';
+        msg.className = 'mt-2 font-semibold text-emerald-700';
+        form.reset();
       }
-      if (!saved) {
-        try {
-          var pending = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-          pending.push(Object.assign({}, lead, { created_at: new Date().toISOString() }));
-          localStorage.setItem('pda.pendingLeads', JSON.stringify(pending));
-        } catch (e2) {}
-      }
-      try { if (window.PDA && window.PDA.track) window.PDA.track(eventName, { saved: saved }); } catch (e3) {}
-      btn.disabled = false;
-      msg.classList.remove('hidden');
-      msg.textContent = '✓ Got it — Amanda will reach out within 1 business day. Faster: call or text (903) 913-6444.';
-      msg.className = 'mt-2 font-semibold text-emerald-700';
-      form.reset();
-    };
+    });
   }
 
   wireForm('sponsor-form', 'sponsor-msg', function (fd) {
@@ -327,10 +316,9 @@ tailwind.config = { theme: { extend: {
         'Company: ' + (fd.get('business') || ''),
         'Level: ' + (LEVELS[fd.get('level')] || fd.get('level') || ''),
         fd.get('notes') ? 'Notes: ' + fd.get('notes') : '',
-        attribution(),
       ].filter(Boolean).join(' · '),
     };
-  }, 'sponsor_business_submit');
+  }, { form: 'business' });
 
   wireForm('student-form', 'student-msg', function (fd) {
     return {
@@ -345,10 +333,9 @@ tailwind.config = { theme: { extend: {
         fd.get('city') ? 'City: ' + fd.get('city') : '',
         fd.get('start_when') ? 'Start: ' + fd.get('start_when') : '',
         'Story: ' + (fd.get('story') || ''),
-        attribution(),
       ].filter(Boolean).join(' · '),
     };
-  }, 'sponsor_student_submit');
+  }, { form: 'student' });
 
   // ── The board: approved, consented, anonymized profiles only ──
   (async function () {

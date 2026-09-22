@@ -3,6 +3,33 @@
 Claude Code auto-loads this file. It is the standing context so any new session
 "just knows" the project. Keep it current.
 
+## OWNER RULES (Amanda) — read docs/OWNER-RULES.md first
+Amanda Williams is owner and final authority; her newest instruction wins. The short
+version: prices/contact/claims come ONLY from `assets/site-facts.js`; never invent or
+retain graduate counts, placement rates, testimonials, salary promises or superlatives;
+no production deploy, DB migration, env/DNS/payment change, real send, user change or
+price/policy change without her explicit approval for that action (SQL is staged in
+`db/pending/`); never put secrets or private student data anywhere. Full text and the
+retired-facts list: docs/OWNER-RULES.md + docs/CONVERSION-AUDIT-2026-09-17.md.
+
+## Conversion plumbing (Sep 2026) — how leads and campaigns flow
+- **Every lead form** submits through `assets/pda-lead.js` (`PDALead.bindForm` / `submit`):
+  POST `/api/lead` (api/lead.js: validate, de-dupe on utm.submission_id, insert; if the
+  insert fails it emails hello@ directly) → fallback direct anon insert → honest inline
+  error with call/text/email links, entries kept, retried next visit. Never show success
+  unless the save succeeded. The DB trigger still emails Amanda on every insert.
+- **Attribution**: `assets/pda-analytics.js` stores last touch (`pda.utm`) and first touch
+  (`pda.utm_first`, once per browser); the lead module writes both to `leads.utm` and the
+  first landing page to `leads.landing_page`; `/admin/kpi` charts leads by campaign and
+  landing page.
+- **Facebook short links**: `/go/<slug>` (data/go-links.mjs → api/go.js, rewrite in
+  vercel.json) redirects with utm tags and logs `go|<slug>` to page_visits. Real funnel
+  pages under `go/*.html` are served first. How-to: docs/go-links.md.
+- **Tripwires in `npm test`**: check:claims (retired claims/contacts/typed dates),
+  check:pricing (engine = site-facts; "$500 down" never without "$3,500"), check:plan-math
+  (every split totals $3,500), check:lead-api, check:go. `npm run test:e2e` drives the
+  real pages in Chromium at phone width (happy + failure paths).
+
 ## What this is
 The live website for Premier Dental Academy of Longview — a Registered Dental
 Assistant (RDA) training school in Longview, TX.

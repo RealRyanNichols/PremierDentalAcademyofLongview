@@ -29,6 +29,7 @@
       color: #cbd5e1;
     }
   </style>
+  <script src="/assets/pda-lead.js"></script>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
 <script src="/assets/pda-nav.js" defer></script>
@@ -211,43 +212,34 @@
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
 window.AOS && AOS.init({ duration: 600, once: true });
-(async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+(() => {
+  // Lead submit goes through the shared module (/assets/pda-lead.js, loaded in <head>):
+  // /api/lead → direct REST insert → local stash + honest inline error near the button.
+  // The "Got it!" panel only shows when the save really succeeded; on failure the
+  // office's answers stay in the form and the button is re-enabled.
   const form = document.getElementById('partner-req');
-  form.onsubmit = async (e) => {
-    e.preventDefault();
-    const fd = new FormData(form);
-    const [first, ...rest] = (fd.get('name') || '').split(' ');
-    const detail = [
-      fd.get('office') ? `Office: ${fd.get('office')}` : '',
-      fd.get('city')   ? `City: ${fd.get('city')}` : '',
-      fd.get('role')   ? `Hiring for: ${fd.get('role')}` : '',
-      fd.get('when')   ? `Timeline: ${fd.get('when')}` : '',
-      fd.get('notes')  ? `Notes: ${fd.get('notes')}` : '',
-    ].filter(Boolean).join(' · ');
-    const lead = {
-      first_name: first, last_name: rest.join(' '),
-      email: fd.get('email'), phone: fd.get('phone'),
-      source: 'hiring-partners',
-      interest_path: 'hiring-partner',
-      message: detail || null,
-    };
-    let saved = false;
-    try {
-      const { error } = await sb.from('leads').insert(lead);
-      saved = !error;
-      if (error) console.error('[hiring-partners] insert error:', error.message);
-    } catch (e) { console.error('[hiring-partners] insert threw:', e); }
-    if (!saved) {
-      try {
-        const p = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        p.push({ ...lead, created_at: new Date().toISOString() });
-        localStorage.setItem('pda.pendingLeads', JSON.stringify(p));
-      } catch (e2) {}
-    }
-    form.classList.add('hidden');
-    document.getElementById('partner-success').classList.remove('hidden');
-  };
+  PDALead.bindForm(form, {
+    event: 'hiring_partner_submit',
+    successEl: document.getElementById('partner-success'),
+    scrollTop: false, // the panel replaces the form in place, as before
+    build: (fd) => {
+      const [first, ...rest] = (fd.get('name') || '').split(' ');
+      const detail = [
+        fd.get('office') ? `Office: ${fd.get('office')}` : '',
+        fd.get('city')   ? `City: ${fd.get('city')}` : '',
+        fd.get('role')   ? `Hiring for: ${fd.get('role')}` : '',
+        fd.get('when')   ? `Timeline: ${fd.get('when')}` : '',
+        fd.get('notes')  ? `Notes: ${fd.get('notes')}` : '',
+      ].filter(Boolean).join(' · ');
+      return {
+        first_name: first, last_name: rest.join(' '),
+        email: fd.get('email'), phone: fd.get('phone'),
+        source: 'hiring-partners',
+        interest_path: 'hiring-partner',
+        message: detail || null,
+      };
+    },
+  });
 })();
 </script>
 <script defer src="/assets/pda-track.js"></script>
