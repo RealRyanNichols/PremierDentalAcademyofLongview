@@ -1,19 +1,3 @@
-// !! STALE MIRROR — DO NOT DEPLOY THIS FILE AS-IS (checked 2026-09-22) !!
-// Live is v11, deployed 2026-09-22 20:03 UTC. It contains fixes this file does NOT:
-//   • a real 10-digit number is required before a lead is looked up or created
-//     (upsertLeadByPhone("") ran `ilike '%%'` and matched ANY lead — one lead had
-//     collected 166 rows that were not hers);
-//   • one communications row per call_id (the old maybeSingle() lookup returned
-//     nothing once two rows existed, so every later event inserted again);
-//   • events on The LeadFlow Pro line (903) 500-8898 are skipped instead of being
-//     created as dental leads;
-//   • one admin task per call.
-// Deploying this file would undo all four. Conversely, live v11 is missing the two
-// stamps below that this file adds (a completed call with no Sona summary, and an
-// outbound text, should move a lead out of "new"). Neither side is a superset.
-// To ship: pull the deployed v11 source down, re-apply those two stamps on top,
-// deploy that, and push the result here. See CHANGELOG 2026-09-22.
-//
 // Quo (OpenPhone) inbound webhook — Sona AI call data + SMS, into the pipeline.
 // =============================================================================
 // Handles two families of Quo events:
@@ -47,6 +31,42 @@
 //   3. DURATION IS DERIVED from answeredAt/completedAt when OpenPhone omits it.
 //   4. MESSAGE DEDUPE on msg_id, because sent and delivered both fire.
 //
+// 2026-09-22 changes (Claude, at Ryan's direction) — v11:
+//   1. CALLS WERE FILED UNDER THE WRONG PEOPLE. Summary and transcript events
+//      carry no phone number, so `upsertLeadByPhone('')` ran `ilike '%%'`, which
+//      matches ANY lead. Since June every such event was attached to whichever
+//      lead came back first (Blythe Squires collected 166 rows that were not
+//      hers, and seeded grades/timelines on the wrong leads). A lead is now
+//      only looked up or created from a real 10 digit number. Party-less events
+//      merge into the call's existing row by call_id, or park as a placeholder
+//      (metadata.pending_party) until the call.completed event names the caller.
+//   2. ONE ROW PER CALL, FOR REAL. The call_id lookup used maybeSingle(), which
+//      returns nothing once two rows exist, so every later event inserted again
+//      (1,149 rows for 328 calls). Lookups now use limit(1), and a unique index
+//      on metadata->>'call_id' makes concurrent duplicate deliveries collapse:
+//      the loser of the insert race merges into the winner's row.
+//   3. ONLY THE PDA LINE. Calls on The LeadFlow Pro line (903) 500-8898 were
+//      reaching this function and being created as dental leads. Events whose
+//      phoneNumberId is not PDA's, or whose parties do not include PDA's number,
+//      are skipped.
+//   4. ONE ADMIN TASK PER CALL, created only by the delivery that first ties the
+//      call to a PDA caller.
+//
+// 2026-09-22 v12: EVERY QUO EVENT ARRIVES TWICE. Two subscriptions point here,
+//   one on API v3 (from/to) and one on v4 (participants), carrying the SAME
+//   event id. Both copies raced into upsertLeadByPhone and created the same new
+//   lead twice. The event id is now claimed in quo_webhook_events (primary key)
+//   before anything runs; the second copy of an event returns immediately.
+//
+// 2026-09-22 v13: SUMMARY AND TRANSCRIPT ERASED EACH OTHER. They arrive within
+//   milliseconds for the same call, and each one read the row, merged in JS and
+//   wrote the whole row back, so the last writer erased the other's text. Not one
+//   transcript had ever been saved. All call writes now go through the SQL
+//   function upsert_call_event, which merges each event's keys under a row lock.
+//   Direction is only written by events that carry it (summaries used to stamp
+//   "inbound" onto outbound calls). If processing throws, the event claim is
+//   released and a 500 goes back, so Quo's retry is processed instead of skipped.
+//
 // NOTE: the repo mirror of this file was stale (it still held the retired
 // $200-down pricing) until 2026-09-18. Deployed is the source of truth. If you
 // edit this, deploy AND push, or the next person ships a price regression.
@@ -61,6 +81,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SITE_URL = "https://premierdentalacademyoflongview.com";
 const PDA_DIGITS = "9039136444"; // our Quo number, used to pick the "other" party
+const PDA_PN_ID = "PNhV3szhHa";  // Quo phone-number id of (903) 913-6444
 
 const PRICE_IN_PERSON_PIF = 3000;
 const PRICE_IN_PERSON_PLAN = 3500;
@@ -79,6 +100,40 @@ function isAfterHours(now = new Date()): boolean {
 }
 
 function digits10(p: string): string { return (p || "").replace(/\D/g, "").slice(-10); }
+
+// ── Which line, and who is on the other end ──
+function asPhone(v: any): string {
+  if (!v) return "";
+  if (typeof v === "string") return v;
+  if (typeof v === "object") return String(v.phoneNumber || v.phone_number || v.number || v.phone || "");
+  return "";
+}
+// Every phone number the event names, in whatever shape Quo sent it.
+function partiesOf(obj: any): string[] {
+  const out: string[] = [];
+  const push = (v: any) => { const p = asPhone(v); if (p) out.push(p); };
+  push(obj.from ?? obj.from_number);
+  const to = obj.to ?? obj.to_number;
+  if (Array.isArray(to)) to.forEach(push); else push(to);
+  if (Array.isArray(obj.participants)) obj.participants.forEach(push);
+  return out;
+}
+// "pda" = this event is on (903) 913-6444. "other" = it is on another Quo line
+// (The LeadFlow Pro shares the workspace). "unknown" = the event names no line
+// and no parties (summary / transcript events), so it can only merge by call_id.
+function lineOf(obj: any): "pda" | "other" | "unknown" {
+  const pn = String(obj.phoneNumberId || obj.phone_number_id || "");
+  if (pn) return pn === PDA_PN_ID ? "pda" : "other";
+  const ds = partiesOf(obj).map(digits10).filter((d) => d.length === 10);
+  if (ds.includes(PDA_DIGITS)) return "pda";
+  if (ds.length >= 2) return "other";
+  return "unknown";
+}
+// The caller or callee who is not us. Empty when the event does not say.
+function externalOf(obj: any): string {
+  const ext = partiesOf(obj).filter((p) => { const d = digits10(p); return d.length === 10 && d !== PDA_DIGITS; });
+  return ext[0] || "";
+}
 
 // ── Sona / free-text field extraction ──
 // Common words the name patterns can falsely catch ("This is my test" → "my").
@@ -130,11 +185,16 @@ function seedGrade(text: string): "hot" | "qualified" | "non_qualified" | null {
 }
 
 // ── Lead upsert by phone ──
+// NEVER call the lookup with fewer than 10 digits: `ilike '%%'` matches every
+// lead, which is how calls got filed under strangers.
 async function upsertLeadByPhone(sb: any, phone: string, opts: {
   firstName?: string; email?: string; source: string; note?: string;
 }): Promise<any> {
   const clean = digits10(phone);
-  let { data: lead } = await sb.from("leads").select("*").ilike("phone", `%${clean}%`).limit(1).maybeSingle();
+  if (clean.length !== 10) return null;
+  let { data: found } = await sb.from("leads").select("*").ilike("phone", `%${clean}%`)
+    .order("created_at", { ascending: true }).limit(1);
+  let lead = found?.[0] || null;
   if (!lead) {
     const { data: created } = await sb.from("leads").insert({
       first_name: opts.firstName || "", email: opts.email || null, phone,
@@ -153,13 +213,25 @@ async function upsertLeadByPhone(sb: any, phone: string, opts: {
 // ============================ CALL EVENTS ============================
 async function handleCall(sb: any, type: string, obj: any, body: any): Promise<Response> {
   const callId: string = String(obj.callId || obj.id || obj.call_id || "");
-  const direction: string = (obj.direction || "").toLowerCase().includes("out") ? "outbound" : "inbound";
-  const from: string = obj.from || obj.from_number || "";
-  const to: string = obj.to || obj.to_number || "";
-  // The "other party" is whichever side isn't our Quo number.
-  let external = direction === "outbound" ? to : from;
-  if (digits10(from) === PDA_DIGITS) external = to;
-  if (digits10(to) === PDA_DIGITS) external = from;
+  const line = lineOf(obj);
+
+  // Not our line. The LeadFlow Pro shares this Quo workspace; its calls are not
+  // dental leads. Drop any placeholder a party-less sub-event parked for it.
+  if (line === "other") {
+    if (callId) {
+      await sb.from("communications").delete().eq("channel", "call")
+        .filter("metadata->>call_id", "eq", callId)
+        .filter("metadata->>pending_party", "eq", "true")
+        .is("related_lead_id", null);
+    }
+    return json({ ok: true, skipped: "not the PDA line", type, call_id: callId });
+  }
+
+  // Only events that carry a direction may set it. Summary and transcript
+  // events do not, and defaulting them to "inbound" mislabeled outbound calls.
+  const dirRaw = String(obj.direction || "").toLowerCase();
+  const direction: string | null = dirRaw ? (dirRaw.includes("out") ? "outbound" : "inbound") : null;
+  const external: string = line === "pda" ? externalOf(obj) : "";
   const status: string = obj.status || obj.disposition || "";
   const rawDuration: number = Number(obj.duration ?? obj.duration_seconds ?? obj.callDuration ?? 0) || 0;
   const answeredAt: string = obj.answeredAt || obj.answered_at || "";
@@ -173,7 +245,7 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
   }
   const recordingUrl: string = obj.recordingUrl || obj.media?.[0]?.url || obj.recording?.url || "";
 
-  if (!external && !callId) return json({ ok: false, reason: "call missing party + id", type, got: body }, 200);
+  if (!external && !callId) return json({ ok: false, reason: "call missing party + id", type }, 200);
 
   // Build transcript / summary text from whatever this sub-event carries.
   let transcriptText = "";
@@ -190,83 +262,96 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
     summaryText = parts.join("\n");
   }
 
-  // Lead upsert + Sona field capture (from summary/transcript when present).
   const richText = `${summaryText}\n${transcriptText}`.trim();
   const extracted = extractInfo(richText);
-  const lead = await upsertLeadByPhone(sb, external || from || to, {
-    firstName: extracted.firstName, email: extracted.email, source: "quo_call",
-    note: `Auto-created from Quo ${type}`,
-  });
 
-  // Seed grade + timeline from the summary, only filling blanks.
-  if (lead?.id && summaryText) {
-    const patch: any = {};
-    if (!lead.lead_grade) { const g = seedGrade(summaryText); if (g) patch.lead_grade = g; }
-    if (!lead.ready_timeline) { const tl = detectTimeline(richText); if (tl) patch.ready_timeline = tl; }
-    if (!lead.path_preference) { const p = detectPath(richText); if (p !== "unspecified") patch.path_preference = p; }
-    if ((lead.pipeline_stage || "new") === "new") patch.pipeline_stage = "contacted";
-    if (Object.keys(patch).length) await sb.from("leads").update(patch).eq("id", lead.id);
-  }
-  // 2026-09-20: any completed call — Amanda dialing out, or an answered inbound call —
-  // is a contact even when no Sona summary ever arrives. Before this, a lead stayed
-  // "new" (and read as uncontacted on the KPI page) unless a summary event fired.
-  if (lead?.id && type === "call.completed" && (lead.pipeline_stage || "new") === "new") {
-    const st = status.toLowerCase();
-    const connected = direction === "outbound" || st === "completed" || !!answeredAt || durationSec > 0;
-    if (connected) await sb.from("leads").update({ pipeline_stage: "contacted" }).eq("id", lead.id);
-  }
-
-  // ONE communications row per call_id; transcript + summary merge into it.
-  let existing: any = null;
-  if (callId) {
-    const { data } = await sb.from("communications").select("id,body,metadata,duration_seconds")
-      .eq("channel", "call").filter("metadata->>call_id", "eq", callId).maybeSingle();
-    existing = data;
-  }
-  const baseBody = summaryText || (existing?.body) ||
-    (status.toLowerCase().includes("miss") || status.toLowerCase().includes("no-answer") ? "[Missed call]" : "[Call]");
-  const mergedMeta = {
-    ...(existing?.metadata || {}),
-    call_id: callId, status, direction, duration_seconds: durationSec || existing?.metadata?.duration_seconds || 0,
-    recording_url: recordingUrl || existing?.metadata?.recording_url || null,
-    transcript: transcriptText || existing?.metadata?.transcript || null,
-    summary: summaryText || existing?.metadata?.summary || null,
-    last_event: type, extracted,
-    answered_at: answeredAt || existing?.metadata?.answered_at || null,
-    completed_at: completedAt || existing?.metadata?.completed_at || null,
-  };
-  if (existing) {
-    await sb.from("communications").update({
-      body: baseBody, duration_seconds: durationSec || existing.duration_seconds || null, metadata: mergedMeta,
-    }).eq("id", existing.id);
-  } else {
-    await sb.from("communications").insert({
-      contact_phone: external || from, contact_name: extracted.firstName || lead?.first_name || null,
-      contact_email: extracted.email || lead?.email || null,
-      channel: "call", direction, body: baseBody, source: "quo",
-      duration_seconds: durationSec || null, related_lead_id: lead?.id || null, metadata: mergedMeta,
+  // Lead: only from a real number this event names. Never guessed.
+  let lead: any = null;
+  if (external) {
+    lead = await upsertLeadByPhone(sb, external, {
+      firstName: extracted.firstName, email: extracted.email, source: "quo_call",
+      note: `Auto-created from Quo ${type}`,
     });
   }
 
-  // One admin task per call, on the completion event.
-  if (type === "call.completed") {
-    // A missing duration is NOT evidence of a missed call. Status is
-    // authoritative here and answeredAt is the fallback.
-    const st = status.toLowerCase();
-    const missed = st.includes("miss") || st.includes("no-answer") ||
-      (st !== "completed" && !answeredAt);
+  const st = status.toLowerCase();
+  const isCompletion = type === "call.completed";
+  const missed = st.includes("miss") || st.includes("no-answer") || (st !== "" && st !== "completed" && !answeredAt);
+  const defaultBody: string | null = isCompletion ? (missed ? "[Missed call]" : "[Call]") : null;
+
+  if (!callId) {
+    // No id to merge on. Keep the record anyway.
+    await sb.from("communications").insert({
+      contact_phone: external || null, contact_name: extracted.firstName || lead?.first_name || null,
+      contact_email: extracted.email || lead?.email || null, channel: "call",
+      direction: direction || "inbound", body: summaryText || defaultBody || "[Call]", source: "quo",
+      duration_seconds: durationSec || null, related_lead_id: lead?.id || null,
+      metadata: { status, direction, duration_seconds: durationSec, summary: summaryText || null,
+        transcript: transcriptText || null, last_event: type, extracted, no_call_id: true },
+    });
+    return json({ ok: true, type, call_id: null, lead_id: lead?.id || null });
+  }
+
+  // Only the keys this event actually knows. The database merges them in.
+  const patch: Record<string, unknown> = { call_id: callId, last_event: type };
+  if (status) patch.status = status;
+  if (direction) patch.direction = direction;
+  if (durationSec) patch.duration_seconds = durationSec;
+  if (recordingUrl) patch.recording_url = recordingUrl;
+  if (transcriptText) patch.transcript = transcriptText;
+  if (summaryText) patch.summary = summaryText;
+  if (answeredAt) patch.answered_at = answeredAt;
+  if (completedAt) patch.completed_at = completedAt;
+  if (extracted.firstName || extracted.email) patch.extracted = extracted;
+
+  const { data: res, error: rpcErr } = await sb.rpc("upsert_call_event", {
+    p_call_id: callId, p_patch: patch,
+    p_summary_body: summaryText || null, p_default_body: defaultBody,
+    p_duration: durationSec ? Math.round(durationSec) : null, p_direction: direction,
+    p_phone: external || null, p_lead: lead?.id || null,
+    p_name: extracted.firstName || lead?.first_name || null,
+    p_email: extracted.email || lead?.email || null,
+  });
+  if (rpcErr) throw new Error(`upsert_call_event failed: ${rpcErr.message}`);
+  const tied = !!res?.tied;              // true for exactly one event per call: the one that first named the caller
+  const rowLeadId: string | null = res?.lead_id || lead?.id || null;
+  const rowSummary: string = summaryText || res?.summary || "";
+
+  // Seed grade + timeline from the Sona summary onto the lead the call belongs
+  // to, only filling blanks. Runs when this event brings the summary, or when
+  // this event ties the caller to a summary that arrived first.
+  if (rowLeadId && rowSummary && (summaryText || tied)) {
+    let leadRow: any = lead?.id === rowLeadId ? lead : null;
+    if (!leadRow) {
+      const { data } = await sb.from("leads").select("*").eq("id", rowLeadId).limit(1);
+      leadRow = data?.[0] || null;
+    }
+    if (leadRow) {
+      const seedText = `${rowSummary}\n${transcriptText}`.trim();
+      const p: any = {};
+      if (!leadRow.lead_grade) { const g = seedGrade(rowSummary); if (g) p.lead_grade = g; }
+      if (!leadRow.ready_timeline) { const tl = detectTimeline(seedText); if (tl) p.ready_timeline = tl; }
+      if (!leadRow.path_preference) { const pp = detectPath(seedText); if (pp !== "unspecified") p.path_preference = pp; }
+      if ((leadRow.pipeline_stage || "new") === "new") p.pipeline_stage = "contacted";
+      if (Object.keys(p).length) await sb.from("leads").update(p).eq("id", leadRow.id);
+    }
+  }
+
+  // One admin task per call: on completion, by the event that first tied the
+  // call to a real PDA caller. Duplicates and sub-events create none.
+  if (isCompletion && tied) {
     await sb.from("admin_tasks").insert({
-      title: `📞 ${missed ? "Missed call" : "Call"} from ${extracted.firstName || external || from} — review`,
+      title: `📞 ${missed ? "Missed call" : "Call"} from ${extracted.firstName || lead?.first_name || external} — review`,
       notes: [
-        `Call ${callId || "(no id)"} · ${direction} · ${status || "completed"} · ${durationSec}s`,
+        `Call ${callId} · ${direction || "inbound"} · ${status || "completed"} · ${durationSec}s`,
         extracted.email ? `Email captured: ${extracted.email}` : null,
         `Sona summary will attach when it arrives. Open the lead in the office to grade + set next action.`,
       ].filter(Boolean).join("\n"),
-      priority: 1, status: "open", related_phone: external || from, related_lead_id: lead?.id || null,
+      priority: 1, status: "open", related_phone: external, related_lead_id: rowLeadId,
     });
   }
 
-  return json({ ok: true, type, call_id: callId, direction, lead_id: lead?.id, merged: !!existing });
+  return json({ ok: true, type, call_id: callId, direction, line, lead_id: rowLeadId, created: !!res?.created, tied });
 }
 
 // ============================ SMS EVENTS ============================
@@ -291,7 +376,10 @@ function classify(text: string): { intent: string; confidence: "high" | "low"; r
 }
 
 async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
-  const fromPhone: string = obj.from || obj.from_number || obj.sender || obj.phone || "";
+  // Not our line (The LeadFlow Pro shares the workspace): not a dental lead.
+  if (lineOf(obj) === "other") return json({ ok: true, skipped: "not the PDA line" });
+
+  const fromPhone: string = asPhone(obj.from || obj.from_number || obj.sender || obj.phone || "");
   const text: string = obj.body || obj.text || obj.message || obj.content || "";
   const direction: string = obj.direction || "";
   const phoneNumberId: string = obj.phoneNumberId || obj.phone_number_id || "";
@@ -301,38 +389,36 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
   // The same message arrives on more than one event (sent, delivered). One row.
   if (msgId) {
     const { data: dup } = await sb.from("communications").select("id")
-      .eq("channel", "sms").filter("metadata->>msg_id", "eq", msgId).maybeSingle();
-    if (dup) return json({ ok: true, skipped: "already logged", msg_id: msgId });
+      .eq("channel", "sms").filter("metadata->>msg_id", "eq", msgId).limit(1);
+    if (dup && dup.length) return json({ ok: true, skipped: "already logged", msg_id: msgId });
   }
 
   // OUTBOUND: log it and stop. No admin task, no auto-reply.
   // Without these rows nothing can tell "we replied and they went quiet" from
   // "nobody ever answered them", which is how a contacted lead reads as cold.
   if (direction && direction !== "incoming" && direction !== "inbound") {
-    const toPhone: string = Array.isArray(obj.to) ? (obj.to[0] || "") : (obj.to || obj.to_number || "");
+    const toPhone: string = Array.isArray(obj.to) ? asPhone(obj.to[0]) : asPhone(obj.to || obj.to_number || "");
     if (!toPhone || !text) return json({ ok: true, skipped: "outbound missing to or body" });
     // Look up only. Never create a lead from an outbound text: Amanda also
     // texts students, vendors and parents, and those are not leads.
-    const { data: outLead } = await sb.from("leads").select("id,first_name,email,pipeline_stage")
-      .ilike("phone", `%${digits10(toPhone)}%`).limit(1).maybeSingle();
-    await sb.from("communications").insert({
+    let outLead: any = null;
+    if (digits10(toPhone).length === 10) {
+      const { data } = await sb.from("leads").select("id,first_name,email")
+        .ilike("phone", `%${digits10(toPhone)}%`).order("created_at", { ascending: true }).limit(1);
+      outLead = data?.[0] || null;
+    }
+    const { error } = await sb.from("communications").insert({
       contact_phone: toPhone, contact_name: outLead?.first_name || null,
       contact_email: outLead?.email || null,
       channel: "sms", direction: "outbound", body: text, source: "quo",
       related_lead_id: outLead?.id || null,
       metadata: { quo_event: body.type || null, msg_id: msgId || null, logged_outbound: true },
     });
-    // 2026-09-20: a text FROM Amanda is a contact. Stamp the lead and move it out of
-    // "new" so the KPI page and the inbox stop calling a contacted lead uncontacted.
-    if (outLead?.id) {
-      const patch: any = { last_contact_at: new Date().toISOString() };
-      if ((outLead.pipeline_stage || "new") === "new") patch.pipeline_stage = "contacted";
-      await sb.from("leads").update(patch).eq("id", outLead.id);
-    }
+    if (error && String(error.code) === "23505") return json({ ok: true, skipped: "already logged", msg_id: msgId });
     return json({ ok: true, logged: "outbound sms", lead_id: outLead?.id, msg_id: msgId });
   }
 
-  if (!fromPhone || !text) return json({ ok: false, reason: "missing from or body", got: body });
+  if (!fromPhone || !text) return json({ ok: false, reason: "missing from or body" });
 
   const extracted = extractInfo(text);
   const firstName = extracted.firstName || (senderName || "").split(" ")[0] || undefined;
@@ -349,13 +435,15 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
   // ALWAYS log the inbound text. This is the core requirement: texts are
   // recorded in the DB whether or not anything replies. The SMS drip's
   // stop-on-reply gate reads these rows, so this insert must never be skipped.
-  await sb.from("communications").insert({
+  const { error: insErr } = await sb.from("communications").insert({
     contact_phone: fromPhone, contact_name: senderName || lead?.first_name || firstName || null,
     contact_email: extracted.email || lead?.email || null,
     channel: "sms", direction: "inbound", body: text, source: "quo",
     related_lead_id: lead?.id || null,
     metadata: { intent, confidence, extracted, quo_event: body.type || null, msg_id: msgId || null },
   });
+  // A concurrent duplicate delivery already logged it and filed the task.
+  if (insErr && String(insErr.code) === "23505") return json({ ok: true, skipped: "already logged", msg_id: msgId });
 
   // Auto-reply: OFF unless the kill switch is explicitly 'on'. Standing setting
   // is 'off' (Amanda replies to texts personally). We never reply during the day.
@@ -407,7 +495,38 @@ Deno.serve(async (req) => {
   const type: string = (body.type || body.event || body.event_name || "").toLowerCase();
   const obj = body?.data?.object || body?.object || body;
 
-  if (type.startsWith("call.")) return handleCall(sb, type, obj, body);
-  // Everything else is treated as an inbound message (message.received / legacy).
-  return handleSms(sb, obj, body);
+  // One delivery per Quo event. The v3 and v4 subscriptions send the same event
+  // id; whichever copy claims it first does the work, the other stops here.
+  // Fails open: if the claim table is unreachable, process the event anyway.
+  let claimed = false;
+  if (body.id) {
+    const { error: claimErr } = await sb.from("quo_webhook_events").insert({ evt: String(body.id), type });
+    if (claimErr && String(claimErr.code) === "23505") {
+      return json({ ok: true, skipped: "duplicate delivery", evt: body.id, type });
+    }
+    claimed = !claimErr;
+  }
+
+  // Shape log, no phone numbers or message text: which event, which line, which
+  // payload version. This is how the duplicate subscriptions were found.
+  try {
+    console.log(JSON.stringify({
+      evt: body.id || null, type, api: body.apiVersion || null,
+      pn: obj.phoneNumberId || obj.phone_number_id || null, line: lineOf(obj),
+      has_from: !!(obj.from || obj.from_number), has_to: !!(obj.to || obj.to_number),
+      n_participants: Array.isArray(obj.participants) ? obj.participants.length : null,
+      call_id: obj.callId || (type.startsWith("call.") ? obj.id : null) || null,
+    }));
+  } catch (_) { /* never block on logging */ }
+
+  try {
+    if (type.startsWith("call.")) return await handleCall(sb, type, obj, body);
+    // Everything else is treated as an inbound message (message.received / legacy).
+    return await handleSms(sb, obj, body);
+  } catch (e) {
+    // Release the claim so Quo's retry of this event is processed, not skipped.
+    console.error(JSON.stringify({ evt: body.id || null, type, error: String((e as Error)?.message || e) }));
+    if (claimed) await sb.from("quo_webhook_events").delete().eq("evt", String(body.id));
+    return json({ ok: false, error: "processing failed, will retry" }, 500);
+  }
 });
