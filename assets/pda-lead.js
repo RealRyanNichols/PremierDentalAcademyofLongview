@@ -127,7 +127,8 @@
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (j) {
         if (!r.ok || !j || j.ok !== true) throw new Error('api ' + r.status + ' ' + ((j && (j.error || j.message)) || ''));
-        return j.via || 'api';
+        var via = j.via || 'api';
+        return { via: via, persisted: j.persisted === true || (j.persisted == null && (via === 'db' || via === 'duplicate')), delivery: j.delivery || (via === 'email' ? 'email' : 'database') };
       });
     });
   }
@@ -175,9 +176,9 @@
     opts = opts || {};
     var row = normalize(lead);
     var errors = [];
-    return viaApi(row).then(function (via) { return { ok: true, via: via, row: row }; }, function (e) {
+    return viaApi(row).then(function (result) { return { ok: true, via: result.via, persisted: result.persisted, delivery: result.delivery, row: row }; }, function (e) {
       errors.push('api: ' + (e && e.message));
-      return viaRest(row).then(function (via) { return { ok: true, via: via, row: row }; }, function (e2) {
+      return viaRest(row).then(function (via) { return { ok: true, via: via, persisted: true, delivery: 'database', row: row }; }, function (e2) {
         errors.push('rest: ' + (e2 && e2.message));
         stash(row);
         try { console.error('[pda-lead] lead NOT saved — shown to visitor as an error', errors); } catch (e3) {}
@@ -234,7 +235,9 @@
     var idleLabel = button ? button.textContent : '';
     var honeypot = cfg.honeypot === false ? null : (cfg.honeypot || 'company');
     function succeed(result) {
-      try { if (cfg.event && root.PDA && root.PDA.track) root.PDA.track(cfg.event, Object.assign({ saved: true, via: result.via }, cfg.eventProps || {})); } catch (e) {}
+      // Keep saved=true's existing receipt/notification semantics; databaseSaved
+      // is the explicit persistence signal. Email-only success must not retry.
+      try { if (cfg.event && root.PDA && root.PDA.track) root.PDA.track(cfg.event, Object.assign({ saved: true, via: result.via, databaseSaved: result.persisted === true, delivery: result.delivery || 'none' }, cfg.eventProps || {})); } catch (e) {}
       if (typeof cfg.onSuccess === 'function') { try { cfg.onSuccess(result); } catch (e) {} }
       if (cfg.redirect) { location.href = cfg.redirect; return; }
       if (cfg.successEl) { form.classList.add('hidden'); form.hidden = true; cfg.successEl.classList.remove('hidden'); cfg.successEl.hidden = false; }

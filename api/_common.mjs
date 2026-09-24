@@ -18,10 +18,33 @@ export const PUBLISHABLE_KEY =
 export const SITE_URL =
   process.env.SITE_URL || 'https://www.premierdentalacademyoflongview.com';
 
-function serviceKey() {
+export function serviceConfigurationError() {
+  const err = new Error('Supabase service credential is unavailable or invalid');
+  err.code = 'SUPABASE_SERVICE_CONFIGURATION_ERROR';
+  err.status = 503;
+  return err;
+}
+
+// Reject placeholders, public keys and user JWTs before privileged requests.
+// This is configuration validation, NOT signature verification/provider acceptance.
+export function serviceKey() {
   const k = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!k) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set');
-  return k;
+  if (typeof k !== 'string' || k.length > 4096) throw serviceConfigurationError();
+  if (/^sb_secret_[A-Za-z0-9_-]{20,}$/.test(k)) return k;
+  if (/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(k)) {
+    try {
+      const parts = k.split('.');
+      const decoded = parts.map((p) => Buffer.from(p, 'base64url'));
+      if (decoded.some((p, i) => p.toString('base64url') !== parts[i])) throw serviceConfigurationError();
+      const header = JSON.parse(decoded[0].toString('utf8'));
+      const payload = JSON.parse(decoded[1].toString('utf8'));
+      const host = new URL(SUPABASE_URL).hostname;
+      const matchesProject = !host.endsWith('.supabase.co') || payload.ref === host.split('.')[0];
+      if (header.alg === 'HS256' && header.typ === 'JWT' && decoded[2].length === 32 &&
+          payload.role === 'service_role' && matchesProject && Number.isInteger(payload.exp) && payload.exp > Date.now() / 1000) return k;
+    } catch { /* Never include a credential in an error or log. */ }
+  }
+  throw serviceConfigurationError();
 }
 
 // PostgREST call with the service-role key (bypasses RLS — server only).
@@ -42,6 +65,7 @@ export async function sb(path, { method = 'GET', body, prefer, query } = {}) {
   let data = null;
   try { data = text ? JSON.parse(text) : null; } catch { data = text; }
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) throw serviceConfigurationError();
     const msg = (data && data.message) || `Supabase ${method} ${path} ${res.status}`;
     const err = new Error(msg);
     err.status = res.status;
@@ -57,6 +81,8 @@ export async function authUser(token) {
   try {
     const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
       headers: { apikey: PUBLISHABLE_KEY, Authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(10_000),
+      redirect: 'error',
     });
     if (!res.ok) return null;
     return await res.json();
