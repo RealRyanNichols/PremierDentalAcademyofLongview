@@ -1,0 +1,1064 @@
+{
+  "_readme": [
+    "Every SQL file in db/migrations and db/pending, and every migration recorded in the live supabase_migrations.schema_migrations, with how we know it is (or is not) applied.",
+    "Checked by scripts/check-migrations.mjs (npm test). \"Absent from schema_migrations\" is NOT \"unapplied\": see provenance plain_sql.",
+    "provenance: schema_migrations (applied by the migration tool; version given) | recovered (applied, file rebuilt from the live statement; body below the marker line must md5-match) | plain_sql (applied as ad-hoc SQL, no history row; evidence says how it was verified) | reconstructed (live objects that appear in no migration; definitions read back from the catalog).",
+    "After applying anything: move the file from db/pending to db/migrations, record it here with its version (or evidence), and refresh schema_migrations with `node scripts/check-migrations.mjs --print-sql` (run via MCP) + `--live <saved output>`."
+  ],
+  "project_ref": "lmbsuwslsycukynzpzik",
+  "snapshot": {
+    "checked_at": "2026-09-24T02:40:00Z",
+    "count": 148,
+    "latest_version": "20260922215442",
+    "files_required_after": "20260905042716",
+    "note": "Migrations up to 20260905042716 that have file:null predate the rule that every applied migration is committed; their statements are still in the live schema_migrations table if ever needed."
+  },
+  "files": {
+    "db/migrations/20260504_pp_simulator_tables.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260504040447",
+      "sha256": "312ff268ef713121715cadbe6423b9f063353beefc562634b3712b92ede1574e"
+    },
+    "db/migrations/20260527_exam_pro.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260527041518",
+      "sha256": "86c94a6137d4adc72e6de4234e2329cc5752e89a0013c632c3f9d243f4c0017c"
+    },
+    "db/migrations/20260604_student_feedback.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260604044822",
+      "sha256": "edca3ef735604dc7b57f12e87ee0af4a374fd2031bd7842abb16f01a3c3f85a7"
+    },
+    "db/migrations/20260607_social_proof_feed.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260607001854",
+      "sha256": "3a9a3d6c8f7502a093978d1062a717b9281b89d2f6a0cf47cbcd14cb9ee601ba"
+    },
+    "db/migrations/20260608_admin_jwt_claim.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260608211324",
+      "sha256": "41b328c1cda4d2533843700a039dded5f9a33fae3ac378bbbdbf71379db0754c"
+    },
+    "db/migrations/20260608_admin_student_progress.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260608194529",
+      "sha256": "ff058d3f7bdec0138fe1c03d7cbd9621bb09ed9356120b52e9c796b311b895f2"
+    },
+    "db/migrations/20260608_admin_student_progress_hide_test.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260608195255",
+      "sha256": "b5016906a49b663fdade52c8b6a92377046a6255f8aefd769031f03bde1e2982"
+    },
+    "db/migrations/20260608_leads_rls_fix.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "8ce9197949bc33f5131aeb1f190de5c5ca37dc4994074f91bab436a6ccd9b91d",
+      "evidence": "Checked 2026-09-24: policy \"staff can read\" is gone from public.leads; its leads_admin_update policy was later replaced by leads_owner_update (20260908232441)."
+    },
+    "db/migrations/20260620_brain_events.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260620215829",
+      "sha256": "52718d3cc76fef0489e4369bf7499bb9bfaf4ab8da20bca3a88f150e895d4182"
+    },
+    "db/migrations/20260620_portal_kajabi_pipeline.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260620210441",
+      "sha256": "17f0ffd57058516617e6ee828d5b6766406ea0e8942bdb18b747e2b0b5bbc780"
+    },
+    "db/migrations/20260621_lead_notify_trigger.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260621150513",
+      "sha256": "7abed6206b18685c71ca16aaa9f8d0d58615a96e0773febb879abb722f17b0bb"
+    },
+    "db/migrations/20260621_skills_lab_progress.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260621223105",
+      "sha256": "431255847eca0054bbe6fc79f586bf59ba68ebda92646051b658feaaa41a3e8d"
+    },
+    "db/migrations/20260702_sponsor_profiles.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260702051341",
+      "sha256": "4d1e420d2755b56783ded4f8cc2d745e2b01e55ba7fe6c70c92cd15b51387c03"
+    },
+    "db/migrations/20260702_student_questions.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260702050907",
+      "sha256": "cf2213c6fc1a0c7ecfeade582e507709c192f15a17c95158a086854a3c72c897"
+    },
+    "db/migrations/20260707_daily_stats_rollup.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260707064048",
+      "sha256": "e2a18d63cf200ad0a72e4963ce8e8d045b1bf0c447ae29161204cd33065e10a5"
+    },
+    "db/migrations/20260707_enrollment_forms.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260707070845",
+      "sha256": "b2355bdb28b548da1eae006851dbd5b5e2211d7a6b2691c5d7edbf8f3001f913"
+    },
+    "db/migrations/20260707_mini_product_entitlements.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260707062211",
+      "sha256": "8cbd11f0d2931f13f43b4f5853c2e8299a0af1c5e835c6de9797a688baf61594"
+    },
+    "db/migrations/20260707_weekly_digest_schedule.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260707064603",
+      "sha256": "12aad14a923a8976f9cc480cdf40f7fb6ea74bdd8b0f4a1fe3a67ae635f17e85"
+    },
+    "db/migrations/20260710_course_platform_admin_write.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260710023453",
+      "sha256": "ade9ccaede287396077537f7485fdaefe572ad461fb785507d39355f65807f47"
+    },
+    "db/migrations/20260710_leads_automation_trigger.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260710043307",
+      "sha256": "9a711ecd0da9748b44ee53f9473a22e03638ef0ab7e1a96384a16611d9365e48"
+    },
+    "db/migrations/20260710_public_course_catalog_view.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260710045345",
+      "sha256": "746f922fb3b40969fe2b045236a8283ccc66ac453f353a30258a5b3e4b0e7551"
+    },
+    "db/migrations/20260711_lesson_attachments.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260711201021",
+      "sha256": "bff36a4030374b600d9676f3fc5569f37e014a92adecd09c1a715a1fa64ba88b"
+    },
+    "db/migrations/20260830_career_plan_price_19.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "0efc498c1c6efcbc0a3ec71f96d169b81123de16e940b2c87e2f76805d7a1dcc",
+      "evidence": "Checked 2026-09-24: products.career_plan price_cents 1900 / reg_price_cents 4700."
+    },
+    "db/migrations/20260830_career_plan_product.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260830210245",
+      "sha256": "ed965bdc50f9ff211a9901c98f02f63d5295c55c56e070954e55e1ce506d96c6"
+    },
+    "db/migrations/20260904_communications_related_lead_id_index.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905030648",
+      "sha256": "8d65b5784f1b60474d33d6d4c3a2314bd78b272b159197d089ffd389cd4552c5"
+    },
+    "db/migrations/20260904_purchases_self_email_read.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905030652",
+      "sha256": "5d531658bcd379731b3f709a2e9ab15fa7a21dfee38c3ae039d44df6d317e9ed"
+    },
+    "db/migrations/20260905_gradebook_activity_rpcs.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905032352",
+      "sha256": "f21af4c69e9a3d818c62fce6796d7b3c07e06bf8b37840d00d075a573baffb5a"
+    },
+    "db/migrations/20260905_instructor_visibility_and_skills_verification.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905032144",
+      "sha256": "48f615c43337c35d6f7ef77101ac5816adc09f506dbf8678b1d21b295742d263"
+    },
+    "db/migrations/20260905_leads_last_contact_from_human_outbound_comms.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905032131",
+      "sha256": "2b736dcd4a50992980c313f982bf815fe773e40d9d17573150b71b852701269d"
+    },
+    "db/migrations/20260905_revoke_anon_on_staff_functions.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905032903",
+      "sha256": "560084dac14138b5e6200b8e6898cf308f542f31e6520c4db32312177518d1e6"
+    },
+    "db/migrations/20260905_revoke_execute_on_new_trigger_functions.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260905042716",
+      "sha256": "750eeef262c805da35e90764bedf56f667fef2d6fea8447a4d02de9262e37cc7"
+    },
+    "db/migrations/20260906_move_selena_to_sep29.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "473bdf9a182bf7235c9bf1f89138f1da38dde2504e38424f9058a48b0283505a",
+      "evidence": "Checked 2026-09-24: the named enrollment is on the Sept 29 cohort."
+    },
+    "db/migrations/20260906_october_cohorts.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "edbecfdf9cae4372066da12cfaa3b542b96b1217c683436159c9451e1b25cfb1",
+      "evidence": "Checked 2026-09-24: cohorts starting 2026-10-05 and 2026-10-20 exist (Oct 5 schedule since updated to the approved MWF hours)."
+    },
+    "db/migrations/20260907031944_scoreboard_public_capture_coverage.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260907031944",
+      "sha256": "31517da8364dce9bd7ef0b5cd0c803411afd593ebe73dd99aad13c74b9ba53e9",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260907_chapter34_spanish_video_removed.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "48c056585ed25cc0d955149fcbc620a62cf0ce02c76f09a904da82554af0214c",
+      "evidence": "Checked 2026-09-24: neither named lesson carries the Spanish video URL."
+    },
+    "db/migrations/20260907_charting_drill_lesson_links.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "f8cb4a72b23d0534e0ddbeeeddadeb7f523a8153ca29869379ced3f9cefcc87f",
+      "evidence": "Checked 2026-09-24: 10 lessons link to /tools/charting-drills?level=."
+    },
+    "db/migrations/20260907_no_false_assign_cohort_task.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "0b360ca98d1c10b9915a96a1688eea511e698d6efc560cf9227677ff442c0421",
+      "evidence": "Checked 2026-09-24: live auto_enroll_on_purchase() contains the \"cohort already assigned\" branch."
+    },
+    "db/migrations/20260907_quiz_intro_copy.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "c96bad03c04335fd4825b9062c3e22f9040e62d5ee40b8ae61b634df3341b866",
+      "evidence": "Checked 2026-09-24: 0 lessons still carry the \"being moved over from our previous system\" notice."
+    },
+    "db/migrations/20260908232243_roles_owner_admin_tier_and_profile_guard.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260908232243",
+      "sha256": "54c6785b1aefccbcea2fb05e4b4649c41e5ac2bf63b7b793f241634a792f6d27",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260908232441_lead_ownership_claim_and_release.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260908232441",
+      "sha256": "d9014c03ff6c7361fd14e8f1a4c283c3f0c1ee146c53dc0d125caf2ccc47e536",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260908232515_sales_commissions.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260908232515",
+      "sha256": "91d31ee2fb1be60ba404de35995853e4f6dae41895a87fa5f9b7ebfdb2ecc777",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260908232624_restrict_company_financials_to_owner.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260908232624",
+      "sha256": "19414033c7c7301d95b0a6b18730343b044ffea05abe8679efe8856fc320d2cf",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260917011407_payment_plans_and_inbox_status.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260917011407",
+      "sha256": "aff10ebaa1aeea58f592c04a1b497df95f2c8118b5ba33b2131b7f31ae9665b1",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260920_reconcile_contacted_leads.sql": {
+      "state": "applied",
+      "provenance": "plain_sql",
+      "sha256": "390478b5eb8b4dbe30ec10222eaf3a0593722232ee46cae9689fcebf4e9b5479",
+      "evidence": "Data-only (no schema object to probe). Applied 2026-09-22 per its header and CHANGELOG (333 leads new → contacted); on 2026-09-24 the table held 165 new / 511 contacted."
+    },
+    "db/migrations/20260922000000_reconstructed_live_objects_without_migration.sql": {
+      "state": "applied",
+      "provenance": "reconstructed",
+      "sha256": "fde05b784c76b85d09eb09c314f1d553aed83fee9fed3c97f58c56969ade2800",
+      "evidence": "Read back from pg_catalog and cron.job on 2026-09-24: quo_webhook_events (+ RLS, no anon/authenticated grants), communications_call_id_uniq, communications_msg_id_uniq, cron jobs prune-quo-webhook-events and pda-release-stale-leads. None appears in any migration."
+    },
+    "db/migrations/20260922215442_upsert_call_event_atomic_merge.sql": {
+      "state": "applied",
+      "provenance": "recovered",
+      "version": "20260922215442",
+      "sha256": "9e504967e2a093ab84f1783ab2b3e30a01d582a4d62af668f27194346f0a5160",
+      "recovered_at": "2026-09-24"
+    },
+    "db/migrations/20260922_revoke_anon_crm_rpcs.sql": {
+      "state": "applied",
+      "provenance": "schema_migrations",
+      "version": "20260922212153",
+      "sha256": "07a4a904f2f4083f8863f711c3865e0bff2b5896194831f6acf71e157bbb3f27"
+    },
+    "db/pending/20260917_online_price_397_promo.sql": {
+      "state": "staged",
+      "gate": "Amanda only — pricing decision",
+      "prerequisite": "ship with site-facts sale:true + api/enroll.js onlineCents 39700"
+    },
+    "db/pending/20260919_lead_notify_reliability.sql": {
+      "state": "staged",
+      "gate": "Amanda (database change + scheduled job)",
+      "prerequisite": "lead-notify accepts x-lead-secret (live v5 does); run the no-email pre-flight in the header"
+    },
+    "db/pending/20260924_close_anon_campaign_metrics.sql": {
+      "state": "staged",
+      "gate": "Amanda (permission change)",
+      "prerequisite": "none"
+    }
+  },
+  "schema_migrations": {
+    "20260502022903": {
+      "name": "pda_initial_schema",
+      "md5": "f596ff7ad723c99781bf09684ebe3777",
+      "file": null
+    },
+    "20260502220712": {
+      "name": "pda_site_storage_bucket",
+      "md5": "fa5882d5510618db17a693094c68a7bc",
+      "file": null
+    },
+    "20260504040447": {
+      "name": "pp_simulator_tables",
+      "md5": "1b80b62d2084afca347521a061b9f5fc",
+      "file": "db/migrations/20260504_pp_simulator_tables.sql"
+    },
+    "20260504064017": {
+      "name": "pda_software_integration_tables",
+      "md5": "0689613df362dc30126e0314b6764a6c",
+      "file": null
+    },
+    "20260504064649": {
+      "name": "pda_tours_hiring_software_interest",
+      "md5": "21208d4a32263cd73cecea11daafb3a2",
+      "file": null
+    },
+    "20260504145126": {
+      "name": "pda_owner_dashboard_pipeline_tasks_comms",
+      "md5": "870c7ecfe64bb7c094dea2f125908458",
+      "file": null
+    },
+    "20260504192259": {
+      "name": "fix_profiles_rls_recursion",
+      "md5": "17c5b480bea33282d6ffd1e110e68411",
+      "file": null
+    },
+    "20260504201627": {
+      "name": "pda_purchases_unify_kajabi_square_source",
+      "md5": "d47e96495281ffa7ab9582092666434e",
+      "file": null
+    },
+    "20260504205639": {
+      "name": "pda_failed_payments_table",
+      "md5": "db54d327efe3612f058a7147a2f3b53a",
+      "file": null
+    },
+    "20260505161046": {
+      "name": "pda_app_secrets_table",
+      "md5": "db6035489e4be1e72da6b4521fccfffb",
+      "file": null
+    },
+    "20260505164015": {
+      "name": "pda_security_audit_hardening",
+      "md5": "f83cd51326c8a919ecd989b2240dc1e9",
+      "file": null
+    },
+    "20260505212733": {
+      "name": "pda_lock_admin_to_hello_only",
+      "md5": "4fe14750195be28569942dac34ada5c8",
+      "file": null
+    },
+    "20260505213716": {
+      "name": "pda_student_messages_table",
+      "md5": "15dd83811bd7fbaf2a1cd556fef041f6",
+      "file": null
+    },
+    "20260505214225": {
+      "name": "pda_profiles_tags_and_setup",
+      "md5": "7e84be661678cdede7cbe33fe33b3ba1",
+      "file": null
+    },
+    "20260505214844": {
+      "name": "pda_admin_can_read_progress",
+      "md5": "e8f6222f0019fa1e0945ccc5149cf3d5",
+      "file": null
+    },
+    "20260513093557": {
+      "name": "pda_cohort_enrolled_count_trigger",
+      "md5": "d02c2bce092c1f531dcfce6fae6ed015",
+      "file": null
+    },
+    "20260513094255": {
+      "name": "pda_kajabi_hourly_cron",
+      "md5": "ad78e64b4a9c3167ac3dd03a2bd04dbb",
+      "file": null
+    },
+    "20260513134510": {
+      "name": "rebrand_eaglenest_to_chairside",
+      "md5": "e6cc1b9fe520de9dd356ab5b9dd2739e",
+      "file": null
+    },
+    "20260514063731": {
+      "name": "pda_public_stats_and_visits",
+      "md5": "826bebf630aa0a298e2bfa9af54143d4",
+      "file": null
+    },
+    "20260514203814": {
+      "name": "pp_leads_table",
+      "md5": "6024aabd1524ca660661a85fdd8a37a0",
+      "file": null
+    },
+    "20260517193355": {
+      "name": "pp_subscribers_table",
+      "md5": "3dcea271aa6a1198ec389e3600aa4821",
+      "file": null
+    },
+    "20260517194654": {
+      "name": "pp_profiles_enrichment",
+      "md5": "93fe542b043f9658b690597c2ad8a6ef",
+      "file": null
+    },
+    "20260518140513": {
+      "name": "pp_cohorts_extend_and_placements",
+      "md5": "45e4635da41cb32eb46a1670b57b4fa7",
+      "file": null
+    },
+    "20260518143310": {
+      "name": "pp_chat_messages",
+      "md5": "3b419fae50e64aeaee82da6450449a06",
+      "file": null
+    },
+    "20260518144430": {
+      "name": "pp_cohorts_payment_links",
+      "md5": "6b97d7aa5732ab85319f2ee72edcd862",
+      "file": null
+    },
+    "20260519021733": {
+      "name": "tighten_admin_rls_and_revoke_rpc",
+      "md5": "01d2afd748ae50a601c18595150265b4",
+      "file": null
+    },
+    "20260519165639": {
+      "name": "study_card_progress",
+      "md5": "4bfe968ddb5c3a553fd52e7e96467be3",
+      "file": null
+    },
+    "20260527025143": {
+      "name": "create_instructor_applications",
+      "md5": "e7c0de05a7bfd3ad27bf3c338b88380b",
+      "file": null
+    },
+    "20260527040705": {
+      "name": "create_practice_exam_attempts",
+      "md5": "96ecbba51b0153ca51edb92969924881",
+      "file": null
+    },
+    "20260527041518": {
+      "name": "exam_pro_entitlement_and_bank",
+      "md5": "8a9c5f7375401dc540f090fc6748d20e",
+      "file": "db/migrations/20260527_exam_pro.sql"
+    },
+    "20260527041620": {
+      "name": "create_feed_posts",
+      "md5": "deda023e1e7f040305674d1c16084abe",
+      "file": null
+    },
+    "20260527043116": {
+      "name": "feed_posts_add_video",
+      "md5": "8a12fd6664d51e03be27556ebe6456dc",
+      "file": null
+    },
+    "20260527043158": {
+      "name": "feed_media_storage_bucket",
+      "md5": "378c63e6f16d3c8360e52fafb270d852",
+      "file": null
+    },
+    "20260604044822": {
+      "name": "student_feedback",
+      "md5": "798af1983cc2169ce23df4e968af4935",
+      "file": "db/migrations/20260604_student_feedback.sql"
+    },
+    "20260607001854": {
+      "name": "social_proof_feed",
+      "md5": "795481940f040f43651be7fe918ceabd",
+      "file": "db/migrations/20260607_social_proof_feed.sql"
+    },
+    "20260608194529": {
+      "name": "admin_student_progress",
+      "md5": "35d0ea5da77f9b7bac313dfb04b0d674",
+      "file": "db/migrations/20260608_admin_student_progress.sql"
+    },
+    "20260608195255": {
+      "name": "admin_student_progress_hide_test",
+      "md5": "f5d635eaa9f22e5de3be50112e9ffd10",
+      "file": "db/migrations/20260608_admin_student_progress_hide_test.sql"
+    },
+    "20260608211324": {
+      "name": "sync_admin_jwt_claim",
+      "md5": "6e0c48f9a281135e2c0d9013df49e8b7",
+      "file": "db/migrations/20260608_admin_jwt_claim.sql"
+    },
+    "20260608222911": {
+      "name": "community_and_qa_layer",
+      "md5": "8fa2599969a606a7e0b8dd651843ea83",
+      "file": null
+    },
+    "20260608223005": {
+      "name": "update_my_directory_profile_rpc",
+      "md5": "c4628cfc35c546e3ddf4ee153f5497fe",
+      "file": null
+    },
+    "20260609231235": {
+      "name": "pda_assets_bucket_temp_upload",
+      "md5": "eaad9496d9b000861a3f6d646fddd477",
+      "file": null
+    },
+    "20260620210441": {
+      "name": "portal_kajabi_pipeline",
+      "md5": "f4f3e300148996dbc364761ddc14004b",
+      "file": "db/migrations/20260620_portal_kajabi_pipeline.sql"
+    },
+    "20260620215829": {
+      "name": "brain_events",
+      "md5": "736fe4cdfb8b5cb3a38dc0fcef361b35",
+      "file": "db/migrations/20260620_brain_events.sql"
+    },
+    "20260621150513": {
+      "name": "lead_notify_trigger",
+      "md5": "4affcc30405294eed492c52c49ee6c4e",
+      "file": "db/migrations/20260621_lead_notify_trigger.sql"
+    },
+    "20260621223105": {
+      "name": "skills_lab_progress",
+      "md5": "07a3c525b1f062cf47f7cd5aa6299d43",
+      "file": "db/migrations/20260621_skills_lab_progress.sql"
+    },
+    "20260702045746": {
+      "name": "course_platform_and_email_engine",
+      "md5": "e908fed47214a0ed2ad60d13a9ffefc9",
+      "file": null
+    },
+    "20260702050020": {
+      "name": "seed_courses_structure",
+      "md5": "81e750e7155490818762540434ad0804",
+      "file": null
+    },
+    "20260702050102": {
+      "name": "seed_career_vault_course",
+      "md5": "4b44f36ae672cd2fb7118dfc65880bf1",
+      "file": null
+    },
+    "20260702050400": {
+      "name": "module_progress_unique_for_upsert",
+      "md5": "5c4afbb87242a262c67c3ff33cd4f6ab",
+      "file": null
+    },
+    "20260702050907": {
+      "name": "student_questions",
+      "md5": "c291f9a5d1ceffe4b384235203065876",
+      "file": "db/migrations/20260702_student_questions.sql"
+    },
+    "20260702051341": {
+      "name": "sponsor_profiles",
+      "md5": "e469b659e5f3deae398a7d9cf01c4471",
+      "file": "db/migrations/20260702_sponsor_profiles.sql"
+    },
+    "20260703015126": {
+      "name": "add_utm_tracking_to_leads",
+      "md5": "753bf01d2e8eba0f80d28c31ee9c9680",
+      "file": null
+    },
+    "20260707025933": {
+      "name": "create_popup_events",
+      "md5": "774a2d526e3dfadc1610eaeae11fa596",
+      "file": null
+    },
+    "20260707062211": {
+      "name": "mini_product_entitlements",
+      "md5": "26207ee7c60c405864d32677290f3a62",
+      "file": "db/migrations/20260707_mini_product_entitlements.sql"
+    },
+    "20260707064048": {
+      "name": "daily_stats_rollup",
+      "md5": "1ad68b6c141813b7de132148b3a9a747",
+      "file": "db/migrations/20260707_daily_stats_rollup.sql"
+    },
+    "20260707064603": {
+      "name": "weekly_digest_schedule",
+      "md5": "974c5e1652245f5f7c3dc1fb8613f416",
+      "file": "db/migrations/20260707_weekly_digest_schedule.sql"
+    },
+    "20260707070738": {
+      "name": "add_product_workbook_data",
+      "md5": "cdd61157921428d6a446fde548fe2c84",
+      "file": null
+    },
+    "20260707070845": {
+      "name": "enrollment_forms",
+      "md5": "31d7ab22ec4e9c708144adfe1b351e0f",
+      "file": "db/migrations/20260707_enrollment_forms.sql"
+    },
+    "20260708034935": {
+      "name": "native_course_email_engine_automations",
+      "md5": "22fdc4eb8cb59c57ddbbb30cf8e635d0",
+      "file": null
+    },
+    "20260709055513": {
+      "name": "add_kajabi_source_id_columns_for_migration",
+      "md5": "a8824604a72d7b17dfba8cb8a2fb5794",
+      "file": null
+    },
+    "20260710002838": {
+      "name": "seed_original_rda_program_course",
+      "md5": "98c91fa1d6c66b235053697b04b923ac",
+      "file": null
+    },
+    "20260710003015": {
+      "name": "email_sequences_and_automations_engine",
+      "md5": "16b23d792c7d87d9dfe7d1be38411f52",
+      "file": null
+    },
+    "20260710023453": {
+      "name": "20260710_course_platform_admin_write",
+      "md5": "1fc09b3900bc195e76896b989498a339",
+      "file": "db/migrations/20260710_course_platform_admin_write.sql"
+    },
+    "20260710043307": {
+      "name": "20260710_leads_automation_trigger",
+      "md5": "820cca7a90393c75127c88c5dfe6e2b1",
+      "file": "db/migrations/20260710_leads_automation_trigger.sql"
+    },
+    "20260710045345": {
+      "name": "20260710_public_course_catalog_view",
+      "md5": "c286d8728a86fadb8095dda3198f8aad",
+      "file": "db/migrations/20260710_public_course_catalog_view.sql"
+    },
+    "20260711201021": {
+      "name": "20260711_lesson_attachments",
+      "md5": "dd2695b15f9d70c81332c3e2adf5933b",
+      "file": "db/migrations/20260711_lesson_attachments.sql"
+    },
+    "20260711203236": {
+      "name": "temp_export_inbox_policy",
+      "md5": "fa8fc73948b66b53483d83ddf385ad88",
+      "file": null
+    },
+    "20260711205138": {
+      "name": "drop_temp_export_inbox_policy",
+      "md5": "29c5f63f031700439e12764928ed67eb",
+      "file": null
+    },
+    "20260712150256": {
+      "name": "export_run2_staging_and_policies",
+      "md5": "16f9d0ede5f7497d0bd3a8e772b152e7",
+      "file": null
+    },
+    "20260712152555": {
+      "name": "export_run3_reopen_policies",
+      "md5": "6332f6bfd92a339d1ddb72b55dc5100f",
+      "file": null
+    },
+    "20260712161919": {
+      "name": "reopen_staging_for_lesson_content",
+      "md5": "bc729dbb3f82ee55994398c0ff2b7de3",
+      "file": null
+    },
+    "20260712162739": {
+      "name": "author_week1_lessons_and_quizzes",
+      "md5": "8e68b7a34c310d94336ee8105a3b7317",
+      "file": null
+    },
+    "20260712163055": {
+      "name": "author_weeks_2_3_lessons",
+      "md5": "57b3d9ce52f87c1a5a27f2a7e5a20726",
+      "file": null
+    },
+    "20260712163230": {
+      "name": "author_weeks_4_5_6_lessons",
+      "md5": "9c86f3fe68d25e5016efe20b2ba477a6",
+      "file": null
+    },
+    "20260712163400": {
+      "name": "author_weeks_7_8_lessons",
+      "md5": "85e11c4b8066dafafbb38357b6e53a3f",
+      "file": null
+    },
+    "20260712163518": {
+      "name": "author_weeks_9_10_lessons",
+      "md5": "81f1f00e26e6ba6a96dd1211c5e2e33e",
+      "file": null
+    },
+    "20260712163600": {
+      "name": "author_weeks_11_12_and_videos",
+      "md5": "8cf6f1f6f0f0617e38eb9ff002c1885a",
+      "file": null
+    },
+    "20260712163710": {
+      "name": "author_career_tool_lessons",
+      "md5": "b84ab9226aa6bc90ffc105aebee860c5",
+      "file": null
+    },
+    "20260712163928": {
+      "name": "gated_quiz_system",
+      "md5": "235db28e8fd5be1cb40dfb58fdb5eae3",
+      "file": null
+    },
+    "20260712163954": {
+      "name": "quiz_gradebook_and_progression",
+      "md5": "bfb193c877bea5c4796cbd076edb5db5",
+      "file": null
+    },
+    "20260712183019": {
+      "name": "enhance_lessons_tools_units_orientation",
+      "md5": "12cebc5e958314883e727a765b971141",
+      "file": null
+    },
+    "20260712183214": {
+      "name": "remove_self_answer_sections",
+      "md5": "fb6ec5da0432e3cb294b24dea83df09e",
+      "file": null
+    },
+    "20260712183411": {
+      "name": "defined_glossaries_weeks_1_to_4",
+      "md5": "8e9d35a9e60536154d08d032a20a6ed0",
+      "file": null
+    },
+    "20260712183648": {
+      "name": "deepen_week1_ch345_gold_standard",
+      "md5": "c563052385ed8a7e847c2187e8d6b257",
+      "file": null
+    },
+    "20260712183844": {
+      "name": "feedback_tutor_missed_v2",
+      "md5": "e9c35a57179be9afe78771aece5679d6",
+      "file": null
+    },
+    "20260712184350": {
+      "name": "wire_interactive_widgets",
+      "md5": "507fe17b242c9b0728b9db851f57e24d",
+      "file": null
+    },
+    "20260712192242": {
+      "name": "ungraded_practice_checks",
+      "md5": "6a5493c50ef8e4ec984830b4532d16b4",
+      "file": null
+    },
+    "20260712193439": {
+      "name": "embed_tooth_classes_diagram_ch11",
+      "md5": "a5b1aa3c16f981a0f5053dfb07587ed9",
+      "file": null
+    },
+    "20260712220654": {
+      "name": "20260712_admin_alerts_emailed_at",
+      "md5": "3efe37344e0927c5dee59f0333d307d6",
+      "file": null
+    },
+    "20260712220928": {
+      "name": "20260712_public_testimonials_view",
+      "md5": "5616241ec267f0e3426ab3bf0b57c41e",
+      "file": null
+    },
+    "20260713232130": {
+      "name": "email_sends_nullable_campaign_id_for_sequence_sends",
+      "md5": "62b8d2466015ff4fb52235b735d6af2c",
+      "file": null
+    },
+    "20260714004101": {
+      "name": "sms_drip_engine_tables",
+      "md5": "529000ff9541ce08faed64357fb98687",
+      "file": null
+    },
+    "20260714004254": {
+      "name": "auto_enroll_leads_sms_drip",
+      "md5": "02ee1025309b084722a40e167cd4a45e",
+      "file": null
+    },
+    "20260714013607": {
+      "name": "sms_enroll_exclude_students",
+      "md5": "ccf3201a084616ab1f0827c99f7d4af3",
+      "file": null
+    },
+    "20260714032006": {
+      "name": "enrollments_crm_seat_columns",
+      "md5": "4da1dc2b425219f97283185f4f195063",
+      "file": null
+    },
+    "20260716054534": {
+      "name": "add_meta_conversion_tracking",
+      "md5": "bacbb592aef1025de12cb3b6c902a97d",
+      "file": null
+    },
+    "20260717034709": {
+      "name": "add_instructor_role",
+      "md5": "9b6b2a97f4dd69dfe37ec34fed35ae9e",
+      "file": null
+    },
+    "20260717034932": {
+      "name": "admin_student_progress_allow_instructors",
+      "md5": "58431bccd4850b96585df06d826598e1",
+      "file": null
+    },
+    "20260717035709": {
+      "name": "lock_lessons_until_cohort_start",
+      "md5": "e4f23fcbaebdf67abf2baeaf6c428f60",
+      "file": null
+    },
+    "20260717041038": {
+      "name": "enrollments_admin_write",
+      "md5": "6949d819f0442a0d178ede18ee4e9b69",
+      "file": null
+    },
+    "20260717042327": {
+      "name": "purchases_admin_write",
+      "md5": "8ea0542141d7c376e08d281de71c38b3",
+      "file": null
+    },
+    "20260717045602": {
+      "name": "class_lock_ignores_online_cohorts",
+      "md5": "c316e972df9d91c396986301b7185c1e",
+      "file": null
+    },
+    "20260719161108": {
+      "name": "secure_sms_tables_rls",
+      "md5": "5555543bc522ea719f95f76895f21fa3",
+      "file": null
+    },
+    "20260720014716": {
+      "name": "fb_lead_sms_enrollment_backstop",
+      "md5": "6b0eed3b3032133f929ff353fdc4c9e6",
+      "file": null
+    },
+    "20260720144252": {
+      "name": "backup_lesson_content_before_textbook",
+      "md5": "fddefd87e419ad695ebc1286fd3d42f7",
+      "file": null
+    },
+    "20260720144700": {
+      "name": "enable_http_and_textbook_staging_bucket",
+      "md5": "f7405e68a0c23070fdacc63ca01f4239",
+      "file": null
+    },
+    "20260720145954": {
+      "name": "revoke_textbook_import_staging",
+      "md5": "8d47169e7cf498a1702961d30d0f7484",
+      "file": null
+    },
+    "20260721055310": {
+      "name": "temp_quiz_import_staging",
+      "md5": "998ec4cbdbb155417e783581be16b841",
+      "file": null
+    },
+    "20260721055740": {
+      "name": "revoke_quiz_import_staging",
+      "md5": "19eb557d1d3fefba2025f0af3f157bb7",
+      "file": null
+    },
+    "20260721130420": {
+      "name": "temp_wk34_import_staging",
+      "md5": "f6abb8191774128753401c10fa350247",
+      "file": null
+    },
+    "20260721130623": {
+      "name": "revoke_wk34_import_staging",
+      "md5": "5df482eb7794f6d5f0e647886a6024da",
+      "file": null
+    },
+    "20260721142206": {
+      "name": "auto_enroll_online_program_purchasers",
+      "md5": "d67589f79c7a785f0c674d6a57773c67",
+      "file": null
+    },
+    "20260731034427": {
+      "name": "sponsor_tree",
+      "md5": "704e92baac6e74c759c7d1f1961be267",
+      "file": null
+    },
+    "20260731034513": {
+      "name": "sponsor_rollup_revoke_execute",
+      "md5": "4c10608d0674deba285cdf714ee9658d",
+      "file": null
+    },
+    "20260731040013": {
+      "name": "sponsorships_square_payment_uq_plain",
+      "md5": "758bbf9dc2850e6f27e4d7244bc41df0",
+      "file": null
+    },
+    "20260802204922": {
+      "name": "sms_drip_reliability_and_instant_text",
+      "md5": "b4153e28fd1597d05a49f06f9abe9738",
+      "file": null
+    },
+    "20260808014941": {
+      "name": "sms_drip_student_exclusion_guardrails",
+      "md5": "591610a6dc50d4352ddb2e46650eb20e",
+      "file": null
+    },
+    "20260808015002": {
+      "name": "sms_subscriptions_unique_active_phone",
+      "md5": "a126e435dd93bb9b011be5ecfe18f84c",
+      "file": null
+    },
+    "20260808015350": {
+      "name": "lock_down_do_not_market_view",
+      "md5": "7936d6d4df6e44b7930562d7dcedfe8c",
+      "file": null
+    },
+    "20260808025449": {
+      "name": "kajabi_contacts_staging",
+      "md5": "5a2908b4cfba680505f0bf6dc3a0d6a0",
+      "file": null
+    },
+    "20260811190458": {
+      "name": "lead_stage_sync_and_meta_stage_log",
+      "md5": "d968c51954bcf08ec4fb59c568eb6bb1",
+      "file": null
+    },
+    "20260811205940": {
+      "name": "course_translations_and_language_preference",
+      "md5": "c7bc3c11cf720b55ca4ef925caab695e",
+      "file": null
+    },
+    "20260816202210": {
+      "name": "add_online_program_flag_to_profiles",
+      "md5": "86e1fe93b72e9387205e8f2f813a8c3e",
+      "file": null
+    },
+    "20260816205702": {
+      "name": "enable_rls_import_candidates_aug2026",
+      "md5": "d2eea429d2c16bc2f31cc101a166dd7c",
+      "file": null
+    },
+    "20260822183403": {
+      "name": "create_lesson_reports",
+      "md5": "faae5b4395f3237f5d7a49f7e0727288",
+      "file": null
+    },
+    "20260822191221": {
+      "name": "create_content_drafts",
+      "md5": "a10d2fa9936b1e23d84aa54bf216f40c",
+      "file": null
+    },
+    "20260822195147": {
+      "name": "security_hardening_20260822",
+      "md5": "3f2ad4ced2059e71f3a4dc630afcf9a6",
+      "file": null
+    },
+    "20260822195259": {
+      "name": "security_hardening_20260822_public_revoke",
+      "md5": "3d672f6a9f707c79807bd70da571f7a5",
+      "file": null
+    },
+    "20260822212837": {
+      "name": "webhook_rate_limit",
+      "md5": "6ae74a68c03c56e16435f8da8de0f056",
+      "file": null
+    },
+    "20260826033823": {
+      "name": "campaign_performance_view",
+      "md5": "77ed7d0e03defe0a02c78d4dab693029",
+      "file": null
+    },
+    "20260830210245": {
+      "name": "career_plan_product",
+      "md5": "9dfead03e078069ed7fe7ac1bb6ca32b",
+      "file": "db/migrations/20260830_career_plan_product.sql"
+    },
+    "20260831004133": {
+      "name": "exam_intent_nurture_autoenroll",
+      "md5": "c9658e5ea3e24e05e1e167b1afe67bb1",
+      "file": null
+    },
+    "20260903020129": {
+      "name": "scoreboard_public_daily",
+      "md5": "852172224e809f1567347eba970712ec",
+      "file": null
+    },
+    "20260905030648": {
+      "name": "communications_related_lead_id_index",
+      "md5": "cad2be27432323b423b541c4ff9c67a9",
+      "file": "db/migrations/20260904_communications_related_lead_id_index.sql"
+    },
+    "20260905030652": {
+      "name": "purchases_self_email_read",
+      "md5": "9e8d10008f27373e34ef17ead2096ce4",
+      "file": "db/migrations/20260904_purchases_self_email_read.sql"
+    },
+    "20260905032131": {
+      "name": "leads_last_contact_from_human_outbound_comms",
+      "md5": "66cc53f6b6a20827c8153bc94cee3017",
+      "file": "db/migrations/20260905_leads_last_contact_from_human_outbound_comms.sql"
+    },
+    "20260905032144": {
+      "name": "instructor_visibility_and_skills_verification",
+      "md5": "a2bae4e98b02ff054bde4fcb8b12a097",
+      "file": "db/migrations/20260905_instructor_visibility_and_skills_verification.sql"
+    },
+    "20260905032352": {
+      "name": "gradebook_activity_rpcs",
+      "md5": "56de765c6244c2d0d94efa3cded092a8",
+      "file": "db/migrations/20260905_gradebook_activity_rpcs.sql"
+    },
+    "20260905032903": {
+      "name": "revoke_anon_on_staff_functions",
+      "md5": "48c433845eec259e54f0c30840dcc2a5",
+      "file": "db/migrations/20260905_revoke_anon_on_staff_functions.sql"
+    },
+    "20260905042716": {
+      "name": "revoke_execute_on_new_trigger_functions",
+      "md5": "3afd20bd5f967a13e9d8ccf0f66d2821",
+      "file": "db/migrations/20260905_revoke_execute_on_new_trigger_functions.sql"
+    },
+    "20260907031944": {
+      "name": "scoreboard_public_capture_coverage",
+      "md5": "106d5cf5deadb59985a8084929a5fdfe",
+      "file": "db/migrations/20260907031944_scoreboard_public_capture_coverage.sql"
+    },
+    "20260908232243": {
+      "name": "roles_owner_admin_tier_and_profile_guard",
+      "md5": "5dd6b3dd8513353c57e862f0a670f914",
+      "file": "db/migrations/20260908232243_roles_owner_admin_tier_and_profile_guard.sql"
+    },
+    "20260908232441": {
+      "name": "lead_ownership_claim_and_release",
+      "md5": "3c8e8c644de7a06d021a82ba833dd76f",
+      "file": "db/migrations/20260908232441_lead_ownership_claim_and_release.sql"
+    },
+    "20260908232515": {
+      "name": "sales_commissions",
+      "md5": "c56de050c943650018a32bac49ad1583",
+      "file": "db/migrations/20260908232515_sales_commissions.sql"
+    },
+    "20260908232624": {
+      "name": "restrict_company_financials_to_owner",
+      "md5": "25d0711d5d1db5f0faa1eead65babdc6",
+      "file": "db/migrations/20260908232624_restrict_company_financials_to_owner.sql"
+    },
+    "20260917011407": {
+      "name": "payment_plans_and_inbox_status",
+      "md5": "737fa08db587390b4aa348a29e190c7d",
+      "file": "db/migrations/20260917011407_payment_plans_and_inbox_status.sql"
+    },
+    "20260922212153": {
+      "name": "revoke_anon_crm_rpcs_and_fix_release_lead_guard",
+      "md5": "714bf4a8f11203f86da159283bc6b1f3",
+      "file": "db/migrations/20260922_revoke_anon_crm_rpcs.sql"
+    },
+    "20260922215442": {
+      "name": "upsert_call_event_atomic_merge",
+      "md5": "5b6b250cd3dca3f351271ce55068c077",
+      "file": "db/migrations/20260922215442_upsert_call_event_atomic_merge.sql"
+    }
+  }
+}

@@ -1,3 +1,14 @@
+// >>> DRIFT-STATUS: diverged — record: supabase/functions/DEPLOYED.json >>>
+// !! THIS IS NOT THE LIVE CHECKOUT — DO NOT DEPLOY THIS FILE (checked 2026-09-24) !!
+// Live is v6 (deployed 2026-08-16). Neither copy contains the other:
+//   live v6 has, this file lacks: www SITE_URL; online_program also unlocks exam_pro +
+//     study_pack + exam_prep; each flag granted separately; profile row upserted first.
+//   this file has, live lacks: buyer automations (subscriber upsert, buyer_<flag> tag,
+//     purchase rules), the enrolled-member check for online_program, and the /learn?c=
+//     course link in the access email.
+// Deploying this file would drop the online bundle from paying customers. This is payment
+// code: reconcile it on the live v6 source (get_edge_function) in its own reviewed change.
+// <<< DRIFT-STATUS <<<
 // buy-product v2 (deployed 2026-07-10; v1 captured from production 2026-07-07).
 // This file is the deployed source of truth — if you change it, redeploy via
 // Supabase MCP/CLI.

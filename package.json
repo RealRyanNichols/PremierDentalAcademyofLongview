@@ -15,7 +15,7 @@
     "check:pricing": "node scripts/check-pricing.mjs",
     "check:labor-day": "node scripts/check-labor-day.mjs",
     "check:enroll-promo": "node scripts/check-enroll-promo.mjs",
-    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-claims.mjs && node scripts/check-dates.mjs && node scripts/check-date-display.mjs && node scripts/check-labor-day.mjs && node scripts/check-enroll-promo.mjs && node scripts/check-plan-math.mjs && node scripts/check-lead-api.mjs && node scripts/check-go.mjs && node scripts/check-tutor-api.mjs",
+    "test": "node scripts/check-facts.mjs && node scripts/check-links.mjs && node scripts/check-analytics.mjs && node scripts/check-seo.mjs && node scripts/check-a11y.mjs && node scripts/check-sitemap.mjs && node scripts/check-pricing.mjs && node scripts/check-claims.mjs && node scripts/check-dates.mjs && node scripts/check-date-display.mjs && node scripts/check-labor-day.mjs && node scripts/check-enroll-promo.mjs && node scripts/check-plan-math.mjs && node scripts/check-lead-api.mjs && node scripts/check-go.mjs && node scripts/check-tutor-api.mjs && node scripts/check-edge-drift.mjs && node scripts/check-edge-behavior.mjs && node scripts/check-migrations.mjs",
     "check:dates": "node scripts/check-dates.mjs",
     "check:date-display": "node scripts/check-date-display.mjs",
     "og": "node scripts/generate-og.mjs",
@@ -25,6 +25,9 @@
     "check:lead-api": "node scripts/check-lead-api.mjs",
     "check:go": "node scripts/check-go.mjs",
     "check:tutor-api": "node scripts/check-tutor-api.mjs",
-    "test:e2e": "node scripts/e2e-smoke.mjs"
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "check:edge-drift": "node scripts/check-edge-drift.mjs",
+    "check:edge-behavior": "node scripts/check-edge-behavior.mjs",
+    "check:migrations": "node scripts/check-migrations.mjs"
   }
 }

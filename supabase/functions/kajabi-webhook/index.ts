@@ -18,6 +18,8 @@
 //                          the legacy literal below if the row isn't set yet.
 //   RESEND_API_KEY         transactional email
 // Platform-provided: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
+// July 16, 2026: SITE_URL switched to the www canonical host (apex now 308-redirects
+// to www; Supabase auth redirect allow-list includes both, wildcarded).
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
@@ -25,7 +27,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_FROM_ENV = Deno.env.get("RESEND_API_KEY");
-const SITE_URL = "https://premierdentalacademyoflongview.com";
+const SITE_URL = "https://www.premierdentalacademyoflongview.com";
 const KAJABI_LIBRARY = "https://premierdentalacademyoflongview.mykajabi.com/library";
 const FROM = "Amanda at Premier Dental Academy <hello@premierdentalacademyoflongview.com>";
 
