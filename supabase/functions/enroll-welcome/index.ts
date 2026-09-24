@@ -1,151 +1,85 @@
-// enroll-welcome — sends a student their enrollment WELCOME email (chosen start
-// date + school supply list) via Resend. Mirrors lead-notify's secret-gated,
-// fail-safe pattern. Intended to be called fire-and-forget from api/enroll.js
-// AFTER a successful Square charge (see docs/enroll-welcome-runbook.md), so it can
-// never affect the buyer's checkout result.
-//
-// Auth: requires ?secret=<ENROLL_WELCOME_SECRET> (from public.app_secrets), same
-// shape as LEAD_NOTIFY_SECRET. verify_jwt is off (called server-side).
-// Secrets (public.app_secrets): RESEND_API_KEY, ENROLL_WELCOME_SECRET.
-// Platform-provided: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY.
-//
-// Expected JSON body:
-//   { name, email, plan ("in-person"|"online"), startDate ("YYYY-MM-DD" | ""),
-//     cohortName?, receiptUrl? }
-// Online enrollments have no class start date — the email adapts.
-
+// enroll-welcome: branded welcome (in-person gets supply list + start date) + notify hello@.
+// Public + secret-protected (body.secret == app_secrets.ENROLL_WELCOME_SECRET). Reads RESEND key from app_secrets.
+// Deduped via public.welcome_log (one welcome per email) unless body.force === true. Fail-open: a failed
+// Resend send releases the dedupe claim so a later event can retry.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND_FROM_ENV = Deno.env.get("RESEND_API_KEY");
+const SITE_URL = "https://premierdentalacademyoflongview.com";
 const FROM = "Amanda at Premier Dental Academy <hello@premierdentalacademyoflongview.com>";
-const ADMIN_EMAIL = "hello@premierdentalacademyoflongview.com";
+const TEAM_INBOX = "hello@premierdentalacademyoflongview.com";
+const SUPPLY_URL = "https://lmbsuwslsycukynzpzik.supabase.co/storage/v1/object/public/pda-assets/PDA-School-Supply-List.pdf";
 
-const json = (o: unknown, s = 200) =>
-  new Response(JSON.stringify(o), { status: s, headers: { "content-type": "application/json" } });
-const esc = (x: unknown) =>
-  String(x ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c] as string));
-function safeEqual(a: string, b: string): boolean {
-  if (a.length !== b.length) return false;
-  let o = 0;
-  for (let i = 0; i < a.length; i++) o |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  return o === 0;
-}
+const CORS = { "access-control-allow-origin": "*", "access-control-allow-headers": "authorization, content-type, apikey", "access-control-allow-methods": "POST, OPTIONS" };
+const J = (o: unknown, s = 200) => new Response(JSON.stringify(o), { status: s, headers: { ...CORS, "content-type": "application/json" } });
+const esc = (x: unknown) => String(x ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c] as string));
 
 function prettyDate(iso: string): string {
-  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) return "";
-  try {
-    return new Date(iso + "T00:00:00").toLocaleDateString("en-US", {
-      weekday: "long", month: "long", day: "numeric", year: "numeric",
-    });
-  } catch (_e) { return iso; }
-}
-
-// School supply list. PLACEHOLDER until Amanda confirms — see runbook.
-// [VERIFY: Amanda — supply list]. Keep items real; do not invent specifics.
-const SUPPLY_LIST: string[] = [
-  "A notebook + pens (or a tablet) for notes",
-  "Closed-toe, non-slip shoes for clinic days",
-  "Your photo ID for check-in on day one",
-  "A water bottle and a snack for the evening sessions",
-];
-
-function welcomeHtml(opts: {
-  firstName: string; plan: string; startDate: string; cohortName: string;
-}): string {
-  const fn = esc(opts.firstName) || "there";
-  const isOnline = opts.plan === "online";
-  const niceDate = prettyDate(opts.startDate);
-  const startBlock = isOnline
-    ? `<div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:12px;padding:16px 18px;margin:0 0 18px">
-         <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#0e7490;font-weight:700">Your program</div>
-         <div style="font-size:18px;font-weight:800;color:#155e75;margin-top:2px">Online — start any day, at your pace</div>
-         <div style="font-size:13px;color:#475569;margin-top:4px">Log in any time and begin module 1 whenever you're ready.</div>
-       </div>`
-    : `<div style="background:#ecfeff;border:1px solid #a5f3fc;border-radius:12px;padding:16px 18px;margin:0 0 18px">
-         <div style="font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#0e7490;font-weight:700">Your start date</div>
-         <div style="font-size:20px;font-weight:800;color:#155e75;margin-top:2px">${niceDate || "We'll confirm your exact date by phone"}</div>
-         ${opts.cohortName ? `<div style="font-size:13px;color:#475569;margin-top:4px">${esc(opts.cohortName)}</div>` : ""}
-         <div style="font-size:13px;color:#475569;margin-top:6px">📍 2800 Gilmer Rd, Suite 106, Longview, TX 75604</div>
-       </div>`;
-
-  const supplyItems = SUPPLY_LIST.map(
-    (s) => `<li style="margin:0 0 6px">${esc(s)}</li>`
-  ).join("");
-
-  return `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;color:#0f172a">
-  <div style="text-align:center;padding:24px 24px 8px">
-    <img src="https://www.premierdentalacademyoflongview.com/assets/logo-mark.png" alt="Premier Dental Academy of Longview" width="48" height="48" style="border-radius:10px" />
-  </div>
-  <div style="border:1px solid #e2e8f0;border-radius:14px;padding:28px 26px;margin:8px">
-    <h1 style="font-family:Georgia,serif;font-size:24px;margin:0 0 12px">You're in, ${fn}! 🎉</h1>
-    <p style="font-size:15px;line-height:1.6;color:#334155;margin:0 0 18px">Welcome to Premier Dental Academy of Longview. I'm Amanda — I'm so glad you're here. Here's everything you need to get started.</p>
-    ${startBlock}
-    <h2 style="font-size:16px;margin:0 0 8px;color:#0f172a">What to bring</h2>
-    <ul style="font-size:14px;line-height:1.6;color:#334155;margin:0 0 18px;padding-left:20px">${supplyItems}</ul>
-    <h2 style="font-size:16px;margin:0 0 8px;color:#0f172a">Next steps</h2>
-    <ol style="font-size:14px;line-height:1.6;color:#334155;margin:0 0 18px;padding-left:20px">
-      <li style="margin:0 0 6px">Set up your student account so you can reach your trainers and lessons.</li>
-      <li style="margin:0 0 6px">Explore the free <a href="https://www.premierdentalacademyoflongview.com/tools/practice-pro" style="color:#0d9488;font-weight:600">Practice Pro</a> &amp; <a href="https://www.premierdentalacademyoflongview.com/skills-lab" style="color:#0d9488;font-weight:600">Skills Lab</a> before day one.</li>
-      <li style="margin:0 0 6px">Watch for a text from us — we'll confirm details and answer any questions.</li>
-    </ol>
-    <div style="text-align:center;margin:6px 0 18px">
-      <a href="https://www.premierdentalacademyoflongview.com/dashboard" style="display:inline-block;background:#f59e0b;color:#fff;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:999px;margin:4px">Open your student hub →</a>
-    </div>
-    <p style="font-size:14px;line-height:1.6;color:#475569;margin:0">Questions? Call or text me any time at <a href="tel:+19039136444" style="color:#0d9488;font-weight:700">(903) 913-6444</a>.</p>
-    <p style="font-size:13px;color:#94a3b8;margin:18px 0 0">Premier Dental Academy of Longview · 2800 Gilmer Rd, Suite 106, Longview, TX 75604</p>
-  </div>
-</div>`;
-}
-
-async function sendEmail(apiKey: string, to: string, subject: string, html: string, bcc?: string): Promise<boolean> {
-  const payload: Record<string, unknown> = { from: FROM, to, subject, html };
-  if (bcc) payload.bcc = bcc;
-  const r = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: "Bearer " + apiKey, "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-  if (!r.ok) console.error("[enroll-welcome] Resend error", r.status, await r.text());
-  return r.ok;
+  const s = String(iso || "");
+  if (!/^\d{4}-\d{2}-\d{2}/.test(s)) return "";
+  const d = new Date(s.slice(0, 10) + "T12:00:00Z");
+  return d.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 }
 
 Deno.serve(async (req) => {
-  try {
-    const url = new URL(req.url);
-    const sb = createClient(SUPABASE_URL, SERVICE_KEY);
-    const { data: rows } = await sb.from("app_secrets").select("key,value").in("key", ["RESEND_API_KEY", "ENROLL_WELCOME_SECRET"]);
-    const cfg: Record<string, string> = {};
-    (rows || []).forEach((r: { key: string; value: string }) => (cfg[r.key] = r.value));
+  if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
+  const sb = createClient(SUPABASE_URL, SERVICE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+  const body = await req.json().catch(() => ({}));
+  const { email, first_name, last_name, phone, path, class_name, start_date, secret, force } = body as Record<string, string | boolean>;
 
-    const SECRET = cfg["ENROLL_WELCOME_SECRET"] || "";
-    const provided = url.searchParams.get("secret") || req.headers.get("x-enroll-secret") || "";
-    if (!SECRET || !safeEqual(provided, SECRET)) return json({ error: "unauthorized" }, 401);
+  const { data: rows } = await sb.from("app_secrets").select("key,value").in("key", ["ENROLL_WELCOME_SECRET", "RESEND_API_KEY"]);
+  const cfg: Record<string, string> = {}; (rows || []).forEach((r: any) => cfg[r.key] = r.value);
+  if (!secret || secret !== cfg["ENROLL_WELCOME_SECRET"]) return J({ error: "unauthorized" }, 401);
+  if (!email) return J({ error: "email required" }, 400);
+  const RESEND_API_KEY = cfg["RESEND_API_KEY"] || RESEND_FROM_ENV;
+  if (!RESEND_API_KEY) return J({ error: "RESEND_API_KEY not configured" }, 500);
 
-    const apiKey = cfg["RESEND_API_KEY"] || RESEND_FROM_ENV || "";
-    if (!apiKey) return json({ error: "missing RESEND_API_KEY" }, 200);
+  const emailKey = String(email).toLowerCase().trim();
 
-    const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
-    const email = String(body.email || "").trim();
-    if (!email) return json({ skipped: "no email" }, 200);
-
-    const name = String(body.name || "").trim();
-    const firstName = name.split(/\s+/)[0] || "";
-    const plan = String(body.plan || "").toLowerCase().includes("online") ? "online" : "in-person";
-    const startDate = String(body.startDate || "");
-    const cohortName = String(body.cohortName || "");
-
-    const sent = await sendEmail(
-      apiKey, email,
-      "Welcome to Premier Dental Academy — you're enrolled! 🎉",
-      welcomeHtml({ firstName, plan, startDate, cohortName }),
-      ADMIN_EMAIL, // bcc Amanda so she has a copy of every welcome
-    );
-    return json({ ok: true, sent }, 200);
-  } catch (e) {
-    console.error("[enroll-welcome] threw:", e);
-    return json({ error: "caught" }, 200); // never retry-storm
+  // Dedupe: one welcome per email (atomic via PK) unless force===true.
+  if (force === true) {
+    await sb.from("welcome_log").upsert({ email: emailKey, sent_at: new Date().toISOString(), meta: { path: path || null, class_name: class_name || null, start_date: start_date || null, forced: true } }, { onConflict: "email" });
+  } else {
+    const { error: claimErr } = await sb.from("welcome_log").insert({ email: emailKey, meta: { path: path || null, class_name: class_name || null, start_date: start_date || null } });
+    if (claimErr && (claimErr.code === "23505" || /duplicate key/i.test(claimErr.message || ""))) {
+      return J({ ok: true, deduped: true, email: emailKey });
+    }
   }
+
+  const isInPerson = String(path || "").toLowerCase().includes("person");
+  const planLabel = (class_name as string) || (isInPerson ? "In-Person (Longview campus)" : "Online (12-week, self-paced)");
+  const greeting = first_name ? esc(first_name) : "there";
+
+  const { data: linkData } = await sb.auth.admin.generateLink({ type: "magiclink", email: emailKey, options: { redirectTo: SITE_URL + "/dashboard" } });
+  const magicLink = linkData?.properties?.action_link || (SITE_URL + "/login");
+
+  const niceStart = prettyDate(start_date as string);
+  const startBlock = niceStart ? '<div style="background:#ecfdf5;border:1px solid #6ee7b7;border-radius:10px;padding:16px;margin-bottom:14px;"><h3 style="margin:0 0 4px;font-size:16px;color:#065f46;">🗓️ Your class start date</h3><p style="margin:0;font-size:15px;color:#064e3b;">Your <strong>' + esc(planLabel) + '</strong> class begins <strong>' + esc(niceStart) + '</strong>. Add it to your calendar — we can’t wait to meet you!</p></div>' : "";
+
+  const supplyBlock = isInPerson ? '<div style="background:#fff7ed;border:1px solid #fbbf24;border-radius:10px;padding:16px;margin-bottom:14px;"><h3 style="margin:0 0 6px;font-size:16px;color:#16294a;">📎 Your School Supply List (attached)</h3><p style="margin:0;font-size:14px;color:#1f3a63;">We’ve attached your supply list to this email — grab these before your first day on the Longview campus. Don’t forget your <strong>driver’s license</strong> and <strong>high school diploma (or equivalent)</strong>.</p></div>' : "";
+
+  const html = '<!doctype html><html><body style="font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:#f4f7fb;margin:0;padding:0;color:#16294a;"><div style="max-width:560px;margin:0 auto;padding:32px 24px;"><div style="text-align:center;padding:18px;background:#16294a;border-radius:14px 14px 0 0;"><h1 style="color:#fff;font-family:Georgia,serif;font-size:24px;margin:0;">Premier Dental Academy of Longview</h1></div><div style="background:#fff;padding:32px 28px;border-radius:0 0 14px 14px;border:1px solid #e6edf6;border-top:0;"><h2 style="font-family:Georgia,serif;color:#16294a;font-size:28px;margin:0 0 16px;">Welcome, ' + greeting + '! 👋</h2><p style="font-size:16px;line-height:1.6;margin:0 0 16px;">I’m so glad you’re here. You just took the first real step toward your career as a Registered Dental Assistant — and I’m proud of you for it.</p>' + startBlock + supplyBlock + '<div style="background:#f4f7fb;border-radius:10px;padding:18px;margin-bottom:14px;border-left:4px solid #c9a961;"><h3 style="margin:0 0 6px;font-size:16px;color:#16294a;">🎒 Your PDA Student Hub</h3><p style="margin:0 0 10px;font-size:14px;color:#1f3a63;">All your tools, practice software, mock state board exam, classmates, and direct text to me — in one place.</p><a href="' + magicLink + '" style="display:inline-block;background:#16294a;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;">Sign in to my Student Hub →</a></div><div style="background:#f4f7fb;border-radius:10px;padding:18px;margin-bottom:14px;border-left:4px solid #2b4a7a;"><h3 style="margin:0 0 6px;font-size:16px;color:#16294a;">📚 Your Course in Kajabi</h3><p style="margin:0 0 10px;font-size:14px;color:#1f3a63;">All your video lessons, quizzes, and curriculum live here. Use the same email you signed up with.</p><a href="https://premierdentalacademyoflongview.mykajabi.com/library" style="display:inline-block;background:#2b4a7a;color:#fff;text-decoration:none;padding:10px 18px;border-radius:8px;font-weight:600;font-size:14px;">Open my Kajabi courses →</a></div><p style="font-size:15px;line-height:1.6;margin:24px 0 8px;">Save my number: <strong>(903) 913-6444</strong>. Text me anytime — lost, stuck, or excited. That’s what I’m here for.</p><p style="font-size:15px;line-height:1.6;margin:24px 0 0;">Talk soon,</p><p style="font-size:18px;line-height:1.4;margin:4px 0 0;font-family:Georgia,serif;color:#16294a;"><strong>Amanda Williams</strong></p><p style="font-size:13px;line-height:1.4;margin:2px 0 0;color:#1f3a63;">Founder + Lead Instructor, PDA</p></div><div style="text-align:center;padding:18px;font-size:12px;color:#1f3a63;">Premier Dental Academy of Longview · Longview, Texas<br/><a href="mailto:hello@premierdentalacademyoflongview.com" style="color:#2b4a7a;">hello@premierdentalacademyoflongview.com</a></div></div></body></html>';
+
+  const studentPayload: Record<string, unknown> = { from: FROM, to: [emailKey], subject: "Welcome to Premier Dental Academy! Here’s where to start.", html };
+  if (isInPerson) studentPayload.attachments = [{ filename: "PDA-School-Supply-List.pdf", path: SUPPLY_URL }];
+
+  const r = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + RESEND_API_KEY, "content-type": "application/json" }, body: JSON.stringify(studentPayload) });
+  const result = await r.json().catch(() => ({}));
+
+  // Fail-open: if the send failed and this wasn't forced, release the dedupe claim so a later event retries.
+  if (!r.ok && force !== true) { await sb.from("welcome_log").delete().eq("email", emailKey); }
+
+  const adminHtml = '<div style="font-family:-apple-system,sans-serif;color:#16294a;max-width:520px;"><h2 style="margin:0 0 8px;">🎓 New enrollment</h2><table style="font-size:15px;line-height:1.7;"><tr><td style="padding-right:12px;color:#64748b;">Name</td><td><strong>' + esc((first_name || "") + " " + (last_name || "")) + '</strong></td></tr><tr><td style="padding-right:12px;color:#64748b;">Email</td><td>' + esc(emailKey) + '</td></tr><tr><td style="padding-right:12px;color:#64748b;">Phone</td><td>' + esc(phone || "—") + '</td></tr><tr><td style="padding-right:12px;color:#64748b;">Class</td><td><strong>' + esc(planLabel) + '</strong></td></tr>' + (niceStart ? '<tr><td style="padding-right:12px;color:#64748b;">Starts</td><td><strong>' + esc(niceStart) + '</strong></td></tr>' : '') + '</table><p style="font-size:13px;color:#64748b;margin-top:14px;">Welcome email ' + (r.ok ? "sent ✓" : "FAILED ✗") + (isInPerson ? " (supply list attached)" : "") + '.</p></div>';
+  let adminNotify: unknown = { sent: false };
+  try {
+    const ar = await fetch("https://api.resend.com/emails", { method: "POST", headers: { Authorization: "Bearer " + RESEND_API_KEY, "content-type": "application/json" }, body: JSON.stringify({ from: FROM, to: [TEAM_INBOX], subject: "🎓 New " + (isInPerson ? "In-Person" : "Online") + " enrollment: " + ((first_name || "") + " " + (last_name || "")).trim(), html: adminHtml }) });
+    adminNotify = { sent: ar.ok, status: ar.status };
+  } catch (e) { adminNotify = { sent: false, error: String(e) }; }
+
+  await sb.from("communications").insert({ contact_email: emailKey, contact_name: (first_name || emailKey), channel: "email", direction: "outbound", body: "[AUTO] Welcome email (" + planLabel + ") sent via Resend" + (isInPerson ? " with supply list" : "") + (niceStart ? " — starts " + niceStart : "") + ". Team notified at hello@.", source: "resend", metadata: { resend_id: (result as any)?.id, path: path || null, start_date: start_date || null, admin_notify: adminNotify } });
+
+  return J({ ok: r.ok, email: emailKey, in_person: isInPerson, start_date: start_date || null, resend: result, admin_notify: adminNotify });
 });

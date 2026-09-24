@@ -1,0 +1,329 @@
+{
+  "_readme": [
+    "What is DEPLOYED for every Supabase edge function, and how each repo copy relates to it.",
+    "Checked by scripts/check-edge-drift.mjs (npm test). Hash = sha256 of index.ts with any leading DRIFT-STATUS block removed.",
+    "status: in_sync (repo == live) | repo_ahead (repo = live + listed additions, awaiting an approved deploy) | live_ahead (live has changes the repo lacks) | diverged (neither contains the other).",
+    "After ANY deploy or dashboard edit: pull the live source (get_edge_function), update this record, and run `node scripts/check-edge-drift.mjs --live <saved list_edge_functions.json>`.",
+    "A git push never deploys an edge function. Runbook: docs/edge-functions.md."
+  ],
+  "project_ref": "lmbsuwslsycukynzpzik",
+  "checked_at": "2026-09-24T02:40:00Z",
+  "functions": {
+    "buy-exam-pro": {
+      "status": "in_sync",
+      "deployed_version": 5,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "92171cbe4715816432aa726e47c534704c415c28cbd2a2fcbffe5931b36b2673",
+      "verify_jwt": true,
+      "deployed_sha256": "d88a7669b67e1e4c8dfb32658d3df3a51c6811b7540c1e535ad2dae70dee1711",
+      "repo_sha256": "d88a7669b67e1e4c8dfb32658d3df3a51c6811b7540c1e535ad2dae70dee1711"
+    },
+    "buy-product": {
+      "status": "diverged",
+      "deployed_version": 6,
+      "deployed_at": "2026-08-16T20:23:10Z",
+      "deployed_ezbr_sha256": "f7abc68ec95bd66dac14432f8e3ff8a7ce3209bf6272738bfa8d12b479aace80",
+      "verify_jwt": true,
+      "deployed_sha256": "a3b28841fa3478ba7eff086a96eceef0da5df6746daeab50ed25606fe6b1824b",
+      "repo_sha256": "b278e8f5e3237e5ac5cf91731e9dc19f2661d8213f5712b31c3198786a9d4baf",
+      "note": "Diverged. Live v6 (Aug 16): www SITE_URL, online_program also grants exam_pro/study_pack/exam_prep, per-flag grants, profile upsert. Repo only: buyer automations (subscriber, buyer_<flag> tag, purchase rules), enrolled check for online_program, /learn?c= course link. One website purchase since Aug 16 (Aug 20) got no buyer tag. Reconcile on live v6 in its own reviewed change."
+    },
+    "enroll-paperwork": {
+      "status": "in_sync",
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "0815a24f2d514fd6c1f8ed4c93115893c1e5890167079438fcf6ef384d044c1f",
+      "verify_jwt": false,
+      "deployed_sha256": "041145de6c3da17aa51fddebd6001568be50389aeae19bbddc1936efbb02a094",
+      "repo_sha256": "041145de6c3da17aa51fddebd6001568be50389aeae19bbddc1936efbb02a094"
+    },
+    "enroll-welcome": {
+      "status": "in_sync",
+      "deployed_version": 4,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "6610d367f0c1d89787d2b40400e135428ff349b873286d8e63fa839a19db5626",
+      "verify_jwt": false,
+      "deployed_sha256": "ca1b100382910a36f8120c2058f7ca7af76185a0daf72bba24cec3bc4b832707",
+      "repo_sha256": "ca1b100382910a36f8120c2058f7ca7af76185a0daf72bba24cec3bc4b832707",
+      "note": "Repo copy was an undeployed draft (different request shape, placeholder supply list mentioning evening sessions). Replaced with live v4 on 2026-09-24. Live v4 still links students to the retired Kajabi library — tracked separately."
+    },
+    "kajabi-webhook": {
+      "status": "in_sync",
+      "deployed_version": 6,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "5124ae19a3d5e523b06c51989c29bdf3db6542b3fec7a970e64cb52ecd863268",
+      "verify_jwt": false,
+      "deployed_sha256": "893f58dfacaf14d45055ee9e7d6aec52063097c9f47db7c16dac9461a7966f94",
+      "repo_sha256": "893f58dfacaf14d45055ee9e7d6aec52063097c9f47db7c16dac9461a7966f94",
+      "note": "Live v6 only adds the www SITE_URL (Jul 16). Repo updated to live on 2026-09-24. Kajabi is retired (Aug 16)."
+    },
+    "lead-notify": {
+      "status": "repo_ahead",
+      "deployed_version": 5,
+      "deployed_at": "2026-08-03T05:15:28Z",
+      "deployed_ezbr_sha256": "262fcfa6effb257c949326ce4622c42d2ceabb8a428f1023c1a159ce025a0e28",
+      "verify_jwt": false,
+      "deployed_sha256": "0bf900aae7ff77d545b797c0d503863b91be1bd0d8958e42ad6003edcfa3d731",
+      "repo_sha256": "32f4a0f6d6452df23d5235a7c3639757033f63144a06bcddcbe43d943a4f21de",
+      "additions": [
+        "Campaign / landing-page / first-visit rows in the new-lead alert (from leads.utm + leads.landing_page, escaped, shown only when present).",
+        "A Text (sms:) button next to Call now."
+      ],
+      "note": "Reconciled 2026-09-24 on live v5. Sender stays in app_secrets (EMAIL_FROM / EMAIL_REPLY_TO). Accepts ?secret= and the x-lead-secret header, as live v5 already does. NOT ported from the old repo copy: its emoji headings, logo image, and the autoresponder wording \"as quickly as possible\" (live says \"within 1 business day\") — copy changes are the owner's call."
+    },
+    "meta-lead-webhook": {
+      "status": "in_sync",
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T21:10:23Z",
+      "deployed_ezbr_sha256": "fd3c646f658955cf1ced7ab8a1020da229e27f86c8d3b86f2c2f32ea6a76b322",
+      "verify_jwt": true,
+      "deployed_sha256": "16b45c22fc039fba23f46d8e3977dc736b22931944ad3e0eab078ab01bfc476d",
+      "repo_sha256": "16b45c22fc039fba23f46d8e3977dc736b22931944ad3e0eab078ab01bfc476d",
+      "note": "Retired Aug 22: live v3 is a 410 stub pointing to meta-leadgen (live-only). Repo updated to the stub on 2026-09-24; the old implementation is in git history."
+    },
+    "quo-inbound-webhook": {
+      "status": "repo_ahead",
+      "deployed_version": 13,
+      "deployed_at": "2026-09-22T21:59:49Z",
+      "deployed_ezbr_sha256": "08a419ae573d8964280921f183f5e39da39e7f0051b2a49b5cd227cb111976f5",
+      "verify_jwt": false,
+      "deployed_sha256": "0822d4fa142f3d93733af4e88558417956e8b1af0167ae4cada2544e80ab1705",
+      "repo_sha256": "2952aab57eb666021d23fb0bd1fc0dc503b57da9beb0e165d6c42b1f8be4b156",
+      "additions": [
+        "A completed call moves its lead out of \"new\" even when no Sona summary arrives (outbound, status completed, answeredAt, or a duration).",
+        "An outbound text from the PDA line moves its lead out of \"new\" (last_contact_at stays with trg_touch_lead_last_contact)."
+      ],
+      "note": "Reconciled 2026-09-24 on live v13 (v12 duplicate-delivery claim + v13 upsert_call_event merge were deployed after the Sep 22 brief). Tested: scripts in docs/edge-functions.md, 17/17 with the additions vs 14/17 on live v13 (the 3 misses are exactly the two new stamps)."
+    },
+    "run-automations": {
+      "status": "in_sync",
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "6f08ab98f5180226f39ffc8512768f7edcd24d97eb0a76e70255984cf83ca6fe",
+      "verify_jwt": false,
+      "deployed_sha256": "f3c8fd93e883762e9d8faed9f26faf02b8d9d026625a89304d85c099fc0dcd42",
+      "repo_sha256": "f3c8fd93e883762e9d8faed9f26faf02b8d9d026625a89304d85c099fc0dcd42"
+    },
+    "weekly-digest": {
+      "status": "in_sync",
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "3448815dc8a0f0dfa9c7a8a7a8d8f15f64d53259429d99daeb48810dc21c68d1",
+      "verify_jwt": false,
+      "deployed_sha256": "e82aaecb3b53f472b3ea0689f6f29b9be72094f811fec6e81cfd11b1ba6d1f77",
+      "repo_sha256": "e82aaecb3b53f472b3ea0689f6f29b9be72094f811fec6e81cfd11b1ba6d1f77"
+    }
+  },
+  "unmirrored": {
+    "cal-webhook": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "23fe3e86584586ef91ac5d6d748e062a174783ae83a0d6287f6b5b4e799c3e3b",
+      "verify_jwt": false
+    },
+    "create-amanda-account": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T19:54:13Z",
+      "deployed_ezbr_sha256": "b2b5ea3d27432ff13d6c490c6b148197a97ee267dca6c4cecdb35d3932a19939",
+      "verify_jwt": true
+    },
+    "create-students-batch": {
+      "deployed_version": 3,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "3bada9c41459d9954345957acca73bbee116f1c098798e6a18e09b4e3e4bcc9c",
+      "verify_jwt": false
+    },
+    "email-worker": {
+      "deployed_version": 6,
+      "deployed_at": "2026-08-24T20:49:12Z",
+      "deployed_ezbr_sha256": "16fb55f504ede8f84618cb7cf08fad7ff0155b5abd5aa3ce021e587d7a569066",
+      "verify_jwt": false
+    },
+    "export-reader": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "65d9b2f15b2f38bc3c2b204d503ff08ea62e61c00828b20e136f1fcf59ad92ed",
+      "verify_jwt": false
+    },
+    "fb-schedule": {
+      "deployed_version": 7,
+      "deployed_at": "2026-08-22T20:05:33Z",
+      "deployed_ezbr_sha256": "80d9528a4d4f4ce83083ce399adf669d2083be6479fcc86d3a811d90d5617706",
+      "verify_jwt": true
+    },
+    "import-students": {
+      "deployed_version": 4,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "6073b6635947d568733ac4ac90d557c4fca139addf21ef5c5bd35a12c76ce6b2",
+      "verify_jwt": true
+    },
+    "kajabi-my-courses": {
+      "deployed_version": 3,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "67d8f0d19c220528f267720d6fc5e51f66e226d7e20cc0de4040edec85125ce5",
+      "verify_jwt": true
+    },
+    "kajabi-pull": {
+      "deployed_version": 2,
+      "deployed_at": "2026-08-08T02:57:12Z",
+      "deployed_ezbr_sha256": "62f0095626f469d7841ba23a6276cdc907a95f6f57347006f2be992d1b944b5f",
+      "verify_jwt": false
+    },
+    "kajabi-push-contacts": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "8d44b15166ff23641be66e83bdda75857ebf8000de3723e99ff3813309128630",
+      "verify_jwt": false
+    },
+    "kajabi-roster-temp": {
+      "deployed_version": 4,
+      "deployed_at": "2026-08-22T19:54:28Z",
+      "deployed_ezbr_sha256": "ff4326f85c72f3df2edc75c85ee497b6a7579e2894afcce241a02233a712738c",
+      "verify_jwt": true
+    },
+    "kajabi-sync": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "1927167efcedbe8736a1c3fe162ad7fd3f5d2531a940289b85e53e16f174a7fe",
+      "verify_jwt": true
+    },
+    "lesson-bulk-update": {
+      "deployed_version": 3,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "659be05061501bbef7cb84d900aff3728755ce54479cb41bbf9f1759d4537803",
+      "verify_jwt": false
+    },
+    "meta-conversions": {
+      "deployed_version": 4,
+      "deployed_at": "2026-08-11T19:06:02Z",
+      "deployed_ezbr_sha256": "1cfc4dce92b0d235e06f32754473304d272fd5b2694ca7337be9c1421395b5ec",
+      "verify_jwt": true
+    },
+    "meta-discover": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "45f3e7d8630844b5dc52f15c3a74670b105d178f64d6a11320543d1b3cd938c4",
+      "verify_jwt": true
+    },
+    "meta-leadgen": {
+      "deployed_version": 6,
+      "deployed_at": "2026-08-22T21:37:06Z",
+      "deployed_ezbr_sha256": "99dfc91d1a2a5372f0afa575a6aa5dde9199fec17a2376a1b92929282cbc8fe7",
+      "verify_jwt": false
+    },
+    "migrate-students-temp": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T19:54:24Z",
+      "deployed_ezbr_sha256": "0f55afd05928cdb847a3558e7e84253a0cc4f1dc904da4799d4846afed6c9f8f",
+      "verify_jwt": true
+    },
+    "mux-upload": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "62f9dc197a1b63a30ee8d89709294787528d5eb91f62db09a859855dd9a8b833",
+      "verify_jwt": false
+    },
+    "mux-webhook": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T20:04:46Z",
+      "deployed_ezbr_sha256": "897e3e91d15e78b9d41cbd2b0d2f643d540e0ba4100b394ed73e5e09d2577637",
+      "verify_jwt": false
+    },
+    "quo-send-sms": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "f6b5bacf0e65d02527b946863d36e73969ddf569ca480b62b1030c4ee7653a31",
+      "verify_jwt": true
+    },
+    "resend-domain-tracking": {
+      "deployed_version": 2,
+      "deployed_at": "2026-08-12T16:22:23Z",
+      "deployed_ezbr_sha256": "d080a97203a5f0ba219de520b85cc9e99b780c3c8d448d5458a263d83cc9c7ac",
+      "verify_jwt": false
+    },
+    "resend-webhook": {
+      "deployed_version": 4,
+      "deployed_at": "2026-08-22T20:01:51Z",
+      "deployed_ezbr_sha256": "d1ab489a6cba69d05c91c2002a3f168cefceb9b515a5ca0af17d876b745dbe5a",
+      "verify_jwt": false
+    },
+    "run-seed-emails": {
+      "deployed_version": 3,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "f98b0229322e15921130b528c34fe2c759bf89738f2a6f1f703488ebbeb7293b",
+      "verify_jwt": true
+    },
+    "seed-test-student": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T19:55:10Z",
+      "deployed_ezbr_sha256": "5f4a9b8b664471c092a7a062cda9e64de6e6a1750561ec760adb8fd57c3f6d30",
+      "verify_jwt": true
+    },
+    "send-welcome-batch": {
+      "deployed_version": 4,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "31d78f881ace0f5e70b3a38825490e854a6c6e64a9f68439bed39a96c9e4d5e2",
+      "verify_jwt": false
+    },
+    "send-welcome-email": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "833ead2628f14f00982f52af1efc2cf16137d904afaefd6b34903f6ff2c0455b",
+      "verify_jwt": true
+    },
+    "site": {
+      "deployed_version": 7,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "3a84494ccc8278872596cad7777b5bbf98ea8e2b768e8cf998da0cdae1f2a813",
+      "verify_jwt": false
+    },
+    "site-uploader": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T20:05:07Z",
+      "deployed_ezbr_sha256": "fd7825f73dbc7a96bc939f1f67994759da300d3e9069cddffc7b7e9920168b75",
+      "verify_jwt": true
+    },
+    "sms-worker": {
+      "deployed_version": 5,
+      "deployed_at": "2026-08-08T01:50:55Z",
+      "deployed_ezbr_sha256": "0d40df22cf5f32e0695031cb1db424e680ea6018b84c507371749ec71544844e",
+      "verify_jwt": false
+    },
+    "social-proof": {
+      "deployed_version": 2,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "f02892befa1ec0b47a0983e5783b95045e45625a4d2357e454073a39ea6ea267",
+      "verify_jwt": false
+    },
+    "square-webhook": {
+      "deployed_version": 6,
+      "deployed_at": "2026-08-30T20:35:18Z",
+      "deployed_ezbr_sha256": "e13c57c4deccc8ff4ac8a0f371dcc051c072be57a0ce8fe5e82538f38a54af8a",
+      "verify_jwt": false
+    },
+    "test-html": {
+      "deployed_version": 3,
+      "deployed_at": "2026-08-22T20:04:50Z",
+      "deployed_ezbr_sha256": "263e50d48c87c384f30326bf88fa8ea0cec611d05de4b580a8b2e5c11f3a2dda",
+      "verify_jwt": true
+    },
+    "translate-course": {
+      "deployed_version": 1,
+      "deployed_at": "2026-08-11T21:00:43Z",
+      "deployed_ezbr_sha256": "9e4f93760b60d77a40a36a79b88536a5632298012ba17380837a06ecbcb8befd",
+      "verify_jwt": false
+    },
+    "translate-message": {
+      "deployed_version": 1,
+      "deployed_at": "2026-08-11T21:01:59Z",
+      "deployed_ezbr_sha256": "0a57b21f0df7f0b790aa734dd8c85d1af6373e57c63f0247e22df33d502c434f",
+      "verify_jwt": false
+    },
+    "tuition-reserve": {
+      "deployed_version": 4,
+      "deployed_at": "2026-07-31T04:17:06Z",
+      "deployed_ezbr_sha256": "7f51b3518690c0fcbd064b7cd60c5ad3209dd5b067bae9be98c7cde37d2371a5",
+      "verify_jwt": false
+    }
+  }
+}
