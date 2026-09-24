@@ -9,6 +9,8 @@
 //   9. no service key → falls back to the public anon-key insert
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { runInNewContext } from 'node:vm';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 let calls = [];
@@ -21,6 +23,7 @@ globalThis.fetch = async (url, opts = {}) => {
   calls.push({ url: u, method, headers, body });
   const ok = (json, status = 200) => ({ ok: true, status, text: async () => JSON.stringify(json), json: async () => json });
   const bad = (status, msg) => ({ ok: false, status, text: async () => JSON.stringify({ message: msg }), json: async () => ({ message: msg }) });
+  if (u.includes('/rest/v1/leads') && mode.authStatus) return bad(mode.authStatus, 'credential rejected (test)');
   if (u.includes('/rest/v1/leads') && method === 'GET') return ok(mode.dupFound ? [{ id: 'dup' }] : []);
   if (u.includes('/rest/v1/leads') && method === 'POST') return mode.insertOk ? ok([], 201) : bad(500, 'db down (test)');
   if (u.includes('api.resend.com')) return mode.resendOk ? ok({ id: 'email_1' }) : bad(500, 'resend down');
@@ -51,12 +54,13 @@ ok(cleanLead({ email: 'not-an-email', phone: '12' }).email === undefined, 'inval
 ok(cleanLead({ phone: '12' }).phone === undefined, 'too-short phone dropped');
 
 // 1. normal insert with service key
-process.env.SUPABASE_SERVICE_ROLE_KEY = 'svc-test'; delete process.env.RESEND_API_KEY; delete process.env.LEAD_NOTIFY_SECRET;
+const TEST_SERVICE_KEY = 'sb_secret_' + 'synthetic_test_only_'.repeat(2);
+process.env.SUPABASE_SERVICE_ROLE_KEY = TEST_SERVICE_KEY; delete process.env.RESEND_API_KEY; delete process.env.LEAD_NOTIFY_SECRET;
 calls = []; mode = { insertOk: true, dupFound: false, resendOk: true, notifyOk: true };
 let r = await call({ lead: LEAD, submission_id: 'sub-1' });
 ok(r.code === 200 && r.body.ok && r.body.via === 'db', `1: expected 200 via db, got ${r.code} ${JSON.stringify(r.body)}`);
 const ins = calls.find((x) => x.url.includes('/rest/v1/leads') && x.method === 'POST');
-ok(!!ins && ins.headers.apikey === 'svc-test', '1: insert used the service key');
+ok(!!ins && ins.headers.apikey === TEST_SERVICE_KEY && r.body.persisted === true, '1: insert used the service key and reports database persistence');
 ok(ins && ins.body.utm.submission_id === 'sub-1' && ins.body.utm.received_at && ins.body.landing_page === '/apply', '1: row carries submission_id, received_at, landing_page');
 ok(ins && !('bogus_column' in ins.body), '1: unknown column not sent');
 const dup = calls.find((x) => x.url.includes('/rest/v1/leads') && x.method === 'GET');
@@ -72,6 +76,7 @@ ok(!calls.some((x) => x.method === 'POST'), '2: no second insert');
 calls = []; mode = { insertOk: false, dupFound: false, resendOk: true, notifyOk: true }; process.env.RESEND_API_KEY = 're_test';
 r = await call({ lead: LEAD, submission_id: 'sub-3' });
 ok(r.code === 200 && r.body.via === 'email', `3: expected via email, got ${r.code} ${JSON.stringify(r.body)}`);
+ok(r.body.persisted === false && r.body.delivery === 'email', '3: email-only receipt does not claim database persistence');
 const mail = calls.find((x) => x.url.includes('api.resend.com'));
 ok(!!mail && mail.body.to[0] === 'hello@premierdentalacademyoflongview.com' && /saved by email only/i.test(mail.body.subject), '3: Amanda emailed with the saved-by-email-only subject');
 ok(mail && /fb_apply/.test(mail.body.html) && /\/apply/.test(mail.body.html), '3: email carries campaign + landing page');
@@ -113,5 +118,50 @@ calls = []; let last;
 for (let i = 0; i < 32; i++) last = await call({ lead: LEAD }, { ip: '203.0.113.9' });
 ok(last.code === 429, '10: 31st submission from one IP in a minute → 429');
 
-console.log(fails === 0 ? '✓ lead API: db, duplicate, email fallback, honest 502, honeypot, validation, anon fallback, rate limit' : `✗ lead API: ${fails} failure(s)`);
+// 11. Malformed/expired/wrong-project/public credentials fail before any fetch.
+const { serviceKey, SUPABASE_URL } = await import(join(root, 'api/_common.mjs'));
+const jwt = (payload, header = { alg: 'HS256', typ: 'JWT' }, signature = Buffer.alloc(32, 1).toString('base64url')) =>
+  [Buffer.from(JSON.stringify(header)).toString('base64url'), Buffer.from(JSON.stringify(payload)).toString('base64url'), signature].join('.');
+const claims = { role: 'service_role', ref: new URL(SUPABASE_URL).hostname.split('.')[0], exp: Math.floor(Date.now() / 1000) + 3600 };
+const badKeys = ['placeholder', ' ', 'sb_secret_short', 'sb_publishable_public', 'x'.repeat(4097), jwt({ ...claims, role: 'authenticated' }), jwt({ ...claims, exp: 1 }), jwt({ ...claims, ref: 'wrong-project' }), jwt(claims, { alg: 'none', typ: 'JWT' }), jwt(claims, undefined, 'bad')];
+process.env.RESEND_API_KEY = 're_test';
+for (const key of badKeys) {
+  process.env.SUPABASE_SERVICE_ROLE_KEY = key;
+  calls = [];
+  r = await call({ lead: LEAD });
+  ok(r.code === 503 && r.body.error === 'service_configuration_error' && r.body.persisted === false && calls.length === 0, '11: invalid configured key → explicit503 without DB/email requests');
+  ok(!JSON.stringify(r.body).includes(key.trim()) || !key.trim(), '11: response does not contain the key');
+}
+process.env.SUPABASE_SERVICE_ROLE_KEY = jwt(claims);
+ok(serviceKey() === process.env.SUPABASE_SERVICE_ROLE_KEY, '11: supported legacy service-role shape accepted, not cryptographically verified');
+
+// 12. Revoked/auth-rejected credentials never become email-only success either.
+process.env.SUPABASE_SERVICE_ROLE_KEY = TEST_SERVICE_KEY;
+for (const authStatus of [401, 403]) {
+  calls = []; mode = { authStatus };
+  r = await call({ lead: LEAD, submission_id: 'rejected' });
+  ok(r.code === 503 && r.body.error === 'service_configuration_error' && !calls.some(x => x.url.includes('resend')), '12: provider auth rejection during duplicate read fails closed without email');
+  calls = [];
+  r = await call({ lead: { email: 'synthetic@example.com' } });
+  ok(r.code === 503 && calls.length === 1 && calls[0].method === 'POST', '12: provider auth rejection during insertion is explicit');
+}
+
+// 13. The real browser helper propagates email-only provenance without retries;
+// config503 still takes its existing direct-REST path. No real DOM/network used.
+let browserCalls = [], apiStatus = 200;
+const browser = { PDA: { attribution: () => ({}) } };
+const sandbox = {
+  window: browser, document: { readyState: 'loading', addEventListener() {}, referrer: '' },
+  location: { pathname: '/apply', search: '' }, localStorage: { getItem: () => null, setItem() {} },
+  URLSearchParams, console, setTimeout, clearTimeout,
+  fetch: async (url) => { browserCalls.push(String(url)); return { ok: !String(url).startsWith('/api') || apiStatus === 200, status: apiStatus, json: async () => ({ ok: apiStatus === 200, via: 'email', persisted: false, delivery: 'email' }) }; },
+};
+runInNewContext(readFileSync(join(root, 'assets/pda-lead.js'), 'utf8'), sandbox);
+let br = await browser.PDALead.submit(LEAD);
+ok(br.ok && br.via === 'email' && br.persisted === false && br.delivery === 'email' && browserCalls.length === 1, '13: email-only success retains explicit provenance and does not duplicate-submit');
+browserCalls = []; apiStatus = 503;
+br = await browser.PDALead.submit(LEAD);
+ok(br.ok && br.via === 'db-direct' && br.persisted === true && browserCalls.length === 2, '13: configuration503 retains browser direct-database fallback');
+
+console.log(fails === 0 ? '✓ lead API: DB/email provenance, browser fallback, credential failure, validation, rate limit' : `✗ lead API: ${fails} failure(s)`);
 process.exit(fails ? 1 : 0);

@@ -10,14 +10,16 @@
 //      lead-notify function) so Amanda still gets it within seconds. Only when both
 //      the database and every email path fail does it answer 502 — and the browser then
 //      shows the visitor an honest error with call/text/email links.
+//   Configuration exception: a malformed/rejected privileged key returns an explicit
+//   503 without sending a fallback email. The browser can try its direct anon insert.
 //
 // Secrets (Vercel env, all optional — each one adds a layer):
 //   SUPABASE_SERVICE_ROLE_KEY  insert + duplicate check bypassing RLS. Absent → the
 //                              insert uses the public anon key (public INSERT policy).
 //   RESEND_API_KEY / RESEND_FROM  direct email fallback when the insert fails.
 //   LEAD_NOTIFY_SECRET         alternative fallback: call the lead-notify edge function.
-// Nothing here logs names, emails or phone numbers — only source + error text.
-import { sb, resendSend, json, SUPABASE_URL, PUBLISHABLE_KEY, SITE_URL } from './_common.mjs';
+// Logs contain fixed failure codes/status only, never submitted fields/provider text.
+import { sb, serviceKey, resendSend, json, SUPABASE_URL, PUBLISHABLE_KEY, SITE_URL } from './_common.mjs';
 
 const ADMIN_EMAIL = 'hello@premierdentalacademyoflongview.com';
 const LIMITS = { first_name: 120, last_name: 120, email: 200, phone: 40, interest_path: 200, message: 4000, source: 120, landing_page: 300,
@@ -66,7 +68,10 @@ async function alreadyStored(submissionId) {
   try {
     const rows = await sb('leads', { query: { select: 'id', 'utm->>submission_id': `eq.${submissionId}`, limit: '1' } });
     return Array.isArray(rows) && rows.length > 0;
-  } catch { return false; }
+  } catch (e) {
+    if (e.code === 'SUPABASE_SERVICE_CONFIGURATION_ERROR') throw e;
+    return false;
+  }
 }
 
 async function insertLead(row) {
@@ -147,19 +152,25 @@ export default async function handler(req, res) {
 
   const submissionId = str(body.submission_id || lead.utm?.submission_id, 80) || null;
   lead.utm = { ...(lead.utm || {}), ...(submissionId ? { submission_id: submissionId } : {}), received_at: new Date().toISOString(), ua: str(req.headers['user-agent'], 160) || undefined };
-  if (submissionId && await alreadyStored(submissionId)) return json(res, 200, { ok: true, via: 'duplicate' });
-
   try {
+    // A nonempty placeholder must not silently turn every lead into email-only
+    // success. An absent key deliberately retains the existing public insert path.
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) serviceKey();
+    if (submissionId && await alreadyStored(submissionId)) return json(res, 200, { ok: true, via: 'duplicate', persisted: true, delivery: 'database' });
     await insertLead(lead);
-    return json(res, 200, { ok: true, via: 'db' });
+    return json(res, 200, { ok: true, via: 'db', persisted: true, delivery: 'database' });
   } catch (e) {
-    const reason = String(e?.message || e).slice(0, 160);
-    console.error('[api/lead] insert failed', { source: lead.source, reason });
+    if (e.code === 'SUPABASE_SERVICE_CONFIGURATION_ERROR') {
+      return json(res, 503, { ok: false, error: 'service_configuration_error', persisted: false, message: 'The server could not save your info. Please try again or call or text (903) 913-6444.' });
+    }
+    const status = Number.isInteger(e?.status) ? e.status : null;
+    const reason = status ? `database_write_failed (${status})` : 'database_write_failed';
+    console.error('[api/lead] insert failed', { code: 'database_write_failed', status });
     try {
       const via = await emailFallback(lead, reason);
-      return json(res, 200, { ok: true, via });
+      return json(res, 200, { ok: true, via, persisted: false, delivery: 'email' });
     } catch (e2) {
-      console.error('[api/lead] email fallback failed', { source: lead.source, reason: String(e2?.message || e2).slice(0, 160) });
+      console.error('[api/lead] email fallback failed', { code: 'email_fallback_failed', status: Number.isInteger(e2?.status) ? e2.status : null });
       return json(res, 502, { ok: false, error: 'store_failed', message: 'We could not save your info right now. Please call or text (903) 913-6444.' });
     }
   }

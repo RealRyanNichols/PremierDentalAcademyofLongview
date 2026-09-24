@@ -156,7 +156,13 @@ window.AOS && AOS.init({ duration: 500, once: true });
     return PALETTE[Math.abs(h) % PALETTE.length];
   };
 
-  const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
+  // Calendar dates ("2026-08-01") must not be parsed as midnight UTC, or they show a day
+  // early in Central time (Aug 1 → "Jul 2026"). Same fix as /classes.
+  const toCalendarDate = (d) => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d || ''));
+    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(d);
+  };
+  const fmt = (d) => d ? toCalendarDate(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
   const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 
   const [{ data: grads, error }, { data: partners }, { data: overrides }] = await Promise.all([
