@@ -48,13 +48,31 @@ pg_net, status 200, then was deleted).
   plus a Text button.
 - **Retry the alert itself:** `db/pending/20260919_lead_notify_reliability.sql` (STAGED, not
   applied) logs each pg_net attempt and re-posts un-delivered alerts every 10 minutes (max 3),
-  with a `lead_notify_status` view for admin. Apply only with Amanda's approval.
+  with a `lead_notify_status` view (SQL only). Apply only with Amanda's approval.
+
+## Ship order (checked 2026-09-24)
+Two independent pieces are waiting. Each is safe on its own, in either order, because live
+`lead-notify` v5 already accepts the secret both ways (`?secret=` and the `x-lead-secret`
+header) and the reconciled copy keeps both (`check:edge-behavior` pins it).
+1. **Redeploy lead-notify** (adds the Campaign / Landing page / First visit rows and the Text
+   button). Follow `docs/edge-functions.md`: re-check `list_edge_functions` first (it must
+   still be v5), deploy the `--body` output, confirm v6, watch logs, set the record to
+   `in_sync`. Rollback = redeploy the v5 source (the repo file minus its two additions).
+2. **Apply the retry migration.** First run the no-email pre-flight in its header: a 200
+   `{"skipped":"no contact info"}` means the header path works; a 401 means stop. Then apply,
+   run the verify queries at the bottom of the file, and move it to `db/migrations/`.
+   Rollback is in the file and restores today's trigger function verbatim.
+Never ship a lead-notify version that drops the `?secret=` path while the old trigger is
+live, or drops the header path once the retry migration is live: either stops every alert.
+The sender always comes from `app_secrets` (`EMAIL_FROM` / `EMAIL_REPLY_TO`) — a hardcoded
+`updates.*` sender drew a Resend 403 on Aug 3.
 - Test: `npm run check:lead-api` (handler with Supabase/Resend mocked) and `npm run test:e2e`
   (real browser, happy + failure paths for the main forms at phone width).
 
 ## Maintenance
 - **Change copy:** edit `templates/email/*.html` AND the inline strings in `index.ts`, then
-  redeploy (`supabase functions deploy lead-notify` or the Supabase MCP `deploy_edge_function`).
+  redeploy per `docs/edge-functions.md` (base the edit on the live source, update
+  `supabase/functions/DEPLOYED.json`; a git push does not deploy a function).
 - **Disable:** `drop trigger trg_notify_new_lead on public.leads;`
 - **Debug:** edge-function logs (`get_logs` / dashboard) or `select status_code, content from
   net._http_response order by created desc limit 5;` (never select the secret-bearing request URL).
