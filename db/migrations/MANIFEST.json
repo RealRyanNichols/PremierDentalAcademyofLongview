@@ -312,6 +312,11 @@
       "state": "staged",
       "gate": "Amanda (database change + scheduled job)",
       "prerequisite": "lead-notify accepts x-lead-secret (live v5 does); run the no-email pre-flight in the header"
+    },
+    "db/pending/20260924_close_anon_campaign_metrics.sql": {
+      "state": "staged",
+      "gate": "Amanda (permission change)",
+      "prerequisite": "none"
     }
   },
   "schema_migrations": {
