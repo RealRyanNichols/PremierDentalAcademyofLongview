@@ -1,0 +1,566 @@
+{
+  "exported_from": "Supabase project lmbsuwslsycukynzpzik (deployed edge-function source)",
+  "exported_at": "2026-09-26",
+  "method": "two independent byte copies per function, compared identical before commit",
+  "functions": {
+    "buy-exam-pro": {
+      "live_version": 5,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "d88a7669b67e1e4c8dfb32658d3df3a51c6811b7540c1e535ad2dae70dee1711",
+          "committed_sha256": "d88a7669b67e1e4c8dfb32658d3df3a51c6811b7540c1e535ad2dae70dee1711",
+          "lines": 246,
+          "redacted_lines": []
+        }
+      }
+    },
+    "buy-product": {
+      "live_version": 6,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "a3b28841fa3478ba7eff086a96eceef0da5df6746daeab50ed25606fe6b1824b",
+          "committed_sha256": "a3b28841fa3478ba7eff086a96eceef0da5df6746daeab50ed25606fe6b1824b",
+          "lines": 178,
+          "redacted_lines": []
+        }
+      }
+    },
+    "cal-webhook": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "8313e12a9ec28ce09ba88e4dddbb224b179c5f19d5dc477faef57d11fe765ee9",
+          "committed_sha256": "e7eae205d2a604ac0aeec56f0ceec4500aa67033864667ff4283d792dfd34028",
+          "lines": 70,
+          "redacted_lines": [
+            6
+          ]
+        }
+      }
+    },
+    "create-amanda-account": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "dea19c783584f23c6f511a5f38867a14b13df23e15748b621e0f8f6417294f28",
+          "committed_sha256": "dea19c783584f23c6f511a5f38867a14b13df23e15748b621e0f8f6417294f28",
+          "lines": 30,
+          "redacted_lines": []
+        }
+      }
+    },
+    "create-students-batch": {
+      "live_version": 3,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "379a93f650fc3e12474d4211b3171cecb47be5fde1e9482bdb3b93e4459f5c46",
+          "committed_sha256": "379a93f650fc3e12474d4211b3171cecb47be5fde1e9482bdb3b93e4459f5c46",
+          "lines": 4,
+          "redacted_lines": []
+        }
+      }
+    },
+    "email-worker": {
+      "live_version": 6,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "01f1b4251461741d35b11e2e047eea38276f7a494447d9beff70d011fe083a98",
+          "committed_sha256": "01f1b4251461741d35b11e2e047eea38276f7a494447d9beff70d011fe083a98",
+          "lines": 164,
+          "redacted_lines": []
+        }
+      }
+    },
+    "enroll-paperwork": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "041145de6c3da17aa51fddebd6001568be50389aeae19bbddc1936efbb02a094",
+          "committed_sha256": "041145de6c3da17aa51fddebd6001568be50389aeae19bbddc1936efbb02a094",
+          "lines": 139,
+          "redacted_lines": []
+        }
+      }
+    },
+    "enroll-welcome": {
+      "live_version": 4,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "ca1b100382910a36f8120c2058f7ca7af76185a0daf72bba24cec3bc4b832707",
+          "committed_sha256": "ca1b100382910a36f8120c2058f7ca7af76185a0daf72bba24cec3bc4b832707",
+          "lines": 86,
+          "redacted_lines": []
+        }
+      }
+    },
+    "export-reader": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "76b86c4e96162ba24938dd7cec9d34e81b4b792da7b60bcb941814e8d6c38050",
+          "committed_sha256": "76b86c4e96162ba24938dd7cec9d34e81b4b792da7b60bcb941814e8d6c38050",
+          "lines": 30,
+          "redacted_lines": []
+        }
+      }
+    },
+    "fb-schedule": {
+      "live_version": 7,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "02d5dee42e5b0f8be1761dc24caf2cd65dfa9f7221b2180487aa23577ed5a0fc",
+          "committed_sha256": "034c0e64d5cc7af7f1f3b54d9cfc1a64e962e37a08a96afabf421292906eeb56",
+          "lines": 101,
+          "redacted_lines": [
+            20
+          ]
+        }
+      }
+    },
+    "import-students": {
+      "live_version": 4,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "65ead50469e42c362c3bbb7729597ee7da5e5e63801c31669149e8b3dca4310f",
+          "committed_sha256": "65ead50469e42c362c3bbb7729597ee7da5e5e63801c31669149e8b3dca4310f",
+          "lines": 170,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-my-courses": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "0b335b341496e16291bd8bd077b3ee74783ccde450635eb1619f1f51b1b97c60",
+          "committed_sha256": "0b335b341496e16291bd8bd077b3ee74783ccde450635eb1619f1f51b1b97c60",
+          "lines": 170,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-pull": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "3fd8e4fa8110a64bba370c24180469c4d4e0ec24ea1d03d49048dc1f269e75e2",
+          "committed_sha256": "3fd8e4fa8110a64bba370c24180469c4d4e0ec24ea1d03d49048dc1f269e75e2",
+          "lines": 108,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-push-contacts": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "1c1a80d3c2d10023942380d9a5c9994392d57d57cb7706264e40677ff7f3bf65",
+          "committed_sha256": "1c1a80d3c2d10023942380d9a5c9994392d57d57cb7706264e40677ff7f3bf65",
+          "lines": 76,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-roster-temp": {
+      "live_version": 4,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "a959b5af6889e6c945cb80a11901e0d8b6556d3ced344acaad0cb8dc7963b1ad",
+          "committed_sha256": "a959b5af6889e6c945cb80a11901e0d8b6556d3ced344acaad0cb8dc7963b1ad",
+          "lines": 23,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-sync": {
+      "live_version": 2,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "8aa000316c4ac226dfbfae30f99f17dedc2df1b147b2e7ea25240aaf5adbf645",
+          "committed_sha256": "8aa000316c4ac226dfbfae30f99f17dedc2df1b147b2e7ea25240aaf5adbf645",
+          "lines": 207,
+          "redacted_lines": []
+        }
+      }
+    },
+    "kajabi-webhook": {
+      "live_version": 6,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "893f58dfacaf14d45055ee9e7d6aec52063097c9f47db7c16dac9461a7966f94",
+          "committed_sha256": "d91b05924381754aed317fcc65765bcc514d5dbdb359ed5bbc40cfe6b73cd85e",
+          "lines": 260,
+          "redacted_lines": [
+            36
+          ]
+        }
+      }
+    },
+    "lead-notify": {
+      "live_version": 5,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "0bf900aae7ff77d545b797c0d503863b91be1bd0d8958e42ad6003edcfa3d731",
+          "committed_sha256": "0bf900aae7ff77d545b797c0d503863b91be1bd0d8958e42ad6003edcfa3d731",
+          "lines": 140,
+          "redacted_lines": []
+        }
+      }
+    },
+    "lesson-bulk-update": {
+      "live_version": 3,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "b99e28a32e42cfa721377ecb81c32d8350db0901717cdc05b28b036dc868c302",
+          "committed_sha256": "b99e28a32e42cfa721377ecb81c32d8350db0901717cdc05b28b036dc868c302",
+          "lines": 4,
+          "redacted_lines": []
+        }
+      }
+    },
+    "meta-conversions": {
+      "live_version": 4,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "d6791b316ba2f2498eb4fc8348346d6f428349643adbb44c3b595469b41e115c",
+          "committed_sha256": "ac93960d9e85ad851a36fdb0ede45fcb57b2279b10d43c92f32ad3657f680357",
+          "lines": 101,
+          "redacted_lines": [
+            22
+          ]
+        }
+      }
+    },
+    "meta-discover": {
+      "live_version": 2,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "61384df1462c0da72fa8d8b7bf8b849a0371786c7b3644131d4439bbf8915642",
+          "committed_sha256": "26f595fde285d840280cd367a26a2712730eeb56bfa9e3a5ab3b91f4934a9dc1",
+          "lines": 38,
+          "redacted_lines": [
+            10
+          ]
+        }
+      }
+    },
+    "meta-lead-webhook": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "16b45c22fc039fba23f46d8e3977dc736b22931944ad3e0eab078ab01bfc476d",
+          "committed_sha256": "16b45c22fc039fba23f46d8e3977dc736b22931944ad3e0eab078ab01bfc476d",
+          "lines": 30,
+          "redacted_lines": []
+        }
+      }
+    },
+    "meta-leadgen": {
+      "live_version": 6,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "9f1f1cafcf21c4c0129214a56b36c25d860c417c73d639c161637199068e58dd",
+          "committed_sha256": "9f1f1cafcf21c4c0129214a56b36c25d860c417c73d639c161637199068e58dd",
+          "lines": 280,
+          "redacted_lines": []
+        }
+      }
+    },
+    "migrate-students-temp": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "085287ed87fd62295d47cf3862f750bd1fa3279e4bc6dcf65db659846aeecda5",
+          "committed_sha256": "085287ed87fd62295d47cf3862f750bd1fa3279e4bc6dcf65db659846aeecda5",
+          "lines": 24,
+          "redacted_lines": []
+        }
+      }
+    },
+    "mux-upload": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "775f1d88329282a3c120400d6337cba9639ebf46b2ef6b58f1ee3ae676c38a14",
+          "committed_sha256": "775f1d88329282a3c120400d6337cba9639ebf46b2ef6b58f1ee3ae676c38a14",
+          "lines": 30,
+          "redacted_lines": []
+        }
+      }
+    },
+    "mux-webhook": {
+      "live_version": 3,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "353676bb88479806d921a461eea038be7546091ef1269ab01f5c4669fff78196",
+          "committed_sha256": "353676bb88479806d921a461eea038be7546091ef1269ab01f5c4669fff78196",
+          "lines": 37,
+          "redacted_lines": []
+        }
+      }
+    },
+    "quo-inbound-webhook": {
+      "live_version": 13,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "0822d4fa142f3d93733af4e88558417956e8b1af0167ae4cada2544e80ab1705",
+          "committed_sha256": "7861d697cdb2b1085c22b4ead9351e190618d88e82655b69cd4b63021ea3103c",
+          "lines": 533,
+          "redacted_lines": [
+            38,
+            79
+          ]
+        }
+      }
+    },
+    "quo-send-sms": {
+      "live_version": 2,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "b74563cd194ce0a34677e869ecc1caa3da9a3aa34f3b62d4e7931ae0695960ba",
+          "committed_sha256": "b74563cd194ce0a34677e869ecc1caa3da9a3aa34f3b62d4e7931ae0695960ba",
+          "lines": 87,
+          "redacted_lines": []
+        }
+      }
+    },
+    "resend-domain-tracking": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "e5a53abe6f7f9878c29802ba69afd4734d56c77e61903256f44aa7e373f215df",
+          "committed_sha256": "e5a53abe6f7f9878c29802ba69afd4734d56c77e61903256f44aa7e373f215df",
+          "lines": 82,
+          "redacted_lines": []
+        }
+      }
+    },
+    "resend-webhook": {
+      "live_version": 4,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "64d8446f9e758b27ef3c9646985213d6635e97b667da02d9382242d5b4ac2188",
+          "committed_sha256": "64d8446f9e758b27ef3c9646985213d6635e97b667da02d9382242d5b4ac2188",
+          "lines": 124,
+          "redacted_lines": []
+        }
+      }
+    },
+    "run-automations": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "f3c8fd93e883762e9d8faed9f26faf02b8d9d026625a89304d85c099fc0dcd42",
+          "committed_sha256": "f3c8fd93e883762e9d8faed9f26faf02b8d9d026625a89304d85c099fc0dcd42",
+          "lines": 116,
+          "redacted_lines": []
+        }
+      }
+    },
+    "run-seed-emails": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "9a2d4063c1768b5f10c9c0b2db231a8f0c59d4d6b997c108ce610375d9483332",
+          "committed_sha256": "9a2d4063c1768b5f10c9c0b2db231a8f0c59d4d6b997c108ce610375d9483332",
+          "lines": 3,
+          "redacted_lines": []
+        }
+      }
+    },
+    "seed-test-student": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "858ccd0c84b1e6caf5c60a8bf6a203abd9df2d655c8bcecc970e9dff8d588c63",
+          "committed_sha256": "405a2d8ff4a3a87e2f52a6bc312ee457548a8cb14213da01cf3f0251332a07dc",
+          "lines": 154,
+          "redacted_lines": [
+            8,
+            19
+          ]
+        }
+      }
+    },
+    "send-welcome-batch": {
+      "live_version": 4,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "9f9d8ddb6efde567628b48a6132649d64a3781e0ab09cbc3035592ecf18c4eab",
+          "committed_sha256": "9f9d8ddb6efde567628b48a6132649d64a3781e0ab09cbc3035592ecf18c4eab",
+          "lines": 4,
+          "redacted_lines": []
+        }
+      }
+    },
+    "send-welcome-email": {
+      "live_version": 2,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "5a5d5c380fc221b70a1db171e303bca66eb765821dbbc978e377e88bb2c4d5e6",
+          "committed_sha256": "5a5d5c380fc221b70a1db171e303bca66eb765821dbbc978e377e88bb2c4d5e6",
+          "lines": 115,
+          "redacted_lines": []
+        }
+      }
+    },
+    "site-uploader": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "7b847b3b0187fba46aebfa9d2f0b46c747a7e2a50b908c3bb44b15bdecb0331e",
+          "committed_sha256": "7b847b3b0187fba46aebfa9d2f0b46c747a7e2a50b908c3bb44b15bdecb0331e",
+          "lines": 60,
+          "redacted_lines": []
+        }
+      }
+    },
+    "site": {
+      "live_version": 7,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "6c96713b93061f224dc4c35efd627531240a0e4cbdeb46e5795c52b66dcfe048",
+          "committed_sha256": "6c96713b93061f224dc4c35efd627531240a0e4cbdeb46e5795c52b66dcfe048",
+          "lines": 58,
+          "redacted_lines": []
+        }
+      }
+    },
+    "sms-worker": {
+      "live_version": 5,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "89df9e4ab1704ca59865b75991e5f673337667c83b76aca233b03468dfc3a6ef",
+          "committed_sha256": "89df9e4ab1704ca59865b75991e5f673337667c83b76aca233b03468dfc3a6ef",
+          "lines": 233,
+          "redacted_lines": []
+        }
+      }
+    },
+    "social-proof": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "8f688979d38fb5b5628d5bee1984e0f6c67394afe9fd1566793fa0c83d6403d1",
+          "committed_sha256": "8f688979d38fb5b5628d5bee1984e0f6c67394afe9fd1566793fa0c83d6403d1",
+          "lines": 134,
+          "redacted_lines": []
+        }
+      }
+    },
+    "square-webhook": {
+      "live_version": 6,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "1efbb821de374ea3585eb8b5bf55cd6ea47a49b2b37e4aa75f1f5bd945760e79",
+          "committed_sha256": "a83f1762b0429a5a52a4f72a072991566c1a1cf2b55cd1bfc1e2e77eb8421cac",
+          "lines": 263,
+          "redacted_lines": [
+            9,
+            136
+          ]
+        }
+      }
+    },
+    "test-html": {
+      "live_version": 3,
+      "verify_jwt": true,
+      "files": {
+        "index.ts": {
+          "live_sha256": "1f9f6ea3a4b382f719935b24cd4d8d4d08b1dd4b1c33bb6e87238ce2ec902809",
+          "committed_sha256": "1f9f6ea3a4b382f719935b24cd4d8d4d08b1dd4b1c33bb6e87238ce2ec902809",
+          "lines": 17,
+          "redacted_lines": []
+        }
+      }
+    },
+    "translate-course": {
+      "live_version": 1,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "8408a8c7b1b2df4862c3307dd2fde5b33e94ddefef4f1d996595e205ae750693",
+          "committed_sha256": "8408a8c7b1b2df4862c3307dd2fde5b33e94ddefef4f1d996595e205ae750693",
+          "lines": 201,
+          "redacted_lines": []
+        }
+      }
+    },
+    "translate-message": {
+      "live_version": 1,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "5ea312e1afee6502407c61dad8c5310e58a208122e047a1109403aa70c2fc2ae",
+          "committed_sha256": "5ea312e1afee6502407c61dad8c5310e58a208122e047a1109403aa70c2fc2ae",
+          "lines": 118,
+          "redacted_lines": []
+        }
+      }
+    },
+    "tuition-reserve": {
+      "live_version": 4,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "136bf993684972c87553c973c179bccb9ae5f6d74b48b1124760a482c2e4e560",
+          "committed_sha256": "136bf993684972c87553c973c179bccb9ae5f6d74b48b1124760a482c2e4e560",
+          "lines": 175,
+          "redacted_lines": []
+        }
+      }
+    },
+    "weekly-digest": {
+      "live_version": 2,
+      "verify_jwt": false,
+      "files": {
+        "index.ts": {
+          "live_sha256": "e82aaecb3b53f472b3ea0689f6f29b9be72094f811fec6e81cfd11b1ba6d1f77",
+          "committed_sha256": "e82aaecb3b53f472b3ea0689f6f29b9be72094f811fec6e81cfd11b1ba6d1f77",
+          "lines": 91,
+          "redacted_lines": []
+        }
+      }
+    }
+  }
+}
