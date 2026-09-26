@@ -12,6 +12,25 @@ price/policy change without her explicit approval for that action (SQL is staged
 `db/pending/`); never put secrets or private student data anywhere. Full text and the
 retired-facts list: docs/OWNER-RULES.md + docs/CONVERSION-AUDIT-2026-09-17.md.
 
+## PLATFORM SWITCHOVER — no more Vercel or Supabase (Amanda, Sep 26, 2026)
+Premier Dental Academy of Longview and The LeadFlow Pro **no longer use Vercel or Supabase**.
+Everything both businesses run is being switched over (in progress as of Sep 26, 2026) to a
+**DigitalOcean droplet** run for The LeadFlow Pro. **GitHub stays** as source control.
+Take this as settled; there is no need to verify it against Vercel or Supabase.
+- Do not plan, build, deploy or migrate anything on Vercel or Supabase: no new edge functions,
+  no Supabase migrations, no Vercel config or env work. New work targets the droplet.
+- Every Vercel/Supabase reference below (stack, auth, payments, edge functions,
+  `db/migrations/`, `db/pending/`, env vars, deploy steps) describes the OLD platform. Read it
+  as history and as the map of what has to be ported, not as how things run now.
+- On hold: the staged Supabase SQL in `db/pending/` and the edge-function deploys queued in
+  PR #163. Do not run them unless Amanda asks for that exact action.
+- Droplet details (address, stack, database, auth, deploy process) are not recorded here yet.
+  Do not invent them; get them from Amanda or from the repo once committed, then update this
+  section.
+- The approval rules above still apply on the droplet: no production deploy, DB migration,
+  env/DNS/payment change, real send or user change without Amanda's explicit approval for
+  that action, and never commit secrets.
+
 ## Conversion plumbing (Sep 2026) — how leads and campaigns flow
 - **Every lead form** submits through `assets/pda-lead.js` (`PDALead.bindForm` / `submit`):
   POST `/api/lead` (api/lead.js: validate, de-dupe on utm.submission_id, insert; if the
@@ -35,7 +54,7 @@ The live website for Premier Dental Academy of Longview — a Registered Dental
 Assistant (RDA) training school in Longview, TX.
 Live: https://www.premierdentalacademyoflongview.com (apex + www).
 
-## Stack & hosting
+## Stack & hosting (OLD platform — Vercel + Supabase are retired; see PLATFORM SWITCHOVER)
 - Static HTML + Tailwind (CDN) + Inter/Fraunces fonts. No build step.
 - Supabase (project `lmbsuwslsycukynzpzik`) — auth, student dashboard, admin, RLS.
   The client uses the PUBLIC anon/publishable key (safe to ship in client code).
