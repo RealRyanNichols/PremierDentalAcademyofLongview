@@ -22,8 +22,11 @@ Take this as settled; there is no need to verify it against Vercel or Supabase.
 - Every Vercel/Supabase reference below (stack, auth, payments, edge functions,
   `db/migrations/`, `db/pending/`, env vars, deploy steps) describes the OLD platform. Read it
   as history and as the map of what has to be ported, not as how things run now.
-- On hold: the staged Supabase SQL in `db/pending/` and the edge-function deploys queued in
-  PR #163. Do not run them unless Amanda asks for that exact action.
+- Retired, not on hold: PR #163 (Supabase edge-function deploys) was closed unmerged on
+  Amanda's decision, Sep 27, 2026, and the staged Supabase SQL in `db/pending/` will not be run.
+  Its two improvements are recorded for the droplet port in `migration/supabase-export/`.
+- The LeadFlow Pro repo has the same export for its own Supabase project, at
+  `migration/supabase-export/` in `RealRyanNichols/TheLeadFlowPro` (merged Sep 27, 2026).
 - **The droplet** (facts from The LeadFlow Pro repo, `docs/infrastructure/droplet.md` and
   `deploy/droplet/`, and its `CLAUDE.md`; Sep 24–26, 2026):
   - It is Ryan's DigitalOcean droplet. Run commands in DigitalOcean's web console; no SSH key is
