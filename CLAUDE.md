@@ -12,6 +12,43 @@ price/policy change without her explicit approval for that action (SQL is staged
 `db/pending/`); never put secrets or private student data anywhere. Full text and the
 retired-facts list: docs/OWNER-RULES.md + docs/CONVERSION-AUDIT-2026-09-17.md.
 
+## PLATFORM SWITCHOVER — no more Vercel or Supabase (Amanda, Sep 26, 2026)
+Premier Dental Academy of Longview and The LeadFlow Pro **no longer use Vercel or Supabase**.
+Everything both businesses run is being switched over (in progress as of Sep 26, 2026) to a
+**DigitalOcean droplet** run for The LeadFlow Pro. **GitHub stays** as source control.
+Take this as settled; there is no need to verify it against Vercel or Supabase.
+- Do not plan, build, deploy or migrate anything on Vercel or Supabase: no new edge functions,
+  no Supabase migrations, no Vercel config or env work. New work targets the droplet.
+- Every Vercel/Supabase reference below (stack, auth, payments, edge functions,
+  `db/migrations/`, `db/pending/`, env vars, deploy steps) describes the OLD platform. Read it
+  as history and as the map of what has to be ported, not as how things run now.
+- On hold: the staged Supabase SQL in `db/pending/` and the edge-function deploys queued in
+  PR #163. Do not run them unless Amanda asks for that exact action.
+- **The droplet** (facts from The LeadFlow Pro repo, `docs/infrastructure/droplet.md` and
+  `deploy/droplet/`, and its `CLAUDE.md`; Sep 24–26, 2026):
+  - It is Ryan's DigitalOcean droplet. Run commands in DigitalOcean's web console; no SSH key is
+    needed.
+  - It already runs the central brain (:3000) and The LeadFlow Pro in Docker: `web` on
+    127.0.0.1:3100, `cron`, and an optional `worker`. Caddy serves HTTPS with automatic
+    certificates.
+  - LeadFlow Pro's app is at `/opt/theleadflowpro`, its secrets are in
+    `/etc/theleadflowpro/web.env`, and it deploys with
+    `sudo /opt/theleadflowpro/deploy/droplet/deploy.sh`. Its read-only `check.sh` prints the
+    droplet's IP.
+  - Not recorded anywhere yet: the IP, size and region; and where the database and logins will
+    run once Supabase is gone. Do not invent them; get them from Amanda or Ryan, then record them
+    here.
+- **This site is not on the droplet yet.** Nothing is set up for it there; it will need its own
+  setup, following LeadFlow Pro's pattern. What has to move is listed in
+  `migration/supabase-export/`:
+  - `README.md`: the database, stored secrets, 10 scheduled jobs, webhooks, and this site plus its
+    `/api` functions.
+  - `INVENTORY.md`: the porting checklist for the 45 Supabase functions.
+  - `functions/`: their verified live code. Port from there, not from `supabase/functions/`.
+- The approval rules above still apply on the droplet: no production deploy, DB migration,
+  env/DNS/payment change, real send or user change without Amanda's explicit approval for
+  that action, and never commit secrets.
+
 ## Conversion plumbing (Sep 2026) — how leads and campaigns flow
 - **Every lead form** submits through `assets/pda-lead.js` (`PDALead.bindForm` / `submit`):
   POST `/api/lead` (api/lead.js: validate, de-dupe on utm.submission_id, insert; if the
@@ -35,7 +72,7 @@ The live website for Premier Dental Academy of Longview — a Registered Dental
 Assistant (RDA) training school in Longview, TX.
 Live: https://www.premierdentalacademyoflongview.com (apex + www).
 
-## Stack & hosting
+## Stack & hosting (OLD platform — Vercel + Supabase are retired; see PLATFORM SWITCHOVER)
 - Static HTML + Tailwind (CDN) + Inter/Fraunces fonts. No build step.
 - Supabase (project `lmbsuwslsycukynzpzik`) — auth, student dashboard, admin, RLS.
   The client uses the PUBLIC anon/publishable key (safe to ship in client code).
@@ -96,6 +133,10 @@ system) is itself the asset — investors and other academies will want it.
 6. Commits: author `Premier Dental Academy of Longview <hello@premierdentalacademyoflongview.com>`
    (the business, never an individual — Amanda, Sep 19, 2026), normal cadence.
    Do NOT tag commits, PRs, or code as machine-generated.
+7. **This repository is PUBLIC on GitHub.** Never put a student's or lead's name, balance,
+   payment detail, phone, email or any other personal data in any file, comment, commit message
+   or PR. Refer to people by role or count ("one student", "a lead"); the details live in the
+   admin pages.
 
 ## Payments (api/enroll.js)
 - Vercel serverless function; reads `SQUARE_ACCESS_TOKEN` from Vercel env.
@@ -308,10 +349,10 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   `laborday2026` payments as `reserved` (no /learn access until the Sep 10 refund window ends).
 - /admin/payments (owner-only) + read-only api/admin-payments.js reconcile purchases vs Square.
   Known: checkout auto-pay (enroll.js STEP 3 invoice) has NEVER succeeded — orders exist,
-  invoices don't. $11,000 of balances (Selena/Linsey/Madisyn $3,000 each, Crystal $2,000) have
+  invoices don't. $11,000 of balances (four students: three at $3,000, one at $2,000; names in /admin/payments) have
   no schedule; plan choices were never stored. Retired Square links ($1,997, $2,100 plans,
   $397 online) are still live; Square location phone is the never-use 903-230-6444.
-- Selena moved to Sept 29 (applied Sep 6). October 5 (MWF, hours TBC) + October 20 (T/Th) live.
+- One student moved to the Sept 29 class (applied Sep 6). October 5 (MWF, hours TBC) + October 20 (T/Th) live.
 - Runbook + Amanda's action list: docs/labor-day-2026-offer.md, docs/COWORK-REQUEST-2026-09-06.md.
 
 ## To continue building

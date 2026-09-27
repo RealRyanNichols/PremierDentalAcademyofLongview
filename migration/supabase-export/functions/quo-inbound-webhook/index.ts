@@ -1,17 +1,3 @@
-// >>> DRIFT-STATUS: repo_ahead — record: supabase/functions/DEPLOYED.json >>>
-// !! NOT LIVE YET — DO NOT DEPLOY WITHOUT THE OWNER'S GO-AHEAD (checked 2026-09-24) !!
-// Live is v13 (deployed 2026-09-22 21:59 UTC). Everything below this block is that exact
-// source, pulled on 2026-09-24 and confirmed by two independent copies, plus exactly two
-// additions (both marked "2026-09-20" in the code):
-//   1. a completed call moves its lead out of "new" even when no Sona summary arrives;
-//   2. an outbound text moves its lead out of "new".
-// Every live protection is kept as-is: a real 10-digit number before any lead lookup,
-// one row per call_id (upsert_call_event), the LeadFlow Pro line skipped, one admin task
-// per call, and the duplicate-delivery claim (quo_webhook_events).
-// To ship: deploy the output of `node scripts/check-edge-drift.mjs --body quo-inbound-webhook`
-// (this block removed), confirm list_edge_functions shows v14, then set status in_sync in
-// DEPLOYED.json and delete this block. npm test enforces both. Runbook: docs/edge-functions.md.
-// <<< DRIFT-STATUS <<<
 // Quo (OpenPhone) inbound webhook — Sona AI call data + SMS, into the pipeline.
 // =============================================================================
 // Handles two families of Quo events:
@@ -90,7 +76,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const SECRET = "pda-quo-2026";
+const SECRET = "REDACTED-see-migration/supabase-export/README";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const SITE_URL = "https://premierdentalacademyoflongview.com";
@@ -350,13 +336,6 @@ async function handleCall(sb: any, type: string, obj: any, body: any): Promise<R
       if (Object.keys(p).length) await sb.from("leads").update(p).eq("id", leadRow.id);
     }
   }
-  // 2026-09-20: any completed call — Amanda dialing out, or an answered inbound call —
-  // is a contact even when no Sona summary ever arrives. Before this, a lead stayed
-  // "new" (and read as uncontacted on the KPI page) unless a summary event fired.
-  if (lead?.id && isCompletion && (lead.pipeline_stage || "new") === "new") {
-    const connected = direction === "outbound" || st === "completed" || !!answeredAt || durationSec > 0;
-    if (connected) await sb.from("leads").update({ pipeline_stage: "contacted" }).eq("id", lead.id);
-  }
 
   // One admin task per call: on completion, by the event that first tied the
   // call to a real PDA caller. Duplicates and sub-events create none.
@@ -424,7 +403,7 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
     // texts students, vendors and parents, and those are not leads.
     let outLead: any = null;
     if (digits10(toPhone).length === 10) {
-      const { data } = await sb.from("leads").select("id,first_name,email,pipeline_stage")
+      const { data } = await sb.from("leads").select("id,first_name,email")
         .ilike("phone", `%${digits10(toPhone)}%`).order("created_at", { ascending: true }).limit(1);
       outLead = data?.[0] || null;
     }
@@ -436,12 +415,6 @@ async function handleSms(sb: any, obj: any, body: any): Promise<Response> {
       metadata: { quo_event: body.type || null, msg_id: msgId || null, logged_outbound: true },
     });
     if (error && String(error.code) === "23505") return json({ ok: true, skipped: "already logged", msg_id: msgId });
-    // 2026-09-20: a text FROM Amanda is a contact. Move the lead out of "new" so the KPI
-    // page and the inbox stop calling a contacted lead uncontacted. (last_contact_at is
-    // already stamped by trg_touch_lead_last_contact on the communications insert above.)
-    if (outLead?.id && (outLead.pipeline_stage || "new") === "new") {
-      await sb.from("leads").update({ pipeline_stage: "contacted" }).eq("id", outLead.id);
-    }
     return json({ ok: true, logged: "outbound sms", lead_id: outLead?.id, msg_id: msgId });
   }
 

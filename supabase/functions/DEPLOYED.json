@@ -88,7 +88,7 @@
       "deployed_ezbr_sha256": "08a419ae573d8964280921f183f5e39da39e7f0051b2a49b5cd227cb111976f5",
       "verify_jwt": false,
       "deployed_sha256": "0822d4fa142f3d93733af4e88558417956e8b1af0167ae4cada2544e80ab1705",
-      "repo_sha256": "2952aab57eb666021d23fb0bd1fc0dc503b57da9beb0e165d6c42b1f8be4b156",
+      "repo_sha256": "0e248bf3dbd3381847a31425a4519145845bc83c964fe77173e7693b7f7b837b",
       "additions": [
         "A completed call moves its lead out of \"new\" even when no Sona summary arrives (outbound, status completed, answeredAt, or a duration).",
         "An outbound text from the PDA line moves its lead out of \"new\" (last_contact_at stays with trg_touch_lead_last_contact)."
