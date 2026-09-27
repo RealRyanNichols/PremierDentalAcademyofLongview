@@ -82,10 +82,11 @@ one with the picture.
 
 ### New posts every month
 
-A monthly Claude task writes the next 30 days of posts, checks them against the same rules, and
-publishes them as an approved queue file. The droplet picks up that file from the link in
-`PDAFB_REMOTE_QUEUES` in `/etc/pda-fb-poster/poster.env`. Each post is scheduled 29.5 days
-before its time, so there are about four weeks to change or remove anything in Business Suite.
+The droplet only posts from queue files that Amanda has approved. Each month the next 30 days of
+posts are drafted, checked against the same rules and sent to Amanda to review. Once she approves
+them, the approved file is added on the droplet with `sudo pda-fb-poster import FILE.json`. From
+then on the droplet schedules each post by itself, 29.5 days before its time, so there are about
+four weeks to change or remove anything in Business Suite.
 
 ## Undo
 
