@@ -1,0 +1,12 @@
+[Unit]
+Description=Run the PDA Facebook Page poster every 15 minutes
+
+[Timer]
+OnBootSec=3min
+OnCalendar=*:0/15
+RandomizedDelaySec=60
+Persistent=true
+Unit=pda-fb-poster.service
+
+[Install]
+WantedBy=timers.target

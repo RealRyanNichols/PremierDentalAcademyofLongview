@@ -1,0 +1,1169 @@
+{
+ "format": "pda-fb-queue/1",
+ "page_id": "180743142587539",
+ "page_name": "Premier Dental Academy of Longview",
+ "title": "Facebook Page posts, Oct 24 to Nov 22, 2026 (5 a day)",
+ "issued_at": "2026-09-27T17:00:00-05:00",
+ "approved": true,
+ "approved_by": "Amanda Williams",
+ "approval_note": "Approved in chat Sun Sep 27, 2026 2:59 PM CT ('That's fine. Get them all scheduled and posted'). Source: project doc claude/PDA_FB_Schedule_Oct24-Nov22_2026-09-26.md",
+ "timezone": "America/Chicago",
+ "allowed_dates": [
+  "November 9",
+  "November 17"
+ ],
+ "allowed_money": [
+  "$3,000",
+  "$3,500",
+  "$500",
+  "$997",
+  "$25",
+  "$50"
+ ],
+ "images": {
+  "tray_setup": {
+   "kind": "photo",
+   "file": "tray_setup.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "f836bc02fad3049a5acb9a17003fd288e64ae84510ac0f3d036cbb87e22dc9a7",
+   "description": "Tray set up on the bracket table with bib, gauze and curing light. No people."
+  },
+  "empty_operatory": {
+   "kind": "photo",
+   "file": "empty_operatory.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "7443f3b483894227fb1872e1baa16c5d770c0ac288a2b0509dbab04153742b3d",
+   "description": "Empty classroom operatory with dental chair. No people."
+  },
+  "tray_colorbands": {
+   "kind": "photo",
+   "file": "tray_colorbands.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "c0558800f566ad80417f87ee956b34ea9a9c6f6349479639ebeb430703eb7093",
+   "description": "Instrument tray close-up with color-coded bands. No people."
+  },
+  "fmx_whiteboard": {
+   "kind": "photo",
+   "file": "fmx_whiteboard.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "cbfe42fb32328275094189ba5320d5aa11d960679bd0a6abc46b566cd28aa95d",
+   "description": "Classroom whiteboard mapping an 18-image FMX. No people."
+  },
+  "grads_walking": {
+   "kind": "photo",
+   "file": null,
+   "people": true,
+   "consent": false,
+   "description": "Five graduates walking away in matching shirts, backs only. CONSENT NEEDED.",
+   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
+  },
+  "student_manikin": {
+   "kind": "photo",
+   "file": null,
+   "people": true,
+   "consent": false,
+   "description": "Student seen from behind at a manikin. CONSENT NEEDED.",
+   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
+  },
+  "pair_manikin": {
+   "kind": "photo",
+   "file": null,
+   "people": true,
+   "consent": false,
+   "description": "Two students at a manikin, one partly in profile. CONSENT NEEDED.",
+   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
+  },
+  "ai01": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai01.jpg",
+   "prompt": "Four adult teeth standing side by side, left to right: an incisor, a canine, a premolar, and a molar, each with its root showing, like a friendly dental anatomy chart. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai02": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai02.jpg",
+   "prompt": "A flat lay of dental protective gear laid out left to right on a light surface: a disposable blue gown, a face mask, clear protective glasses, and a pair of nitrile gloves. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai03": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai03.jpg",
+   "prompt": "A cute orange pumpkin trick-or-treat bucket full of wrapped Halloween candy, with a toothbrush and a small container of dental floss leaning against it. Playful, not spooky. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai04": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai04.jpg",
+   "prompt": "Two dental handpieces resting on a clean instrument tray: a slim high-speed handpiece and a slow-speed handpiece with a prophy angle. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai05": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai05.jpg",
+   "prompt": "Two healthy molars side by side: one with a tooth-colored filling that blends in, and one with a silver filling. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai06": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai06.jpg",
+   "prompt": "A close-up of a molar's chewing surface with deep grooves; the left half is coated with a thin, glossy clear sealant and the right half is not. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai07": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai07.jpg",
+   "prompt": "An American flag waving at sunrise above tall East Texas pine trees. Warm, respectful, patriotic mood. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai08": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai08.jpg",
+   "prompt": "A dental impression tray filled with pink impression material next to a sleek intraoral scanner wand, both resting on a clean counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai09": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai09.jpg",
+   "prompt": "A dental mouth mirror, close up, reflecting a soft beam of light. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai10": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai10.jpg",
+   "prompt": "A bright, clean clinic hallway with a wall-mounted AED, a small green oxygen tank, and a red emergency kit. No people. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai11": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai11.jpg",
+   "prompt": "A soft-bristled toothbrush with a line of toothpaste next to a small two-minute sand timer on a bathroom counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai12": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai12.jpg",
+   "prompt": "A cozy Thanksgiving table with pumpkin pie, cranberries, and a turkey platter slightly out of focus, and a small container of dental floss in front. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai13": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai13.jpg",
+   "prompt": "Gloved hands practicing with a dental mirror on a dental training manikin head in a dental chair. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  },
+  "ai14": {
+   "kind": "ai_illustration",
+   "file": null,
+   "people": false,
+   "consent": false,
+   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai14.jpg",
+   "prompt": "Two pairs of gloved hands passing a dental instrument above a dental training manikin, showing teamwork. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+  }
+ },
+ "posts": [
+  {
+   "date": "2026-10-24",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Saturday morning, coffee in hand. If a career change has been on your mind, give it ten quiet minutes today.\n\nWrite down what you want your weekdays to look like a year from now. That list is the start of a plan."
+  },
+  {
+   "date": "2026-10-24",
+   "time": "10:30",
+   "kind": "question",
+   "text": "This or that: would you rather work with your hands all day, or sit at a desk all day?"
+  },
+  {
+   "date": "2026-10-24",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Thinking about dental assisting? Three small things you can do this weekend:\n\n1. Try the free practice exam on our website and see what already feels familiar.\n2. Write down the questions you would ask on a school tour.\n3. Look at your weekday calendar and circle the hours you could give to class.\n\nNone of it costs a thing, and all of it makes the next conversation easier."
+  },
+  {
+   "date": "2026-10-24",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "See the colored bands on these instruments? Many dental offices color-code their instruments so each set stays together, from the tray to the sterilizer and back again. A color can stand for one treatment room or one type of procedure.\n\nThis tray is from our Longview classroom, where students learn to set up, break down, and sort trays just like it.",
+   "images": [
+    "tray_colorbands"
+   ]
+  },
+  {
+   "date": "2026-10-24",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Two in-person classes start in November at our Longview campus:\n\nMonday, November 9: Mon/Wed/Fri, 8:30 AM to 12:30 PM\nTuesday, November 17: Tue/Thu, 9:00 AM to 3:00 PM\n\nBoth are daytime classes, about 12 weeks long, and no prior dental experience is required. Want help picking the one that fits your week? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-10-25",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Sunday reset: you do not need the whole plan figured out today. You only need the next step. 💙"
+  },
+  {
+   "date": "2026-10-25",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is something you are looking forward to between now and the holidays?"
+  },
+  {
+   "date": "2026-10-25",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Start this fall or wait for the new year? We hear this question every season, so we wrote an honest comparison.\n\nIt covers what really changes if you wait, what does not, and how to decide based on your own life instead of a sales pitch.\n\nhttps://www.premierdentalacademyoflongview.com/blog/starting-dental-assistant-school-fall-vs-january"
+  },
+  {
+   "date": "2026-10-25",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Every tooth is built in layers.\n\nEnamel is the hard outer shell of the crown. Dentin sits underneath it and makes up most of the tooth. In the center is the pulp, where the nerves and blood vessels live.\n\nWhen a patient asks why a tooth feels sensitive, these layers are part of the answer, and assistants learn to explain it in plain words."
+  },
+  {
+   "date": "2026-10-25",
+   "time": "19:15",
+   "kind": "program",
+   "text": "The money part, in plain numbers.\n\nIn-person training is $3,000 paid in full. Or choose the payment plan: $3,500 total, with $500 down and the $3,000 balance in weekly or monthly payments, up to 12.\n\nAsk us anything about either option. Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-10-26",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Monday reminder: a new career gets built one ordinary day at a time. Today can be one of those days."
+  },
+  {
+   "date": "2026-10-26",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What does your dream work schedule look like? Mornings only, a few long days a week, or something else?"
+  },
+  {
+   "date": "2026-10-26",
+   "time": "13:15",
+   "kind": "value",
+   "text": "November has two in-person start dates at our Longview campus: Monday, November 9 and Tuesday, November 17.\n\nThis article covers both schedules, what is included, what it costs, and how to get ready before day one.\n\nhttps://www.premierdentalacademyoflongview.com/blog/november-dental-assistant-classes-longview"
+  },
+  {
+   "date": "2026-10-26",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Dental teams split the mouth into four quadrants. In adults, teeth 1 to 8 are the upper right, 9 to 16 the upper left, 17 to 24 the lower left, and 25 to 32 the lower right.\n\nOne detail trips up almost every new student: right and left always mean the patient's right and left, not yours."
+  },
+  {
+   "date": "2026-10-26",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Picking between November 9 and November 17 gets easier once you have seen the room.\n\nCome tour our Longview campus: the dental chairs, the instruments, and the practice management software students train on. Bring your questions. Tours are free and there is no obligation.\n\nhttps://www.premierdentalacademyoflongview.com/tour"
+  },
+  {
+   "date": "2026-10-27",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "You are allowed to change direction. Choosing something new is not quitting. It is deciding."
+  },
+  {
+   "date": "2026-10-27",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Quick poll: which would you want to learn first?\n\nA. Taking X-rays\nB. Charting\nC. Setting up instrument trays\nD. Scheduling patients\n\nTell us your letter in the comments."
+  },
+  {
+   "date": "2026-10-27",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Before you pick a class schedule, map a normal week on paper.\n\nWrite in work shifts, school pickups, appointments, and drive time. Then compare our two in-person options: Mon/Wed/Fri from 8:30 AM to 12:30 PM, or Tue/Thu from 9:00 AM to 3:00 PM.\n\nThe schedule that fits with the fewest changes is usually the one you will stick with."
+  },
+  {
+   "date": "2026-10-27",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "An adult mouth usually has 32 teeth: 8 incisors for cutting, 4 canines for tearing, 8 premolars, and 12 molars for grinding, counting the four wisdom teeth.\n\nThe shape of each tooth matches its job. Learn the job and the name gets easier to remember.",
+   "images": [
+    "ai01"
+   ]
+  },
+  {
+   "date": "2026-10-27",
+   "time": "19:15",
+   "kind": "program",
+   "text": "You do not need dental office experience to start.\n\nWe teach the instruments, the terms, and the routines from the beginning. People come to dental assisting from retail, restaurants, childcare, and plenty of other jobs, and the people skills from those jobs carry over.\n\nWondering if that could be you? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-10-28",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Midweek check-in: you are further along than you were on Monday. That counts."
+  },
+  {
+   "date": "2026-10-28",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is the hardest part about going back to school as an adult? Be honest. We have heard it all."
+  },
+  {
+   "date": "2026-10-28",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Thinking about our online program but not sure it fits? This five-question self-check helps you choose between online and in-person training based on how you learn and what your week really looks like.\n\nhttps://www.premierdentalacademyoflongview.com/blog/online-rda-program-self-check"
+  },
+  {
+   "date": "2026-10-28",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Set up before the patient sits down.\n\nA tray like this one has the instruments laid out in the order they will be used, with the patient bib, gauze, and a curing light within reach. When the setup is right, the appointment runs smoothly and the dentist never has to wait.\n\nTray setups are one of the first skills students practice in our Longview classroom.",
+   "images": [
+    "tray_setup"
+   ]
+  },
+  {
+   "date": "2026-10-28",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Can't fit weekday classes right now? Our online program is self-paced, with no class times.\n\nIt is $997 one time, and you can start the same day you enroll. You get guided lessons, practice management trainers, and mock state board exams.\n\nIt is study and software practice, not hands-on training. Hands-on practice with real instruments happens in our in-person program in Longview.\n\nQuestions? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-10-29",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "The version of you who finishes is built by the version of you who starts, even on the days you do not feel ready."
+  },
+  {
+   "date": "2026-10-29",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What song gets you through a long day? Drop it in the comments."
+  },
+  {
+   "date": "2026-10-29",
+   "time": "13:15",
+   "kind": "value",
+   "text": "A study tip that works for dental terms: spread it out.\n\nFifteen minutes a day for five days beats seventy-five minutes all at once. Short sessions with breaks in between help your brain hold on to what you learned.\n\nTry it with tooth numbers or instrument names this week."
+  },
+  {
+   "date": "2026-10-29",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "There is a right order for putting on and taking off protective gear.\n\nOn: gown, mask, eyewear, then gloves. Off: gloves first, then eyewear, gown, and mask, and clean your hands at the end.\n\nThe order matters because the outside of used gear is the dirtiest part. Students practice it until it is automatic.",
+   "images": [
+    "ai02"
+   ]
+  },
+  {
+   "date": "2026-10-29",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Every in-person class is capped at eight students.\n\nThat means more time with your hands on the equipment, faster feedback when something is off, and an instructor who knows exactly where you are. November classes start on the 9th and the 17th.\n\nCall or text (903) 913-6444 to talk it through."
+  },
+  {
+   "date": "2026-10-30",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Friday: you showed up this week, even on the hard days. That matters. 💙"
+  },
+  {
+   "date": "2026-10-30",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What was your very first job, and what did it teach you?"
+  },
+  {
+   "date": "2026-10-30",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Worried you might not be good with blood? You are not the first person to ask, and it is a fair question.\n\nThis article gives an honest answer: what you actually see in a dental office, how people adjust, and when it might be worth rethinking.\n\nhttps://www.premierdentalacademyoflongview.com/blog/what-if-im-not-good-with-blood-dental-assistant"
+  },
+  {
+   "date": "2026-10-30",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Dental X-rays follow a rule called ALARA: as low as reasonably achievable.\n\nIn practice, that means taking only the images the dentist orders, positioning carefully so retakes are rare, and protecting the patient and the team every time. Good technique is a safety skill, not just a picture-quality skill."
+  },
+  {
+   "date": "2026-10-30",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Ready for a first step that costs nothing? Applying is free, with no payment required, and we reply within 1 business day.\n\nTell us which November start interests you, or ask about the self-paced online program.\n\nhttps://www.premierdentalacademyoflongview.com/apply"
+  },
+  {
+   "date": "2026-10-31",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Happy Halloween, East Texas! 🎃 Have fun out there tonight, and stay safe."
+  },
+  {
+   "date": "2026-10-31",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Halloween question: what is the best candy to find in the trick-or-treat bag?"
+  },
+  {
+   "date": "2026-10-31",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Twenty words you will hear in your first week in a dental office, explained in plain English. Save this one for later.\n\nhttps://www.premierdentalacademyoflongview.com/blog/dental-terms-day-one-cheat-sheet"
+  },
+  {
+   "date": "2026-10-31",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "A dental assistant's Halloween tip: not all candy is equal.\n\nChocolate melts and clears the mouth faster. Sticky, chewy, and hard candies cling to teeth or stick around for a long time, and sour candy adds acid.\n\nEnjoy the treats, drink some water afterward, and brush before bed.",
+   "images": [
+    "ai03"
+   ]
+  },
+  {
+   "date": "2026-10-31",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Clocks fall back an hour tonight. Here is one way to use it: think about where you want to be this time next year.\n\nOur November classes start on the 9th (Mon/Wed/Fri mornings) and the 17th (Tue/Thu). Questions? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-11-01",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "New month, fresh page. What do you want November to be about?"
+  },
+  {
+   "date": "2026-11-01",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Did every clock in your house change on its own, or is the microwave still an hour off?"
+  },
+  {
+   "date": "2026-11-01",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Everybody's timeline looks tidy from the outside. Real life is messier than that.\n\nSome people start a new career at 19. Some start at 45. Neither one is late.\n\nThe right time is the one where you are ready to show up for it."
+  },
+  {
+   "date": "2026-11-01",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "From our classroom whiteboard: the full mouth series, or FMX.\n\nThis board maps out 18 images: 8 posterior periapicals, 6 anterior periapicals, and 4 bitewings. Each box shows which teeth that image needs to capture.\n\nLearning the map first makes the positioning make sense.",
+   "images": [
+    "fmx_whiteboard"
+   ]
+  },
+  {
+   "date": "2026-11-01",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Our in-person classes meet during the day, on one of two schedules: Mon/Wed/Fri from 8:30 AM to 12:30 PM, or Tue/Thu from 9:00 AM to 3:00 PM.\n\nThis month's starts are Monday, November 9 and Tuesday, November 17.\n\nCall or text (903) 913-6444 and we will help you pick."
+  },
+  {
+   "date": "2026-11-02",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Monday is a good day to make the phone call you have been putting off. You know the one."
+  },
+  {
+   "date": "2026-11-02",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is one thing you wish more people understood about your current job?"
+  },
+  {
+   "date": "2026-11-02",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Want to see what the payment plan looks like on your own calendar?\n\nOur free tuition planner builds your $500-down schedule, weekly or monthly, with the same math our checkout uses. The plan total always comes to $3,500.\n\nhttps://www.premierdentalacademyoflongview.com/tools/tuition-planner"
+  },
+  {
+   "date": "2026-11-02",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Two words that sound alike but mean different things.\n\nOverbite is how far the upper front teeth overlap the lower ones from top to bottom. Overjet is how far the upper front teeth sit out in front of the lower ones.\n\nAssistants hear both during exams and orthodontic visits, so they learn the difference early."
+  },
+  {
+   "date": "2026-11-02",
+   "time": "19:15",
+   "kind": "program",
+   "text": "One week until our Mon/Wed/Fri class starts on November 9, and the Tue/Thu class follows on November 17.\n\nIf you have questions about the schedule, the cost, or what the first week looks like, this is a good week to ask. Call or text (903) 913-6444.",
+   "note": "Nov 9 check: if the Nov 9 class is called off or moved, replace with: 'Our next in-person class starts Tuesday, November 17. It meets Tue/Thu from 9:00 AM to 3:00 PM in Longview. If you have questions about the schedule, the cost, or what the first week looks like, this is a good week to ask. Call or text (903) 913-6444.'"
+  },
+  {
+   "date": "2026-11-03",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Small, steady steps still get you there. Keep going."
+  },
+  {
+   "date": "2026-11-03",
+   "time": "10:30",
+   "kind": "question",
+   "text": "If you could spend one day shadowing any job, which one would it be?"
+  },
+  {
+   "date": "2026-11-03",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Asking about WIOA or other workforce funding? Bring these three questions to Workforce Solutions East Texas:\n\n1. Am I eligible, and what documents do you need from me?\n2. Does the award cover tuition only, or supplies and exam fees too?\n3. How long does approval usually take?\n\nFunding is never automatic, but the right questions get you a clear answer faster."
+  },
+  {
+   "date": "2026-11-03",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "The high-speed handpiece is what most people call the drill. It spins very fast and sprays water to keep the tooth cool while it works.\n\nThe slow-speed handpiece turns much slower and is used for jobs like polishing. The assistant keeps the suction in the right spot so the dentist can see through the spray.",
+   "images": [
+    "ai04"
+   ]
+  },
+  {
+   "date": "2026-11-03",
+   "time": "19:15",
+   "kind": "program",
+   "text": "How does the $500-down payment plan actually work?\n\nThis article lays it out: $3,000 paid in full, or $3,500 on the plan with $500 down and the $3,000 balance in weekly or monthly payments. It even has a calculator, so you can see your payments before you commit to anything.\n\nhttps://www.premierdentalacademyoflongview.com/blog/dental-assistant-school-payment-plan-explained"
+  },
+  {
+   "date": "2026-11-04",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Confidence usually shows up after you start, not before. Start anyway."
+  },
+  {
+   "date": "2026-11-04",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is a compliment you got at work that you still think about?"
+  },
+  {
+   "date": "2026-11-04",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Before you pay any school, make sure it is licensed.\n\nIn Texas, career schools are licensed by the Texas Workforce Commission. Our license number is S5316, and you can look it up yourself. This article shows how to check any school in about ten minutes.\n\nhttps://www.premierdentalacademyoflongview.com/blog/verify-dental-assistant-school-texas"
+  },
+  {
+   "date": "2026-11-04",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Two common filling materials: composite and amalgam.\n\nComposite is tooth-colored and hardens under a blue curing light. Amalgam is the silver-colored filling many people have from years ago.\n\nFor either one, the assistant helps keep the tooth dry and has the right materials ready at the right moment.",
+   "images": [
+    "ai05"
+   ]
+  },
+  {
+   "date": "2026-11-04",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Questions we hear before every start date:\n\nDo I need experience? No.\nIs it daytime? Yes: Mon/Wed/Fri mornings or Tue/Thu.\nWhat does it cost? $3,000 paid in full, or $3,500 on a plan with $500 down.\n\nNovember classes start on the 9th and the 17th. Anything else? Call or text (903) 913-6444.",
+   "note": "Nov 9 check: if the Nov 9 class is called off or moved, change the last line to 'Our next class starts Tuesday, November 17. Anything else? Call or text (903) 913-6444.'"
+  },
+  {
+   "date": "2026-11-05",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Someday a nervous patient will relax because you were calm and kind. That skill starts now."
+  },
+  {
+   "date": "2026-11-05",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What makes someone a great coworker, in your opinion?"
+  },
+  {
+   "date": "2026-11-05",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Here is a no-cost way to test the waters: talk to someone who already does the job.\n\nIf you know a dental assistant, ask them to coffee. Ask what surprised them, what they love, and what is hard. Real answers from real people beat any brochure, ours included."
+  },
+  {
+   "date": "2026-11-05",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Our Longview classroom, between classes.\n\nDental chairs, real equipment, and a room arranged like a working dental office. Students practice here until the routines feel familiar, so the first day in a real office does not feel brand new.",
+   "images": [
+    "empty_operatory"
+   ]
+  },
+  {
+   "date": "2026-11-05",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Curious what actually happens at a campus tour? This article walks through it: what you will see, who you will meet, how long it takes, and how to book one for free.\n\nhttps://www.premierdentalacademyoflongview.com/blog/what-happens-at-a-pda-campus-tour"
+  },
+  {
+   "date": "2026-11-06",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Friday reminder: you do not have to earn rest. Take some this weekend. 💙"
+  },
+  {
+   "date": "2026-11-06",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Sweet tea or unsweet? This is East Texas, so choose carefully."
+  },
+  {
+   "date": "2026-11-06",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Can you do dental assistant training with kids at home? The honest answer: yes, with a plan.\n\nThis article covers childcare workarounds, studying in small pockets of time, and getting the whole family on the same team.\n\nhttps://www.premierdentalacademyoflongview.com/blog/dental-school-with-kids-at-home"
+  },
+  {
+   "date": "2026-11-06",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Sealants are a thin protective coating painted onto the chewing surfaces of back teeth.\n\nThose surfaces have deep pits and grooves where food and bacteria hide. Sealing them helps keep decay out, which is why you often see sealants on kids' molars.",
+   "images": [
+    "ai06"
+   ]
+  },
+  {
+   "date": "2026-11-06",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Our Tuesday, November 17 class meets Tue/Thu from 9:00 AM to 3:00 PM at our Longview campus, for about 12 weeks.\n\nTwo full days a week can leave the other three open for work or family. Want to see if it fits your life? Call or text (903) 913-6444.",
+   "note": "Nov 17 check: if the Nov 17 class is called off or moved, rewrite around the next published start date."
+  },
+  {
+   "date": "2026-11-07",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Saturday morning: think of one person who believed in you before you believed in yourself. Send them a thank-you today."
+  },
+  {
+   "date": "2026-11-07",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is a skill you taught yourself that you are proud of?"
+  },
+  {
+   "date": "2026-11-07",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Starting any hands-on training soon? Budget for good shoes.\n\nDental assistants spend a lot of the day on their feet and moving around the chair. Comfortable, closed-toe shoes you can wipe clean are worth more than a cute pair you will regret by noon."
+  },
+  {
+   "date": "2026-11-07",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Fluoride varnish is painted onto teeth in a thin layer. It helps strengthen enamel and makes teeth more resistant to decay.\n\nPatients are usually asked to skip hard or sticky foods and hot drinks for a few hours afterward so it can do its work."
+  },
+  {
+   "date": "2026-11-07",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Every dental office runs on practice management software: the schedule, the chart, treatment plans, and insurance claims.\n\nOur students train on software from the start, including Practice Pro and ChairSide, trainers we built for our own classroom. That way the office side of the job already feels familiar by your first interview.\n\nQuestions? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-11-08",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Sunday is for resting, planning, and believing next week can be better than the last one."
+  },
+  {
+   "date": "2026-11-08",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Tell us something good that happened to you this week. Big or small, we want to hear it."
+  },
+  {
+   "date": "2026-11-08",
+   "time": "13:15",
+   "kind": "value",
+   "text": "A five-minute exercise for anyone thinking about a new career: write down three reasons you want it.\n\nNot the reasons you think you should have. Your real ones. Keep the list somewhere you will see it, because on hard days that list does more than any pep talk."
+  },
+  {
+   "date": "2026-11-08",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Plaque is a soft, sticky film of bacteria that forms on teeth every day. Brushing and flossing remove it.\n\nLeft alone, plaque hardens into calculus, also called tartar. Tartar cannot be brushed off. It has to be removed with instruments at a cleaning."
+  },
+  {
+   "date": "2026-11-08",
+   "time": "19:15",
+   "kind": "program",
+   "text": "A quick, honest note about what school gives you.\n\nWhen you finish our program, you earn a Certificate of Completion from Premier Dental Academy of Longview.\n\nBecoming a Registered Dental Assistant in Texas is a separate step with the Texas State Board of Dental Examiners. We help you prepare for it and walk you through it.\n\nQuestions? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-11-09",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "New week, same you, one step further. Let's go."
+  },
+  {
+   "date": "2026-11-09",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Coffee, tea, or energy drink: what gets your Monday going?"
+  },
+  {
+   "date": "2026-11-09",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Twelve weeks sounds like a long time until you look back at the last twelve and wonder where they went.\n\nThis one is about why a twelve-week plan is short enough to finish and long enough to change your direction.\n\nhttps://www.premierdentalacademyoflongview.com/blog/twelve-week-rule-monday-motivation"
+  },
+  {
+   "date": "2026-11-09",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Most dental work needs a dry tooth. That is why assistants get good at isolation: cotton rolls, suction in the right spot, and sometimes a dental dam.\n\nA dry field helps materials bond and lets the dentist see clearly. It is one of those quiet skills that makes a big difference."
+  },
+  {
+   "date": "2026-11-09",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Next in-person start: Tuesday, November 17. That class meets Tue/Thu from 9:00 AM to 3:00 PM at our Longview campus.\n\nPrefer Mon/Wed/Fri mornings? Ask us about the next one. Call or text (903) 913-6444.",
+   "note": "Nov 17 check before scheduling."
+  },
+  {
+   "date": "2026-11-10",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "It is okay to be proud of yourself for simply trying something new."
+  },
+  {
+   "date": "2026-11-10",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Think about the best job you ever had. What made it great: the people, the work, or the boss?"
+  },
+  {
+   "date": "2026-11-10",
+   "time": "13:15",
+   "kind": "value",
+   "text": "If you have worked retail, restaurants, or childcare, you already have skills dental offices value: staying calm with people, handling a rush, and keeping things clean and organized.\n\nWhen you write your resume, put those skills in plain words. They count."
+  },
+  {
+   "date": "2026-11-10",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Before anyone works on a real patient, the moves get practiced on a manikin: seating and positioning, mirror work, where to hold the suction, and passing instruments.\n\nReps like these build the muscle memory that makes a first real appointment feel familiar instead of frightening.",
+   "images": [
+    "student_manikin",
+    "ai13"
+   ],
+   "note": "Photo shows a student from behind. Attach it ONLY if Amanda has confirmed consent for student photos; otherwise post as text only."
+  },
+  {
+   "date": "2026-11-10",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Thinking about the November 17 class? Here is the full price, no guessing.\n\n$3,000 paid in full, or $3,500 on a payment plan: $500 down, then the $3,000 balance in weekly or monthly payments, up to 12.\n\nCall or text (903) 913-6444 with any question about it.",
+   "note": "Nov 17 check before scheduling."
+  },
+  {
+   "date": "2026-11-11",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Thank you to every veteran and military family in East Texas. We are grateful for your service. 🇺🇸",
+   "images": [
+    "ai07"
+   ]
+  },
+  {
+   "date": "2026-11-11",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Veterans Day: is there a veteran in your life you want to thank today? Give them a shout out below."
+  },
+  {
+   "date": "2026-11-11",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Already working as a CNA and thinking about dental assisting? A lot of what you know carries over, like patient care, infection control habits, and staying calm under pressure.\n\nThis article covers what transfers and what will be brand new.\n\nhttps://www.premierdentalacademyoflongview.com/blog/switching-from-cna-to-dental-assistant"
+  },
+  {
+   "date": "2026-11-11",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Gingivitis is inflammation of the gums: redness, swelling, and bleeding when you brush. Caught early, it can usually be reversed with good cleanings and home care.\n\nPeriodontitis is more serious. It affects the bone and tissue that hold teeth in place. Assistants help record the signs so the dentist can track them over time."
+  },
+  {
+   "date": "2026-11-11",
+   "time": "19:15",
+   "kind": "program",
+   "text": "What makes our program different? Training that mimics a real dental office: real instruments, real equipment, and the practice management software offices run on, in small classes of no more than eight students.\n\nNext in-person start: Tuesday, November 17. Come see it for yourself. Call or text (903) 913-6444.",
+   "note": "Nov 17 check before scheduling."
+  },
+  {
+   "date": "2026-11-12",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "You do not have to be fearless. You just have to be a little braver than your doubts today."
+  },
+  {
+   "date": "2026-11-12",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Name one thing you are better at now than you were a year ago."
+  },
+  {
+   "date": "2026-11-12",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Interview practice you can do in the car: answer \"Tell me about yourself\" out loud in 30 seconds.\n\nCover where you have worked, one thing you are good at, and why you want to work in a dental office. Say it until it sounds like you, not like a script."
+  },
+  {
+   "date": "2026-11-12",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "When a hygienist or dentist calls out numbers like 3, 2, 3, they are measuring the gum pocket around a tooth in millimeters, at six spots per tooth.\n\nIn general, 1 to 3 millimeters is considered healthy. The assistant often records the numbers on the perio chart as they are called out, so speed and accuracy both matter."
+  },
+  {
+   "date": "2026-11-12",
+   "time": "19:15",
+   "kind": "program",
+   "text": "A school tour tells you more than any website can.\n\nBefore the November 17 class starts, come see our Longview classroom in person and ask anything on your mind. Tours are free, with no obligation.\n\nhttps://www.premierdentalacademyoflongview.com/tour",
+   "note": "Nov 17 check before scheduling."
+  },
+  {
+   "date": "2026-11-13",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Friday reminder: progress you cannot see yet is still progress. 💙"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Friday the 13th: are you superstitious at all, or is it just another Friday?"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "13:15",
+   "kind": "value",
+   "text": "What does it take to become a Registered Dental Assistant in Texas? The steps can feel confusing, so we put them in order.\n\nThis guide walks through the requirements, the training, the jurisprudence exam, and the registration process itself.\n\nhttps://www.premierdentalacademyoflongview.com/blog/texas-rda-registration-guide"
+  },
+  {
+   "date": "2026-11-13",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Many offices still take traditional impressions with a tray and impression material. More and more also use digital scanners that capture the teeth with a small wand and a computer.\n\nEither way, the goal is an accurate copy of the teeth, and assistants often help prepare the patient and the equipment.",
+   "images": [
+    "ai08"
+   ]
+  },
+  {
+   "date": "2026-11-13",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Our Tue/Thu class starts Tuesday, November 17. If you are thinking about it, applying is free, with no payment required, and we reply within 1 business day.\n\nhttps://www.premierdentalacademyoflongview.com/apply",
+   "note": "Nov 17 check before scheduling."
+  },
+  {
+   "date": "2026-11-14",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Saturday thought: the life you want is allowed to look different from the one you planned."
+  },
+  {
+   "date": "2026-11-14",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Be honest: how many unread emails are sitting in your inbox right now?"
+  },
+  {
+   "date": "2026-11-14",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Planning to start later? A small weekly goal now makes the $500 down payment on our $3,500 plan easier to reach.\n\n$25 a week gets you there in 20 weeks. $50 a week gets you there in 10. Pick a number that will not hurt, set it on autopay, and let it grow."
+  },
+  {
+   "date": "2026-11-14",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Teamwork at the dental chair is a skill, not a personality trait.\n\nThe dentist and the assistant each know their zone, their timing, and what comes next. That rhythm gets built the same way every other skill does: through practice, one repetition at a time.",
+   "images": [
+    "pair_manikin",
+    "ai14"
+   ],
+   "note": "Photo shows two students, one partly in profile. Attach it ONLY if Amanda has confirmed consent for student photos; otherwise post as text only."
+  },
+  {
+   "date": "2026-11-14",
+   "time": "19:15",
+   "kind": "program",
+   "text": "An online question we get a lot: can I start today? Yes.\n\nOur online program is self-paced and starts any day. It is $997 one time, with guided lessons, practice management trainers, and mock state board exams. It is study and software practice, not hands-on training.\n\nQuestions? Call or text (903) 913-6444."
+  },
+  {
+   "date": "2026-11-15",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Rest today. Plan a little. Then take on the week. 💙"
+  },
+  {
+   "date": "2026-11-15",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Who gave you your first real chance at work? What did they see in you?"
+  },
+  {
+   "date": "2026-11-15",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Starting class soon, or just curious what day one looks like? Here is what to bring to your first day, and what to leave at home.\n\nhttps://www.premierdentalacademyoflongview.com/blog/what-to-bring-to-your-first-day-of-class"
+  },
+  {
+   "date": "2026-11-15",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "After a tooth is pulled, a blood clot forms in the socket. That clot protects the bone while it heals.\n\nIf it comes loose, the result can be a painful dry socket. That is why patients are told not to use straws, smoke, or spit hard for the first few days. Assistants often give these instructions, so knowing the why helps patients listen."
+  },
+  {
+   "date": "2026-11-15",
+   "time": "19:15",
+   "kind": "program",
+   "text": "If the only thing stopping you is a question, ask it.\n\nIs it the cost? The schedule? Worry about going back to school after a long time away?\n\nCall or text (903) 913-6444 and get a straight answer."
+  },
+  {
+   "date": "2026-11-16",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "A fresh week is a fresh chance. Use it well."
+  },
+  {
+   "date": "2026-11-16",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Which side of a dental office would you rather learn first: the front desk or chairside?"
+  },
+  {
+   "date": "2026-11-16",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Starting a new daytime schedule soon? Practice it a week early.\n\nSet your alarm for the time you will need on class days and run your whole morning routine: clothes, lunch, drive time. Day one goes better when your body already knows the drill."
+  },
+  {
+   "date": "2026-11-16",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "In a dental office, if it is not written down, it did not happen.\n\nClinical notes record what was done, which tooth and surfaces, the materials used, and how the patient did. Clear notes protect the patient and the office. Students practice writing them in ChairSide, the clinical notes trainer we built."
+  },
+  {
+   "date": "2026-11-16",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Thinking about the Tue/Thu class that starts November 17? Today is a good day to call.\n\nWe can answer questions about the schedule, the cost, and what the first week looks like. Call or text (903) 913-6444.",
+   "note": "Nov 17 check: if the Nov 17 class is called off or moved, rewrite around the next published start date."
+  },
+  {
+   "date": "2026-11-17",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Whatever you are starting this season, start it with your whole heart."
+  },
+  {
+   "date": "2026-11-17",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is a small win you had this month? Brag a little. We will cheer."
+  },
+  {
+   "date": "2026-11-17",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Coming from retail? You might be more ready for dental assisting than you think.\n\nThis article breaks down the retail skills that carry over to the dental office, from handling a rush to keeping a calm face with an upset customer.\n\nhttps://www.premierdentalacademyoflongview.com/blog/retail-to-dental-assisting-skills-transfer"
+  },
+  {
+   "date": "2026-11-17",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "The mouth mirror does four jobs. It lets the dentist see spots they cannot see directly, holds the cheek or tongue out of the way, reflects light where it is needed, and can shine light through front teeth to reveal problems.\n\nNot bad for a tool that small.",
+   "images": [
+    "ai09"
+   ]
+  },
+  {
+   "date": "2026-11-17",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Planning ahead for a future start? Applying is free, with no payment required, and we reply within 1 business day to walk you through upcoming dates, schedules, and costs.\n\nhttps://www.premierdentalacademyoflongview.com/apply",
+   "note": "If new start dates are in the cohorts table by the time this is scheduled, name them here."
+  },
+  {
+   "date": "2026-11-18",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Midweek reminder: learning slowly is still learning."
+  },
+  {
+   "date": "2026-11-18",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is the best customer service you have ever received? What made it great?"
+  },
+  {
+   "date": "2026-11-18",
+   "time": "13:15",
+   "kind": "value",
+   "text": "If you are learning on your own schedule, make an appointment with yourself.\n\nPick two or three set times a week, put them on your calendar, and protect them like a doctor's appointment. Self-paced learning works best when it is not left to whenever."
+  },
+  {
+   "date": "2026-11-18",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Patient privacy is part of the job from day one.\n\nThat means no talking about patients outside the office, no patient details on social media, and screens and charts kept out of view. Even mentioning that you saw someone at the dentist can be a privacy problem."
+  },
+  {
+   "date": "2026-11-18",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Live anywhere in Texas and want to start learning now? Our self-paced online program runs on your schedule.\n\nThis article explains what the online program is, who it fits, and what a week of it looks like.\n\nhttps://www.premierdentalacademyoflongview.com/blog/dental-assistant-training-from-anywhere-in-texas"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "The work you put in quietly will show up loudly one day."
+  },
+  {
+   "date": "2026-11-19",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Name an East Texas small business you love and want everyone to know about."
+  },
+  {
+   "date": "2026-11-19",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Dental assisting is not just for women. This article takes an honest look at the career for men: what the work is like, what training looks like, and the questions guys ask most.\n\nhttps://www.premierdentalacademyoflongview.com/blog/men-in-dental-assisting"
+  },
+  {
+   "date": "2026-11-19",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Every dental team plans for a medical emergency, even though emergencies are rare.\n\nAssistants know where the emergency kit, oxygen, and AED are kept, and CPR training is part of being ready. Knowing the plan ahead of time is what lets you stay calm if it ever happens.",
+   "images": [
+    "ai10"
+   ]
+  },
+  {
+   "date": "2026-11-19",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Here is every price in one place.\n\nIn person: $3,000 paid in full, or $3,500 on a plan with $500 down. Online: $997 one time, self-paced.\n\nNot sure which fits your budget? Call or text (903) 913-6444 and we will talk it through."
+  },
+  {
+   "date": "2026-11-20",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Friday: put the phone down for a bit tonight and enjoy the people around you. 💙"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What is your go-to Thanksgiving side dish? Defend your answer."
+  },
+  {
+   "date": "2026-11-20",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Every free practice tool on our website, on one page: a practice exam, flashcards, charting practice, practice management trainers, and resume and interview prep. No signup needed.\n\nBookmark it for the days you have ten minutes to spare.\n\nhttps://www.premierdentalacademyoflongview.com/blog/free-dental-assistant-practice-resources"
+  },
+  {
+   "date": "2026-11-20",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "What dental teams tell patients about brushing: a soft-bristled brush, fluoride toothpaste, two minutes, twice a day. Angle the bristles toward the gumline and use gentle circles instead of hard scrubbing.\n\nSimple advice, but assistants repeat it all day because it works.",
+   "images": [
+    "ai11"
+   ]
+  },
+  {
+   "date": "2026-11-20",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Planning for the new year? Come see our classroom first.\n\nTours of our Longview campus are free, with no obligation, and they are the easiest way to picture yourself there.\n\nhttps://www.premierdentalacademyoflongview.com/tour"
+  },
+  {
+   "date": "2026-11-21",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Saturday thought: every expert you admire was once a beginner who kept going."
+  },
+  {
+   "date": "2026-11-21",
+   "time": "10:30",
+   "kind": "question",
+   "text": "Real talk: what is one thing that would make going back to school easier for you?"
+  },
+  {
+   "date": "2026-11-21",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Want to walk through a dental operatory before your first day chairside? Our free Virtual Dental Office lets you tap through nine stations in the room and learn what your job is at each one.\n\nhttps://www.premierdentalacademyoflongview.com/blog/virtual-dental-office-walkthrough"
+  },
+  {
+   "date": "2026-11-21",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "Most dental procedures are done with the patient reclined, head and knees at about the same level. It gives the dentist a clear view and keeps the patient comfortable.\n\nAssistants learn to move the chair slowly and let patients sit up for a moment before they stand, so no one gets dizzy on the way out."
+  },
+  {
+   "date": "2026-11-21",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Small classes, real instruments, real equipment, and the software dental offices actually use. That is how we train dental assistants in Longview.\n\nWant to talk about upcoming start dates? Call or text (903) 913-6444.",
+   "note": "If new start dates are in the cohorts table by the time this is scheduled, name them here."
+  },
+  {
+   "date": "2026-11-22",
+   "time": "07:45",
+   "kind": "morning",
+   "text": "Thanksgiving week is here. We are thankful for every person who has trusted us with a step toward a new career. 💙",
+   "images": [
+    "grads_walking"
+   ],
+   "note": "Photo shows graduates from behind. Attach it ONLY if Amanda has confirmed consent for graduate photos; otherwise post as text only."
+  },
+  {
+   "date": "2026-11-22",
+   "time": "10:30",
+   "kind": "question",
+   "text": "What are you most thankful for this year?"
+  },
+  {
+   "date": "2026-11-22",
+   "time": "13:15",
+   "kind": "value",
+   "text": "Thanksgiving means a big family table. If you are planning to tell everyone you are going back to school, this article helps with the money talk, the schedule talk, and handling the doubters with grace.\n\nhttps://www.premierdentalacademyoflongview.com/blog/telling-your-family-going-back-to-school"
+  },
+  {
+   "date": "2026-11-22",
+   "time": "16:30",
+   "kind": "inside",
+   "text": "A Thanksgiving tip from the dental side: keep floss handy.\n\nTurkey, corn, and pecan pie love to hide between teeth. A quick floss after the big meal and a glass of water between helpings go a long way.",
+   "images": [
+    "ai12"
+   ]
+  },
+  {
+   "date": "2026-11-22",
+   "time": "19:15",
+   "kind": "program",
+   "text": "Before the holidays get busy, get your questions answered.\n\nCall or text (903) 913-6444 to ask about upcoming in-person start dates, or about starting online any day. Tours are free, and applying costs nothing.",
+   "note": "If new start dates are in the cohorts table by the time this is scheduled, name them here."
+  }
+ ]
+}
