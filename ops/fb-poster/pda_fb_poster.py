@@ -530,7 +530,7 @@ def read_token(cfg: dict) -> str | None:
 
 
 def fetch(url: str, timeout: float, limit: int = 12_000_000) -> bytes:
-    if not url.startswith("https://"):
+    if not url.startswith("https://") and not (os.environ.get("PDAFB_TEST") and url.startswith("http://127.0.0.1")):
         raise ValueError("only https links are allowed")
     req = urllib.request.Request(url, headers={"User-Agent": f"pda-fb-poster/{VERSION}"})
     with urllib.request.urlopen(req, timeout=timeout) as r:
@@ -608,16 +608,19 @@ def image_for(cfg: dict, names: list, images: dict) -> tuple[str, str, bytes, st
                 break
         if content is None and meta.get("url"):
             cache = os.path.join(paths(cfg)["cache"], name)
+            miss = cache + ".miss"
             if os.path.isfile(cache):
                 with open(cache, "rb") as fh:
                     content = fh.read()
-            else:
+            elif not (os.path.isfile(miss) and time.time() - os.path.getmtime(miss) < 1800):
                 try:
                     content = fetch(meta["url"], cfg["timeout"])
                     with open(cache, "wb") as fh:
                         fh.write(content)
                 except Exception:  # noqa: BLE001
                     content = None
+                    with open(miss, "w") as fh:  # not there yet: try again in 30 minutes
+                        fh.write(ct_stamp())
         if not content:
             continue
         if meta.get("sha256") and hashlib.sha256(content).hexdigest() != meta["sha256"]:
@@ -627,6 +630,27 @@ def image_for(cfg: dict, names: list, images: dict) -> tuple[str, str, bytes, st
         if content[:8] == b"\x89PNG\r\n\x1a\n":
             return name, name + ".png", content, "image/png"
     return None
+
+
+def waiting_for_photo(cfg: dict, names: list, images: dict, ts: int, now: int, fallback_ok: bool = True) -> str | None:
+    """If the first-choice image is an allowed photo marked wait_days that is not here yet, and the post is
+    still more than wait_days away, return a note saying so (the post is held back for now). Without
+    fallback_ok (the Page's schedule listing has not been shown to include Business Suite posts, so a
+    photo post loaded there would be invisible to us) it keeps waiting rather than risk a duplicate."""
+    if not names:
+        return None
+    meta = images.get(names[0]) or {}
+    days = float(meta.get("wait_days") or 0)
+    if not days or (meta.get("people") and not meta.get("consent")):
+        return None
+    if image_for(cfg, names[:1], images):
+        return None
+    if not fallback_ok:
+        return f"waiting for its photo ({names[0]}); it is loaded with the photo in Business Suite"
+    if ts - now <= days * 86400:
+        return None
+    until = ct_label(ts - int(days * 86400))
+    return f"waiting for its photo ({names[0]}); if the photo is not here by {until}, it goes out as text"
 
 
 def drop_privileges(cfg: dict) -> None:
@@ -751,6 +775,9 @@ def _run_locked(cfg: dict, dry: bool, summary: dict, led: "Ledger") -> dict:
     start_after = parse_fb_time(cfg["start_after"]) if cfg["start_after"] else None
     rows = led.all()
     proof = start_after is None or any(at_slot(r["slot_ts"]) for r in rows if r["slot_ts"] <= start_after)
+    # has the listing ever shown a post we did not create (for example one loaded in Business Suite)?
+    bs_visible = any(r["state"] == "on_schedule" for r in rows) or (
+        start_after is not None and any(at_slot(r["slot_ts"]) for r in rows if r["slot_ts"] <= start_after))
     lead = int(cfg["min_lead_min"] * 60)
     if not proof and any(r["state"] in OPEN_STATES and now + lead <= r["slot_ts"] <= start_after for r in rows):
         summary["notes"].append(f"leaving slots up to {ct_label(start_after)} to Business Suite "
@@ -791,6 +818,11 @@ def _run_locked(cfg: dict, dry: bool, summary: dict, led: "Ledger") -> dict:
             if start_after is not None and ts <= start_after and not proof:
                 continue
             if created >= cfg["max_per_run"]:
+                continue
+            wait_note = waiting_for_photo(cfg, json.loads(row["images"]), images, ts, now, bs_visible)
+            if wait_note:
+                if row["note"] != wait_note:
+                    led.set(key, note=wait_note)
                 continue
             img = image_for(cfg, json.loads(row["images"]), images)
             if dry:

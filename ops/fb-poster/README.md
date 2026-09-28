@@ -76,9 +76,18 @@ needed. Deleting a post in Business Suite is respected: the poster will not add 
 
 ### Adding an illustration later
 
-Save it as `/var/lib/pda-fb-poster/photos/ai01.jpg` (the name the queue gives that post), owned by
-`pdafb`. If the post is still more than 2 hours away, the next run swaps the text-only version for
-one with the picture.
+Each illustration has a link in the queue: `ops/fb-poster/photos/ai01.jpg` on this branch. Once a
+picture is committed there (or saved on the droplet as `/var/lib/pda-fb-poster/photos/ai01.jpg`),
+the droplet picks it up within about 30 minutes. If that post was already scheduled as text and is
+still more than 2 hours away, the droplet swaps in the version with the picture.
+
+### Photos of students
+
+Photos that show students are used only with recorded consent, and their files are kept off GitHub.
+The nightly Business Suite loader attaches them. The droplet leaves those time slots alone until 2 days
+before; if nothing has been scheduled there by then, it posts the text on its own so the day is not
+missing a post. It never does that unless the Page's schedule has shown it the Business Suite posts,
+so it cannot create a duplicate.
 
 ### New posts every month
 
@@ -124,8 +133,8 @@ first one that exists and is allowed is used, otherwise the post goes out as tex
 
 ## Tests
 
-`python3 -m unittest discover -s ops/fb-poster/tests -v` runs 24 tests against a fake Facebook API:
+`python3 -m unittest discover -s ops/fb-poster/tests -v` runs 29 tests against a fake Facebook API:
 first fill, idempotent re-runs, adopting Business Suite posts, the start-after guard, held posts,
 lost responses (no duplicates), retries, expired tokens, removed posts, publication checks,
-missed slots, late images, consent, pause, newer queue wins, daylight-saving time, and that no
-token is ever printed.
+missed slots, late images (from a file or a link), consent, photos waiting for Business Suite,
+pause, newer queue wins, daylight-saving time, and that no token is ever printed.

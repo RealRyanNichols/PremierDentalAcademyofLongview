@@ -42,6 +42,7 @@ class FakeGraph:
         self.token_ok = True
         self.page_token_mode = False   # True: token is a user token that hands out a page token
         self.calls = []
+        self.files = {}          # served at /img/<name> without a token (stands in for GitHub raw links)
         self.lock = threading.Lock()
 
     def new_id(self):
@@ -169,6 +170,19 @@ def make_handler(fake: FakeGraph):
             return self._err(400, 100, "unknown route " + "/".join(parts))
 
         def do_GET(self):
+            if self.path.startswith("/img/"):
+                body = fake.files.get(self.path[5:])
+                if body is None:
+                    self.send_response(404)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "image/jpeg")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+                return
             self._route("GET")
 
         def do_POST(self):
@@ -205,6 +219,7 @@ class PosterTest(unittest.TestCase):
         f._lose = False
         f.token_ok = True
         f.page_token_mode = False
+        f.files.clear()
         self.tmp = tempfile.mkdtemp()
         self.data = os.path.join(self.tmp, "data")
         os.makedirs(os.path.join(self.data, "queue"))
@@ -452,6 +467,78 @@ class PosterTest(unittest.TestCase):
         self.set_now(iso(2026, 10, 12, 9, 0))
         self.run_once()
         self.assertEqual([p["message"] for p in self.fake.posts.values()], ["New wording."])
+
+    def _people_queue(self):
+        img = {"student": {"kind": "photo", "file": "student.jpg", "people": True, "consent": True, "wait_days": 2}}
+        self.write_queue([{"date": "2026-10-20", "time": "07:45", "text": "Already loaded in Business Suite."},
+                          {"date": "2026-11-10", "time": "16:30", "text": "Class photo post.", "images": ["student"]}],
+                         images=img)
+
+    def test_consented_photo_waits_then_goes_out_as_text(self):
+        self._people_queue()
+        self.fake.add(P.slot_ts("2026-10-20", "07:45"), "Already loaded in Business Suite.")
+        self.set_now(iso(2026, 10, 12, 9, 0))
+        self.run_once()                     # adopts Oct 20; the photo post waits (no proof yet)
+        self.run_once()                     # proof now exists; still more than 2 days away: waits
+        self.assertEqual(self.posts_at("2026-11-10 16:30"), [])
+        self.assertIn("waiting for its photo", self.status_problem_free_note("2026-11-10 16:30"))
+        self.set_now(iso(2026, 11, 8, 17, 0))
+        self.run_once()                     # within 2 days and still no photo: text, so the day is not empty
+        posts = self.posts_at("2026-11-10 16:30")
+        self.assertEqual(len(posts), 1)
+        self.assertFalse(posts[0]["full_picture"])
+
+    def test_consented_photo_goes_out_with_the_photo_when_present(self):
+        self._people_queue()
+        shutil.copy(os.path.join(ROOT, "photos", "tray_setup.jpg"), os.path.join(self.data, "photos", "student.jpg"))
+        self.set_now(iso(2026, 10, 12, 9, 0))
+        self.run_once()
+        posts = self.posts_at("2026-11-10 16:30")
+        self.assertEqual(len(posts), 1)
+        self.assertTrue(posts[0]["full_picture"])
+
+    def test_waiting_photo_post_loaded_in_business_suite_is_adopted(self):
+        self._people_queue()
+        self.fake.add(P.slot_ts("2026-10-20", "07:45"), "Already loaded in Business Suite.")
+        self.set_now(iso(2026, 10, 12, 9, 0))
+        self.run_once()
+        self.fake.add(P.slot_ts("2026-11-10", "16:30"), "Class photo post.", picture="https://img/x.jpg")
+        s = self.run_once()
+        self.assertIn("2026-11-10 16:30", s["adopted"])
+        self.set_now(iso(2026, 11, 8, 17, 0))
+        self.run_once()
+        self.assertEqual(len(self.posts_at("2026-11-10 16:30")), 1)
+
+    def test_without_proof_a_waiting_photo_post_never_risks_a_duplicate(self):
+        self._people_queue()                # nothing on the schedule, so no proof the listing shows Business Suite
+        self.set_now(iso(2026, 11, 8, 17, 0))
+        self.run_once()
+        self.assertEqual(self.posts_at("2026-11-10 16:30"), [])
+
+    def test_illustration_from_a_link_arrives_later(self):
+        url = f"http://127.0.0.1:{self.port}/img/ai01.jpg"
+        self.write_queue([{"date": "2026-10-27", "time": "16:30", "text": "Four teeth, four jobs.", "images": ["ai01"]}],
+                         images={"ai01": {"kind": "ai_illustration", "file": None, "people": False, "url": url}})
+        self.set_now(iso(2026, 9, 28, 16, 45))
+        self.run_once()                     # link not there yet: text post
+        self.assertFalse(list(self.fake.posts.values())[0]["full_picture"])
+        miss = os.path.join(self.data, "image-cache", "ai01.miss")
+        self.assertTrue(os.path.exists(miss))
+        with open(os.path.join(ROOT, "photos", "tray_setup.jpg"), "rb") as fh:
+            self.fake.files["ai01.jpg"] = fh.read()
+        self.run_once()                     # remembered miss: no retry within 30 minutes
+        self.assertFalse(list(self.fake.posts.values())[0]["full_picture"])
+        os.utime(miss, (0, 0))              # 30 minutes later
+        s = self.run_once()
+        self.assertEqual(len(s["upgraded"]), 1)
+        self.assertEqual(len(self.fake.posts), 1)
+        self.assertTrue(list(self.fake.posts.values())[0]["full_picture"])
+
+    def status_problem_free_note(self, key):
+        led = P.Ledger(os.path.join(self.data, "ledger.db"))
+        row = led.get(key)
+        led.db.close()
+        return row["note"] or ""
 
     def test_dst_fall_back(self):
         self.assertEqual(P.slot_ts("2026-10-31", "07:45"),

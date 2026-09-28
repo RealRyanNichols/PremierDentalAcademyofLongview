@@ -3,7 +3,7 @@
  "page_id": "180743142587539",
  "page_name": "Premier Dental Academy of Longview",
  "title": "Facebook Page posts, Oct 24 to Nov 22, 2026 (5 a day)",
- "issued_at": "2026-09-27T19:05:00-05:00",
+ "issued_at": "2026-09-27T19:50:00-05:00",
  "approved": true,
  "approved_by": "Amanda Williams",
  "approval_note": "Approved in chat Sun Sep 27, 2026 2:59 PM CT ('That's fine. Get them all scheduled and posted'). Source: project doc claude/PDA_FB_Schedule_Oct24-Nov22_2026-09-26.md",
@@ -60,7 +60,8 @@
    "consent": true,
    "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
    "description": "Five graduates walking away in matching shirts, backs only.",
-   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/grads_walking.jpg; without the file the post goes out as text."
+   "delivery": "Kept off GitHub for the students' privacy. The nightly Business Suite loader attaches it. The droplet leaves this slot alone until 2 days before; if no post is there by then, it goes out as text.",
+   "wait_days": 2
   },
   "pair_manikin": {
    "kind": "photo",
@@ -69,7 +70,8 @@
    "consent": true,
    "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
    "description": "Two students at a manikin, one partly in profile.",
-   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/pair_manikin.jpg; without the file the post goes out as text."
+   "delivery": "Kept off GitHub for the students' privacy. The nightly Business Suite loader attaches it. The droplet leaves this slot alone until 2 days before; if no post is there by then, it goes out as text.",
+   "wait_days": 2
   },
   "student_manikin": {
    "kind": "photo",
@@ -78,103 +80,116 @@
    "consent": true,
    "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
    "description": "Student seen from behind at a manikin.",
-   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/student_manikin.jpg; without the file the post goes out as text."
+   "delivery": "Kept off GitHub for the students' privacy. The nightly Business Suite loader attaches it. The droplet leaves this slot alone until 2 days before; if no post is there by then, it goes out as text.",
+   "wait_days": 2
   },
   "ai01": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai01.jpg",
-   "prompt": "Four adult teeth standing side by side, left to right: an incisor, a canine, a premolar, and a molar, each with its root showing, like a friendly dental anatomy chart. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai01.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "Four adult teeth standing side by side, left to right: an incisor, a canine, a premolar, and a molar, each with its root showing, like a friendly dental anatomy chart. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai01.jpg"
   },
   "ai02": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai02.jpg",
-   "prompt": "A flat lay of dental protective gear laid out left to right on a light surface: a disposable blue gown, a face mask, clear protective glasses, and a pair of nitrile gloves. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai02.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A flat lay of dental protective gear laid out left to right on a light surface: a disposable blue gown, a face mask, clear protective glasses, and a pair of nitrile gloves. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai02.jpg"
   },
   "ai03": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai03.jpg",
-   "prompt": "A cute orange pumpkin trick-or-treat bucket full of wrapped Halloween candy, with a toothbrush and a small container of dental floss leaning against it. Playful, not spooky. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai03.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A cute orange pumpkin trick-or-treat bucket full of wrapped Halloween candy, with a toothbrush and a small container of dental floss leaning against it. Playful, not spooky. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai03.jpg"
   },
   "ai04": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai04.jpg",
-   "prompt": "Two dental handpieces resting on a clean instrument tray: a slim high-speed handpiece and a slow-speed handpiece with a prophy angle. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai04.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "Two dental handpieces resting on a clean instrument tray: a slim high-speed handpiece and a slow-speed handpiece with a prophy angle. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai04.jpg"
   },
   "ai05": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai05.jpg",
-   "prompt": "Two healthy molars side by side: one with a tooth-colored filling that blends in, and one with a silver filling. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai05.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "Two healthy molars side by side: one with a tooth-colored filling that blends in, and one with a silver filling. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai05.jpg"
   },
   "ai06": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai06.jpg",
-   "prompt": "A close-up of a molar's chewing surface with deep grooves; the left half is coated with a thin, glossy clear sealant and the right half is not. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai06.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A close-up of a molar's chewing surface with deep grooves; the left half is coated with a thin, glossy clear sealant and the right half is not. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai06.jpg"
   },
   "ai07": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai07.jpg",
-   "prompt": "An American flag waving at sunrise above tall East Texas pine trees. Warm, respectful, patriotic mood. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai07.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "An American flag waving at sunrise above tall East Texas pine trees. Warm, respectful, patriotic mood. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai07.jpg"
   },
   "ai08": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai08.jpg",
-   "prompt": "A dental impression tray filled with pink impression material next to a sleek intraoral scanner wand, both resting on a clean counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai08.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A dental impression tray filled with pink impression material next to a sleek intraoral scanner wand, both resting on a clean counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai08.jpg"
   },
   "ai09": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai09.jpg",
-   "prompt": "A dental mouth mirror, close up, reflecting a soft beam of light. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai09.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A dental mouth mirror, close up, reflecting a soft beam of light. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai09.jpg"
   },
   "ai10": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai10.jpg",
-   "prompt": "A bright, clean clinic hallway with a wall-mounted AED, a small green oxygen tank, and a red emergency kit. No people. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai10.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A bright, clean clinic hallway with a wall-mounted AED, a small green oxygen tank, and a red emergency kit. No people. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai10.jpg"
   },
   "ai11": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai11.jpg",
-   "prompt": "A soft-bristled toothbrush with a line of toothpaste next to a small two-minute sand timer on a bathroom counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai11.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A soft-bristled toothbrush with a line of toothpaste next to a small two-minute sand timer on a bathroom counter. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai11.jpg"
   },
   "ai12": {
    "kind": "ai_illustration",
    "file": null,
    "people": false,
    "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai12.jpg",
-   "prompt": "A cozy Thanksgiving table with pumpkin pie, cranberries, and a turkey platter slightly out of focus, and a small container of dental floss in front. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
+   "description": "AI illustration (not a photo of the school). Used once it appears at its link (added to GitHub when Amanda delivers it) or as photos/ai12.jpg on the droplet; a post already scheduled as text gets the picture swapped in.",
+   "prompt": "A cozy Thanksgiving table with pumpkin pie, cranberries, and a turkey platter slightly out of focus, and a small container of dental floss in front. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces.",
+   "url": "https://raw.githubusercontent.com/RealRyanNichols/PremierDentalAcademyofLongview/refs/heads/ops/fb-poster/ops/fb-poster/photos/ai12.jpg"
   }
  },
  "posts": [
