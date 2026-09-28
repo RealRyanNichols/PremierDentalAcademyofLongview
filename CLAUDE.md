@@ -381,7 +381,8 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   Known: checkout auto-pay (enroll.js STEP 3 invoice) has NEVER succeeded — orders exist,
   invoices don't. $11,000 of balances (four students: three at $3,000, one at $2,000; names in /admin/payments) have
   no schedule; plan choices were never stored. Retired Square links ($1,997, $2,100 plans,
-  $397 online) are still live; Square location phone is the never-use 903-230-6444.
+  $397 online) are still live. (The Square location's phone now reads (903) 913-6444 — checked
+  through the Square connector Sept 28, 2026.)
 - One student moved to the Sept 29 class (applied Sep 6). October 5 (MWF, hours TBC) + October 20 (T/Th) live.
 - Runbook + Amanda's action list: docs/labor-day-2026-offer.md, docs/COWORK-REQUEST-2026-09-06.md.
 
