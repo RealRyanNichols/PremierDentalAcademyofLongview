@@ -125,7 +125,7 @@ export function checkSecret(req, envName = 'CRON_SECRET') {
 }
 
 // Send one email through Resend. Returns { id } or throws.
-export async function resendSend({ to, subject, html, headers = {}, from }) {
+export async function resendSend({ to, subject, html, headers = {}, from, attachments }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY is not set');
   const res = await fetch('https://api.resend.com/emails', {
@@ -137,6 +137,7 @@ export async function resendSend({ to, subject, html, headers = {}, from }) {
       subject,
       html,
       headers,
+      ...(Array.isArray(attachments) && attachments.length ? { attachments } : {}),
     }),
   });
   const data = await res.json().catch(() => ({}));

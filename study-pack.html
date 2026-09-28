@@ -31,6 +31,7 @@ tailwind.config = { theme: { extend: {
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://web.squarecdn.com/v1/square.js"></script>
+<script src="/assets/pda-pay.js"></script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Product","name":"Dental Assistant Study Pack","description":"Instrument cheat sheets, tray setups, tooth-numbering, abbreviations, and a state-board quick-study guide for dental assistant students.","brand":{"@type":"Brand","name":"Premier Dental Academy of Longview"},"url":"https://premierdentalacademyoflongview.com/study-pack","offers":{"@type":"Offer","price":"19.00","priceCurrency":"USD","availability":"https://schema.org/InStock","url":"https://premierdentalacademyoflongview.com/study-pack"}}
 </script>
@@ -530,7 +531,7 @@ tailwind.config = { theme: { extend: {
     catch(e){ LOCK=false; btn.disabled=false; btn.textContent='Pay $19 & unlock'; err.textContent=e.message||'Card error.'; err.hidden=false; return; }
     try{ if(window.PDA&&window.PDA.track) window.PDA.track('begin_checkout',{product:'study_pack',value:19}); }catch(e){}
     try{
-      var resp=await fetch(SB_URL+'/functions/v1/buy-product',{ method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY}, body:JSON.stringify({ product_key:'study_pack', sourceId:tok.token, email:email, name:name }) });
+      var resp=await pdaPay('buy-product',{ method:'POST', headers:{'Content-Type':'application/json','apikey':SB_KEY}, body:JSON.stringify({ product_key:'study_pack', sourceId:tok.token, email:email, name:name }) });
       var out=await resp.json().catch(function(){return{};});
       if(out.alreadyOwned){ location.reload(); return; }
       if(resp.ok&&out.ok){
