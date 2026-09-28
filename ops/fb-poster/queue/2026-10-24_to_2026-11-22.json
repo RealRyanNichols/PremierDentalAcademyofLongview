@@ -3,7 +3,7 @@
  "page_id": "180743142587539",
  "page_name": "Premier Dental Academy of Longview",
  "title": "Facebook Page posts, Oct 24 to Nov 22, 2026 (5 a day)",
- "issued_at": "2026-09-27T17:00:00-05:00",
+ "issued_at": "2026-09-27T19:05:00-05:00",
  "approved": true,
  "approved_by": "Amanda Williams",
  "approval_note": "Approved in chat Sun Sep 27, 2026 2:59 PM CT ('That's fine. Get them all scheduled and posted'). Source: project doc claude/PDA_FB_Schedule_Oct24-Nov22_2026-09-26.md",
@@ -21,14 +21,6 @@
   "$50"
  ],
  "images": {
-  "tray_setup": {
-   "kind": "photo",
-   "file": "tray_setup.jpg",
-   "people": false,
-   "consent": false,
-   "sha256": "f836bc02fad3049a5acb9a17003fd288e64ae84510ac0f3d036cbb87e22dc9a7",
-   "description": "Tray set up on the bracket table with bib, gauze and curing light. No people."
-  },
   "empty_operatory": {
    "kind": "photo",
    "file": "empty_operatory.jpg",
@@ -36,14 +28,6 @@
    "consent": false,
    "sha256": "7443f3b483894227fb1872e1baa16c5d770c0ac288a2b0509dbab04153742b3d",
    "description": "Empty classroom operatory with dental chair. No people."
-  },
-  "tray_colorbands": {
-   "kind": "photo",
-   "file": "tray_colorbands.jpg",
-   "people": false,
-   "consent": false,
-   "sha256": "c0558800f566ad80417f87ee956b34ea9a9c6f6349479639ebeb430703eb7093",
-   "description": "Instrument tray close-up with color-coded bands. No people."
   },
   "fmx_whiteboard": {
    "kind": "photo",
@@ -53,29 +37,48 @@
    "sha256": "cbfe42fb32328275094189ba5320d5aa11d960679bd0a6abc46b566cd28aa95d",
    "description": "Classroom whiteboard mapping an 18-image FMX. No people."
   },
+  "tray_colorbands": {
+   "kind": "photo",
+   "file": "tray_colorbands.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "c0558800f566ad80417f87ee956b34ea9a9c6f6349479639ebeb430703eb7093",
+   "description": "Instrument tray close-up with color-coded bands. No people."
+  },
+  "tray_setup": {
+   "kind": "photo",
+   "file": "tray_setup.jpg",
+   "people": false,
+   "consent": false,
+   "sha256": "f836bc02fad3049a5acb9a17003fd288e64ae84510ac0f3d036cbb87e22dc9a7",
+   "description": "Tray set up on the bracket table with bib, gauze and curing light. No people."
+  },
   "grads_walking": {
    "kind": "photo",
-   "file": null,
+   "file": "grads_walking.jpg",
    "people": true,
-   "consent": false,
-   "description": "Five graduates walking away in matching shirts, backs only. CONSENT NEEDED.",
-   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
-  },
-  "student_manikin": {
-   "kind": "photo",
-   "file": null,
-   "people": true,
-   "consent": false,
-   "description": "Student seen from behind at a manikin. CONSENT NEEDED.",
-   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
+   "consent": true,
+   "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
+   "description": "Five graduates walking away in matching shirts, backs only.",
+   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/grads_walking.jpg; without the file the post goes out as text."
   },
   "pair_manikin": {
    "kind": "photo",
-   "file": null,
+   "file": "pair_manikin.jpg",
    "people": true,
-   "consent": false,
-   "description": "Two students at a manikin, one partly in profile. CONSENT NEEDED.",
-   "rule": "Shows students. Attached only if Amanda records written consent (set consent to true and add the file)."
+   "consent": true,
+   "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
+   "description": "Two students at a manikin, one partly in profile.",
+   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/pair_manikin.jpg; without the file the post goes out as text."
+  },
+  "student_manikin": {
+   "kind": "photo",
+   "file": "student_manikin.jpg",
+   "people": true,
+   "consent": true,
+   "consent_note": "Amanda Williams gave consent in chat, Sun Sep 27, 2026 6:57 PM CT ('I give consent').",
+   "description": "Student seen from behind at a manikin.",
+   "delivery": "Kept off GitHub for the students' privacy. To use it from the droplet, copy it to /var/lib/pda-fb-poster/photos/student_manikin.jpg; without the file the post goes out as text."
   },
   "ai01": {
    "kind": "ai_illustration",
@@ -172,22 +175,6 @@
    "consent": false,
    "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai12.jpg",
    "prompt": "A cozy Thanksgiving table with pumpkin pie, cranberries, and a turkey platter slightly out of focus, and a small container of dental floss in front. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
-  },
-  "ai13": {
-   "kind": "ai_illustration",
-   "file": null,
-   "people": false,
-   "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai13.jpg",
-   "prompt": "Gloved hands practicing with a dental mirror on a dental training manikin head in a dental chair. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
-  },
-  "ai14": {
-   "kind": "ai_illustration",
-   "file": null,
-   "people": false,
-   "consent": false,
-   "description": "AI illustration (not a photo of the school). Attached only once delivered as photos/ai14.jpg",
-   "prompt": "Two pairs of gloved hands passing a dental instrument above a dental training manikin, showing teamwork. Clean, modern 3D illustration with soft lighting on a white background, with teal and warm amber accents. Square image. No words, letters, numbers, logos, or human faces."
   }
  },
  "posts": [
@@ -759,10 +746,9 @@
    "kind": "inside",
    "text": "Before anyone works on a real patient, the moves get practiced on a manikin: seating and positioning, mirror work, where to hold the suction, and passing instruments.\n\nReps like these build the muscle memory that makes a first real appointment feel familiar instead of frightening.",
    "images": [
-    "student_manikin",
-    "ai13"
+    "student_manikin"
    ],
-   "note": "Photo shows a student from behind. Attach it ONLY if Amanda has confirmed consent for student photos; otherwise post as text only."
+   "note": "Photo shows a student from behind. Amanda gave consent Sun Sep 27, 6:57 PM CT ('I give consent'): attach it."
   },
   {
    "date": "2026-11-10",
@@ -894,10 +880,9 @@
    "kind": "inside",
    "text": "Teamwork at the dental chair is a skill, not a personality trait.\n\nThe dentist and the assistant each know their zone, their timing, and what comes next. That rhythm gets built the same way every other skill does: through practice, one repetition at a time.",
    "images": [
-    "pair_manikin",
-    "ai14"
+    "pair_manikin"
    ],
-   "note": "Photo shows two students, one partly in profile. Attach it ONLY if Amanda has confirmed consent for student photos; otherwise post as text only."
+   "note": "Photo shows two students, one partly in profile. Amanda gave consent Sun Sep 27, 6:57 PM CT ('I give consent'): attach it."
   },
   {
    "date": "2026-11-14",
@@ -1135,7 +1120,7 @@
    "images": [
     "grads_walking"
    ],
-   "note": "Photo shows graduates from behind. Attach it ONLY if Amanda has confirmed consent for graduate photos; otherwise post as text only."
+   "note": "Photo shows graduates from behind. Amanda gave consent Sun Sep 27, 6:57 PM CT ('I give consent'): attach it."
   },
   {
    "date": "2026-11-22",
