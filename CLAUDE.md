@@ -179,6 +179,12 @@ system) is itself the asset — investors and other academies will want it.
   was published and removed the same day. Do not recreate night-class content.
 - CONFIRMED by Amanda (Jul 7, 2026): classes are DAYTIME now; cohort start dates are
   unchanged (Aug 17, Aug 25, Sep 14, Sep 29, Nov 9, Nov 17).
+- **Start dates added Sep 29, 2026 (Amanda):** Dec 7 and Dec 22, 2026; then 2027: Feb 1, Feb 9, Mar 1, Mar 16,
+  Apr 26, May 4, May 24, Jun 8, Jul 19, Jul 27, Aug 16, Aug 31, Oct 11, Oct 19, Nov 8, Nov 23. Every Monday date is a
+  Mon/Wed/Fri cohort and every Tuesday date a Tue/Thu cohort; their cohort rows carry the two approved hour strings
+  below (ask Amanda before publishing different hours for any one class). The cohorts table stays the source of truth.
+- **Every time a class starts**, the blog TOUR_CTA grid and "next cohorts" prose must roll forward (see the Sep 17 and
+  Sep 29 CHANGELOG entries for the pattern); `check:dates` turns `npm test` red the morning after a start date passes.
 - **HOURS NOW CONFIRMED AND PUBLISHABLE (Amanda, Sep 4, 2026).** She reviewed and approved
   these two lines verbatim. They are the ONLY approved class-hour strings:
     * Mon/Wed/Fri cohorts (Sep 14, Nov 9) — **8:30 AM – 12:30 PM**
