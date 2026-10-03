@@ -46,7 +46,7 @@
     { href: '/directory',          label: 'Dental office directory', match: /^\/directory(\/|$)/ },
     { href: '/career-archives',    label: 'Career archives' },
     { href: '/hiring-partners',    label: 'For dental offices' },
-    { href: '/tools/practice-pro', label: 'Try the free trainer' },
+    { href: '/tools/practice-pro', label: 'Trainer demo' },
   ];
   // Shown in the drawer instead of Sign in / Apply when a session exists.
   const SIGNED_IN_LINKS = [

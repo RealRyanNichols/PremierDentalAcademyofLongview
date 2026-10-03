@@ -33,40 +33,48 @@ Navigation, access, and honesty fixes only. No price, program, policy, or claim 
 
 ---
 
-## 2. Needs Amanda's decision — pricing and program wording
+## 2. Pricing and program wording — DONE (Amanda's instruction, Oct 3, 2026)
 
-The whole public site, the chatbot, the apply form, the enroll page, the classes/calendar cards, and
-the dashboard labels still describe the **old program structure**: "RDA Foundation, 12 weeks, $1,995
-or $499 × 4" and "RDA Career Track, 24 weeks with externship, $3,495 or $499 × 7".
+Amanda's direction: remove every free / funded enrollment option (WIOA, TWC, GI Bill, scholarships,
+in-house financing, "$0 out-of-pocket") and present exactly two ways to pay for the in-person
+program: **$3,000 paid in full** or **$3,500 on the payment plan ($500 down + $3,000 balance)**.
 
-Current approved offer (per your standing instructions):
+Applied in this PR:
 
-| Offer | Approved | Site says now |
-| --- | --- | --- |
-| In-person, ~12 weeks, pay in full | **$3,000** | $1,995 (Foundation) |
-| In-person, payment plan | **$3,500 total = $500 down + $3,000 balance** | $499 × 4 months; comparison table also mentions a $0–$200 figure |
-| Online, self-paced, starts any day | **$397 promo / $997 regular** | Not offered anywhere on the site; "Career Track $3,495 / 24 weeks / externship" is offered instead |
+- One source of truth: `05_Live_Site/assets/pda-offer.js` (program name, 12 weeks, $3,000, plan
+  $500 + $3,000 = $3,500, `fundingOffered: false`). The classes and calendar cards, the enroll
+  page's checkout summary, and the Ask Premier chatbot read from it. Static copy on
+  `index.html`, `enroll.html`, `apply.html` carries the same figures.
+- Guard: `python3 scripts/check_offer.py` fails if retired prices, "Career Track", funding words
+  ("WIOA", "TWC", "GI Bill", "scholarship", "0% financing", "out-of-pocket") or "Stripe" reappear
+  on public pages, or if the approved figures go missing. Run it after any copy change.
+- Rewritten: homepage structured data (organization price range, Course schema, FAQ schema),
+  programs section ("One program. Two ways to pay."), tuition section (the $0 "Free Preview"
+  pricing card and the Workforce / Veterans / 0% financing footnote are gone), comparison table
+  (PDA cost cell; the "externship guarantee" row removed), FAQ answers, footer links; enroll page
+  (two payment cards replace Foundation / Career Track / Workforce-Veterans; checkout summary no
+  longer names Stripe); apply form ("How would you like to pay?" replaces the program picker, and
+  the admin inbox + CSV show the answer); contact reasons; classes and calendar card labels and
+  prices; chatbot answers for cost, duration, payment plan, funding (now a clear "we don't offer
+  funded or free enrollment"), job placement, greeting, and quick replies; "Apply free" buttons
+  now read "Apply now"; "scholarship deadlines" removed from newsletter copy; free-guide bullet;
+  salary and graduates pages; the two blog posts that described Foundation / Career Track; nav
+  label "Try the free trainer" → "Trainer demo".
 
-Every place that must change together (find them with
-`grep -rn "1,995\|3,495\|499\|Career Track\|Foundation\|24 week\|24-week\|externship" 05_Live_Site --include=*.html --include=*.js`):
+Still open on this topic:
 
-- `index.html` — meta description, FAQ schema (price, payment plan, refund answers), program cards, pricing section, comparison table, FAQ copy, CTA strip.
-- `enroll.html` — both program cards, the `PLANS` map, the "Workforce / Veterans $0 out-of-pocket" card, and a **"Stripe checkout" placeholder modal** (Square is the payment authority). The modal currently tells people to apply instead; no payment is taken on the site.
-- `apply.html` — program dropdown options "(12 weeks, $1,995)" and "(24 weeks, $3,495)".
-- `contact.html` — reason dropdown "RDA Foundation program" / "RDA Career Track program".
-- `classes.html` — `PROGRAMS` map (labels, prices, durations); "Saturday classes end at 1pm (Foundation) or 3pm (Career Track)".
-- `calendar.html` — card label "Career Track · 24 weeks" / "Foundation · 12 weeks".
-- `assets/ask-premier.js` — chatbot answers for cost, duration, payment plan, funding, refund.
-- `dashboard.html` — program labels "RDA Foundation / 12-week" and "RDA Career Track / 24-week with externship" (these match the `program` values stored on student profiles: 45 foundation, 10 career_track, 26 preview, 2 staff).
-- `salary.html`, `graduates.html`, blog posts — "12-week Foundation program" mentions.
-
-Recommended path: one follow-up PR that introduces a single approved-offer record (a small config
-module in `assets/`) and rewires every consumer above to it, with the enroll page pointing at the
-Square checkout/payment-plan links you approve. Needs: your final wording for the online program,
-and whether "Foundation" / "Career Track" remain names students see (they are still the values on
-their profiles).
-
----
+- `terms.html` still describes refund timing in Foundation / Career Track terms ("no refund after
+  week 10 (Foundation) or week 20 (Career Track)"). Legal text should match the signed enrollment
+  agreement, so it was left for Amanda to confirm the wording.
+- `privacy.html` says payment information is "processed by Stripe". Square is the processor. Also
+  legal text, so left for Amanda to confirm; the guard script lists it as a note until fixed.
+- The **online self-paced program ($397 promo / $997 regular)** from the standing instructions was
+  **not added**: Amanda's Oct 3 instruction named only the two in-person payment options, and the
+  site had never offered online. Add it only on her say-so.
+- Student records in the database still carry `program = foundation / career_track`; the
+  dashboard labels those as before. Internal only; no change needed unless she wants to rename.
+- The free-guide PDF itself (hosted outside this repo) may still discuss funding paths; its landing
+  page bullet was updated.
 
 ## 3. Needs Amanda's decision — claims on the "never retain" list
 

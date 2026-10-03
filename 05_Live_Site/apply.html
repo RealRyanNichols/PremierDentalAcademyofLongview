@@ -76,11 +76,11 @@
       <fieldset class="border-t border-slate-100 pt-5">
         <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">Your interest</legend>
         <label class="block mb-3">
-          <span class="text-sm font-medium">Which program interests you most?</span>
-          <select name="program" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
-            <option>Not sure yet — help me decide</option>
-            <option>RDA Foundation (12 weeks, $1,995)</option>
-            <option>RDA Career Track (24 weeks, $3,495)</option>
+          <span class="text-sm font-medium">How would you like to pay for the in-person program?</span>
+          <select name="payment_option" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>Not sure yet — tell me about both</option>
+            <option>Pay in full ($3,000)</option>
+            <option>Payment plan ($3,500 total: $500 down + $3,000 balance)</option>
           </select>
         </label>
         <label class="block mb-3">
@@ -167,7 +167,7 @@
       metadata: {
         city: fd.get('city'),
         age: fd.get('age'),
-        program: fd.get('program'),
+        payment_option: fd.get('payment_option'),
         source: fd.get('source'),
         start_when: fd.get('start_when'),
         notes: fd.get('notes'),
