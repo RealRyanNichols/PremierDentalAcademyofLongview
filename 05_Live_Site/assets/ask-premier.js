@@ -9,9 +9,12 @@
   if (typeof window === 'undefined' || window.__askPremierLoaded) return;
   window.__askPremierLoaded = true;
 
-  // Don't load inside the trainers (they have their own UI) or admin
+  // Don't load inside the trainers (they have their own UI), the admin
+  // inbox, or the signed-in / account pages — this is a prospect-facing
+  // widget, not student support.
   const path = location.pathname;
   if (/^\/tools\//.test(path) || /^\/admin\//.test(path)) return;
+  if (/^\/(dashboard|login|reset-password)(\.html)?\/?$/.test(path)) return;
 
   // Supabase (optional — only used to log conversations)
   let sb = null;

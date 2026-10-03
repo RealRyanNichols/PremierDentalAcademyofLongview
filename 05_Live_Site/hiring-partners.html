@@ -153,15 +153,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 600, once: true });
+if (window.AOS) AOS.init({ duration: 600, once: true });
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  // Null when the CDN library failed to load; the submit handler then shows
+  // the error state instead of throwing.
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
   const form = document.getElementById('partner-req');
+  const btn = form.querySelector('button[type=submit]');
+  const showError = (text) => {
+    let err = form.querySelector('.pda-form-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'pda-form-error w-full mt-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      err.setAttribute('role', 'alert');
+      form.appendChild(err);
+    }
+    err.innerHTML = text;
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
+    btn.disabled = true; btn.textContent = 'Sending…';
     const fd = new FormData(form);
     const [first, ...rest] = (fd.get('name') || '').split(' ');
-    await sb.from('leads').insert({
+    const { error } = sb ? await sb.from('leads').insert({
       first_name: first, last_name: rest.join(' '),
       email: fd.get('email'), phone: fd.get('phone'),
       source: 'hiring-partners',
@@ -170,7 +186,13 @@ AOS.init({ duration: 600, once: true });
         role: fd.get('role'), when: fd.get('when'), notes: fd.get('notes'),
         kind: 'hiring-partner'
       },
-    });
+    }) : { error: new Error('Form service did not load') };
+    if (error) {
+      console.warn('[hiring-partners] request not saved:', error.message);
+      showError('We couldn\'t send your request just now. It\'s still here — please try again, or email <a href="mailto:hello@premierdentalacademyoflongview.com" class="font-semibold underline">hello@premierdentalacademyoflongview.com</a> or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a>.');
+      btn.disabled = false; btn.textContent = 'Try again →';
+      return;
+    }
     form.classList.add('hidden');
     document.getElementById('partner-success').classList.remove('hidden');
   };

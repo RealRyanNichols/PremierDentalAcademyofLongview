@@ -172,17 +172,20 @@
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
 </head>
 <body class="bg-white antialiased">
 
 <!-- ───────────── Sticky header stack (countdown + nav) ───────────── -->
 <header class="sticky top-0 z-50">
-  <!-- Countdown — compact on mobile, never wraps -->
-  <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-3 overflow-hidden">
+  <!-- Countdown — compact on mobile, never wraps. Date + days are filled from
+       the next upcoming class in the database (see script at the bottom);
+       nothing here is hard-coded so it can't go stale. -->
+  <div id="cohort-bar" class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-3 overflow-hidden">
     <div class="max-w-7xl mx-auto flex items-center gap-2 justify-center">
       <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse flex-shrink-0"></span>
-      <span class="truncate"><span class="hidden sm:inline">Next cohort starts </span><span class="underline">Aug 19</span> · <span id="cohort-countdown" class="font-mono font-bold">— days left</span></span>
-      <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2 py-0.5 rounded text-xs flex-shrink-0 ml-1">Reserve →</a>
+      <span id="cohort-copy" class="truncate"><span class="hidden sm:inline">Next class starts </span><span id="cohort-next-date" class="underline">—</span> · <span id="cohort-countdown" class="font-mono font-bold">loading…</span></span>
+      <a href="/calendar" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2 py-0.5 rounded text-xs flex-shrink-0 ml-1">See dates →</a>
     </div>
   </div>
 
@@ -843,45 +846,44 @@
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
+  // Guard the CDN libraries: if one fails to load the page must still work.
+  if (window.AOS) AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
 
-  // Mobile menu toggle
-  (function () {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    if (!btn || !menu) return;
-    btn.addEventListener('click', () => {
-      const open = menu.classList.toggle('hidden');
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    // Close mobile menu when clicking any link inside it
-    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
-  })();
+  // The mobile menu and the "Sign in" / "⌂ Dashboard" swap are handled
+  // site-wide by /assets/pda-nav.js (loaded in <head>).
 
-  // Newsletter signup + nav account swap
+  // Live cohort countdown + live stats + newsletter signup
   (async () => {
     const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Null when the data library failed to load; every use below tolerates that.
+    const sb = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // If signed in, swap "Sign in" -> "Dashboard"
-    const { data: { session } } = await sb.auth.getSession();
-    const navAcct = document.getElementById('nav-account');
-    if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
-
-    // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
-    let nextStart = new Date('2026-08-19T00:00:00');
+    // Live countdown to the next class that hasn't started yet (Central time).
+    // There is deliberately no hard-coded fallback date: if nothing is posted,
+    // the bar points to the calendar instead of counting down to a past date.
+    const bar     = document.getElementById('cohort-bar');
+    const copyEl  = document.getElementById('cohort-copy');
+    const dateEl  = document.getElementById('cohort-next-date');
+    const countEl = document.getElementById('cohort-countdown');
+    const todayCT = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+    let nextStart = null;
     try {
       const { data: next } = await sb.from('cohorts')
-        .select('start_date').eq('status', 'upcoming').order('start_date', { ascending: true }).limit(1).maybeSingle();
+        .select('start_date').eq('status', 'upcoming').gte('start_date', todayCT)
+        .order('start_date', { ascending: true }).limit(1).maybeSingle();
       if (next?.start_date) nextStart = new Date(next.start_date + 'T00:00:00');
     } catch (e) {}
-    const tick = () => {
-      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
-      const el = document.getElementById('cohort-countdown');
-      if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
-    };
-    tick(); setInterval(tick, 60000);
+    if (nextStart) {
+      if (dateEl) dateEl.textContent = nextStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const tick = () => {
+        const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
+        if (countEl) countEl.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left' : days + ' days left';
+      };
+      tick(); setInterval(tick, 60000);
+    } else if (copyEl) {
+      copyEl.innerHTML = 'Next in-person start dates are posted on the <a href="/calendar" class="underline">class calendar</a>';
+    }
 
     // Live "By the numbers" stats
     try {
@@ -910,9 +912,14 @@
     form.onsubmit = async (e) => {
       e.preventDefault();
       const email = new FormData(form).get('email');
-      const { error: err } = await sb.from('subscribers').insert({ email, source: 'homepage-footer' });
-      if (err && !/duplicate/i.test(err.message)) {
-        error.textContent = '✗ ' + err.message; error.classList.remove('hidden'); return;
+      const { error: err } = sb
+        ? await sb.from('subscribers').insert({ email, source: 'homepage-footer' })
+        : { error: new Error('could not connect') };
+      // An address that is already on the list counts as success.
+      if (err && !/duplicate|unique/i.test(err.message)) {
+        console.warn('[homepage] subscribe failed:', err.message);
+        error.textContent = 'We couldn\'t add you just now. Please try again in a moment, or email hello@premierdentalacademyoflongview.com.';
+        error.classList.remove('hidden'); return;
       }
       form.classList.add('hidden');
       success.classList.remove('hidden');

@@ -61,6 +61,10 @@
     'login': 'Sign in', 'dashboard': 'Dashboard', 'privacy': 'Privacy', 'terms': 'Terms',
     'tools': 'Trainers', 'practice-pro': 'Practice Pro', 'chairside': 'ChairSide',
     'thank-you': 'Thank you', 'unsubscribe': 'Unsubscribe', '404': 'Not found',
+    'classes': 'Classes', 'calendar': 'Calendar', 'graduates': 'Graduates',
+    'salary': 'Salary calculator', 'blog': 'Blog', 'guide': 'Free guide',
+    'hiring-partners': 'For dental offices', 'career-archives': 'Career archives',
+    'directory': 'Dental office directory', 'reset-password': 'Set your password',
   };
   if (segs.length > 0) {
     const items = [{ '@type': 'ListItem', position: 1, name: 'Home', item: location.origin + '/' }];

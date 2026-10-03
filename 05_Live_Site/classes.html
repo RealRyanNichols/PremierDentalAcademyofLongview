@@ -135,10 +135,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+// Guard the CDN libraries: if one fails to load, the page must still render
+// its content and error states instead of stopping at "loading…".
+if (window.AOS) AOS.init({ duration: 500, once: true });
 
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
 
   const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
   const fmtRange = (a, b) => fmtDate(a) + ' – ' + fmtDate(b);
@@ -189,11 +193,22 @@ AOS.init({ duration: 500, once: true });
     `;
   };
 
-  const { data: cohorts, error } = await sb.from('cohorts').select('*').order('start_date', { ascending: true });
-  if (error) { console.warn(error); document.getElementById('current-list').innerHTML = '<div class="text-rose-700">Could not load classes — please call (903) 913-6444.</div>'; return; }
+  const { data: cohorts, error } = sb
+    ? await sb.from('cohorts').select('*').order('start_date', { ascending: true })
+    : { data: null, error: new Error('Class schedule service did not load') };
+  if (error || !cohorts) {
+    console.warn(error);
+    const failMsg = '<div class="md:col-span-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl p-6 text-center">We couldn\'t load the class schedule just now. Please refresh, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> and we\'ll tell you the next start date.</div>';
+    document.getElementById('current-list').innerHTML = failMsg;
+    document.getElementById('upcoming-list').innerHTML = failMsg;
+    return;
+  }
 
+  // Today in Central time (YYYY-MM-DD) so a class that has already started
+  // is never offered as "upcoming" even if its status hasn't been rolled over.
+  const todayCT = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   const current = cohorts.filter(c => c.status === 'current');
-  const upcoming = cohorts.filter(c => c.status === 'upcoming');
+  const upcoming = cohorts.filter(c => c.status === 'upcoming' && c.start_date >= todayCT);
   document.getElementById('current-count').textContent = current.length + ' in session';
   document.getElementById('upcoming-count').textContent = upcoming.length + ' upcoming';
 
@@ -226,10 +241,22 @@ AOS.init({ duration: 500, once: true });
   document.getElementById('rm-close').onclick = () => modal.classList.add('hidden');
   modal.onclick = (e) => { if (e.target === modal) modal.classList.add('hidden'); };
 
+  const rmBtn = form.querySelector('button[type=submit]');
+  const showError = (text) => {
+    let err = form.querySelector('.pda-form-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'pda-form-error mt-2 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      err.setAttribute('role', 'alert');
+      rmBtn.insertAdjacentElement('afterend', err);
+    }
+    err.innerHTML = text;
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
+    rmBtn.disabled = true; rmBtn.textContent = 'Reserving…';
     const fd = new FormData(form);
-    await sb.from('leads').insert({
+    const { error } = await sb.from('leads').insert({
       first_name: fd.get('first_name'),
       last_name: fd.get('last_name'),
       email: fd.get('email'),
@@ -240,6 +267,12 @@ AOS.init({ duration: 500, once: true });
         notes: fd.get('notes'),
       },
     });
+    if (error) {
+      console.warn('[classes] reservation not saved:', error.message);
+      showError('We couldn\'t save your reservation just now. Your details are still here — please try again, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> and we\'ll hold the seat by phone.');
+      rmBtn.disabled = false; rmBtn.textContent = 'Try again →';
+      return;
+    }
     form.classList.add('hidden'); success.classList.remove('hidden');
   };
 })();

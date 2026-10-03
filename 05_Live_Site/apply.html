@@ -177,22 +177,37 @@
     };
 
     let saved = false;
+    let reason = 'The form service did not load.';
     if (sb) {
       const { error } = await sb.from('leads').insert(lead);
       saved = !error;
+      if (error) reason = error.message;
     }
-    // Redirect to dedicated thank-you page
-    location.href = '/thank-you';
-    return;
 
-    if (!saved) {
-      // Stash locally as a backup so nothing is lost
-      try {
-        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        existing.push(lead);
-        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
-      } catch(e){}
+    if (saved) {
+      location.href = '/thank-you';
+      return;
     }
+
+    // Not saved: keep what they typed, tell them plainly, and give them a
+    // way to reach us that doesn't depend on this form.
+    console.warn('[apply] lead not saved:', reason);
+    try {
+      const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+      existing.push(lead);
+      localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
+    } catch(e){}
+    let err = document.getElementById('apply-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.id = 'apply-error';
+      err.setAttribute('role', 'alert');
+      err.className = 'mt-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      btn.insertAdjacentElement('afterend', err);
+    }
+    err.innerHTML = 'We couldn\'t send your application just now. Your answers are still here — please try again in a moment, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> or email <a href="mailto:hello@premierdentalacademyoflongview.com" class="font-semibold underline">hello@premierdentalacademyoflongview.com</a>.';
+    btn.disabled = false;
+    btn.textContent = 'Try again →';
   };
 })();
 </script>

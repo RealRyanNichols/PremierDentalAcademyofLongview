@@ -115,7 +115,11 @@ def cover_svg(o):
 def avatar(o, size=104, fs=38, ring=True):
     (pname, c1, c2, soft), _ = theme(o["name"])
     r = 'style="box-shadow:0 8px 24px -8px rgba(15,23,42,.4)"' if ring else ""
-    return f'''<div class="grid place-items-center rounded-2xl border-4 border-white flex-none" {r} aria-hidden="true"><svg width="{size}" height="{size}" viewBox="0 0 100 100" style="border-radius:12px;display:block"><defs><linearGradient id="a{abs(hash(o['name']))%99999}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></linearGradient></defs><rect width="100" height="100" rx="0" fill="url(#a{abs(hash(o['name']))%99999})"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="{fs}" fill="#fff">{html.escape(initials(o["name"]))}</text></svg></div>'''
+    # Stable per-office gradient id. Python's built-in hash() is salted per
+    # process, which made every regeneration rewrite all 232 profile pages
+    # even when nothing changed; md5 of the name is the same every run.
+    gid = "a%d" % (int(hashlib.md5(o["name"].encode()).hexdigest(), 16) % 99999)
+    return f'''<div class="grid place-items-center rounded-2xl border-4 border-white flex-none" {r} aria-hidden="true"><svg width="{size}" height="{size}" viewBox="0 0 100 100" style="border-radius:12px;display:block"><defs><linearGradient id="{gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{c1}"/><stop offset="1" stop-color="{c2}"/></linearGradient></defs><rect width="100" height="100" rx="0" fill="url(#{gid})"/><text x="50" y="50" dy=".36em" text-anchor="middle" font-family="Georgia,serif" font-weight="700" font-size="{fs}" fill="#fff">{html.escape(initials(o["name"]))}</text></svg></div>'''
 
 # ---------------------------------------------------------------- classification
 def specialty(o):
@@ -174,12 +178,15 @@ def nav(active):
       <span class="text-sm sm:text-base">Premier Dental Academy</span>
       <span class="hidden lg:inline text-xs text-slate-500 font-normal">of Longview</span>
     </a>
-    <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
+    <!-- Static fallback; /assets/pda-nav.js rebuilds this cluster (and the
+         mobile drawer) from the site-wide menu definition on load. -->
+    <div class="hidden lg:flex items-center gap-5 text-sm font-medium text-slate-700">
       <a href="/#programs" class="hover:text-teal-700">Programs</a>
-      <a href="/career-archives" {cls("archives")}>Archives</a>
+      <a href="/classes" class="hover:text-teal-700">Classes</a>
+      <a href="/calendar" class="hover:text-teal-700">Calendar</a>
+      <a href="/graduates" class="hover:text-teal-700">Graduates</a>
       <a href="/directory" {cls("directory")}>Directory</a>
-      <a href="/salary" class="hover:text-teal-700">Salary</a>
-      <a href="/blog" class="hover:text-teal-700">Blog</a>
+      <a href="/career-archives" {cls("archives")}>Archives</a>
       <a href="/about" class="hover:text-teal-700">About</a>
       <a href="/contact" class="hover:text-teal-700">Contact</a>
     </div>
