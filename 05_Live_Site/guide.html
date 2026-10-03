@@ -41,7 +41,7 @@
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Why software fluency beats clinical knowledge in the hiring decision</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> How to negotiate your first offer (most people leave $2/hr on the table)</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> The 5 mistakes that get new hires fired in the first 90 days</li>
-        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Funding paths (TWC, GI Bill, WIOA, payment plans)</li>
+        <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> Tuition and the payment plan, explained</li>
         <li class="flex gap-2"><span class="text-teal-600 font-bold">✓</span> The Texas RDA registration checklist</li>
       </ul>
     </div>
@@ -110,17 +110,40 @@
 
 <script>
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  // Null when the CDN library failed to load; the submit handler then shows
+  // the error state instead of throwing.
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
   const form = document.getElementById('guide-form');
+  const btn = form.querySelector('button[type=submit]');
+  const showError = (text) => {
+    let err = form.querySelector('.pda-form-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'pda-form-error w-full mt-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      err.setAttribute('role', 'alert');
+      form.appendChild(err);
+    }
+    err.innerHTML = text;
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
+    btn.disabled = true;
     const fd = new FormData(form);
-    await sb.from('subscribers').insert({
+    const { error } = sb ? await sb.from('subscribers').insert({
       email: fd.get('email'),
       first_name: fd.get('first_name'),
       source: 'guide-7-things',
       tags: ['guide-7-things']
-    });
+    }) : { error: new Error('Form service did not load') };
+    btn.disabled = false;
+    // An address that is already on the list counts as success.
+    if (error && !/duplicate|unique/i.test(error.message)) {
+      console.warn('[guide] subscribe failed:', error.message);
+      showError('We couldn\'t send the guide just now. Please try again in a moment, or email <a href="mailto:hello@premierdentalacademyoflongview.com" class="font-semibold underline">hello@premierdentalacademyoflongview.com</a> and we\'ll send it by hand.');
+      return;
+    }
     form.classList.add('hidden');
     document.getElementById('guide-success').classList.remove('hidden');
   };

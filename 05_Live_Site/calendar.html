@@ -25,6 +25,7 @@
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
   <script src="/assets/pda-nav.js" defer></script>
+  <script src="/assets/pda-offer.js"></script>
 </head>
 <body class="bg-white">
 
@@ -114,7 +115,7 @@
     <p class="mt-3 text-lg">Call Amanda — we'll squeeze you in or get you on the next list.</p>
     <div class="mt-6 flex flex-wrap gap-3 justify-center">
       <a href="tel:+19039136444" class="bg-slate-900 hover:bg-slate-800 text-amber-300 font-bold px-6 py-3 rounded-lg">📞 (903) 913-6444</a>
-      <a href="/apply" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/apply" class="bg-white hover:bg-slate-50 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply now →</a>
     </div>
   </div>
 </section>
@@ -127,10 +128,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+// Guard the CDN libraries: if one fails to load, the page must still render
+// its content and error states instead of stopping at a blank calendar.
+if (window.AOS) AOS.init({ duration: 500, once: true });
 
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
 
   // Track this page view per cohort displayed (writes to chat_messages just as a lightweight signal for now)
   const fmt = { day: (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
@@ -139,11 +144,33 @@ AOS.init({ duration: 500, once: true });
     daysFromToday: (d) => Math.round((new Date(d + 'T00:00:00') - new Date()) / 86400000),
   };
 
-  const [{ data: cohorts, error }, { data: leadsRows }] = await Promise.all([
-    sb.from('cohorts').select('*').eq('status', 'upcoming').order('start_date', { ascending: true }),
-    sb.from('leads').select('metadata').eq('source', 'classes-reservation'),
-  ]);
-  if (error) { document.body.innerHTML = '<p style="padding:40px;text-align:center">Could not load classes.</p>'; return; }
+  // Only classes that haven't started yet count as upcoming, even if a
+  // cohort's status hasn't been rolled over in the database.
+  const todayCT = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+  const [{ data: cohortsRaw, error }, { data: leadsRows }] = sb
+    ? await Promise.all([
+        sb.from('cohorts').select('*').eq('status', 'upcoming').gte('start_date', todayCT).order('start_date', { ascending: true }),
+        sb.from('leads').select('metadata').eq('source', 'classes-reservation'),
+      ])
+    : [{ data: null, error: new Error('Class calendar service did not load') }, { data: [] }];
+  if (error || !cohortsRaw) {
+    // Keep the header and nav; explain in the content area.
+    console.warn(error);
+    const failMsg = '<div class="sm:col-span-2 lg:col-span-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl p-6 text-center">We couldn\'t load the class calendar just now. Please refresh, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> for the next start date.</div>';
+    document.getElementById('cal-grid').innerHTML = failMsg;
+    document.getElementById('velocity-chart').innerHTML = '<p class="text-sm text-slate-500 text-center">Unavailable right now.</p>';
+    document.getElementById('urgency-cards').innerHTML = failMsg;
+    return;
+  }
+  const cohorts = cohortsRaw;
+  if (cohorts.length === 0) {
+    const emptyMsg = '<div class="sm:col-span-2 lg:col-span-3 bg-white border border-slate-200 text-slate-600 rounded-2xl p-8 text-center">No upcoming start dates are posted yet. Call <a href="tel:+19039136444" class="text-teal-700 font-semibold">(903) 913-6444</a> or <a href="/apply" class="text-teal-700 font-semibold">apply</a> and we\'ll let you know the next one.</div>';
+    document.getElementById('cal-grid').innerHTML = emptyMsg;
+    document.getElementById('velocity-chart').innerHTML = '<p class="text-sm text-slate-500 text-center">No upcoming classes to chart yet.</p>';
+    document.getElementById('urgency-cards').innerHTML = emptyMsg;
+    ['m-classes', 'm-seats', 'm-filling', 'm-inquiries'].forEach(id => { document.getElementById(id).textContent = '0'; });
+    return;
+  }
 
   // Count real inquiries per cohort
   const inquiriesByCohort = {};
@@ -278,7 +305,7 @@ AOS.init({ duration: 500, once: true });
     card.innerHTML = `
       ${hot || full ? `<div class="absolute top-3 right-3 ${full?'bg-rose-600':'bg-rose-500'} text-white text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-full ${hot?'seat-pulse':''}">${full?'🚫 Closed':'🔥 Filling now'}</div>` : ''}
 
-      <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">${c.program === 'career_track' ? 'Career Track · 24 weeks' : 'Foundation · 12 weeks'}</div>
+      <div class="text-xs uppercase tracking-widest text-teal-700 font-bold">${window.PDA_OFFER.programName} · ${window.PDA_OFFER.durationLabel}</div>
       <h3 class="display text-xl font-bold mt-1 leading-tight">${c.name}</h3>
       <p class="text-xs text-slate-500 mt-0.5">${c.schedule || ''}</p>
 

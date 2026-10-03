@@ -21,7 +21,7 @@
     "url": "https://premierdentalacademyoflongview.com",
     "telephone": "+1-903-913-6444",
     "email": "hello@PremierDentalAcademyOfLongview.com",
-    "priceRange": "$1,995 – $3,495",
+    "priceRange": "$3,000 – $3,500",
     "image": "https://premierdentalacademyoflongview.com/og.svg",
     "logo": "https://premierdentalacademyoflongview.com/og.svg",
     "address": {
@@ -40,10 +40,10 @@
     "founder": { "@type": "Person", "name": "Amanda Williams", "jobTitle": "Founder & Director" },
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
-      "name": "RDA Training Programs",
+      "name": "RDA Training Program",
       "itemListElement": [
-        { "@type": "Offer", "name": "RDA Foundation (12 weeks)", "price": "1995", "priceCurrency": "USD" },
-        { "@type": "Offer", "name": "RDA Career Track (24 weeks with externship)", "price": "3495", "priceCurrency": "USD" }
+        { "@type": "Offer", "name": "In-person RDA program (12 weeks) — paid in full", "price": "3000", "priceCurrency": "USD" },
+        { "@type": "Offer", "name": "In-person RDA program (12 weeks) — payment plan ($500 down + $3,000 balance)", "price": "3500", "priceCurrency": "USD" }
       ]
     }
   }
@@ -55,10 +55,13 @@
     {
       "@context": "https://schema.org",
       "@type": "Course",
-      "name": "RDA Foundation",
-      "description": "12-week Registered Dental Assistant training program with hands-on practice management software, evening and weekend classes.",
+      "name": "In-person RDA program",
+      "description": "12-week Registered Dental Assistant training program in Longview, TX: hands-on practice on real dental equipment and instruments plus PDA's own practice management trainers.",
       "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview", "sameAs": "https://premierdentalacademyoflongview.com" },
-      "offers": { "@type": "Offer", "price": "1995", "priceCurrency": "USD", "category": "Tuition" },
+      "offers": [
+        { "@type": "Offer", "price": "3000", "priceCurrency": "USD", "category": "Tuition — paid in full" },
+        { "@type": "Offer", "price": "3500", "priceCurrency": "USD", "category": "Tuition — payment plan ($500 down + $3,000 balance)" }
+      ],
       "hasCourseInstance": {
         "@type": "CourseInstance",
         "courseMode": "Blended",
@@ -66,22 +69,6 @@
         "courseWorkload": "PT12W"
       },
       "educationalCredentialAwarded": "PDA Certificate of Completion",
-      "occupationalCategory": "31-9091"
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "Course",
-      "name": "RDA Career Track",
-      "description": "24-week intensive RDA program with guaranteed externship placement at an East Texas dental office, 1-on-1 mentorship, CPR/BLS/OSHA certs.",
-      "provider": { "@type": "EducationalOrganization", "name": "Premier Dental Academy of Longview" },
-      "offers": { "@type": "Offer", "price": "3495", "priceCurrency": "USD", "category": "Tuition" },
-      "hasCourseInstance": {
-        "@type": "CourseInstance",
-        "courseMode": "Blended",
-        "location": "Longview, TX",
-        "courseWorkload": "PT24W"
-      },
-      "educationalCredentialAwarded": "PDA Certificate of Completion + Externship",
       "occupationalCategory": "31-9091"
     }
   ]
@@ -96,7 +83,7 @@
       {
         "@type": "Question",
         "name": "How long until I'm working as a dental assistant in East Texas?",
-        "acceptedAnswer": { "@type": "Answer", "text": "RDA Foundation is 12 weeks of evening + weekend classes. Most students start interviewing in week 10 and have offers within 2 weeks of completion. Career Track adds a 12-week externship at a partner office, with most externs hired by their host office." }
+        "acceptedAnswer": { "@type": "Answer", "text": "The in-person program runs about 12 weeks in Longview. Class days and times are posted with each start date on our calendar, and job placement help with East Texas dental offices is part of the program." }
       },
       {
         "@type": "Question",
@@ -116,7 +103,7 @@
       {
         "@type": "Question",
         "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Foundation can be split into 4 monthly payments of $499. Career Track into 7 monthly payments of $499. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and offer 0% interest in-house financing." }
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Tuition is $3,000 if you pay in full. The payment plan is $3,500 total: $500 down, then the $3,000 balance. Those are the only two ways to pay — we don't offer grants, vouchers, scholarships, or other funded enrollment." }
       },
       {
         "@type": "Question",
@@ -172,17 +159,20 @@
   </style>
   <script src="/assets/pda-seo.js" defer></script>
   <script src="/assets/ask-premier.js" defer></script>
+  <script src="/assets/pda-nav.js" defer></script>
 </head>
 <body class="bg-white antialiased">
 
 <!-- ───────────── Sticky header stack (countdown + nav) ───────────── -->
 <header class="sticky top-0 z-50">
-  <!-- Countdown — compact on mobile, never wraps -->
-  <div class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-3 overflow-hidden">
+  <!-- Countdown — compact on mobile, never wraps. Date + days are filled from
+       the next upcoming class in the database (see script at the bottom);
+       nothing here is hard-coded so it can't go stale. -->
+  <div id="cohort-bar" class="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-900 text-xs sm:text-sm font-semibold py-1.5 sm:py-2 px-3 overflow-hidden">
     <div class="max-w-7xl mx-auto flex items-center gap-2 justify-center">
       <span class="w-2 h-2 bg-rose-600 rounded-full animate-pulse flex-shrink-0"></span>
-      <span class="truncate"><span class="hidden sm:inline">Next cohort starts </span><span class="underline">Aug 19</span> · <span id="cohort-countdown" class="font-mono font-bold">— days left</span></span>
-      <a href="/enroll" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2 py-0.5 rounded text-xs flex-shrink-0 ml-1">Reserve →</a>
+      <span id="cohort-copy" class="truncate"><span class="hidden sm:inline">Next class starts </span><span id="cohort-next-date" class="underline">—</span> · <span id="cohort-countdown" class="font-mono font-bold">loading…</span></span>
+      <a href="/calendar" class="bg-slate-900 text-amber-300 hover:bg-slate-800 px-2 py-0.5 rounded text-xs flex-shrink-0 ml-1">See dates →</a>
     </div>
   </div>
 
@@ -366,47 +356,49 @@
 <section id="programs" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-7xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-14" data-aos="fade-up">
-      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Programs</p>
-      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Two paths. One goal: get you hired.</h2>
-      <p class="text-slate-600 mt-3">Both programs include unlimited access to our practice management trainers. The difference is the depth of in-person instruction.</p>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">The program</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">One program. Two ways to pay.</h2>
+      <p class="text-slate-600 mt-3">About 12 weeks of in-person training in Longview on real dental equipment, plus unlimited access to our practice management trainers.</p>
     </div>
 
     <div class="grid lg:grid-cols-2 gap-6">
       <div data-aos="fade-up" class="bg-white border border-slate-200 rounded-2xl p-8 hover:shadow-xl transition">
         <div class="flex items-center gap-3 mb-2">
           <span class="text-3xl">🦷</span>
-          <h3 class="text-2xl font-bold display">RDA Foundation</h3>
+          <h3 class="text-2xl font-bold display">In-person RDA program</h3>
         </div>
-        <p class="text-slate-600 text-sm">For new entrants to the dental field. 12 weeks, evenings + weekends.</p>
-        <div class="display text-4xl font-bold text-slate-900 my-6">$1,995<span class="text-base font-normal text-slate-500"> / 12 weeks</span></div>
-        <ul class="space-y-2.5 text-sm text-slate-700">
+        <p class="text-slate-600 text-sm">For new entrants to the dental field. About 12 weeks in Longview. Class days and times are posted with each start date.</p>
+        <ul class="space-y-2.5 text-sm text-slate-700 mt-6">
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> 12-week instructor-led curriculum</li>
+          <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on practice with real dental equipment and instruments</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Full access to PDA Practice Pro + ChairSide trainers</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> 25 realistic practice patients with branching scenarios</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Hands-on infection control + radiology certifications</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> Job placement assistance with East Texas offices</li>
           <li class="flex items-start gap-2"><span class="text-teal-600 font-bold">✓</span> PDA Certificate of Completion</li>
         </ul>
-        <a href="/enroll" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">Apply for Foundation →</a>
+        <a href="/calendar" class="block text-center mt-7 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg">See start dates →</a>
       </div>
 
       <div data-aos="fade-up" data-aos-delay="100" class="relative bg-gradient-to-br from-slate-900 to-cyan-900 text-white border border-cyan-800 rounded-2xl p-8 hover:shadow-2xl transition overflow-hidden">
-        <div class="absolute top-0 right-0 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-bl-lg">Most Popular</div>
         <div class="flex items-center gap-3 mb-2">
-          <span class="text-3xl">⭐</span>
-          <h3 class="text-2xl font-bold display">RDA Career Track</h3>
+          <span class="text-3xl">💳</span>
+          <h3 class="text-2xl font-bold display">Tuition</h3>
         </div>
-        <p class="text-cyan-100 text-sm">Comprehensive 24-week program with externship placement guaranteed.</p>
-        <div class="display text-4xl font-bold text-white my-6">$3,495<span class="text-base font-normal text-cyan-200"> / 24 weeks</span></div>
-        <ul class="space-y-2.5 text-sm">
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Everything in Foundation, plus:</li>
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> 1-on-1 mentorship from a practicing dentist</li>
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Guaranteed externship at a partner East Texas office</li>
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Resume + interview coaching with hiring offices</li>
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> CPR, BLS, and OSHA certifications included</li>
-          <li class="flex items-start gap-2"><span class="text-amber-400 font-bold">★</span> Lifetime trainer access for continuing education</li>
-        </ul>
-        <a href="/enroll" class="block text-center mt-7 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-lg">Apply for Career Track →</a>
+        <p class="text-cyan-100 text-sm">Two ways to pay. There are no grants, vouchers, scholarships, or funded seats — these are the only options.</p>
+        <div class="mt-6 grid gap-4">
+          <div class="bg-white/10 rounded-xl p-5 border border-white/20">
+            <div class="text-xs uppercase tracking-widest text-amber-300 font-bold">Pay in full</div>
+            <div class="display text-4xl font-bold mt-1">$3,000</div>
+            <p class="text-cyan-100 text-sm mt-1">One payment. That's the whole tuition.</p>
+          </div>
+          <div class="bg-white/10 rounded-xl p-5 border border-white/20">
+            <div class="text-xs uppercase tracking-widest text-amber-300 font-bold">Payment plan</div>
+            <div class="display text-4xl font-bold mt-1">$3,500<span class="text-base font-normal text-cyan-200"> total</span></div>
+            <p class="text-cyan-100 text-sm mt-1">$500 down, then the $3,000 balance on a payment plan.</p>
+          </div>
+        </div>
+        <a href="/enroll" class="block text-center mt-7 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 rounded-lg">Enroll →</a>
       </div>
     </div>
   </div>
@@ -477,14 +469,13 @@
           </thead>
           <tbody class="divide-y divide-slate-100">
             <tr><td class="px-5 py-3 font-medium">Real practice management trainer</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
-            <tr><td class="px-5 py-3 font-medium">Free preview before you pay</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-slate-400">n/a</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
+            <tr><td class="px-5 py-3 font-medium">Try the trainer before you pay</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-slate-400">n/a</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">In-person clinical training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-teal-600 font-bold text-lg">✓</td></tr>
             <tr><td class="px-5 py-3 font-medium">East Texas office partnerships</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-amber-500">limited</td></tr>
-            <tr><td class="px-5 py-3 font-medium">Externship guarantee</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-amber-500">sometimes</td></tr>
             <tr><td class="px-5 py-3 font-medium">Mobile-friendly training</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-amber-500">limited</td><td class="text-center text-amber-500">limited</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Real ADA insurance workflow</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
             <tr><td class="px-5 py-3 font-medium">Built-in allergy / drug interaction safety</td><td class="text-center bg-teal-50/50"><span class="text-teal-600 font-bold text-lg">✓</span></td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td><td class="text-center text-rose-400">✗</td></tr>
-            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$1,995 – $3,495</td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
+            <tr class="bg-slate-50"><td class="px-5 py-4 font-bold text-slate-900">Total program cost</td><td class="text-center px-5 py-4 bg-teal-50/50 font-bold text-teal-700">$3,000<br/><span class="text-xs font-normal">or $3,500 on the payment plan</span></td><td class="text-center text-slate-500">$0 – $200</td><td class="text-center text-slate-500">$1,200 – $2,000</td><td class="text-center text-slate-500">$4,000 – $12,000</td></tr>
           </tbody>
         </table>
       </div>
@@ -638,54 +629,40 @@
 <section id="pricing" class="py-20 sm:py-28 scroll-mt">
   <div class="max-w-5xl mx-auto px-4 sm:px-6">
     <div class="text-center max-w-2xl mx-auto mb-12" data-aos="fade-up">
-      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Pricing</p>
-      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Affordable today. Pays for itself in 6 weeks.</h2>
-      <p class="text-slate-600 mt-3">Average RDA starting salary in East Texas: $36,000 – $44,000. Your investment in PDA pays back in 4–8 weeks of working.</p>
+      <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Tuition</p>
+      <h2 class="display text-3xl sm:text-4xl font-bold mt-2">Two ways to pay. That's it.</h2>
+      <p class="text-slate-600 mt-3">The in-person RDA program is one price, paid in full or on a payment plan. There are no grants, vouchers, scholarships, or funded seats.</p>
     </div>
-    <div class="grid md:grid-cols-3 gap-5">
-      <div data-aos="fade-up" class="bg-white border border-slate-200 rounded-2xl p-6">
-        <h3 class="font-bold text-lg">Free Preview</h3>
-        <p class="text-xs text-slate-500 mt-1">For anyone curious about a dental career.</p>
-        <div class="display text-3xl font-bold mt-4">$0</div>
+    <div class="grid md:grid-cols-2 gap-5 max-w-3xl mx-auto">
+      <div data-aos="fade-up" class="bg-white border-2 border-teal-600 rounded-2xl p-6 relative">
+        <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Pay in full</span>
+        <h3 class="font-bold text-lg mt-2">One payment</h3>
+        <p class="text-xs text-slate-500 mt-1">Pay once and you're done.</p>
+        <div class="display text-3xl font-bold mt-4">$3,000<span class="text-sm text-slate-500 font-normal"> total</span></div>
         <ul class="text-sm text-slate-600 mt-5 space-y-2">
-          <li>✓ Try the trainers (5 essential tabs)</li>
-          <li>✓ 25 sample patients</li>
-          <li>✓ No signup required</li>
-        </ul>
-        <a href="/tools/practice-pro" class="block text-center mt-6 border-2 border-slate-300 hover:border-teal-600 hover:text-teal-700 text-slate-700 font-semibold py-2.5 rounded-lg">Open preview</a>
-      </div>
-      <div data-aos="fade-up" data-aos-delay="100" class="bg-white border-2 border-teal-600 rounded-2xl p-6 relative">
-        <span class="absolute -top-3 left-6 bg-teal-600 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Foundation</span>
-        <h3 class="font-bold text-lg mt-2">RDA Foundation</h3>
-        <p class="text-xs text-slate-500 mt-1">12-week program. Most students enroll here.</p>
-        <div class="display text-3xl font-bold mt-4">$1,995<span class="text-sm text-slate-500 font-normal"> one-time</span></div>
-        <div class="text-xs text-slate-500">or $499 × 4 months</div>
-        <ul class="text-sm text-slate-600 mt-5 space-y-2">
-          <li>✓ All trainer modules unlocked</li>
-          <li>✓ 12-week instructor-led curriculum</li>
-          <li>✓ Persistence + PDF exports</li>
+          <li>✓ About 12 weeks of in-person training</li>
+          <li>✓ All trainer modules unlocked, progress saved</li>
           <li>✓ PDA Certificate of Completion</li>
           <li>✓ Job placement assistance</li>
         </ul>
         <a href="/enroll" class="block text-center mt-6 bg-teal-700 hover:bg-teal-800 text-white font-semibold py-2.5 rounded-lg">Enroll →</a>
       </div>
-      <div data-aos="fade-up" data-aos-delay="200" class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white border border-cyan-700 rounded-2xl p-6 relative">
-        <span class="absolute -top-3 left-6 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Career Track</span>
-        <h3 class="font-bold text-lg mt-2">RDA Career Track</h3>
-        <p class="text-xs text-cyan-200 mt-1">24-week program with externship.</p>
-        <div class="display text-3xl font-bold mt-4">$3,495<span class="text-sm text-cyan-200 font-normal"> one-time</span></div>
-        <div class="text-xs text-cyan-200">or $499 × 7 months</div>
+      <div data-aos="fade-up" data-aos-delay="100" class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white border border-cyan-700 rounded-2xl p-6 relative">
+        <span class="absolute -top-3 left-6 bg-amber-500 text-slate-900 text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">Payment plan</span>
+        <h3 class="font-bold text-lg mt-2">$500 down, then the balance</h3>
+        <p class="text-xs text-cyan-200 mt-1">Same program, spread out.</p>
+        <div class="display text-3xl font-bold mt-4">$3,500<span class="text-sm text-cyan-200 font-normal"> total</span></div>
+        <div class="text-xs text-cyan-200">$500 down + $3,000 balance</div>
         <ul class="text-sm text-cyan-100 mt-5 space-y-2">
-          <li>★ Everything in Foundation</li>
-          <li>★ 1-on-1 dentist mentorship</li>
-          <li>★ Guaranteed externship placement</li>
-          <li>★ CPR, BLS, OSHA included</li>
-          <li>★ Lifetime trainer access</li>
+          <li>★ Everything in the program</li>
+          <li>★ $500 down payment at enrollment</li>
+          <li>★ $3,000 balance on a payment plan</li>
+          <li>★ Installment schedule confirmed at enrollment</li>
         </ul>
         <a href="/enroll" class="block text-center mt-6 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-2.5 rounded-lg">Enroll →</a>
       </div>
     </div>
-    <p class="text-center text-xs text-slate-500 mt-8">All programs eligible for Texas Workforce Solutions funding · Veterans benefits accepted · 0% interest financing available</p>
+    <p class="text-center text-xs text-slate-500 mt-8">Questions about tuition or the plan? Call <a href="tel:+19039136444" class="text-teal-700 font-semibold">(903) 913-6444</a> or <a href="/contact" class="text-teal-700 font-semibold">send a message</a>.</p>
   </div>
 </section>
 
@@ -702,7 +679,7 @@
           <span>How long until I'm working?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Foundation is 12 weeks of evening + weekend classes. Most students start interviewing in week 10 and have offers within 2 weeks of completion. Career Track adds a 12-week externship at a partner office, with most externs being hired by their host office.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">The in-person program runs about 12 weeks in Longview. Class days and times are posted with each start date on our <a href="/calendar" class="text-teal-700 font-semibold">calendar</a>, and job placement help with East Texas dental offices is part of the program.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -730,7 +707,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Foundation can be split into 4 monthly payments of $499. Career Track into 7 monthly payments of $499. We also accept Texas Workforce Solutions vouchers, GI Bill / veterans benefits, and offer 0% interest in-house financing.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes. Tuition is $3,000 if you pay in full. The payment plan is $3,500 total: $500 down, then the $3,000 balance. Those are the only two ways to pay — we don't offer grants, vouchers, scholarships, or other funded enrollment.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -774,7 +751,7 @@
   <div class="max-w-3xl mx-auto px-6 text-center">
     <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Stay in touch</p>
     <h2 class="display text-2xl sm:text-3xl font-bold mt-1">Not ready to apply? Get cohort dates + tips by email.</h2>
-    <p class="text-slate-600 mt-2 text-sm">One short email per month. Cohort start dates, scholarship deadlines, dental career advice from Amanda. No spam, unsubscribe anytime.</p>
+    <p class="text-slate-600 mt-2 text-sm">One short email per month. Cohort start dates and dental career advice from Amanda. No spam, unsubscribe anytime.</p>
     <form id="subscribe-form" class="mt-5 flex flex-wrap gap-2 max-w-md mx-auto justify-center">
       <input type="email" name="email" required placeholder="you@example.com"
         class="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />
@@ -799,8 +776,8 @@
       <div>
         <div class="text-white font-semibold mb-3 text-sm">Programs</div>
         <ul class="space-y-1.5 text-sm">
-          <li><a href="#programs" class="hover:text-white">RDA Foundation</a></li>
-          <li><a href="#programs" class="hover:text-white">RDA Career Track</a></li>
+          <li><a href="#programs" class="hover:text-white">In-person RDA program</a></li>
+          <li><a href="#pricing" class="hover:text-white">Tuition &amp; payment plan</a></li>
           <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
           <li><a href="/apply" class="hover:text-white">Apply now</a></li>
         </ul>
@@ -843,45 +820,44 @@
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
+  // Guard the CDN libraries: if one fails to load the page must still work.
+  if (window.AOS) AOS.init({ duration: 600, once: true, offset: 50, easing: 'ease-out-cubic' });
 
-  // Mobile menu toggle
-  (function () {
-    const btn = document.getElementById('mobile-menu-btn');
-    const menu = document.getElementById('mobile-menu');
-    if (!btn || !menu) return;
-    btn.addEventListener('click', () => {
-      const open = menu.classList.toggle('hidden');
-      btn.setAttribute('aria-expanded', String(!open));
-    });
-    // Close mobile menu when clicking any link inside it
-    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu.classList.add('hidden')));
-  })();
+  // The mobile menu and the "Sign in" / "⌂ Dashboard" swap are handled
+  // site-wide by /assets/pda-nav.js (loaded in <head>).
 
-  // Newsletter signup + nav account swap
+  // Live cohort countdown + live stats + newsletter signup
   (async () => {
     const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // Null when the data library failed to load; every use below tolerates that.
+    const sb = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
-    // If signed in, swap "Sign in" -> "Dashboard"
-    const { data: { session } } = await sb.auth.getSession();
-    const navAcct = document.getElementById('nav-account');
-    if (session && navAcct) { navAcct.textContent = '⌂ Dashboard'; navAcct.href = '/dashboard'; navAcct.classList.add('text-teal-700','font-semibold'); }
-
-    // Live cohort countdown (uses next upcoming class start date from DB; falls back to fixed date)
-    let nextStart = new Date('2026-08-19T00:00:00');
+    // Live countdown to the next class that hasn't started yet (Central time).
+    // There is deliberately no hard-coded fallback date: if nothing is posted,
+    // the bar points to the calendar instead of counting down to a past date.
+    const bar     = document.getElementById('cohort-bar');
+    const copyEl  = document.getElementById('cohort-copy');
+    const dateEl  = document.getElementById('cohort-next-date');
+    const countEl = document.getElementById('cohort-countdown');
+    const todayCT = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+    let nextStart = null;
     try {
       const { data: next } = await sb.from('cohorts')
-        .select('start_date').eq('status', 'upcoming').order('start_date', { ascending: true }).limit(1).maybeSingle();
+        .select('start_date').eq('status', 'upcoming').gte('start_date', todayCT)
+        .order('start_date', { ascending: true }).limit(1).maybeSingle();
       if (next?.start_date) nextStart = new Date(next.start_date + 'T00:00:00');
     } catch (e) {}
-    const tick = () => {
-      const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
-      const el = document.getElementById('cohort-countdown');
-      if (el) el.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left · last chance' : days + ' days left';
-    };
-    tick(); setInterval(tick, 60000);
+    if (nextStart) {
+      if (dateEl) dateEl.textContent = nextStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      const tick = () => {
+        const days = Math.max(0, Math.ceil((nextStart - new Date()) / 86400000));
+        if (countEl) countEl.textContent = days === 0 ? 'starts today' : days === 1 ? '1 day left' : days + ' days left';
+      };
+      tick(); setInterval(tick, 60000);
+    } else if (copyEl) {
+      copyEl.innerHTML = 'Next in-person start dates are posted on the <a href="/calendar" class="underline">class calendar</a>';
+    }
 
     // Live "By the numbers" stats
     try {
@@ -910,9 +886,14 @@
     form.onsubmit = async (e) => {
       e.preventDefault();
       const email = new FormData(form).get('email');
-      const { error: err } = await sb.from('subscribers').insert({ email, source: 'homepage-footer' });
-      if (err && !/duplicate/i.test(err.message)) {
-        error.textContent = '✗ ' + err.message; error.classList.remove('hidden'); return;
+      const { error: err } = sb
+        ? await sb.from('subscribers').insert({ email, source: 'homepage-footer' })
+        : { error: new Error('could not connect') };
+      // An address that is already on the list counts as success.
+      if (err && !/duplicate|unique/i.test(err.message)) {
+        console.warn('[homepage] subscribe failed:', err.message);
+        error.textContent = 'We couldn\'t add you just now. Please try again in a moment, or email hello@premierdentalacademyoflongview.com.';
+        error.classList.remove('hidden'); return;
       }
       form.classList.add('hidden');
       success.classList.remove('hidden');

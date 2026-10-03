@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Dashboard — Premier Dental Academy of Longview</title>
+  <meta name="robots" content="noindex" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='4' fill='%230d9488'/%3E%3Ctext x='12' y='17' text-anchor='middle' font-family='Inter,sans-serif' font-size='14' font-weight='700' fill='white'%3EP%3C/text%3E%3C/svg%3E" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -25,8 +26,8 @@
 </head>
 <body class="bg-slate-50 min-h-screen">
 
-<!-- Top nav -->
-<nav class="bg-white border-b border-slate-200">
+<!-- Top nav (portal mode: pda-nav.js keeps these links, adds the mobile drawer + Sign out) -->
+<nav class="bg-white border-b border-slate-200" data-pda-nav="portal">
   <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
     <a href="/" class="flex items-center gap-2 font-bold">
       <span class="inline-block w-7 h-7 rounded bg-gradient-to-br from-teal-600 to-cyan-700 text-white font-extrabold text-sm grid place-items-center">P</span>
@@ -209,6 +210,14 @@
 (async () => {
   const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
+  // If the sign-in library failed to load, say so instead of leaving a blank page.
+  if (!window.supabase?.createClient) {
+    const wall = document.getElementById('auth-wall');
+    wall.querySelector('h1').textContent = 'The sign-in service didn\'t load.';
+    wall.querySelector('p').textContent = 'Please refresh the page. If it keeps happening, call (903) 913-6444 and we\'ll help.';
+    wall.classList.remove('hidden');
+    return;
+  }
   const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const { data: { session } } = await sb.auth.getSession();
@@ -237,6 +246,10 @@
   const hour = new Date().getHours();
   document.getElementById('hero-greet').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
   document.getElementById('hero-name').textContent = p.first_name || 'student';
+  // Program label. Admin / instructor flags win over the program column so
+  // staff (whose program may be empty) never see "Free preview" copy, and an
+  // enrolled student with an unrecognised program value is still shown as
+  // enrolled rather than falling back to preview.
   const programLabels = {
     preview:      { name: 'Free preview', sub: 'Try the trainers, no save' },
     foundation:   { name: 'RDA Foundation', sub: '12-week program' },
@@ -244,13 +257,20 @@
     staff:        { name: 'PDA Staff', sub: 'Full access' },
     admin:        { name: 'PDA Admin', sub: 'Full access + inbox' },
   };
-  const prog = programLabels[p.program] || programLabels.preview;
+  const isStaff = !!(p.is_admin || p.is_instructor);
+  const isPreview = !isStaff && (!p.program || p.program === 'preview');
+  const prog = p.is_admin ? programLabels.admin
+    : p.is_instructor ? programLabels.staff
+    : (programLabels[p.program] || (isPreview ? programLabels.preview : { name: 'Enrolled student', sub: String(p.program).replace(/_/g, ' ') }));
   document.getElementById('stat-program').textContent = prog.name;
   document.getElementById('stat-program-sub').textContent = prog.sub;
   document.getElementById('cohort-status').textContent = prog.name;
   document.getElementById('cohort-since').textContent = p.enrolled_at ? new Date(p.enrolled_at).toLocaleDateString() : '—';
-  document.getElementById('cohort-name').textContent = p.cohort || (p.program === 'preview' ? 'n/a' : 'TBD');
-  if (p.program === 'preview') {
+  document.getElementById('cohort-name').textContent = p.cohort || (isPreview || isStaff ? 'n/a' : 'TBD');
+  if (!isStaff && p.portal_status === 'suspended') {
+    document.getElementById('hero-tag').textContent = 'Access paused';
+    document.getElementById('hero-sub').textContent = 'Your portal access is paused right now. Call (903) 913-6444 or email hello@premierdentalacademyoflongview.com and we\'ll sort it out with you.';
+  } else if (isPreview) {
     document.getElementById('hero-tag').textContent = 'Preview mode';
     document.getElementById('hero-sub').textContent = 'You\'re in preview mode. Enroll to unlock save, PDFs, and your certificate.';
   }

@@ -56,7 +56,7 @@
 
   async function signOut() {
     if (sb) await sb.auth.signOut();
-    location.href = '/login.html';
+    location.href = '/login';
   }
 
   window.PDA = {

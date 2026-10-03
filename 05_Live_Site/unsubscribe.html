@@ -42,7 +42,7 @@
 (async () => {
   const SUPABASE_URL = 'https://lmbsuwslsycukynzpzik.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh';
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const sb = window.supabase?.createClient ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
 
   const params = new URLSearchParams(location.search);
   const token = params.get('token');
@@ -50,6 +50,12 @@
   const success = document.getElementById('success');
   const error = document.getElementById('error');
 
+  if (!sb) {
+    loading.classList.add('hidden');
+    error.classList.remove('hidden');
+    document.getElementById('error-msg').textContent = 'The unsubscribe service didn\'t load. Please refresh this page and try the link again.';
+    return;
+  }
   if (!token) {
     loading.classList.add('hidden');
     error.classList.remove('hidden');

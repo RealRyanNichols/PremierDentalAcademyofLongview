@@ -76,11 +76,11 @@
       <fieldset class="border-t border-slate-100 pt-5">
         <legend class="text-xs uppercase tracking-widest text-teal-700 font-semibold mb-3">Your interest</legend>
         <label class="block mb-3">
-          <span class="text-sm font-medium">Which program interests you most?</span>
-          <select name="program" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
-            <option>Not sure yet — help me decide</option>
-            <option>RDA Foundation (12 weeks, $1,995)</option>
-            <option>RDA Career Track (24 weeks, $3,495)</option>
+          <span class="text-sm font-medium">How would you like to pay for the in-person program?</span>
+          <select name="payment_option" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-teal-600">
+            <option>Not sure yet — tell me about both</option>
+            <option>Pay in full ($3,000)</option>
+            <option>Payment plan ($3,500 total: $500 down + $3,000 balance)</option>
           </select>
         </label>
         <label class="block mb-3">
@@ -167,7 +167,7 @@
       metadata: {
         city: fd.get('city'),
         age: fd.get('age'),
-        program: fd.get('program'),
+        payment_option: fd.get('payment_option'),
         source: fd.get('source'),
         start_when: fd.get('start_when'),
         notes: fd.get('notes'),
@@ -177,22 +177,37 @@
     };
 
     let saved = false;
+    let reason = 'The form service did not load.';
     if (sb) {
       const { error } = await sb.from('leads').insert(lead);
       saved = !error;
+      if (error) reason = error.message;
     }
-    // Redirect to dedicated thank-you page
-    location.href = '/thank-you';
-    return;
 
-    if (!saved) {
-      // Stash locally as a backup so nothing is lost
-      try {
-        const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
-        existing.push(lead);
-        localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
-      } catch(e){}
+    if (saved) {
+      location.href = '/thank-you';
+      return;
     }
+
+    // Not saved: keep what they typed, tell them plainly, and give them a
+    // way to reach us that doesn't depend on this form.
+    console.warn('[apply] lead not saved:', reason);
+    try {
+      const existing = JSON.parse(localStorage.getItem('pda.pendingLeads') || '[]');
+      existing.push(lead);
+      localStorage.setItem('pda.pendingLeads', JSON.stringify(existing));
+    } catch(e){}
+    let err = document.getElementById('apply-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.id = 'apply-error';
+      err.setAttribute('role', 'alert');
+      err.className = 'mt-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      btn.insertAdjacentElement('afterend', err);
+    }
+    err.innerHTML = 'We couldn\'t send your application just now. Your answers are still here — please try again in a moment, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a> or email <a href="mailto:hello@premierdentalacademyoflongview.com" class="font-semibold underline">hello@premierdentalacademyoflongview.com</a>.';
+    btn.disabled = false;
+    btn.textContent = 'Try again →';
   };
 })();
 </script>

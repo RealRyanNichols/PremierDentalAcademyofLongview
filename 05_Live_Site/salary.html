@@ -150,7 +150,7 @@
     <div class="bg-white border border-slate-200 rounded-2xl p-5">
       <div class="text-2xl mb-2">🎓</div>
       <h3 class="font-bold">Get certified</h3>
-      <p class="text-sm text-slate-600 mt-1">PDA's 12-week Foundation program gets you state-registered + job-ready.</p>
+      <p class="text-sm text-slate-600 mt-1">PDA's 12-week in-person program gets you trained and job-ready.</p>
     </div>
     <div class="bg-white border border-slate-200 rounded-2xl p-5">
       <div class="text-2xl mb-2">💼</div>
@@ -167,9 +167,9 @@
   <!-- CTA -->
   <div class="bg-gradient-to-br from-slate-900 to-cyan-900 text-white rounded-3xl p-8 text-center">
     <h2 class="display text-3xl font-bold">Stop wondering. Start earning.</h2>
-    <p class="text-cyan-100 mt-2">12 weeks of training. Free application. 1-business-day response.</p>
+    <p class="text-cyan-100 mt-2">12 weeks of training. No application fee. 1-business-day response.</p>
     <div class="mt-5 flex flex-wrap gap-3 justify-center">
-      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply now →</a>
       <a href="/tools/practice-pro" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">Try the trainer first</a>
     </div>
   </div>
@@ -236,8 +236,22 @@ recalc();
 
 // Save email
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  // Null when the CDN library failed to load; the submit handler then shows
+  // the error state instead of throwing (the calculator above still works).
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
   const form = document.getElementById('save-form');
+  const showError = (text) => {
+    let err = form.querySelector('.pda-form-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'pda-form-error w-full mt-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-lg p-3 text-sm text-center';
+      err.setAttribute('role', 'alert');
+      form.appendChild(err);
+    }
+    err.innerHTML = text;
+  };
   form.onsubmit = async (e) => {
     e.preventDefault();
     const email = new FormData(form).get('email');
@@ -247,7 +261,13 @@ recalc();
       years: document.getElementById('years').value,
       annual: document.getElementById('annual').textContent,
     };
-    await sb.from('subscribers').insert({ email, source: 'salary-calculator', metadata: meta });
+    const { error } = sb ? await sb.from('subscribers').insert({ email, source: 'salary-calculator', metadata: meta }) : { error: new Error('Form service did not load') };
+    // An address that is already on the list counts as success.
+    if (error && !/duplicate|unique/i.test(error.message)) {
+      console.warn('[salary] subscribe failed:', error.message);
+      showError('We couldn\'t save that just now. Please try again in a moment, or email <a href="mailto:hello@premierdentalacademyoflongview.com" class="font-semibold underline">hello@premierdentalacademyoflongview.com</a>.');
+      return;
+    }
     form.classList.add('hidden');
     document.getElementById('save-success').classList.remove('hidden');
   };

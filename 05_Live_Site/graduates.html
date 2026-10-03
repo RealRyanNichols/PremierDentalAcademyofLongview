@@ -74,9 +74,9 @@
 <section class="py-16 bg-gradient-to-br from-teal-700 to-cyan-900 text-white text-center">
   <div class="max-w-3xl mx-auto px-6">
     <h2 class="display text-3xl sm:text-4xl font-bold" data-aos="fade-up">Be next on this wall.</h2>
-    <p class="text-teal-100 mt-3 max-w-xl mx-auto" data-aos="fade-up">12 weeks of training. Free application. We don't stop until you're working.</p>
+    <p class="text-teal-100 mt-3 max-w-xl mx-auto" data-aos="fade-up">12 weeks of training. No application fee. We don't stop until you're working.</p>
     <div class="mt-7 flex flex-wrap gap-3 justify-center" data-aos="fade-up">
-      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply free →</a>
+      <a href="/apply" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-6 py-3 rounded-lg">Apply now →</a>
       <a href="/classes" class="bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold px-6 py-3 rounded-lg">See upcoming classes</a>
     </div>
   </div>
@@ -90,10 +90,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-AOS.init({ duration: 500, once: true });
+// Guard the CDN libraries: if one fails to load, the page must still show
+// its error state instead of stopping at "loading…".
+if (window.AOS) AOS.init({ duration: 500, once: true });
 
 (async () => {
-  const sb = window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh');
+  const sb = window.supabase?.createClient
+    ? window.supabase.createClient('https://lmbsuwslsycukynzpzik.supabase.co', 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh')
+    : null;
 
   const PALETTE = ['#0d9488','#0891b2','#0e7490','#7c3aed','#db2777','#dc2626','#0284c7','#65a30d','#a16207','#115e59'];
   const colorFor = (s) => {
@@ -104,8 +108,20 @@ AOS.init({ duration: 500, once: true });
   const fmt = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
   const daysBetween = (a, b) => Math.round((new Date(b) - new Date(a)) / 86400000);
 
-  const { data: grads, error } = await sb.from('placements').select('*').eq('visible', true).order('hire_date', { ascending: false });
-  if (error) { console.warn(error); return; }
+  const { data: grads, error } = sb
+    ? await sb.from('placements').select('*').eq('visible', true).order('hire_date', { ascending: false })
+    : { data: null, error: new Error('Graduate wall service did not load') };
+  if (error || !grads) {
+    console.warn(error);
+    document.getElementById('grad-grid').innerHTML = '<div class="sm:col-span-2 lg:col-span-3 bg-rose-50 border border-rose-200 text-rose-900 rounded-2xl p-6 text-center">We couldn\'t load the graduate wall just now. Please refresh, or call <a href="tel:+19039136444" class="font-semibold underline">(903) 913-6444</a>.</div>';
+    return;
+  }
+  if (grads.length === 0) {
+    document.getElementById('grad-grid').innerHTML = '<div class="sm:col-span-2 lg:col-span-3 bg-white border border-slate-200 text-slate-600 rounded-2xl p-8 text-center">Graduate placements will be posted here as students give permission to share them.</div>';
+    ['stat-grads', 'stat-offices', 'stat-cities'].forEach(id => { document.getElementById(id).textContent = '0'; });
+    document.getElementById('stat-rate').textContent = '—';
+    return;
+  }
 
   // Stats
   document.getElementById('stat-grads').textContent = grads.length;
