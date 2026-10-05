@@ -38,16 +38,31 @@ Take this as settled; there is no need to verify it against Vercel or Supabase.
     `/etc/theleadflowpro/web.env`, and it deploys with
     `sudo /opt/theleadflowpro/deploy/droplet/deploy.sh`. Its read-only `check.sh` prints the
     droplet's IP.
-  - Not recorded anywhere yet: the IP, size and region; and where the database and logins will
-    run once Supabase is gone. Do not invent them; get them from Amanda or Ryan, then record them
-    here.
-- **This site is not on the droplet yet.** Nothing is set up for it there; it will need its own
-  setup, following LeadFlow Pro's pattern. What has to move is listed in
-  `migration/supabase-export/`:
-  - `README.md`: the database, stored secrets, 10 scheduled jobs, webhooks, and this site plus its
-    `/api` functions.
-  - `INVENTORY.md`: the porting checklist for the 45 Supabase functions.
-  - `functions/`: their verified live code. Port from there, not from `supabase/functions/`.
+  - Droplet facts recorded Sept 21–24 (LeadFlow runbook and migration status docs in Amanda's
+    Drive): `leadflow-web`, reserved IP 165.227.248.110, NYC3, Ubuntu 24.04, 8 GB / 4 vCPU /
+    80 GB (resized Sept 22). Still not decided: where the database and logins will run once
+    Supabase is gone. Do not invent it; get it from Amanda or Ryan, then record it here.
+- **This site already runs on the droplet** (since Sept 24, 2026; re-checked Sept 28 by public
+  DNS and response headers — earlier notes here said it wasn't, which was wrong):
+  - DNS for the domain is at DigitalOcean; www and the apex point at 165.227.248.110, and Caddy
+    answers (apex 308 → www).
+  - Caddy serves the files from `/srv/sites/pda`, a checkout of `main` that updates from GitHub
+    every 5 minutes. That update stalled around Sept 24 but **is working again** (verified
+    Oct 4, 2026: the Oct 1 post /blog/dental-assistant-school-near-troup-tx returns 200 live).
+  - The `/api` functions run in the `pda-api` service (port 3200). Its settings are in
+    `/etc/pda/api.env` (root-only): Square, Resend and Supabase keys were copied there from Vercel
+    on Sept 23. Website checkout (`/api/enroll`) has taken real payments there since Sept 24.
+  - **Square is ported (Sept 28):** `api/square-webhook.js`, `api/buy-product.js`,
+    `api/buy-exam-pro.js` (+ `api/_square.mjs`, `_welcome.mjs`, `_accounts.mjs`) replace the
+    Supabase functions of the same names; `ops/square/README.md` is the droplet runbook
+    (`pda-square webhook-setup` / `cutover` / `rollback`). Until the Square webhook is switched
+    with `cutover`, the Supabase webhook still handles payment notifications.
+  - Still on Supabase and still to port: the database, logins, the other functions and the
+    scheduled jobs, listed in `migration/supabase-export/`:
+    - `README.md`: the database, stored secrets, 10 scheduled jobs, webhooks, and this site plus
+      its `/api` functions.
+    - `INVENTORY.md`: the porting checklist for the 45 Supabase functions.
+    - `functions/`: their verified live code. Port from there, not from `supabase/functions/`.
 - The approval rules above still apply on the droplet: no production deploy, DB migration,
   env/DNS/payment change, real send or user change without Amanda's explicit approval for
   that action, and never commit secrets.
@@ -131,8 +146,9 @@ system) is itself the asset — investors and other academies will want it.
 3. Square: NEVER return an error to the buyer after a successful charge.
 4. Marketing copy is REAL ONLY — no fabricated names, claims, or statistics.
 5. Never commit secrets. The Supabase anon key is public and fine in client
-   code. `SQUARE_ACCESS_TOKEN`, service-role keys, and any access tokens live in
-   Vercel env vars — never in the repo.
+   code. `SQUARE_ACCESS_TOKEN`, the Square webhook signing key, service-role keys and any
+   access tokens live in the droplet's `/etc/pda/api.env` (formerly Vercel env vars) — never
+   in the repo.
 6. Commits: author `Premier Dental Academy of Longview <hello@premierdentalacademyoflongview.com>`
    (the business, never an individual — Amanda, Sep 19, 2026), normal cadence.
    Do NOT tag commits, PRs, or code as machine-generated.
@@ -141,18 +157,28 @@ system) is itself the asset — investors and other academies will want it.
    or PR. Refer to people by role or count ("one student", "a lead"); the details live in the
    admin pages.
 
-## Payments (api/enroll.js)
-- Vercel serverless function; reads `SQUARE_ACCESS_TOKEN` from Vercel env.
+## Payments (api/enroll.js, api/buy-product.js, api/buy-exam-pro.js, api/square-webhook.js)
+- All four run in pda-api on the droplet and read `SQUARE_ACCESS_TOKEN` from `/etc/pda/api.env`
+  (shared helpers: `api/_square.mjs`). Checkout pages post through `assets/pda-pay.js`
+  (droplet first; the old Supabase function only on a 404 or no connection, same idempotency
+  key both ways). Tests: `npm run check:square-api`.
 - Square location id `2P2ZE3FJNEYTV`. Since July 1, 2026: in-person **$3,000
   paid in full** OR **$3,500 on a plan** ($500 down + $3,000 balance, weekly or
   monthly, up to ~13 installments / 12 months; certificate issued when tuition
-  is paid in full). Online $397 (sale; reg $997). Idempotency keys are derived
+  is paid in full). Online $997 (the older $397 sale is over). Idempotency keys are derived
   from the card nonce so a re-submit can't double-charge. Never errors after a
   charge.
-- `supabase/functions/buy-product` is the one checkout engine for every item
-  in `public.products` (guest checkout, entitlement grant, Kajabi sync, Resend
-  access email). Dormant `ms_*` mini-products stay `active=false` until they
-  have a delivery PDF + page — see docs/mini-products-launch-checklist.md.
+- **Payment-plan autopay (enroll.js STEP 3) cannot work on the current Square plan:** Square
+  only accepts INSTALLMENT invoices (and invoice custom fields) with an Invoices Plus
+  subscription, and answers MERCHANT_SUBSCRIPTION_NOT_FOUND otherwise (Square Invoices API
+  docs, checked Sept 28, 2026). That is why orders exist but invoices never did. The fix is an
+  owner decision (subscribe, or schedule the charges another way) — do not work around it.
+- `api/buy-product.js` is the one checkout for every item in `public.products` (guest
+  checkout, entitlement grant, access email). Dormant `ms_*` mini-products stay `active=false`
+  until they have a delivery PDF + page — see docs/mini-products-launch-checklist.md.
+- `api/square-webhook.js` treats only tuition as enrollment: website product sales
+  ("<product> — website"), Exam Pro and service payment links are skipped (the old v6 enrolled
+  every payer).
 - Deploy checklist: `npm test` (includes `check:pricing`, which fails on any
   page contradicting the payment engine) + one-line entry in CHANGELOG.md.
 
@@ -360,7 +386,8 @@ The Kajabi replacement is BUILT and DEPLOYED (PRs #146/#147; docs/kajabi-migrati
   Known: checkout auto-pay (enroll.js STEP 3 invoice) has NEVER succeeded — orders exist,
   invoices don't. $11,000 of balances (four students: three at $3,000, one at $2,000; names in /admin/payments) have
   no schedule; plan choices were never stored. Retired Square links ($1,997, $2,100 plans,
-  $397 online) are still live; Square location phone is the never-use 903-230-6444.
+  $397 online) are still live. (The Square location's phone now reads (903) 913-6444 — checked
+  through the Square connector Sept 28, 2026.)
 - One student moved to the Sept 29 class (applied Sep 6). October 5 (MWF, hours TBC) + October 20 (T/Th) live.
 - Runbook + Amanda's action list: docs/labor-day-2026-offer.md, docs/COWORK-REQUEST-2026-09-06.md.
 

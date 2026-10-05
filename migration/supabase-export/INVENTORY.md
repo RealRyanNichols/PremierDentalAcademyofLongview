@@ -10,6 +10,13 @@ that evidence. Confirm with Amanda before dropping anything marked "Probably not
 
 **Totals:** 14 yes, 3 probably, 1 unclear, 6 probably not, 21 no.
 
+**Ported so far (Sep 28, 2026, branch feat/square-on-droplet):** `square-webhook` →
+`api/square-webhook.js`, `buy-product` → `api/buy-product.js`, `buy-exam-pro` →
+`api/buy-exam-pro.js`, `enroll-welcome` → `api/_welcome.mjs` (called in-process by the webhook;
+`enroll-paperwork` still calls the Supabase copy until it is ported). Runbook:
+`ops/square/README.md`. The Supabase copies keep running until the Square webhook is switched
+with `pda-square cutover`.
+
 ## Must-fix items when porting (apply to every function you move)
 
 - **Replace every shared secret** named in README.md with a new value from the droplet's environment. Never hardcode one again.

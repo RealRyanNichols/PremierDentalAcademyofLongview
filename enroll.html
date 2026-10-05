@@ -43,6 +43,7 @@
   <script src="/assets/seat-mask.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://web.squarecdn.com/v1/square.js"></script>
+  <script src="/assets/pda-pay.js"></script>
 <script src="/assets/pda-nav.js" defer></script>
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
@@ -967,7 +968,7 @@ async function submit() {
   // (deposits + payment plans) stays on /api/enroll below.
   if (state.plan === 'online') {
     try {
-      const resp = await fetch('https://lmbsuwslsycukynzpzik.supabase.co/functions/v1/buy-product', {
+      const resp = await pdaPay('buy-product', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'apikey': 'sb_publishable_vzuQZbkmj-UsYZVs5Zqw9w_c8PiOfbh' },
         body: JSON.stringify({ product_key: 'online_program', sourceId: tokenRes.token, email, name, phone }),
