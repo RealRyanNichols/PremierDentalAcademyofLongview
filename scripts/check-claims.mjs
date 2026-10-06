@@ -49,6 +49,9 @@ FORBIDDEN.push([/Jasmine M\./, 'retired testimonial "Jasmine M."'], [/Aisha C\./
 for (const a of F.retired.addresses || []) FORBIDDEN.push([new RegExp(esc(a), 'i'), `old address "${a}"`]);
 for (const p of F.retired.phones || []) FORBIDDEN.push([new RegExp(esc(p)), `old phone "${p}"`]);
 for (const s of F.retired.spellings || []) FORBIDDEN.push([new RegExp(esc(s), 'i'), `misspelling "${s}"`]);
+// Funded / free enrollment options were retired on Oct 6, 2026 (Amanda): no WIOA, Workforce
+// Solutions, GI Bill, scholarship or "may be free" wording anywhere on the public site.
+for (const f of F.retired.funding || []) FORBIDDEN.push([new RegExp(esc(f), 'i'), `retired funding option "${f}" (no free or funded enrollment since Oct 6, 2026)`]);
 // Exact phrasings found on live pages (Sep 2026 audit).
 FORBIDDEN.push(
   [/interviewing in week 10/i, 'unverified interview-timing claim'],

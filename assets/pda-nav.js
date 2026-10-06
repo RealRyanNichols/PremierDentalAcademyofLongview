@@ -71,7 +71,6 @@
           <a href="/exam-prep-course" class="block px-4 py-2 hover:bg-slate-50">💎 Exam-Prep Course</a>
           <a href="/career-vault" class="block px-4 py-2 hover:bg-slate-50">💎 Career Vault — 4 tracks</a>
           <p class="px-4 pt-2 pb-1 text-[10px] uppercase tracking-widest text-slate-400 font-bold border-t border-slate-100 mt-1">Free — no signup</p>
-          <a href="/tools/funding-finder" class="block px-4 py-2 hover:bg-slate-50">Get it paid for</a>
           <a href="/tools/take-home-pay" class="block px-4 py-2 hover:bg-slate-50">Take-home pay</a>
           <a href="/tools/schedule-planner" class="block px-4 py-2 hover:bg-slate-50">Fit school into my life</a>
           <a href="/tools/interview-prep" class="block px-4 py-2 hover:bg-slate-50">Interview prep</a>
@@ -139,7 +138,6 @@
     <a href="/exam-prep-course" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam-Prep Course</a>
     <a href="/career-vault" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Career Vault — 4 tracks</a>
     <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold px-1 mt-3 mb-1">Free — no signup</p>
-    <a href="/tools/funding-finder" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Get it paid for</a>
     <a href="/tools/take-home-pay" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Take-home pay</a>
     <a href="/tools/schedule-planner" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Fit school into my life</a>
     <a href="/tools/interview-prep" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Interview prep</a>
@@ -658,7 +656,6 @@
     </nav>
     <nav aria-label="Free trainers" class="space-y-2">
       <p class="text-white font-semibold">Free trainers</p>
-      <a href="/tools/funding-finder" class="block hover:text-white">Get it paid for</a>
       <a href="/tools/take-home-pay" class="block hover:text-white">Take-home pay</a>
       <a href="/tools/schedule-planner" class="block hover:text-white">Fit it into my life</a>
       <a href="/tools/interview-prep" class="block hover:text-white">Interview prep</a>

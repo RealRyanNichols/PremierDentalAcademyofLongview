@@ -80,46 +80,67 @@
   <!-- FAQ schema — powers Google rich-result FAQ accordions -->
   <script type="application/ld+json">
   {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    "mainEntity": [
-      {
-        "@type": "Question",
-        "name": "How long until I'm working as a dental assistant in East Texas?",
-        "acceptedAnswer": { "@type": "Answer", "text": "PDA's RDA program runs about 12 weeks — In-Person at our Longview campus or Online from home. We help every graduate prepare for the job search and introduce them to hiring East Texas offices." }
-      },
-      {
-        "@type": "Question",
-        "name": "Do I need previous dental experience to enroll?",
-        "acceptedAnswer": { "@type": "Answer", "text": "No. Many PDA students come in with no prior dental background. The curriculum and the trainers are designed for someone walking in cold." }
-      },
-      {
-        "@type": "Question",
-        "name": "What makes PDA's practice management trainers different from online courses?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Online courses show you what dental software looks like. PDA's trainers are software — fully interactive, with 25 sample patients, charts you actually mark, claims you actually submit, prescriptions you actually write. It's the difference between watching cooking videos and standing at the stove." }
-      },
-      {
-        "@type": "Question",
-        "name": "Will my certificate be recognized by Texas dental offices?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Our curriculum aligns with the Texas State Board of Dental Examiners RDA registration requirements. Graduates are positioned to register as RDAs in Texas." }
-      },
-      {
-        "@type": "Question",
-        "name": "Can I pay in monthly installments?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Yes for In-Person: $3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance). Online is a one-time $997 payment — non-refundable but transferable to In-Person credit if you switch. You may also qualify for WIOA funding through Workforce Solutions East Texas — you apply directly with them." }
-      },
-      {
-        "@type": "Question",
-        "name": "Where is Premier Dental Academy located?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Our campus is at 2800 Gilmer Rd, Suite 106, Longview, TX 75604. Students attend from Longview, Tyler, Marshall, Kilgore, Henderson, Gladewater, and surrounding East Texas towns." }
-      },
-      {
-        "@type": "Question",
-        "name": "What's the refund policy if I change my mind?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Online: non-refundable, but transferable in full to In-Person credit if it isn't the right fit — your money is never lost. In-Person ($3,000 paid in full, or $3,500 on a plan): pro-rated refund per Texas state proprietary-school guidelines; submit your withdrawal in writing and refunds process within 30 days." }
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How long until I'm working as a dental assistant in East Texas?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PDA's RDA program runs about 12 weeks — In-Person at our Longview campus or Online from home. We help every graduate prepare for the job search and introduce them to hiring East Texas offices."
       }
-    ]
-  }
+    },
+    {
+      "@type": "Question",
+      "name": "Do I need previous dental experience to enroll?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Many PDA students come in with no prior dental background. The curriculum and the trainers are designed for someone walking in cold."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What makes PDA's practice management trainers different from online courses?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Online courses show you what dental software looks like. PDA's trainers are software — fully interactive, with 25 sample patients, charts you actually mark, claims you actually submit, prescriptions you actually write. It's the difference between watching cooking videos and standing at the stove."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will my certificate be recognized by Texas dental offices?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Our curriculum aligns with the Texas State Board of Dental Examiners RDA registration requirements. Graduates are positioned to register as RDAs in Texas."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I pay in monthly installments?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes for In-Person: $3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance). Online is a one-time $997 payment — non-refundable but transferable to In-Person credit if you switch."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where is Premier Dental Academy located?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Our campus is at 2800 Gilmer Rd, Suite 106, Longview, TX 75604. Students attend from Longview, Tyler, Marshall, Kilgore, Henderson, Gladewater, and surrounding East Texas towns."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What's the refund policy if I change my mind?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Online: non-refundable, but transferable in full to In-Person credit if it isn't the right fit — your money is never lost. In-Person ($3,000 paid in full, or $3,500 on a plan): pro-rated refund per Texas state proprietary-school guidelines; submit your withdrawal in writing and refunds process within 30 days."
+      }
+    }
+  ]
+}
   </script>
 
   <!-- Person schema for Amanda -->
@@ -418,7 +439,7 @@
           <div class="text-right text-sm text-slate-400" id="pdacalc-count">6 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot →</a>
-        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.</p>
+        <p class="text-center text-xs text-slate-500 mt-3" id="pdacalc-note">Plans up to 12 months. Can't sit for the state board until paid in full.</p>
       </div>
     </div>
   </div>
@@ -439,7 +460,7 @@
   var ipDown=document.getElementById("pdacalc-ip-down"),ipSub=document.getElementById("pdacalc-ip-sub"),note=document.getElementById("pdacalc-note"),totLbl=document.getElementById("pdacalc-totlbl");
   if(ipDown)ipDown.textContent="$"+IP.down;
   if(ipSub)ipSub.textContent=NEW?("$"+IP.planTotal.toLocaleString()+" plan / $"+IP.pif.toLocaleString()+" paid in full"):("$"+IP.planTotal.toLocaleString()+" total · weekly or monthly");
-  if(note)note.textContent="Plans up to 12 months. Can't sit for the state board until paid in full. WIOA funding through Workforce Solutions East Texas.";
+  if(note)note.textContent="Plans up to 12 months. Can't sit for the state board until paid in full.";
   function on(b){b.classList.add("bg-white","text-teal-700","shadow-sm");b.classList.remove("text-slate-600");}
   function off(b){b.classList.remove("bg-white","text-teal-700","shadow-sm");b.classList.add("text-slate-600");}
   function setMonthly(){mode="monthly";on(mo);off(wk);term.min=NEW?3:1;term.max=NEW?12:3;term.value=NEW?6:3;}
@@ -684,12 +705,6 @@
       <p class="text-slate-600 mt-3 text-base sm:text-lg">Money, time, and confidence are the real things in the way. These are free, no signup — built for busy women and parents ready for a change.</p>
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-10" data-aos="fade-up">
-      <a href="/tools/funding-finder" data-event="tool_card_click" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 block">
-        <div class="text-3xl">💰</div>
-        <h3 class="display text-lg font-bold text-navy-900 mt-2">Can you get it paid for?</h3>
-        <p class="text-sm text-slate-600 mt-1">See what funding could cover your tuition — WIOA / Workforce Solutions and payment plans.</p>
-        <span class="text-teal-700 font-semibold text-sm mt-3 inline-block">Open tool →</span>
-      </a>
       <a href="/tools/take-home-pay" data-event="tool_card_click" class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 block">
         <div class="text-3xl">📊</div>
         <h3 class="display text-lg font-bold text-navy-900 mt-2">See your new pay</h3>
@@ -784,7 +799,6 @@
     </div>
   </div>
 </section>
-
 
 <!-- ───────────── Student gallery ───────────── -->
 <section class="py-20 sm:py-28 bg-gradient-to-br from-teal-50 to-cyan-50/40">
@@ -897,7 +911,7 @@
         <a href="/enroll?plan=online" class="block text-center mt-6 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-full shadow-md">Enroll Online — <span class="js-online-price">$997</span> →</a>
       </div>
     </div>
-    <p class="text-center text-xs text-slate-500 mt-8">May qualify for WIOA funding through Workforce Solutions · Payment plans available</p>
+    <p class="text-center text-xs text-slate-500 mt-8">Payment plan available: $500 down, then the $3,000 balance ($3,500 total)</p>
     <div class="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-slate-600 font-medium">
       <span>🔒 Secure Square checkout</span>
       <span>💳 Klarna · Afterpay · Affirm</span>
@@ -959,7 +973,7 @@
           <span>Can I make payments instead of paying upfront?</span>
           <span class="faq-icon text-2xl text-teal-600">+</span>
         </summary>
-        <div class="px-5 pb-4 text-sm text-slate-700">Yes for In-Person: <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> ($500 down + $3,000 balance, up to 12 payments). <strong>Online is $997 one time</strong> and is non-refundable, but 100% transfers as credit toward the In-Person program within 90 days. You may also qualify for WIOA funding through Workforce Solutions East Texas.</div>
+        <div class="px-5 pb-4 text-sm text-slate-700">Yes for In-Person: <strong>$3,000 paid in full</strong>, or <strong>$3,500 on a plan</strong> ($500 down + $3,000 balance, up to 12 payments). <strong>Online is $997 one time</strong> and is non-refundable, but 100% transfers as credit toward the In-Person program within 90 days.</div>
       </details>
       <details data-aos="fade-up" class="bg-white rounded-xl border border-slate-200 group">
         <summary class="px-5 py-4 flex items-center justify-between cursor-pointer font-semibold">
@@ -1004,7 +1018,7 @@
   <div class="max-w-3xl mx-auto px-6 text-center">
     <p class="text-xs uppercase tracking-widest text-teal-700 font-semibold">Stay in touch</p>
     <h2 class="display text-2xl sm:text-3xl font-bold mt-1">Not ready to apply? Get cohort dates + tips by email.</h2>
-    <p class="text-slate-600 mt-2 text-sm">One short email per month. Cohort start dates, WIOA funding tips, dental career advice from Amanda. No spam, unsubscribe anytime.</p>
+    <p class="text-slate-600 mt-2 text-sm">One short email per month. Cohort start dates, dental career advice from Amanda. No spam, unsubscribe anytime.</p>
     <form id="subscribe-form" class="mt-5 flex flex-wrap gap-2 max-w-md mx-auto justify-center">
       <input type="email" name="email" required placeholder="you@example.com"
         class="flex-1 min-w-[200px] px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:outline-none focus:border-teal-600 focus:ring-1 focus:ring-teal-600" />

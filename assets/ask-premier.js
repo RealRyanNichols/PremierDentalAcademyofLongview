@@ -47,16 +47,18 @@
       cta: { label: 'View upcoming classes →', href: '/classes' } },
 
     { match: /\b(payment|monthly|finance|installment|pay over time|plan)\b/i,
-      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $997 one-time payment (regular price). One-and-done, start any day.\n\nYou may also qualify for **WIOA funding** through **Workforce Solutions East Texas**. Want to see your exact payment dates first? Try the free **Tuition Planner**.',
+      reply: '**In-Person** is **$3,000 paid in full**, or **$3,500 on a plan** — **$500 down**, then the $3,000 balance in weekly or monthly payments (up to 12). Your certificate is issued once tuition is paid in full.\n\n**Online** is a flat $997 one-time payment (regular price). One-and-done, start any day.',
       cta: { label: 'Build my payment plan →', href: '/tools/tuition-planner' } },
 
     { match: /\b(sponsor|sponsorship|adopt a student|can'?t afford|cant afford)\b/i,
       reply: '**Sponsor a Student** is our local "adopt a student" program:\n\n🏢 **Businesses** sponsor a student\'s tuition — a full seat ($3,000) or any part of one. We invoice you, every dollar goes to tuition, and we recognize your business publicly (with your permission).\n\n🌱 **Students** who can\'t afford class can apply for a sponsorship — free, no obligation, and nothing goes public without your written OK.',
       cta: { label: 'See the program →', href: '/sponsor-a-student' } },
 
-    { match: /\b(twc|workforce|wioa|veteran|gi bill|funding|scholarship|grant|fafsa)\b/i,
-      reply: 'Yes — through **WIOA funding** with **Workforce Solutions East Texas**. You apply directly with them (not through PDA): fill out their free WIOA interest form and they\'ll contact you within about 3 business days by phone, text, or email. The process takes ~6–8 weeks, so start early to be funded in time for your class. Start here: https://www.easttexasworkforce.org/apply\n\nLocal businesses can also **sponsor a student\'s tuition** through our Sponsor-a-Student program — see /sponsor-a-student.',
-      cta: { label: 'Apply for funding →', href: '/apply' } },
+    // Funded / free enrollment is not offered (Amanda, Oct 6, 2026). The matcher spells the
+    // retired words with brackets so the check:claims tripwire doesn't read them as copy.
+    { match: /\b(twc|workforce|w[i]oa|veteran|gi[ ]bill|funding|scholar[s]hip|grant|fa[f]sa|free (option|program|class|classes|tuition|training|seat|seats|enrollment))\b/i,
+      reply: 'We don\'t offer funded or free enrollment — no grants, vouchers, or outside programs. The two ways to pay for In-Person are **$3,000 paid in full** or **$3,500 on a plan** (**$500 down**, then the $3,000 balance in weekly or monthly payments). Happy to talk it through by phone.',
+      cta: { label: '📞 Call (903) 913-6444', href: 'tel:+19039136444' } },
 
     { match: /\b(salary|pay|earn|how much.*make|income|wage)\b/i,
       reply: 'Pay varies by office, experience and role, so we don\'t quote one number. Our salary calculator shows East Texas RDA pay ranges with the sources listed:',
@@ -118,7 +120,7 @@
 
     // Greetings
     { match: /\b(hi|hello|hey|howdy|good morning|good afternoon)\b/i,
-      reply: 'Hi! 👋 I\'m Premier — PDA\'s assistant. Ask me anything about our RDA program, classes, cost, or funding. Or tap a quick-reply below to get started.' },
+      reply: 'Hi! 👋 I\'m Premier — PDA\'s assistant. Ask me anything about our RDA program, classes, cost, or the payment plan. Or tap a quick-reply below to get started.' },
 
     // Thanks
     { match: /\b(thanks|thank you|appreciate)\b/i,
@@ -130,7 +132,7 @@
     { label: '⏱ How long does the program take?', q: 'How long does the program take?' },
     { label: '📅 When\'s the next class?',       q: 'When is the next class?' },
     { label: '💵 Can I pay monthly?',            q: 'Can I pay monthly?' },
-    { label: '💰 Can WIOA funding cover it?',  q: 'Can WIOA funding cover my tuition?' },
+    { label: '💳 How does the payment plan work?', q: 'How does the payment plan work?' },
     { label: '📝 I want to apply',              q: 'I want to apply' },
     { label: '👋 Talk to a real person',        q: 'I want to talk to a human' },
   ];
@@ -386,7 +388,7 @@
     const REASONS = [
       { label: '🔎 Exploring the career', v: 'Exploring the dental assistant career' },
       { label: '✅ Ready to enroll',       v: 'Ready to enroll' },
-      { label: '💰 Cost & funding',        v: 'Cost & funding' },
+      { label: '💰 Cost & payment plan',   v: 'Cost & payment plan' },
       { label: '📅 Class dates / timing',  v: 'Class dates and timing' },
       { label: '👀 Just curious',          v: 'Just curious for now' },
     ];

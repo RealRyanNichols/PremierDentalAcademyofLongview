@@ -12,6 +12,20 @@ price/policy change without her explicit approval for that action (SQL is staged
 `db/pending/`); never put secrets or private student data anywhere. Full text and the
 retired-facts list: docs/OWNER-RULES.md + docs/CONVERSION-AUDIT-2026-09-17.md.
 
+## FUNDING — NOT OFFERED (Amanda, Oct 3 and Oct 6, 2026)
+Prospects were holding off because the site suggested a free / funded path. Amanda's instruction:
+take WIOA and every free or funded option off the website; the only ways to pay are **$3,000 paid
+in full** or **$3,500 on the payment plan ($500 down + $3,000 balance)** (the paid Online course is
+unchanged). Done Oct 6, 2026 — see CHANGELOG. `assets/site-facts.js` records `funding.offered =
+false` and `retired.funding`; `npm run check:claims` fails on WIOA, Workforce Solutions, GI Bill,
+scholarship, FAFSA, "may be free", "Funding Finder" / "Get it paid for" anywhere public. Ten
+funding-topic blog posts and /tools/funding-finder are noindex redirect stubs to /enroll.
+Still open for Amanda: the Sponsor-a-Student page (a "someone else pays" path; the page is left
+in place, but its cards on the /go ad funnels came off), the
+`marketing/series/day-11-funding.html` and `day-27-funding-veterans.html` email templates (and the
+matching rows in `sequence_emails` on Supabase), and `content/2026-09-25-a.json` which still names
+a retired post. Do not reintroduce funding copy without her explicit instruction.
+
 ## PLATFORM SWITCHOVER — no more Vercel or Supabase (Amanda, Sep 26, 2026)
 Premier Dental Academy of Longview and The LeadFlow Pro **no longer use Vercel or Supabase**.
 Everything both businesses run is being switched over (in progress as of Sep 26, 2026) to a

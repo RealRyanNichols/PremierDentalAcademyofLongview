@@ -11,7 +11,7 @@
  *   countdown  — live seat-aware countdown to the next in-person class
  *   race       — the Time Race chart (animates on scroll)
  *   payback    — wage slider → weekly / payback / yearly readouts
- *   financing  — Ways To Pay tabs (pif / plan / split / wioa)
+ *   financing  — Ways To Pay tabs (pif / plan / split)
  *   quiz       — 3-question gut check (questions/messages from config)
  *   pack       — the Premier Pay-in-Full Pack section
  *   sticky     — mobile sticky CTA
@@ -203,12 +203,11 @@
     function act(k) { return k === def ? ' active' : ''; }
     el.innerHTML =
       '<div class="tool-card" id="pay"><span class="kicker">💳 Ways To Pay</span>' +
-      '<h2 class="sec">' + (o.heading || 'Four real ways to cover tuition. Pick your style, then enroll.') + '</h2>' +
+      '<h2 class="sec">' + (o.heading || 'Three real ways to pay. Pick your style, then enroll.') + '</h2>' +
       '<div class="fin-tabs">' +
         '<button class="fin-tab' + act('pif') + '" data-fin="pif" type="button">Pay in full</button>' +
         '<button class="fin-tab' + act('plan') + '" data-fin="plan" type="button">Payment plan</button>' +
         '<button class="fin-tab' + act('split') + '" data-fin="split" type="button">Klarna / Afterpay / Affirm</button>' +
-        '<button class="fin-tab' + act('wioa') + '" data-fin="wioa" type="button">WIOA (may be free)</button>' +
       '</div>' +
       '<div class="fin-panel' + act('pif') + '" id="fin-pif"><h3>Pay in full — the straight line</h3><div class="fp-big">$3,000</div>' +
         '<p>One payment, done. It’s $500 less than the plan total — and right now the first two pay-in-full students in the next class also take home the <strong>Premier Pay-in-Full Pack</strong>.</p>' +
@@ -221,9 +220,6 @@
       '<div class="fin-panel' + act('split') + '" id="fin-split"><h3>Klarna, Afterpay, or Affirm</h3>' +
         '<p>Prefer to split payments through a service you already use? Klarna, Afterpay, and Affirm are accepted at checkout — their terms and approval are between you and them.</p>' +
         '<a class="btn gold enroll" href="/enroll?plan=in-person&' + UTM + '">See checkout options →</a></div>' +
-      '<div class="fin-panel' + act('wioa') + '" id="fin-wioa"><h3>WIOA funding — training that may cost you $0</h3>' +
-        '<p>' + (o.wioaLead || 'Texas Workforce Solutions offers WIOA funding that can help cover dental-assistant training for people who qualify. The application takes about 6–8 weeks, so if the timing matters, hold your seat with $500 down now and start the WIOA process in the meantime.') + '</p>' +
-        '<a class="btn gold" href="/tools/funding-finder">Check if I qualify (free, 6 questions) →</a></div>' +
       '</div>';
     el.querySelectorAll('.fin-tab').forEach(function (t) {
       t.addEventListener('click', function () {

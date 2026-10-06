@@ -334,7 +334,7 @@ tailwind.config = { theme: { extend: {
         'Read the real requirements at the official board, like tsbde.texas.gov.',
         'Sample the material free: our practice exam and is-it-for-me quiz.',
         'Stand in the actual room. Tour a campus or walk a job site.',
-        'Run your numbers in this builder, then check funding.',
+        'Run your numbers in this builder, then pick pay-in-full or the payment plan.',
         'Review your plan with everything you learned.' ],
     p:[ 'Name the skill inside each role you like. No skill, no role.',
         'Send your shadow message. The builder wrote it for you.',
@@ -370,20 +370,20 @@ tailwind.config = { theme: { extend: {
         'Community college then transfer carries the same diploma for less. Finishing is what matters.' ],
     t:[ 'The military cannot be quietly quit. Talk to veterans, not just recruiters.',
         'Apprenticeships pay you to train, and spots are competitive. Apply broadly.',
-        'GI Bill benefits are real but change. Read va.gov/education yourself before counting on them.' ] };
+        'Military education benefits are real but change. Read va.gov/education yourself before counting on them.' ] };
 
   var FEARS={
-    'Money':'Money is the most solvable one on this list. Real funding exists in East Texas for short training, and the FAFSA is free to file. Your plan links straight to both.',
+    'Money':'Money is the most solvable one on this list. Tuition is $3,000 paid in full or $3,500 on a plan ($500 down, then the balance in simple payments). Your plan links straight to the tuition planner.',
     'I’m scared of failing':'That is exactly what the test week is for. You cannot fail a test week. It is designed to be cheap to be wrong in, and every "no" you find this week saves you a year later.',
     'Disappointing my family':'Your plan ends with a one-pager written for your people, built from your own answers and your real numbers. You will not walk into that conversation empty-handed.',
     'Picking wrong and wasting time':'Nothing here locks. Your answers stay saved, switching directions takes one tap, and deciding with real numbers beats deciding by default. Wrong discovered early is cheap.',
     'I don’t know anyone who’s done it':'Your shadow message is already written, and one person saying yes to one afternoon is how everyone starts. And Amanda answers her own texts.' };
 
   var RES={
-    h:[ ['Funding finder','/tools/funding-finder'], ['Free practice exam','/tools/practice-exam'], ['Free campus tour','/tour'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['TX dental board','https://tsbde.texas.gov'] ],
+    h:[ ['Tuition planner','/tools/tuition-planner'], ['Free practice exam','/tools/practice-exam'], ['Free campus tour','/tour'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['TX dental board','https://tsbde.texas.gov'] ],
     p:[ ['Free practice exam','/tools/practice-exam'], ['East Texas salary page','/salary'], ['Interview prep','/tools/interview-prep'], ['Free campus tour','/tour'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'] ],
-    s:[ ['FAFSA (studentaid.gov)','https://studentaid.gov'], ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['Trade school vs. college','/blog/trade-school-vs-college-what-nobody-tells-you'] ],
-    t:[ ['apprenticeship.gov','https://www.apprenticeship.gov'], ['GI Bill (va.gov)','https://www.va.gov/education/'], ['Funding finder','/tools/funding-finder'], ['Free campus tour','/tour'] ] };
+    s:[ ['Real pay data (bls.gov)','https://www.bls.gov/ooh/'], ['Trade school vs. college','/blog/trade-school-vs-college-what-nobody-tells-you'] ],
+    t:[ ['apprenticeship.gov','https://www.apprenticeship.gov'], ['Education benefits (va.gov)','https://www.va.gov/education/'], ['Free campus tour','/tour'] ] };
 
   var TRADES=['Dental assisting','Medical assisting','Welding','HVAC','Electrical','Cosmetology','CDL driving'];
   var ROLES=['Dental assisting','Medical assisting','Patient coordinator','Pharmacy tech','Teaching aide / child care'];
@@ -406,7 +406,7 @@ tailwind.config = { theme: { extend: {
       { id:'h-honest', type:'info', title:'Quick honesty check', bullets:HONEST.h },
       { id:'h-costA', type:'money', title:function(){ return 'Price your first pick: '+esc((S.h_trades||[])[0]||'trade #1'); }, sub:'Numbers from the school’s own price sheet. Skip what you don’t know yet.', fields:[['h_a_tuition','Tuition ($)'],['h_a_extra','Gear + fees + licensing ($)'],['h_a_months','Months of training'],['h_a_living','Your living costs per month ($)']] },
       { id:'h-costB', type:'money', title:function(){ return 'Now your second pick: '+esc((S.h_trades||[])[1]||'trade #2'); }, sub:'Same four numbers.', fields:[['h_b_tuition','Tuition ($)'],['h_b_extra','Gear + fees + licensing ($)'],['h_b_months','Months of training'],['h_b_living','Your living costs per month ($)']] },
-      { id:'h-fund', type:'chips', title:'Want help paying for it?', key:'h_fund', options:['Yes, show me funding options','I’m covered'], multi:0 } ];
+      { id:'h-fund', type:'chips', title:'Want help paying for it?', key:'h_fund', options:['Yes, show me the payment plan','I’m covered'], multi:0 } ];
     if(d==='p') return [
       { id:'p-roles', type:'chips', title:'Which people-facing roles sound like you?', sub:'Every one of these carries a real skill. Tap up to two.', key:'p_roles', options:ROLES, multi:2, other:true },
       { id:'p-honest', type:'info', title:'Quick honesty check', bullets:HONEST.p },
@@ -793,7 +793,7 @@ tailwind.config = { theme: { extend: {
         if(t[0]>0&&t[1]>0&&t[0]!==t[1]) rows+='<p class="text-sm font-bold text-sage-700 text-center mt-2 calc-out">'+esc(t[0]<t[1]?t1:t2)+' costs '+money(Math.abs(t[0]-t[1]))+' less all-in.</p>';
         np.innerHTML+=rows;
       } else np.innerHTML+='<p class="text-sm text-plum-500 mt-1">Add costs and the comparison lands here. <button type="button" class="underline text-rose-600" data-jump="h-costA">Add my numbers</button></p>';
-      if(S.h_fund&&S.h_fund.indexOf('Yes')===0) np.innerHTML+='<a href="/tools/funding-finder" class="res-btn mt-3"><span>Your funding walkthrough starts here</span>'+ico('go','text-sage-500',18)+'</a>';
+      if(S.h_fund&&S.h_fund.indexOf('Yes')===0) np.innerHTML+='<a href="/tools/tuition-planner" class="res-btn mt-3"><span>Build your $500-down payment plan</span>'+ico('go','text-sage-500',18)+'</a>';
       wrap.appendChild(np);
     }
     if(d==='s'){
@@ -852,7 +852,7 @@ tailwind.config = { theme: { extend: {
     var facts=[];
     if(d==='h'){ var tl=(S.h_trades||[]).join(' and '); if(tl) facts.push('Testing: <b>'+esc(tl)+'</b>.');
       var t3=handsTotals(); if(t3[0]>0) facts.push('Real all-in cost they priced: <b>'+money(t3[0])+'</b> (their numbers, from the school’s own sheet).');
-      facts.push('Funding exists for this: Workforce Solutions East Texas. The plan links straight to it.'); }
+      facts.push('The payment plan: $500 down, then the $3,000 balance in up to 12 payments. The plan links straight to the tuition planner.'); }
     if(d==='p'){ var rl=(S.p_roles||[]).join(' and '); if(rl) facts.push('Roles on the list: <b>'+esc(rl)+'</b>, each with a real skill attached.');
       if(S.p_who) facts.push('First move: shadowing <b>'+esc(S.p_who)+'</b> for one afternoon. The ask is already written.'); }
     if(d==='s'){ if(S.s_become) facts.push('Destination: <b>becoming a '+esc(S.s_become)+'</b>. Chosen on purpose, not by default.');

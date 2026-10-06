@@ -1,134 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Can you get your RDA training paid for? | Premier Dental Academy</title>
-<meta name="description" content="Answer 6 quick questions and see which funding could cover your dental-assistant training — Texas Workforce Solutions (WIOA), payment plans and more. Free, no signup.">
-<meta name="robots" content="index,follow">
-<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png">
-<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<link rel="canonical" href="https://www.premierdentalacademyoflongview.com/tools/funding-finder">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = { theme: { extend: {
-  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b'} }
-}}}
-</script>
-<style>
-  body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
-  .display{font-family:'Fraunces',serif}
-  .opt{cursor:pointer}
-  .opt input{position:absolute;opacity:0}
-  .opt .box{border:2px solid #e2e8f0;border-radius:9999px;transition:.15s}
-  .opt input:checked + .box{border-color:#0d9488;background:#0d9488;color:#fff}
-  .q.answered{opacity:.6}
-</style>
-<script src="/assets/pda-seo.js" defer></script>
-<script src="/assets/pda-nav.js" defer></script>
-<script src="/assets/pda-analytics.js" defer></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tuition &amp; ways to pay — Premier Dental Academy of Longview</title>
+  <meta name="description" content="Tuition for the in-person RDA program: $3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance)." />
+  <!-- Retired Oct 6, 2026 (Amanda): PDA no longer presents funded or free enrollment options.
+       This URL now sends people to the enroll page, which states the two ways to pay. -->
+  <link rel="canonical" href="https://www.premierdentalacademyoflongview.com/enroll" />
+  <meta name="robots" content="noindex, follow" />
+  <meta http-equiv="refresh" content="0; url=/enroll" />
+  <script>location.replace('/enroll');</script>
+  <style>body{font-family:Inter,system-ui,sans-serif;max-width:640px;margin:12vh auto;padding:0 24px;color:#0f172a;text-align:center;}a{color:#0d9488;}</style>
 </head>
-<body class="min-h-screen pda-tinted">
-
-<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-800 text-white">
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 text-center">
-    <p class="text-teal-200 text-xs font-bold tracking-widest uppercase">Free tool · no signup</p>
-    <h1 class="display text-3xl sm:text-5xl font-bold mt-2">Can you get your training <span class="text-amber-400 italic">paid for?</span></h1>
-    <p class="text-slate-200 mt-4 max-w-xl mx-auto text-base sm:text-lg">Money is the #1 thing that stops people — but a lot of our students never pay full price. Answer 6 quick questions and see what could cover your tuition.</p>
-  </div>
-</section>
-
-<main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-  <form id="quiz" class="space-y-5"></form>
-  <div class="mt-6 text-center">
-    <button id="seeBtn" data-event="funding_finder_run" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-8 py-3.5 rounded-full shadow-md disabled:opacity-40" disabled>See what I qualify for →</button>
-    <p id="progress" class="text-sm text-slate-500 mt-2">Answer the questions above</p>
-  </div>
-
-  <div id="results" class="hidden mt-8"></div>
-</main>
-
-<script>
-(function () {
-  'use strict';
-  var QUESTIONS = [
-    { id:'unemployed', q:'Are you currently unemployed, working part-time, or recently laid off?' },
-    { id:'lowincome', q:'Do you receive any assistance (SNAP, TANF, Medicaid) or have a limited income?' },
-    { id:'parent', q:'Are you a parent or the main support for your household?' },
-    { id:'hsgrad', q:'Do you have a high-school diploma or GED?' },
-    { id:'plan', q:'Would small weekly or monthly payments help more than paying all at once?' }
-  ];
-  var ans = {};
-  var form = document.getElementById('quiz');
-  var seeBtn = document.getElementById('seeBtn');
-  var progress = document.getElementById('progress');
-
-  form.innerHTML = QUESTIONS.map(function (item, i) {
-    return '<div class="q bg-white rounded-2xl border border-slate-100 shadow-sm p-5" data-q="' + item.id + '">' +
-      '<div class="font-semibold text-navy-900">' + (i + 1) + '. ' + item.q + '</div>' +
-      '<div class="mt-3 flex gap-3">' +
-      ['Yes', 'No'].map(function (v) {
-        return '<label class="opt flex-1"><input type="radio" name="' + item.id + '" value="' + v + '">' +
-          '<span class="box block text-center font-semibold py-2.5 rounded-full text-slate-700">' + v + '</span></label>';
-      }).join('') + '</div></div>';
-  }).join('');
-
-  form.addEventListener('change', function (e) {
-    if (e.target.name) {
-      ans[e.target.name] = e.target.value;
-      var qEl = form.querySelector('[data-q="' + e.target.name + '"]');
-      if (qEl) qEl.classList.add('answered');
-    }
-    var n = Object.keys(ans).length;
-    progress.textContent = n + ' of ' + QUESTIONS.length + ' answered';
-    seeBtn.disabled = n < QUESTIONS.length;
-  });
-
-  function card(emoji, title, body, accent) {
-    return '<div class="bg-white rounded-2xl border-2 ' + (accent ? 'border-teal-300' : 'border-slate-100') + ' shadow-sm p-5">' +
-      '<div class="flex items-start gap-3"><div class="text-2xl">' + emoji + '</div><div>' +
-      '<h3 class="display text-lg font-bold text-navy-900">' + title + '</h3>' +
-      '<p class="text-sm text-slate-600 mt-1">' + body + '</p></div></div></div>';
-  }
-
-  seeBtn.addEventListener('click', function () {
-    var matches = [];
-    if (ans.unemployed === 'Yes' || ans.lowincome === 'Yes') {
-      matches.push(card('🏛️', 'Texas Workforce Solutions / WIOA', 'You may qualify for WIOA funding that can help cover tuition. You apply directly with Workforce Solutions East Texas — start their free <a href="https://www.easttexasworkforce.org/apply" target="_blank" rel="noopener" class="underline">WIOA interest form</a>. They contact you within about 3 business days; the whole process takes ~6–8 weeks, so start early.', true));
-    }
-    if (ans.parent === 'Yes' || ans.lowincome === 'Yes') {
-      matches.push(card('💛', 'WIOA funding & payment plans', 'We never want money to be the only thing in your way. WIOA funding through Workforce Solutions East Texas can cover tuition for eligible students, and we offer affordable weekly payment plans. Ask Amanda where to start.', false));
-    }
-    // Always-available options
-    matches.push(card('💳', 'Simple payment plan', '$3,000 paid in full, or $3,500 on a plan — $500 down holds your seat, then small weekly or monthly payments (up to 12); your certificate is issued once tuition is paid in full. Or split it with Klarna / Afterpay. <a href="/tools/tuition-planner" class="underline font-semibold text-teal-700">Preview your exact payment dates →</a>', ans.plan === 'Yes'));
-    matches.push(card('🤝', 'Sponsor-a-Student program', 'Local businesses sponsor students through school — a full seat or part of one. Free to apply, and nothing goes public without your OK. <a href="/sponsor-a-student" class="underline font-semibold text-teal-700">Apply for a sponsorship →</a>', false));
-    matches.push(card('💻', 'Online for $997', 'If upfront cost is tight, the 100% online program is a flat $997 and you can start any day.', false));
-
-    var elig = ans.hsgrad === 'No'
-      ? '<p class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl p-3 mt-1">Most funding and registration paths ask for a high-school diploma or GED. Not there yet? Call us — we will talk through your options.</p>'
-      : '';
-
-    document.getElementById('results').innerHTML =
-      '<div class="text-center mb-5"><h2 class="display text-2xl font-bold text-navy-900">Here is what could help you</h2>' +
-      '<p class="text-slate-600 mt-1">Based on your answers. Eligibility is decided by each program — this is a starting point, not a guarantee.</p></div>' +
-      elig +
-      '<div class="grid sm:grid-cols-2 gap-4 mt-4">' + matches.join('') + '</div>' +
-      '<div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-6 mt-6 text-center">' +
-      '<h3 class="display text-xl font-bold">Let us help you fund it.</h3>' +
-      '<p class="text-teal-50 mt-1 text-sm">Amanda will walk you through exactly what you qualify for — no pressure.</p>' +
-      '<div class="mt-4 flex flex-wrap gap-3 justify-center">' +
-      '<a href="tel:+19039136444" data-event="call_click" class="bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Call or text (903) 913-6444</a>' +
-      '<a href="/apply" data-event="apply_click" class="bg-white text-navy-900 font-bold px-6 py-3 rounded-full">Apply free →</a>' +
-      '</div></div>';
-    document.getElementById('results').classList.remove('hidden');
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-  });
-})();
-</script>
+<body>
+  <h1 style="font-size:1.25rem">Tuition &amp; ways to pay</h1>
+  <p>This page has been retired. Tuition is $3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance). Taking you to <a href="/enroll">tuition &amp; ways to pay</a>…</p>
 <script defer src="/assets/pda-track.js"></script>
 </body>
 </html>

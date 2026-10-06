@@ -73,6 +73,18 @@
       }
     },
 
+    // ── FUNDING: NOT OFFERED (Amanda, Oct 3 and Oct 6, 2026) ─────────────────
+    // Prospects were holding off, expecting a "free option", so every WIOA /
+    // Workforce Solutions / GI Bill / "may be free" mention came off the public site
+    // on Oct 6, 2026. The only ways to pay are the two in-person options above (plus
+    // the paid online course). scripts/check-claims.mjs fails the build if any phrase
+    // in retired.funding reappears on a public page.
+    funding: {
+      offered: false,
+      decidedOn: "2026-10-06",
+      neutral: "Tuition is $3,000 paid in full, or $3,500 on a payment plan ($500 down + $3,000 balance). We don't offer grants, vouchers, or other funded enrollment."
+    },
+
     // ── APPROVED CLAIMS REGISTER ─────────────────────────────────────────────
     // Every statistic or outcome claim the site could show. Only status:"approved"
     // renders; anything else is HIDDEN or replaced by the neutral copy below.
@@ -107,7 +119,10 @@
       addresses: ["1405 McCann"],
       phones: ["230-6444", "903-230-6444", "(903) 230-6444"],
       prices: ["$1,997", "$1,995", "$3,495", "$2,120", "$200 down", "$200 locks", "locks your seat", "$499"],
-      spellings: ["Premiere Dental"]
+      spellings: ["Premiere Dental"],
+      // Funded / free enrollment wording retired Oct 6, 2026 (see `funding` above).
+      funding: ["WIOA", "GI Bill", "Workforce Solutions", "funding-finder", "Funding Finder", "Get it paid for",
+                "may be free", "Free training if you qualify", "veterans benefits", "veterans' benefits", "scholarship", "FAFSA"]
     },
 
     // ── COHORT DATES: where they come from + honest fallback copy ────────────
@@ -275,7 +290,7 @@
     },
 
     _meta: {
-      updated: "2026-09-17",
+      updated: "2026-10-06",
       maintainer: "docs/business-facts-source-of-truth.md",
       rule: "Do not hard-code these facts in pages. Read from window.PDA_FACTS."
     }
