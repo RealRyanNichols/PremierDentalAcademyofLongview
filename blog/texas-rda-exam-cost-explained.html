@@ -63,10 +63,9 @@
   <h1 class="display text-3xl sm:text-4xl font-bold mt-2 leading-tight">How much does the Texas RDA exam cost? (And what's included)</h1>
   <p class="text-slate-500 mt-3 text-lg">Here's the honest answer most schools dance around: there is no single "RDA exam fee." Becoming a Registered Dental Assistant in Texas is a handful of separate costs that people lump together — and knowing the pieces is the only way to budget without surprises. Let's lay them all out.</p>
 
-  <div class="grid grid-cols-3 gap-3 mt-8 not-prose">
+  <div class="grid grid-cols-2 gap-3 mt-8 not-prose">
     <div class="bg-teal-50 border border-teal-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-teal-700">4</div><div class="text-xs text-slate-600 mt-1">separate pieces most people bundle into "the exam"</div></div>
     <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-amber-600">1</div><div class="text-xs text-slate-600 mt-1">official source for state fees: TSBDE</div></div>
-    <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4 text-center"><div class="display text-2xl font-bold text-cyan-700">$0</div><div class="text-xs text-slate-600 mt-1">out of pocket for many, with WIOA or workforce funding</div></div>
   </div>
 
   <div class="prose max-w-none mt-8">
@@ -94,9 +93,6 @@
     <h2 class="display text-2xl font-bold mt-10">Where to find the official numbers</h2>
     <p>For anything set by the state — exam fees, registration fees, retake fees, renewal cycles — go straight to the board: <a href="https://tsbde.texas.gov" class="text-teal-700 font-semibold" rel="nofollow">tsbde.texas.gov</a>. It's the one source that's always current, and it's free to read. If a school quotes you an all-in "exam price," ask them to itemize it against that list — a straight answer is a good sign; a dodge is a red flag.</p>
 
-    <h2 class="display text-2xl font-bold mt-10">Funding can cover a lot of it</h2>
-    <p>Here's the part that surprises people: for many East Texans, a big chunk of this comes down to <strong>$0 out of pocket</strong>. Training that leads to a real job often qualifies for <strong>WIOA</strong> funding through Workforce Solutions East Texas, and veterans may be able to use <strong>GI Bill</strong> benefits. We accept all three. Walk through our free <a href="/tools/funding-finder" class="text-teal-700 font-semibold">funding finder</a> to see which doors are open to you, and read <a href="/blog/dental-assistant-grants-financial-aid-texas" class="text-teal-700 font-semibold">grants &amp; financial aid for Texas dental assistants</a> for the full picture. Funding is applied for directly through those agencies — we'll help you get the paperwork right.</p>
-
     <div class="bg-slate-50 border-l-4 border-amber-600 p-4 rounded-r-lg">
       <div class="font-semibold text-slate-900">Compare apples to apples.</div>
       <p class="mt-1 mb-0">When you price schools, add every piece — course + exam + BLS + radiography — for each option. A "cheap" course that leaves you to sort out the rest alone can end up costing more in money and months than one that walks you through the whole path.</p>
@@ -117,18 +113,18 @@
         <label class="flex items-center justify-between gap-3 text-[15px] text-slate-700">Study materials / other <span>$ <input id="k_other" type="number" min="0" placeholder="0" class="costin border border-slate-300 rounded-lg px-2 py-1 text-right" /></span></label>
       </div>
       <div id="k_out" class="mt-4 bg-teal-50 border border-teal-100 rounded-xl p-4 text-center text-slate-700"></div>
-      <p class="text-xs text-slate-400 mt-2 mb-0">Estimate only — enter your own quoted figures. Funding may reduce your out-of-pocket cost substantially.</p>
+      <p class="text-xs text-slate-400 mt-2 mb-0">Estimate only — enter your own quoted figures.</p>
     </div>
 
     <div class="not-prose" data-pda-lead data-topic="texas-rda-exam-cost-explained" data-heading="Not sure which fees apply to you? Ask Amanda." data-sub="She reads every message personally and follows up fast. No pressure, no call center." data-cta="Send my question"></div>
 
     <div class="bg-gradient-to-br from-teal-700 to-teal-600 text-white rounded-2xl p-8 mt-12 text-center">
       <h2 class="display text-2xl font-bold mb-2">Know your number before you commit.</h2>
-      <p class="text-teal-100 mb-5">See what funding could cover, then apply free — In-Person in Longview or fully online.</p>
+      
       <a href="/apply" data-event="blog_cta_click" class="inline-block bg-amber-500 hover:bg-amber-600 text-white font-bold px-6 py-3 rounded-full">Apply now →</a>
     </div>
 
-    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/how-much-does-dental-assistant-school-cost-in-texas" class="text-teal-700 font-semibold">What dental assistant school costs in Texas</a> · <a href="/blog/dental-assistant-grants-financial-aid-texas" class="text-teal-700 font-semibold">Grants &amp; financial aid</a> · <a href="/blog/texas-rda-registration-guide" class="text-teal-700 font-semibold">The Texas RDA registration guide</a></p>
+    <p class="text-sm text-slate-500 mt-8">Keep reading: <a href="/blog/how-much-does-dental-assistant-school-cost-in-texas" class="text-teal-700 font-semibold">What dental assistant school costs in Texas</a> · <a href="/blog/texas-rda-registration-guide" class="text-teal-700 font-semibold">The Texas RDA registration guide</a></p>
   </div>
 
   <p data-pda-related class="text-sm text-slate-500 mt-4 max-w-3xl mx-auto px-4 sm:px-6">More that can help: <a href="/exam-prep-course" data-event="blog_related_click" class="text-teal-700 font-semibold">RDA Exam-Prep Course</a></p>
@@ -144,7 +140,7 @@
     var t=0;ids.forEach(function(i){t+=parseFloat(document.getElementById(i).value)||0;});
     var out=document.getElementById('k_out');
     if(t<=0){out.innerHTML='Enter your quotes above to see your all-in total.';return;}
-    out.innerHTML='Your all-in estimate: <span class="display text-2xl font-bold text-teal-700">$'+t.toLocaleString()+'</span><br><span class="text-xs text-slate-500">Now check the <a href=\"/tools/funding-finder\" class=\"text-teal-700 font-semibold\">funding finder</a> — this number could drop a lot.</span>';
+    out.innerHTML='Your all-in estimate: <span class="display text-2xl font-bold text-teal-700">$'+t.toLocaleString()+'</span><br><span class="text-xs text-slate-500">Tuition can go on the payment plan — <a href=\"/tools/tuition-planner\" class=\"text-teal-700 font-semibold\">see the installment math</a>.</span>';
   }
   ids.forEach(function(i){document.getElementById(i).addEventListener('input',calc);});
   calc();

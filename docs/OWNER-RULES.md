@@ -14,6 +14,10 @@ when present; this file is the standing summary every session must follow. CLAUD
 - Class hours: only "Mon/Wed/Fri 8:30 AM–12:30 PM" and "Tue/Thu 9:00 AM–3:00 PM". No evening,
   night or Saturday times, ever.
 - Dates and seats come from the `cohorts` table, never typed into a page.
+- **No free or funded enrollment options** (Amanda, Oct 3 & 6, 2026): no WIOA, Workforce
+  Solutions, GI Bill, scholarship, FAFSA, "may be free" or "get it paid for" wording anywhere
+  public. The only ways to pay are the two in-person options above (and the paid Online course).
+  `check:claims` enforces it.
 
 ## Never invent or retain as fact without dated evidence from Amanda
 Graduate counts (406+), placement rates (85%+), "70% start with no experience", 17 partner

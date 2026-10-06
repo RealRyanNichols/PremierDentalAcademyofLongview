@@ -231,7 +231,7 @@ const CALC = `
           <div class="text-right text-sm text-slate-400" id="pdacalc-count">6 payments</div>
         </div>
         <a href="/enroll" data-event="enroll_click" class="mt-4 inline-flex w-full items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold px-6 py-3 rounded-full shadow-md">Reserve my spot &rarr;</a>
-        <p class="text-center text-xs text-slate-500 mt-3">Up to 12 weekly or monthly payments. Certificate issued when tuition is paid in full. Klarna or Afterpay too. WIOA funding through Workforce Solutions East Texas.</p>
+        <p class="text-center text-xs text-slate-500 mt-3">Up to 12 weekly or monthly payments. Certificate issued when tuition is paid in full. Klarna or Afterpay too.</p>
       </div>
     </div>
   </div>
@@ -325,9 +325,8 @@ ${twoWays(c)}
     </section>
 ${learnSection(c, idx)}
     <section>
-      <h2 class="display text-2xl font-bold">Pay &amp; funding</h2>
+      <h2 class="display text-2xl font-bold">Pay</h2>
       <p class="text-slate-600 mt-2">We keep tuition straightforward. In-person is <strong>$3,000 paid in full</strong>, or <strong>$500 down on a $3,500 payment plan</strong> with simple weekly or monthly payments. Online is a flat <strong>$997</strong>, self-paced. No surprises and nothing buried in fine print.</p>
-      <p class="text-slate-600 mt-3">Depending on your situation, you <em>may</em> qualify for WIOA workforce funding through your local Workforce Solutions office — we can't promise anything, but we're glad to point you in the right direction. <a href="/apply" class="text-teal-700 underline">Apply or reach out</a> and we'll talk through your options. Wondering what dental assistants earn in East Texas? See our <a href="/salary" class="text-teal-700 underline">salary page</a>.</p>
     </section>
 
     <section>

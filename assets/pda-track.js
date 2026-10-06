@@ -9,7 +9,6 @@
  *   click:tour|<path>      tour link
  *   click:call|<path>      tel: tap
  *   click:email|<path>     mailto: tap
- *   click:funding|<path>   funding-finder link
  *   click:tool:<name>|<path>  a /tools/* link
  *   click:blog|<path>      a blog-article link
  *   click:share|<path>     share button/link
@@ -84,7 +83,6 @@
     if (href.indexOf('/tour') !== -1 && href.indexOf('/tools') === -1) return 'click:tour';
     if (href.indexOf('tel:') === 0) return 'click:call';
     if (href.indexOf('mailto:') === 0) return 'click:email';
-    if (href.indexOf('funding-finder') !== -1) return 'click:funding';
     if (href.indexOf('/tools/') !== -1) {
       var m = href.match(/\/tools\/([a-z0-9-]+)/);
       return 'click:tool:' + (m ? m[1] : 'unknown');
