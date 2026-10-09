@@ -6,6 +6,7 @@
   "scripts": {
     "generate:cities": "node scripts/generate-city-pages.mjs",
     "import:emails": "node scripts/import-emails.mjs",
+    "roll:dates": "node scripts/roll-cohort-dates.mjs",
     "check:facts": "node scripts/check-facts.mjs",
     "check:links": "node scripts/check-links.mjs",
     "check:analytics": "node scripts/check-analytics.mjs",
