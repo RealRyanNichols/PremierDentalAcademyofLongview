@@ -125,17 +125,20 @@ export function checkSecret(req, envName = 'CRON_SECRET') {
 }
 
 // Send one email through Resend. Returns { id } or throws.
-export async function resendSend({ to, subject, html, headers = {}, from }) {
+export async function resendSend({ to, subject, html, text, cc, reply_to, headers = {}, from, idempotencyKey }) {
   const key = process.env.RESEND_API_KEY;
   if (!key) throw new Error('RESEND_API_KEY is not set');
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+    headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}) },
     body: JSON.stringify({
       from: from || process.env.RESEND_FROM || 'Premier Dental Academy <hello@premierdentalacademyoflongview.com>',
       to: Array.isArray(to) ? to : [to],
       subject,
       html,
+      ...(text !== undefined ? { text } : {}),
+      ...(cc !== undefined ? { cc: Array.isArray(cc) ? cc : [cc] } : {}),
+      ...(reply_to !== undefined ? { reply_to } : {}),
       headers,
     }),
   });
@@ -145,7 +148,13 @@ export async function resendSend({ to, subject, html, headers = {}, from }) {
     err.status = res.status;
     throw err;
   }
-  return data; // { id }
+  if (typeof data?.id !== 'string' || !data.id.trim()) {
+    const err = new Error('Resend returned success without a message ID; reconcile before retry');
+    err.code = 'RESEND_ACCEPTANCE_UNVERIFIED';
+    err.unknown = true;
+    throw err;
+  }
+  return data; // Provider acceptance ID; delivery and Gmail Sent are separate.
 }
 
 // One-click unsubscribe headers for a given subscriber token.

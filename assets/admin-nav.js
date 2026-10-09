@@ -23,6 +23,7 @@
   var LINKS = [
     ['/admin',             '🏠', 'Home',                  'Daily'],
     ['/admin/kpi',         '📈', 'Business numbers',      'Daily'],
+    ['/admin/payment-dashboard', '$', 'Student payment plans', 'Daily'],
     ['/admin/payments',    '💳', 'Payments',              'Daily'],
     ['/admin/leads',       '📥', 'Leads',                 'Daily'],
     ['/admin/questions',   '🙋', 'Student questions',     'Daily'],

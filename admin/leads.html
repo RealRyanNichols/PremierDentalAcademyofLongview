@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Leads — PDA Admin</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png" />
-  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png" />
-  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon.png?v=transparent-20261008" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png?v=transparent-20261008" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png?v=transparent-20261008" />
   <meta name="robots" content="noindex,nofollow" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fraunces:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -17,6 +17,8 @@
   <script defer src="/_vercel/insights/script.js"></script>
   <script defer src="/_vercel/speed-insights/script.js"></script>
   <link rel="stylesheet" href="/assets/pda-polish.css" />
+  <link rel="stylesheet" href="/assets/pda-call-brief-20261008.css" />
+  <script src="/assets/pda-call-brief-20261008.js"></script>
 </head>
 <body class="bg-slate-50 min-h-screen pda-tinted">
 
@@ -549,6 +551,8 @@
             <div class="text-xs text-slate-500 flex flex-wrap items-center gap-x-2 gap-y-1 mt-1 min-w-0">${wantBadge(l)}${dupChip(l)}${touchSpans(l)}</div>
           </div>
         </div>
+        ${PdaCallBrief.preview(l)}
+        ${phone ? `<div class="pda-phone-display">${esc(l.phone)}</div>` : ''}
         <div class="grid grid-cols-2 gap-2 mt-3">
           ${phone
             ? `<a href="tel:${esc(phone)}" data-sc-call="${l.id}" class="bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 rounded-xl text-center text-base">📞 Call</a>
@@ -940,6 +944,7 @@
           </div>
           ${metaLine(l)}
           <div class="text-sm text-slate-600 truncate mt-0.5">${storyLine(l)}</div>
+          ${PdaCallBrief.preview(l)}
           <div class="text-xs font-semibold mt-0.5 ${step.tone}">→ ${step.text}</div>
         </div>
         <div class="shrink-0 hidden sm:block">${actionButtons(l, true)}</div>
@@ -978,6 +983,7 @@
               ${cleanInterest(l) ? `<div class="text-sm text-slate-700 mt-1.5"><strong>Interest:</strong> ${esc(cleanInterest(l))}</div>` : ''}
               ${l.message ? `<div class="text-sm text-slate-700 mt-1.5 bg-slate-50 border border-slate-200 rounded p-2">${esc(l.message)}</div>` : ''}
               ${paySignal(l)}
+              ${PdaCallBrief.preview(l)}
               <div class="mt-2">
                 <textarea data-notes="${l.id}" rows="1" placeholder="Add a private note… (auto-saves)" class="w-full text-sm px-3 py-2 border border-slate-200 rounded-lg focus:border-amber-400 focus:outline-none bg-amber-50/40">${esc(l.amanda_notes || '')}</textarea>
                 <span data-notes-status="${l.id}" class="text-[11px] text-slate-400"></span>
@@ -1004,7 +1010,7 @@
     // Calm-view rows: tap anywhere (except a control) to open the full card
     document.querySelectorAll('[data-expand]').forEach(row => {
       row.addEventListener('click', (e) => {
-        if (e.target.closest('a,button,select,textarea,input')) return;
+        if (e.target.closest('a,button,select,textarea,input,details')) return;
         const id = row.dataset.expand;
         if (expandedLeads.has(id)) expandedLeads.delete(id); else expandedLeads.add(id);
         render();
@@ -1725,9 +1731,10 @@
             : `<span class="min-h-[48px] rounded-xl font-semibold text-xs grid place-items-center text-center px-2 bg-slate-100 text-slate-400" title="No email on file">✉️ No email</span>`}
         </div>
         <div class="mt-2 text-sm space-y-0.5">
-          <div class="mono break-all">${l.phone ? esc(l.phone) : '<span class="text-slate-400">No phone on file</span>'}</div>
+          <div class="pda-phone-display">${l.phone ? esc(l.phone) : '<span class="text-slate-400">No phone on file</span>'}</div>
           <div class="break-all">${l.email ? esc(l.email) : '<span class="text-slate-400">No email on file</span>'}</div>
         </div>`)}
+      <div class="pda-brief-panel">${PdaCallBrief.body(l)}</div>
       ${dupSection(l)}
       ${drawerSection('What they want', `
         <div class="mb-2">${wantBadge(l)}</div>

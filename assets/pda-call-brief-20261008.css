@@ -1,0 +1,12 @@
+.pda-call-brief{position:relative;margin:.75rem 0;color:#173b48;font:400 13px/1.5 Inter,sans-serif}
+.pda-call-brief summary{list-style:none;display:flex;gap:10px;align-items:center;min-height:44px;padding:10px 12px;border:1px solid #bfd8dc;border-radius:12px;background:linear-gradient(120deg,#f2fbfb,#fff);cursor:pointer;font-weight:700}
+.pda-call-brief summary::-webkit-details-marker{display:none}
+.pda-call-brief summary:focus-visible{outline:3px solid #0891b2;outline-offset:3px}
+.pda-brief-hint{font-weight:400;color:#58747b;flex:1;font-size:12px}
+.pda-brief-panel{padding:16px;background:#fff;border:1px solid #bfd8dc;border-radius:12px;box-shadow:0 12px 32px #123d4a12;margin-top:6px;overflow-wrap:anywhere}
+.pda-brief-panel p{margin:0 0 9px}.pda-brief-heading{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#32717a;margin:12px 0 5px}.pda-brief-heading:first-child{margin-top:0}
+.pda-brief-next{font-weight:600}.pda-brief-evidence{font-size:11px;color:#647d84;margin-top:10px!important}
+.pda-brief-panel dl>div{display:grid;grid-template-columns:minmax(82px,28%) minmax(0,1fr);gap:8px;padding:5px 0;border-bottom:1px solid #edf3f4}.pda-brief-panel dt{color:#657c83;font-size:12px}.pda-brief-panel dd{margin:0}
+.pda-phone-display{font:700 clamp(24px,4vw,34px)/1.2 Inter,sans-serif;letter-spacing:-.035em;color:#0e6371;overflow-wrap:anywhere;margin:12px 0}
+@media(hover:hover) and (min-width:768px){.pda-call-brief:not([open]):hover>.pda-brief-panel{display:block;position:relative}.pda-call-brief:not([open])>.pda-brief-panel{display:none}}
+@media(prefers-reduced-motion:reduce){.hot-ring{animation:none!important}}
