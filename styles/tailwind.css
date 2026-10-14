@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body[data-pda-video-in-view="true"] #ap-teaser,
+body[data-pda-video-in-view="true"] #pda-sp-toast {
+  display: none !important;
+}

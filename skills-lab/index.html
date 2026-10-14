@@ -30,17 +30,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="/assets/pda-tailwind.v3.4.19.f38a435875f24b40.min.css" data-pda-tailwind="compiled" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/assets/skills-lab/access.js"></script>
-<script>
-/* Skills Lab shared Tailwind config — keep identical on every /skills-lab page. */
-window.tailwind = window.tailwind || {};
-tailwind.config = { theme: { extend: {
-  fontFamily: { sans:['Inter','system-ui','sans-serif'], display:['Fraunces','Inter','serif'] },
-  colors: { navy:{900:'#0a1226',800:'#0f172a',700:'#1e293b'}, teal:{600:'#0d9488',700:'#0f766e',800:'#115e59'}, amber:{400:'#fbbf24',500:'#f59e0b',600:'#d97706'} }
-}}};
-</script>
 <style>
   body{font-family:'Inter',system-ui,sans-serif;color:#0f172a;-webkit-font-smoothing:antialiased;background:#f8fafc}
   .display{font-family:'Fraunces',serif}
@@ -63,8 +55,7 @@ tailwind.config = { theme: { extend: {
     a[href]:after{content:""!important}
   }
 </style>
-  <script defer src="/_vercel/speed-insights/script.js"></script>
-<script src="/assets/pda-analytics.js" defer></script>
+  <script src="/assets/pda-analytics.js" defer></script>
   <link rel="stylesheet" href="/assets/pda-polish.css" />
 <script defer src="/assets/student-nav.js"></script>
 </head>
