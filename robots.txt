@@ -3,3 +3,4 @@ Allow: /
 Disallow: /admin/
 
 Sitemap: https://www.premierdentalacademyoflongview.com/sitemap.xml
+Sitemap: https://www.premierdentalacademyoflongview.com/videos/video-sitemap.xml

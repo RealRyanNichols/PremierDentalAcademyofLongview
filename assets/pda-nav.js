@@ -90,6 +90,7 @@
           <a href="/tools/resume-builder"     class="block px-4 py-2 hover:bg-slate-50">Resume builder</a>
           <a href="/skills-lab/instruments"   class="block px-4 py-2 hover:bg-slate-50">Instrument library</a>
           <a href="/skills-lab/abbreviations" class="block px-4 py-2 hover:bg-slate-50">Charting abbreviations</a>
+          <a href="/texas-rda/" data-event="texas_rda_resource_click" class="block px-4 py-2 hover:bg-slate-50 border-t border-slate-100 font-semibold text-teal-700">Texas RDA resource hub</a>
         </div>
       </div>
       <a href="/employers" data-nav-link class="hover:text-teal-700">For offices</a>
@@ -97,6 +98,7 @@
         <button type="button" data-dd-btn aria-expanded="false" aria-haspopup="true" class="inline-flex items-center gap-1 hover:text-teal-700">About <span class="text-[10px] leading-none" aria-hidden="true">▼</span></button>
         <div data-dd-menu hidden role="menu" class="absolute left-0 top-9 bg-white border border-slate-200 rounded-xl shadow-lg py-2 w-56 z-50 text-slate-700">
           <a href="/about"     class="block px-4 py-2 hover:bg-slate-50">About Amanda</a>
+          <a href="/videos/" data-event="video_library_click" class="block px-4 py-2 hover:bg-slate-50">Watch Amanda’s videos</a>
           <a href="/graduates" class="block px-4 py-2 hover:bg-slate-50">Our graduates</a>
           <a href="/sponsor-a-student" class="block px-4 py-2 hover:bg-slate-50">Sponsor a student</a>
           <a href="/salary"    class="block px-4 py-2 hover:bg-slate-50">Salary calculator</a>
@@ -132,6 +134,7 @@
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">Tools</p>
     <a href="/tools" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base font-bold text-teal-700">🧰 All tools — free &amp; paid</a>
+    <a href="/texas-rda/" data-nav-link data-event="texas_rda_resource_click" class="block py-2.5 px-1 border-b border-slate-100 text-base font-semibold text-teal-700">Texas RDA resource hub</a>
     <p class="text-[10px] uppercase tracking-widest text-amber-600 font-bold px-1 mt-3 mb-1">Paid prep — own it</p>
     <a href="/exam-pro" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Exam Pro — mock state board</a>
     <a href="/study-pack" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">💎 Study Pack</a>
@@ -160,6 +163,7 @@
 
     <p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold px-1 mt-5 mb-1">About PDA</p>
     <a href="/about"     data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">About Amanda</a>
+    <a href="/videos/" data-nav-link data-event="video_library_click" class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Watch Amanda’s videos</a>
     <a href="/graduates" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Our graduates</a>
     <a href="/sponsor-a-student" data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Sponsor a student</a>
     <a href="/salary"    data-nav-link class="block py-2.5 px-1 border-b border-slate-100 text-base text-slate-700">Salary calculator</a>
@@ -669,6 +673,7 @@
       <a href="/tools/chairside" class="block hover:text-white">ChairSide</a>
       <a href="/tools/flashcards" class="block hover:text-white">Flashcards</a>
       <a href="/study-guide" class="block hover:text-white">Study guide</a>
+      <a href="/texas-rda/" data-event="texas_rda_resource_click" class="block hover:text-white">Texas RDA resource hub</a>
     </nav>
     <nav aria-label="More" class="space-y-2">
       <p class="text-white font-semibold">More</p>
@@ -677,6 +682,7 @@
       <a href="/locations" class="block hover:text-white">Towns we serve</a>
       <a href="/graduates" class="block hover:text-white">Our graduates</a>
       <a href="/about" class="block hover:text-white">About Amanda</a>
+      <a href="/videos/" data-event="video_library_click" class="block hover:text-white">Watch Amanda’s videos</a>
       <a href="/contact" class="block hover:text-white">Contact</a>
       <a href="/blog" class="block hover:text-white">Blog</a>
     </nav>

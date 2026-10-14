@@ -5,3 +5,9 @@ node_modules
 .env.*
 !.env.example
 *.log
+
+# Finished video media lives on the DigitalOcean archive volume, outside Git.
+/videos/exports/
+/videos/captions/
+/videos/thumbnails/
+/videos/*.zip

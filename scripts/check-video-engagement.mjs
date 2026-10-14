@@ -1,0 +1,20 @@
+import fs from 'node:fs';
+import vm from 'node:vm';
+import assert from 'node:assert/strict';
+import {fileURLToPath} from 'node:url';
+const events=[],handlers={};
+function video(id){return {dataset:{pdaVideoId:id,pdaVideoPlacement:'watch'},duration:100,paused:true,played:{length:0,start:()=>0,end:()=>0},listeners:{},addEventListener(name,fn){this.listeners[name]=fn},pause(){this.paused=true},fire(name){this.listeners[name]?.()}}}
+const a=video('01-interview-support'),b=video('02-come-back-for-practice');
+const doc={readyState:'complete',querySelectorAll:()=>[a,b],addEventListener:(n,f)=>handlers[n]=f};
+const win={PDA:{track:(name,props)=>events.push({name,props})}};
+vm.runInNewContext(fs.readFileSync(fileURLToPath(new URL('../videos/video-engagement.js',import.meta.url)),'utf8'),{window:win,document:doc,Number});
+a.paused=false;a.fire('play');a.fire('play');assert.equal(events.filter(e=>e.name==='video_start').length,1);
+a.played={length:1,start:()=>0,end:()=>51};a.fire('timeupdate');a.fire('timeupdate');
+assert.deepEqual(events.filter(e=>e.name==='video_progress').map(e=>e.props.percent),[25,50]);
+a.played={length:1,start:()=>0,end:()=>5};a.currentTime=99;a.fire('ended');assert(!events.some(e=>e.name==='video_complete'));
+a.played={length:2,start:i=>i?60:0,end:i=>i?100:60};a.fire('timeupdate');a.fire('ended');a.fire('ended');assert.equal(events.filter(e=>e.name==='video_complete').length,1);
+b.paused=false;b.fire('play');assert.equal(a.paused,true);
+handlers.click({target:{closest:()=>({dataset:{pdaVideoCta:'enroll',pdaVideoId:a.dataset.pdaVideoId,pdaVideoPlacement:'home',email:'private@example.com'},href:'/enroll?email=private@example.com'})}});
+const c=events.find(e=>e.name==='video_cta_click');assert.equal(c.props.action,'enroll');assert.equal(c.props.placement,'home');assert.deepEqual(Object.keys(c.props).sort(),['action','placement','video_id']);assert(!JSON.stringify(events).includes('private@example.com'));
+win.PDA.track=()=>{throw Error('blocked analytics')};assert.doesNotThrow(()=>handlers.click({target:{closest:()=>({dataset:{pdaVideoCta:'watch',pdaVideoId:a.dataset.pdaVideoId}})}}));
+console.log('PASS: native played-range progress, deduplication, seek-safe completion, one active player, CTA privacy and blocked-provider safety.');
