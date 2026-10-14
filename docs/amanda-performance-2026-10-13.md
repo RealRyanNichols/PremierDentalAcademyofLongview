@@ -44,6 +44,8 @@ New media is served from the existing archive folder at `/mnt/archive/client-del
 
 `videos/video-loading.js` prepares metadata for one nearby visible player, or when a visitor hovers over or focuses a player. Automatic preparation is skipped for Save-Data and slow-2g/2g connections. Contextual and library players begin with `preload="none"`; individual watch-page players begin with `preload="metadata"`. Playback remains under the visitor's control and players do not autoplay. The visibility observer also controls both automatic prompt rules without removing the manual chat button.
 
+Eight lazy campus-gallery photos on the homepage use `fetchpriority="low"` so browsers can prioritize requested playback over nearby secondary photos. Existing photo dimensions, formats, and lazy loading are retained.
+
 425 broken Vercel-only analytics script tags were removed from public compiled pages after their actual URLs returned HTTP 404. The existing PDA GA4 and Meta integrations remain in place; no provider IDs or measurement events were replaced.
 
 ## Validation and measurements
