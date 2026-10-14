@@ -3,16 +3,31 @@
 Permanent working rules for any AI/dev work in this repo. Read before editing.
 
 ## Stack reality (so instructions get adapted correctly)
-- This is a **static, no-build site**: plain HTML + **Tailwind via CDN** + vanilla JS in
-  `assets/`. **No framework, no TypeScript, no bundler, no lint/typecheck/test runner.**
-- Hosting is **Vercel** (`vercel.json`, `cleanUrls:true` → `/foo` serves `foo.html`).
-  "Build" = Vercel serving static files. There is nothing to compile.
+- This is a **static HTML site** with vanilla JavaScript in `assets/` and `videos/`.
+  Public marketing and study pages use locally compiled, checked-in Tailwind 3.4.19 CSS;
+  PracticePro, ChairSide, and Career Plan have separate scoped stylesheets. Excluded
+  private/noindex utility pages may retain the older runtime. There is no framework,
+  TypeScript, or application bundler. Existing Node validation scripts run through
+  `npm test`; there is no separate lint or typecheck configuration.
+- Production hosting is the existing **DigitalOcean** server. Caddy serves the static
+  checkout at `/srv/sites/pda`, resolves clean URLs, and forwards `/api/*` to the existing
+  Node API on `127.0.0.1:3200`. The existing main autopull validates `npm test` before a
+  fast-forward deployment. Legacy `vercel.json` is not the production deployment guide.
+- CSS compilation is a local preparation step: `npm run build:css`,
+  `npm run build:css:scoped`, and `npm run check:css:scoped`. Commit the generated
+  versioned assets with page references; production serves them without a compiler.
 - When a task says "create `src/lib/*.ts`" or "run lint/typecheck/build", **translate it**
   to this stack: a shared `assets/*.js` ES module, a data file, and/or a small Node script
-  under `scripts/` run with `node`. Confirm before introducing a framework/build step.
-- Backend: Supabase (client uses the **publishable anon key only**; RLS enforced), Square
-  via `api/enroll.js`, Kajabi/Resend/Quo via `supabase/functions/`. Secrets live in
-  Vercel/Supabase env — **never commit secrets**.
+  under `scripts/` run with `node`. Confirm before introducing a framework or additional
+  build system.
+- The existing Node wrapper `/opt/pda-api/server.mjs`, managed by `pda-api.service`, loads
+  the repository's API handlers, including `api/enroll.js`. Preserve existing enrollment
+  and provider behavior. Supabase and older provider/migration files remain in the repo;
+  verify their current integration before claiming a backend migration or new connection.
+  Keep private keys and production secrets in the server environment; **never commit
+  secrets** or expose them in client-side code.
+- See [README](../README.md) and [Amanda performance release](amanda-performance-2026-10-13.md)
+  for current commands, hosting, validation, release status, and rollback notes.
 
 ## Content & honesty rules (non-negotiable)
 - **Do not invent** testimonials, graduate names, partner offices, placement numbers, or
